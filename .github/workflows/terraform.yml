@@ -1,0 +1,71 @@
+name: "Terraform"
+
+on:
+  workflow_call:
+    inputs:
+      workdir:
+        required: false
+        type: string
+        default: '.'
+        description: directory to run Terraform commands from
+      apply:
+        required: false
+        type: boolean
+        default: false
+        description: whether to apply config, or otherwise just plan
+      approved_plan:
+        required: false
+        type: string
+        description: if you are applying, provide the approved plan
+    secrets:
+      access_key:
+        required: true
+      secret_Key:
+        required: true
+    outputs:
+      plan:
+        description: "The output of `terraform plan`"
+        value: ${{ jobs.terraform.outputs.plan }}
+      
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    outputs:
+      plan: ${{ steps.plan.outputs.stdout }}
+    defaults:
+      run:
+        working-directory: ${{inputs.workdir}}
+    env:
+      AWS_ACCESS_KEY_ID: ${{secrets.access_key}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.secret_key}}
+      AWS_REGION: "eu-west-1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check -diff -recursive
+        working-directory: ./ # To include the modules folder
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -input=false
+      
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color # possibly unnecessary as "plan" implicitly validates
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color -input=false
+
+      - name: Compare plans
+        if: inputs.apply && inputs.approved_plan != steps.plan.outputs.stdout
+        run: echo "Plans have changed; restart the planning job and review it" && exit 1
+
+      - name: Terraform Apply
+        if: inputs.apply
+        run: terraform apply -auto-approve -input=false

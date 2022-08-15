@@ -1,0 +1,56 @@
+name: "Deployment"
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  plan_test:
+    name: Plan changes to Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/terraform.yml
+        with:
+          workdir: test
+        secrets:
+          access_key: "${{secrets.access_key_dev}}"
+          secret_key: "${{secrets.secret_key_dev}}"  
+  deploy_test:
+    name: Deploy changes to Test
+    runs-on: ubuntu-latest
+    needs: test
+    environment: test
+    steps:
+      - uses: ./.github/workflows/terraform.yml
+        with:
+          workdir: test
+          approved_plan: ${{needs.plan_test.outputs.plan}}
+        secrets:
+          access_key: "${{secrets.access_key_dev}}"
+          secret_key: "${{secrets.secret_key_dev}}"
+  plan_staging:
+    name: Validate and plan staging
+    runs-on: ubuntu-latest
+    needs: deploy_test
+    steps:
+      - uses: ./.github/workflows/terraform.yml
+        with:
+          workdir: staging
+        secrets:
+          access_key: "${{secrets.access_key_dev}}"
+          secret_key: "${{secrets.secret_key_dev}}"
+  deploy_staging:
+    name: Apply staging
+    runs-on: ubuntu-latest
+    needs: plan_staging
+    # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+    environment: staging
+    steps:
+      - uses: ./.github/workflows/terraform.yml
+        with:
+          workdir: staging
+          approved_plan: needs.plan_staging.outputs.plan
+        secrets:
+          access_key: "${{secrets.access_key_dev}}"
+          secret_key: "${{secrets.secret_key_dev}}"  
