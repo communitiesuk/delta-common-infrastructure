@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - "main"
-    # paths:
-    #   - "terraform/**"
+    paths:
+      - "terraform/**"
 
 jobs:
   test:
@@ -18,3 +18,25 @@ jobs:
     secrets:
       access_key: ${{ secrets.access_key_dev }}
       secret_key: ${{ secrets.secret_key_dev }}
+  staging:
+    name: Deploy to "Staging"
+    needs: test
+    uses: ./.github/workflows/terraform.yml
+    with:
+      workdir: terraform/staging
+      apply: true
+      environment: staging
+    secrets:
+      access_key: ${{ secrets.access_key_dev }}
+      secret_key: ${{ secrets.secret_key_dev }}
+  production:
+    name: Deploy to "Production"
+    needs: staging
+    uses: ./.github/workflows/terraform.yml
+    with:
+      workdir: terraform/production
+      apply: true
+      environment: production
+    secrets:
+      access_key: ${{ secrets.access_key_prod }}
+      secret_key: ${{ secrets.secret_key_prod }}

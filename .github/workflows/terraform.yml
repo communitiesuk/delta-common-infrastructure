@@ -24,11 +24,12 @@ on:
         required: true
 
 jobs:
-  terraform_plan:
+  plan:
     name: Terraform plan
     runs-on: ubuntu-latest
     outputs:
       plan: ${{ steps.plan.outputs.stdout }}
+      plan_exitcode: ${{ steps.plan.outputs.exitcode }}
     defaults:
       run:
         working-directory: ${{ inputs.workdir }}
@@ -39,31 +40,39 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      # - name: Terraform Format
-      #   id: fmt
-      #   run: terraform fmt -check -diff -recursive
-      #   working-directory: ./ # To include the modules folder
-
-      # - name: Terraform Init
-      #   id: init
-      #   run: terraform init -input=false
       
-      # - name: Terraform Validate
-      #   id: validate
-      #   run: terraform validate -no-color # possibly unnecessary as "plan" implicitly validates
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check -diff -recursive
+        working-directory: ./ # To include the modules folder
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -input=false
+      
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color # possibly unnecessary as "plan" implicitly validates
 
       - name: Terraform Plan
         id: plan
-        # run: terraform plan -no-color -input=false
-        run: ls
+        # Terraform's "detailed-exitcode" codes are: 0 for "no changes", 1 for errors, 2 for "valid changes" 
+        run: terraform plan -no-color -input=false -detailed-exitcode
+        continue-on-error: true
 
-  terraform_deploy:
+      - name: Fail job if plan resulted in an error
+        if: steps.plan.outputs.exitcode == 1
+        run: exit 1
+
+  apply:
     name: Terraform apply
-    needs: terraform_plan
+    needs: plan
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: inputs.apply
+    if: inputs.apply && needs.plan.outputs.plan_exitcode == 2
     defaults:
       run:
         working-directory: ${{ inputs.workdir }}
@@ -71,17 +80,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        
       - name: Terraform Plan
         id: repeat_plan
-        # run: terraform plan -no-color -input=false
-        run: ls
+        run: terraform plan -no-color -input=false
 
       - name: Compare plans
-        # if: inputs.apply && steps.repeat_plan.outputs.stdout != needs.terraform_plan.outputs.plan
-        if: inputs.apply && steps.repeat_plan.outputs.stdout != needs.terraform_plan.outputs.plan
+        if: inputs.apply && steps.repeat_plan.outputs.stdout != needs.plan.outputs.plan
         run: echo "Plans have changed; restart the planning job and review it again" && exit 1
 
       - name: Terraform Apply
         if: inputs.apply
-        # run: terraform apply -auto-approve -input=false
-        run: echo "terraform apply"
+        run: terraform apply -auto-approve -input=false
