@@ -2,23 +2,21 @@ name: "Validate and plan for pull request"
 
 on:
   pull_request:
+    paths:
+      - "terraform/**"
 
 jobs:
-  test:
-    name: Run Terraform workflow for Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ./.github/workflows/terraform.yml
-        with:
-          workdir: test
-          apply: false
-        secrets:
-          access_key: "${{secrets.access_key_dev}}"
-          secret_key: "${{secrets.secret_key_dev}}"
-      - uses: ./.github/workflows/terraform.yml
-        with:
-          workdir: staging
-          apply: false
-        secrets:
-          access_key: "${{secrets.access_key_dev}}"
-          secret_key: "${{secrets.secret_key_dev}}"
+  validate_test:
+    uses: ./.github/workflows/terraform.yml
+    with:
+      workdir: test
+    secrets:
+      access_key: "${{secrets.access_key_dev}}"
+      secret_key: "${{secrets.secret_key_dev}}"
+  validate_staging:
+    uses: ./.github/workflows/terraform.yml
+    with:
+      workdir: test
+    secrets:
+      access_key: "${{secrets.access_key_dev}}"
+      secret_key: "${{secrets.secret_key_dev}}"

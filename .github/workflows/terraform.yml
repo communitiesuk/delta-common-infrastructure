@@ -1,4 +1,4 @@
-name: "Terraform"
+name: "Reusable Terraform workflow"
 
 on:
   workflow_call:
@@ -13,23 +13,18 @@ on:
         type: boolean
         default: false
         description: whether to apply config, or otherwise just plan
-      approved_plan:
+      environment:
         required: false
         type: string
-        description: if you are applying, provide the approved plan
+        description: If applying, specify a release "environment"
     secrets:
       access_key:
         required: true
       secret_Key:
         required: true
-    outputs:
-      plan:
-        description: "The output of `terraform plan`"
-        value: ${{ jobs.terraform.outputs.plan }}
-      
 
 jobs:
-  terraform:
+  terraform_plan:
     name: "Terraform"
     runs-on: ubuntu-latest
     outputs:
@@ -65,6 +60,28 @@ jobs:
       - name: Compare plans
         if: inputs.apply && inputs.approved_plan != steps.plan.outputs.stdout
         run: echo "Plans have changed; restart the planning job and review it" && exit 1
+
+      - name: Terraform Apply
+        if: inputs.apply
+        run: terraform apply -auto-approve -input=false
+
+  terraform_deploy:
+    name: "Terraform apply job"
+    needs: terraform_plan
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    if: inputs.apply
+    defaults:
+      run:
+        working-directory: ${{inputs.workdir}}
+    steps:
+      - name: Terraform Plan
+        id: repeat_plan
+        run: terraform plan -no-color -input=false
+
+      - name: Compare plans
+        if: inputs.apply && steps.repeat_plan != jobs.terraform_plan.outputs.plan
+        run: echo "Plans have changed; restart the planning job and review it again" && exit 1
 
       - name: Terraform Apply
         if: inputs.apply
