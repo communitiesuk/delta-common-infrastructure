@@ -12,7 +12,7 @@ terraform {
     encrypt        = true
     dynamodb_table = "tfstate-locks"
     key            = "datamart-production"
-    region         = "eu-west-2"
+    region         = "eu-west-1"
   }
 
   required_version = "~> 1.0.0"
