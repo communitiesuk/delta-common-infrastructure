@@ -4,10 +4,13 @@ Infrastructure specific to an application should live in its own codebase, but s
 
 ## Repository contents
 
-* docs/adr: contains Architecture Decision Records
-* terraform/: contains
-  * modules: reusable Terraform config that can be shared between environments
-  * 
+* docs - any documentation relevant to Datamart's infrastructure or this repository 
+  * adr - Architecture Decision Records
+  * diagrams - architecture diagrams
+* terraform - all of the Terraform code
+  * modules - reusable Terraform config that can be shared between environments
+  * test, staging, production - Terraform root modules for each of the three environments
+  * backend - configuration for the resources that will store the remote state
 
 ## CI/CD
 
