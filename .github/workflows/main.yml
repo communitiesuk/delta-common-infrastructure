@@ -4,11 +4,12 @@ on:
   push:
     branches:
       - "main"
-    paths:
-      - "terraform/**"
+    # paths:
+    #   - "terraform/**"
 
 jobs:
-  plan_test:
+  test:
+    name: Deploy to "Test"
     uses: ./.github/workflows/terraform.yml
     with:
       workdir: terraform/test
