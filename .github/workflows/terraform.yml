@@ -80,7 +80,7 @@ jobs:
         run: terraform plan -no-color -input=false
 
       - name: Compare plans
-        if: inputs.apply && steps.repeat_plan != jobs.terraform_plan.outputs.plan
+        if: inputs.apply && steps.repeat_plan != needs.terraform_plan.outputs.plan
         run: echo "Plans have changed; restart the planning job and review it again" && exit 1
 
       - name: Terraform Apply
