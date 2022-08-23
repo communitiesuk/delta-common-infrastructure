@@ -24,4 +24,6 @@ provider "aws" {
 
 module "networking" {
   source = "../modules/networking"
+
+  default_tags = var.default_tags
 }

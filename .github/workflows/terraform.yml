@@ -90,12 +90,14 @@ jobs:
 
       - name: Terraform Plan
         id: repeat_plan
-        run: terraform plan -no-color -input=false
+        run: terraform plan -no-color -input=false -detailed-exitcode
+        continue-on-error: true
 
       - name: Compare plans
-        if: inputs.apply && steps.repeat_plan.outputs.stdout != needs.plan.outputs.plan
-        run: echo "Plans have changed; restart the planning job and review it again" && exit 1
+        if: steps.repeat_plan.outputs.stdout != needs.plan.outputs.plan
+        run: >
+          echo "Plans have changed; restart the planning job and review it again";
+          diff <(echo "${{steps.repeat_plan.outputs.stdout}}") <(echo "${{needs.plan.outputs.plan}}")
 
       - name: Terraform Apply
-        if: inputs.apply
         run: terraform apply -auto-approve -input=false
