@@ -8,7 +8,7 @@ terraform {
 
   # Requires S3 bucket & Dynamo DB to be configured, please see README.md
   backend "s3" {
-    bucket         = "data-collection-service-tfstate-prod"
+    bucket         = "data-collection-service-tfstate-production"
     encrypt        = true
     dynamodb_table = "tfstate-locks"
     key            = "common-infra-prod"

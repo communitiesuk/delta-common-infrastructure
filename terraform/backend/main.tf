@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "data-collection-service-tfstate-prod"
+  bucket = "data-collection-service-tfstate-production"
   lifecycle {
     prevent_destroy = true
   }
