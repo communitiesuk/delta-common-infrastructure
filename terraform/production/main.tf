@@ -8,10 +8,10 @@ terraform {
 
   # Requires S3 bucket & Dynamo DB to be configured, please see README.md
   backend "s3" {
-    bucket         = "datamart-terraform-state"
+    bucket         = "data-collection-service-tfstate-prod"
     encrypt        = true
     dynamodb_table = "tfstate-locks"
-    key            = "datamart-production"
+    key            = "common-infra-prod"
     region         = "eu-west-1"
   }
 

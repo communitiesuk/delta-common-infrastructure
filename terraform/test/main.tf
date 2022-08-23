@@ -8,10 +8,10 @@ terraform {
 
   # Requires S3 bucket & Dynamo DB to be configured, please see README.md
   backend "s3" {
-    bucket         = "datamart-terraform-state"
+    bucket         = "data-collection-service-tfstate-dev"
     encrypt        = true
     dynamodb_table = "tfstate-locks"
-    key            = "datamart-test"
+    key            = "common-infra-test"
     region         = "eu-west-1"
   }
 
@@ -24,4 +24,6 @@ provider "aws" {
 
 module "networking" {
   source = "../modules/networking"
+
+  default_tags = var.default_tags
 }

@@ -1,10 +1,10 @@
-This repository contains Terraform configuration for the infrastructure of "Datamart", containing services such as Delta and the "Common Payments Module".
+This repository contains Terraform configuration for the infrastructure for data collection as a service, which consists of  Delta, the Common Payments Module, and potentially e-claims in the future. 
 
-Infrastructure specific to an application should live in its own codebase, but shared services like AWS SES or 
+Infrastructure specific to an individual application should live in its own codebase, but shared resources like AWS SES or the shared VPC will be defined here.
 
 ## Repository contents
 
-* docs - any documentation relevant to Datamart's infrastructure or this repository 
+* docs - any documentation relevant to the shared infrastructure or this repository 
   * adr - Architecture Decision Records
   * diagrams - architecture diagrams
 * terraform - all of the Terraform code
@@ -21,7 +21,5 @@ GitHub Actions is the CI/CD platform of choice for minimal maintenance, plus it 
   * Run `terraform plan` for the test environment
   * After a reviewer approves the plan, run `terraform apply` for the test environment
   * After that completes successfully, repeat for the next environment (test -> staging -> production)
-
-An possible improvement: skip review/apply step if the plan is "no changes".
 
 The `terraform.yml` workflow could be reused by other Git repositories, but may need to be enhanced with e.g. a continuous deployment option. 

@@ -1,33 +1,33 @@
-resource "aws_s3_bucket" "b" {
-  bucket = "mybucket"
-
-  tags = {
-    Name = "My bucket"
-  }
+resource "aws_s3_bucket" "cf_bucket" {
+  bucket = "data-collections-service-cloudfront-${var.suffix}"
+  tags   = var.default_tags
 }
 
 resource "aws_s3_bucket_acl" "b_acl" {
-  bucket = aws_s3_bucket.b.id
+  bucket = aws_s3_bucket.cf_bucket.id
   acl    = "private"
+  tags   = var.default_tags
 }
 
 locals {
   s3_origin_id = "myS3Origin"
 }
 
-resource "aws_cloudfront_distribution" "s3_distribution" {
+resource "aws_cloudfront_origin_access_identity" "main" {
+}
+
+resource "aws_cloudfront_distribution" "main" {
   origin {
-    domain_name = aws_s3_bucket.b.bucket_regional_domain_name
+    domain_name = aws_s3_bucket.cf_bucket.bucket_regional_domain_name
     origin_id   = local.s3_origin_id
 
     s3_origin_config {
-      origin_access_identity = "origin-access-identity/cloudfront/ABCDEFG1234567"
+      origin_access_identity = aws_cloudfront_origin_access_identity.main.cloudfront_access_identity_path
     }
   }
 
   enabled             = true
   is_ipv6_enabled     = true
-  comment             = "Some comment"
   default_root_object = "index.html"
 
   logging_config {
@@ -35,8 +35,6 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     bucket          = "mylogs.s3.amazonaws.com"
     prefix          = "myprefix"
   }
-
-  aliases = ["mysite.example.com", "yoursite.example.com"]
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]

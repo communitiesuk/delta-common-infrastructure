@@ -4,7 +4,7 @@ variable "default_tags" {
     project           = "Data Collection Service"
     business-unit     = "Digital Delivery"
     technical-contact = "Team-DLUHC@softwire.com"
-    environment       = "production"
+    environment       = "test"
     repository        = "https://github.com/communitiesuk/delta-common-infrastructure"
   }
 }

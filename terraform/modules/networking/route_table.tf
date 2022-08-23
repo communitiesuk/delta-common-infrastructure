@@ -10,7 +10,7 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "route_table_association_subnet" {
-  count          = var.number_of_public_subnets
-  subnet_id      = aws_subnet.pub_subnet.*.id[count.index]
+  count          = var.number_of_private_subnets
+  subnet_id      = aws_subnet.private_subnet[count.index].id
   route_table_id = aws_route_table.public.id
 }
