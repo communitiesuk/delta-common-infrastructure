@@ -61,6 +61,10 @@ jobs:
           terraform plan -no-color -input=false -detailed-exitcode | sed '/ Refreshing state... /d';
           exit ${PIPESTATUS[0]}
         continue-on-error: true
+
+      - name: Fail job if plan failed
+        if: steps.plan.outputs.exitcode == 1
+        run: exit 1
         
   apply:
     name: Terraform apply

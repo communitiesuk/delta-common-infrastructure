@@ -4,19 +4,30 @@ on:
   pull_request:
     paths:
       - "terraform/**"
+      - ".github/workflows/**"
 
 jobs:
   validate_test:
+    name: Validate test Terraform config
     uses: ./.github/workflows/terraform.yml
     with:
-      workdir: test
+      workdir: terraform/test
     secrets:
       access_key: "${{secrets.access_key_dev}}"
       secret_key: "${{secrets.secret_key_dev}}"
   validate_staging:
+    name: Validate staging Terraform config
     uses: ./.github/workflows/terraform.yml
     with:
-      workdir: test
+      workdir: terraform/staging
+    secrets:
+      access_key: "${{secrets.access_key_dev}}"
+      secret_key: "${{secrets.secret_key_dev}}"
+  validate_production:
+    name: Validate production Terraform config
+    uses: ./.github/workflows/terraform.yml
+    with:
+      workdir: terraform/production
     secrets:
       access_key: "${{secrets.access_key_dev}}"
       secret_key: "${{secrets.secret_key_dev}}"
