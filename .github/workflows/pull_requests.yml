@@ -29,5 +29,5 @@ jobs:
     with:
       workdir: terraform/production
     secrets:
-      access_key: "${{secrets.access_key_dev}}"
-      secret_key: "${{secrets.secret_key_dev}}"
+      access_key: "${{secrets.access_key_prod}}"
+      secret_key: "${{secrets.secret_key_prod}}"
