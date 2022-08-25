@@ -1,4 +1,4 @@
-resource "aws_route_table" "nat_gateway" {
+resource "aws_route_table" "to_internet_gateway" {
   vpc_id = aws_vpc.vpc.id
 
   route {
@@ -9,9 +9,14 @@ resource "aws_route_table" "nat_gateway" {
   tags = var.default_tags
 }
 
+resource "aws_route_table_association" "ad_management_server" {
+  subnet_id      = aws_subnet.ad_management_server.id
+  route_table_id = aws_route_table.to_internet_gateway.id
+}
+
 resource "aws_route_table_association" "nat_gateway" {
   subnet_id      = aws_subnet.nat_gateway.id
-  route_table_id = aws_route_table.nat_gateway.id
+  route_table_id = aws_route_table.to_internet_gateway.id
 }
 
 resource "aws_route_table" "private" {
