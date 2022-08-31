@@ -28,6 +28,13 @@ resource "aws_subnet" "ad_management_server" {
   tags                    = var.default_tags
 }
 
+resource "aws_subnet" "ldaps_ca_server" {
+  availability_zone = data.aws_availability_zones.available.names[0]
+  cidr_block        = "10.0.225.0/24"
+  vpc_id            = aws_vpc.vpc.id
+  tags              = var.default_tags
+}
+
 resource "aws_subnet" "nat_gateway" {
   availability_zone = data.aws_availability_zones.available.names[0]
   cidr_block        = "10.0.240.0/24"

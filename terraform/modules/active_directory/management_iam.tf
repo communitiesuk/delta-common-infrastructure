@@ -18,8 +18,6 @@ resource "aws_iam_role" "ad_management_role" {
   tags = var.default_tags
 }
 
-data "aws_caller_identity" "current" {}
-
 data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
   arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
@@ -38,6 +36,6 @@ resource "aws_iam_role_policy_attachment" "ad_management_attach_2" {
 }
 
 resource "aws_iam_instance_profile" "ad_management_profile" {
-  name  = "ad_management_profile"
+  name = "ad_management_profile"
   role = aws_iam_role.ad_management_role.name
 }

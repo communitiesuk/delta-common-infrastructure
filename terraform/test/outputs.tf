@@ -10,3 +10,8 @@ output "ad_management_server_password" {
   # this is encrypted, so not sensitive
   value = module.active_directory.ad_management_server_password
 }
+
+output "ca_server_private_key" {
+  value     = module.active_directory.private_key
+  sensitive = true
+}

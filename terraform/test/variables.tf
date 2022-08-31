@@ -10,7 +10,7 @@ variable "default_tags" {
 }
 
 variable "directory_admin_password" {
-  type = string
+  type      = string
   sensitive = true
 }
 

@@ -14,3 +14,7 @@ output "ad_private_subnets" {
 output "ad_public_subnet" {
   value = aws_subnet.ad_management_server
 }
+
+output "ldaps_ca_subnet" {
+  value = aws_subnet.ldaps_ca_server
+}
