@@ -7,6 +7,17 @@ on:
       - ".github/workflows/**"
 
 jobs:
+  tfsec:
+    name: tfsec PR commenter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+      - name: tfsec
+        uses: tfsec/tfsec-pr-commenter-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      
   validate_test:
     name: Validate test Terraform config
     uses: ./.github/workflows/terraform.yml
