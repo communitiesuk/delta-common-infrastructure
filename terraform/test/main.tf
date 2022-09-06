@@ -23,7 +23,21 @@ provider "aws" {
 }
 
 module "networking" {
-  source = "../modules/networking"
+  source                    = "../modules/networking"
+  number_of_private_subnets = 3
+  number_of_ad_subnets      = 2
+  default_tags              = var.default_tags
+}
 
-  default_tags = var.default_tags
+module "active_directory" {
+  source = "../modules/active_directory"
+
+  default_tags                 = var.default_tags
+  edition                      = "Standard"
+  vpc                          = module.networking.vpc
+  subnets                      = module.networking.ad_private_subnets
+  public_subnet                = module.networking.ad_public_subnet
+  number_of_domain_controllers = 2
+  ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
+  environment                  = "test"
 }
