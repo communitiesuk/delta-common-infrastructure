@@ -10,7 +10,12 @@ output "ad_management_server_password" {
   value = aws_instance.ad_management_server.password_data
 }
 
-output "private_key" {
+output "ca_server_private_key" {
   value     = tls_private_key.ca_server_ec2.private_key_pem
+  sensitive = true
+}
+
+output "ad_management_private_key" {
+  value     = tls_private_key.ad_management_ec2.private_key_pem
   sensitive = true
 }

@@ -11,7 +11,12 @@ output "ad_management_server_password" {
   value = module.active_directory.ad_management_server_password
 }
 
+output "ad_management_private_key" {
+  value     = module.active_directory.ad_management_private_key
+  sensitive = true
+}
+
 output "ca_server_private_key" {
-  value     = module.active_directory.private_key
+  value     = module.active_directory.ca_server_private_key
   sensitive = true
 }

@@ -1,7 +1,11 @@
-# Create the Key Pair
+resource "tls_private_key" "ad_management_ec2" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
 resource "aws_key_pair" "ad_management_key_pair" {
-  key_name   = "ad-management-key-pair"
-  public_key = var.ad_management_public_key
+  key_name   = "ad-management-ec2-key-${var.environment}"
+  public_key = tls_private_key.ad_management_ec2.public_key_openssh
 }
 
 resource "tls_private_key" "ca_server_ec2" {
