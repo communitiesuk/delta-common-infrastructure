@@ -8,8 +8,3 @@ variable "default_tags" {
     repository        = "https://github.com/communitiesuk/delta-common-infrastructure"
   }
 }
-
-variable "directory_admin_password" {
-  type      = string
-  sensitive = true
-}

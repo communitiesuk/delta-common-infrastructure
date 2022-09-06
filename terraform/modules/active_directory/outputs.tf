@@ -19,3 +19,8 @@ output "ad_management_private_key" {
   value     = tls_private_key.ad_management_ec2.private_key_pem
   sensitive = true
 }
+
+output "directory_admin_password" {
+  value     = random_password.directory_admin_password
+  sensitive = true
+}

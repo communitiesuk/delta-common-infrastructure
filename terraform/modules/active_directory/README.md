@@ -3,7 +3,7 @@
 ## RDP to management server as directory admin:
 
 * Username: dluhcdata.local\admin
-* Password: from input variable directory_admin_password
+* Password: from output directory_admin_password
 
 ### RDP to CA server
 

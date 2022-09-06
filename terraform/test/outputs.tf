@@ -20,3 +20,8 @@ output "ca_server_private_key" {
   value     = module.active_directory.ca_server_private_key
   sensitive = true
 }
+
+output "directory_admin_password" {
+  value     = module.active_directory.directory_admin_password
+  sensitive = true
+}
