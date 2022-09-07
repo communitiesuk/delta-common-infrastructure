@@ -18,11 +18,14 @@ resource "aws_security_group" "ad_management_server" {
     to_port   = 0
     protocol  = "-1"
 
+    # tfsec:ignore:aws-vpc-no-public-egress-sgr
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all egress"
   }
 }
 
 resource "aws_security_group_rule" "domain_controllers_to_ca_1" {
+  description       = "Directory Services to CA port 135"
   type              = "egress"
   from_port         = 135
   to_port           = 135
@@ -32,6 +35,7 @@ resource "aws_security_group_rule" "domain_controllers_to_ca_1" {
 }
 
 resource "aws_security_group_rule" "domain_controllers_to_ca_2" {
+  description       = "Directory Services to CA ports 49152+"
   type              = "egress"
   from_port         = 49152
   to_port           = 65535

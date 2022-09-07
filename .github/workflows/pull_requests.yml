@@ -31,3 +31,14 @@ jobs:
     secrets:
       access_key: "${{secrets.access_key_prod}}"
       secret_key: "${{secrets.secret_key_prod}}"
+  tfsec:
+    name: tfsec PR commenter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+      - name: tfsec
+        uses: aquasecurity/tfsec-pr-commenter-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          working_directory: terraform/

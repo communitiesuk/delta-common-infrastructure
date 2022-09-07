@@ -7,6 +7,12 @@ resource "aws_instance" "ad_management_server" {
   associate_public_ip_address = true
   get_password_data           = true
   iam_instance_profile        = aws_iam_instance_profile.ad_management_profile.name
+  metadata_options {
+    http_tokens = "required"
+  }
+  root_block_device {
+    encrypted = true
+  }
 
   tags = merge(var.default_tags, { name = "AD management server" })
 }
