@@ -2,11 +2,30 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-# TODO:tfsec Enable bucket encryption
-# TODO:tfsec Consider enabling access logging
-# tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging
+resource "aws_kms_key" "state_bucket_encryption_key" {
+  description         = "Terraform state bucket encryption key"
+  enable_key_rotation = true
+}
+
+resource "aws_s3_bucket_logging" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+
+  target_bucket = aws_s3_bucket.state_access_log_bucket.id
+  target_prefix = "production/"
+}
+
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "data-collection-service-tfstate-production"
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.state_bucket_encryption_key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+
   lifecycle {
     prevent_destroy = true
   }
