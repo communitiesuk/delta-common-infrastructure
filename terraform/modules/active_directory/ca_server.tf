@@ -6,15 +6,36 @@ resource "aws_secretsmanager_secret_version" "ca_install_credentials" {
   })
 }
 
+# TODO:tfsec Use CMK for secrets manager
+# tfsec:ignore:aws-ssm-secret-use-customer-key
 resource "aws_secretsmanager_secret" "ca_install_credentials" {
   name = "ldaps_ca_credentials"
 }
 
+# TODO:tfsec Enable bucket encryption
+# TODO:tfsec Consider enabling access logging
+# tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging
 resource "aws_s3_bucket" "ldaps_crl_and_certs" {
   bucket = "data-collection-service-ldaps-crl-certs-${var.environment}"
   lifecycle {
     prevent_destroy = true
   }
+}
+
+resource "aws_s3_bucket_versioning" "ldaps_crl_and_certs" {
+  bucket = aws_s3_bucket.ldaps_crl_and_certs.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "ldaps_crl_and_certs" {
+  bucket = aws_s3_bucket.ldaps_crl_and_certs.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_cloudformation_stack" "ca_server" {
