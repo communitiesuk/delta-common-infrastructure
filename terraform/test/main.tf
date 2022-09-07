@@ -26,6 +26,15 @@ provider "aws" {
   }
 }
 
+module "cloudfront" {
+  source             = "../modules/cloudfront"
+  nginx_test_subnet  = module.networking.public_subnets[0]
+  vpc                = module.networking.vpc
+  prefix             = "nginx-test-"
+  environment        = "test"
+  public_alb_subnets = module.networking.public_subnets
+}
+
 module "networking" {
   source                    = "../modules/networking"
   number_of_private_subnets = 3
