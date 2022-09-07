@@ -25,9 +25,9 @@ resource "aws_route_table" "private" {
   }
 }
 
-resource "aws_route_table_association" "private" {
-  count          = var.number_of_private_subnets
-  subnet_id      = aws_subnet.private_subnet[count.index].id
+resource "aws_route_table_association" "ml_private" {
+  count          = 3
+  subnet_id      = aws_subnet.ml_private_subnets[count.index].id
   route_table_id = aws_route_table.private.id
 }
 

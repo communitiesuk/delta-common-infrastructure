@@ -28,7 +28,6 @@ provider "aws" {
 
 module "networking" {
   source                    = "../modules/networking"
-  number_of_private_subnets = 3
   number_of_ad_subnets      = 2
 }
 
@@ -43,3 +42,12 @@ module "active_directory" {
   ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
   environment                  = "test"
 }
+
+# module "marklogic" {
+#   source = "../modules/marklogic"
+
+#   default_tags = var.default_tags
+#   environment  = "test"
+#   vpc          = "module.networking.vpc"
+#   private_subnets = module.networking.ml_private_subnets
+# }

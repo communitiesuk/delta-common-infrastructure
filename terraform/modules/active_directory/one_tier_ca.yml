@@ -449,11 +449,11 @@ Resources:
             type: String
           DirectoryType:
             description: Type of Active Directory CA will be integrated with
-            type: String 
-          DomainDNSName: 
+            type: String
+          DomainDNSName:
             description: Fully qualified domain name (FQDN) of the forest root domain e.g. example.com
             type: String
-          DomainNetBIOSName: 
+          DomainNetBIOSName:
             description: NetBIOS name of the domain (up to 15 characters) for users of earlier versions of Windows e.g. EXAMPLE
             type: String
           DomainController1IP:
@@ -464,7 +464,7 @@ Resources:
             type: String
           EnableAdvancedAudtingandMetrics:
             description: Enable advanced auditing and metrics
-            type: String            
+            type: String
           EntCaHashAlgorithm:
             description: Enterprise Root CA Hash Algorithm for Siging Certificates
             type: String
@@ -476,7 +476,7 @@ Resources:
             type: String
           EntCaServerNetBIOSName:
             description: NetBIOS name of the Enterprise Root or Subordinate CA server (up to 15 characters)
-            type: String            
+            type: String
           QSS3BucketName:
             description: S3 bucket name for the Quick Start assets. Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
             type: String
@@ -508,7 +508,7 @@ Resources:
           inputs:
             Service: ec2
             Api: DescribeInstances
-            Filters:  
+            Filters:
             - Name: tag:Name
               Values: ['{{EntCaServerNetBIOSName}}']
             - Name: tag:aws:cloudformation:stack-name
@@ -597,7 +597,7 @@ Resources:
                         Write-Output "Failed to Import Modules $_"
                         Exit 1
                     }
-                } 
+                }
             CloudWatchOutputConfig:
               CloudWatchOutputEnabled: true
               CloudWatchLogGroupName: !Sub /aws/Quick_Start/${AWS::StackName}
@@ -698,7 +698,7 @@ Resources:
           inputs:
             Choices:
             - NextStep: signalsuccess
-              Not: 
+              Not:
                 Variable: '{{StackName}}'
                 StringEquals: ''
             - NextStep: sleepend
@@ -745,7 +745,7 @@ Resources:
         - Key: Domain
           Value: !Ref DomainDNSName
         - Key: Role
-          Value: Enterprise CA        
+          Value: Enterprise CA
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
@@ -765,7 +765,7 @@ Resources:
         - !Ref CaSG
         - !Ref DomainMembersSG
       KeyName: !Ref KeyPairName
-      UserData: 
+      UserData:
         Fn::Base64: !Sub
             - |
                 <powershell>
