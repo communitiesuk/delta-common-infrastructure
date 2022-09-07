@@ -1,0 +1,21 @@
+name: "TFSec main branch check"
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "terraform/**"
+      - ".github/workflows/tfsec-main.yml"
+
+jobs:
+  tfsec:
+    name: tfsec check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@main
+        with:
+          working_directory: terraform/
