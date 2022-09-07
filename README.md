@@ -23,3 +23,16 @@ GitHub Actions is the CI/CD platform of choice for minimal maintenance, plus it 
   * After that completes successfully, repeat for the next environment (test -> staging -> production)
 
 The `terraform.yml` workflow could be reused by other Git repositories, but may need to be enhanced with e.g. a continuous deployment option. 
+
+## tfsec
+
+This repository uses [tfsec](https://aquasecurity.github.io/tfsec/) to scan the terraform code for potential security issues.
+It can be run using Docker
+
+```sh
+docker run --rm -it -v "$(pwd):/src" aquasec/tfsec /src
+```
+
+It's also available via Chocolately + other package managers, but the Docker image seems to be more up to date.
+
+Individual rules can be ignored with a comment on the line above with the form `tfsec:ignore:<rule-name>` e.g. `tfsec:ignore:aws-dynamodb-enable-at-rest-encryption`.
