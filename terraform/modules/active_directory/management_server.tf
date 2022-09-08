@@ -8,7 +8,8 @@ resource "aws_instance" "ad_management_server" {
   get_password_data           = true
   iam_instance_profile        = aws_iam_instance_profile.ad_management_profile.name
   metadata_options {
-    http_tokens = "required"
+    http_tokens   = "required"
+    http_endpoint = "enabled"
   }
   root_block_device {
     encrypted = true
