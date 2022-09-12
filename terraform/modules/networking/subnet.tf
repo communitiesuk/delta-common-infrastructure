@@ -45,6 +45,6 @@ resource "aws_subnet" "ldaps_ca_server" {
 
 resource "aws_subnet" "nat_gateway" {
   availability_zone = data.aws_availability_zones.available.names[0]
-  cidr_block        = "10.0.240.0/24"
+  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 226)
   vpc_id            = aws_vpc.vpc.id
 }

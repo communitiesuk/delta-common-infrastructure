@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "ml_attach" {
 
 resource "aws_iam_instance_profile" "ml_instance_profile" {
   name = "ml_profile_${var.environment}"
-  role = aws_iam_role.ad_management_role.name
+  role = aws_iam_role.ml_iam_role.name
 }
 
 resource "aws_iam_policy" "ml_instance_policy" {

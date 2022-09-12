@@ -12,7 +12,11 @@ variable "vpc" {
   description = "The main VPC"
 }
 
+variable "instance_type" {
+  description = "EC2 instance type for MarkLogic"
+  default = "r5.4xlarge"
+}
+
 variable "private_subnets" {
   description = "Three private subnets"
-  type        = list(string)
 }

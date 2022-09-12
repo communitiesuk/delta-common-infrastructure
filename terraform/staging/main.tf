@@ -28,4 +28,29 @@ provider "aws" {
 
 module "networking" {
   source = "../modules/networking"
+  default_tags              = var.default_tags
+  vpc_cidr_block = "10.20.0.0/16"
+}
+
+module "active_directory" {
+  source = "../modules/active_directory"
+
+  default_tags                 = var.default_tags
+  edition                      = "Standard"
+  vpc                          = module.networking.vpc
+  subnets                      = module.networking.ad_private_subnets
+  public_subnet                = module.networking.ad_public_subnet
+  number_of_domain_controllers = 2
+  ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
+  environment                  = "staging"
+}
+
+module "marklogic" {
+  source = "../modules/marklogic"
+
+  default_tags = var.default_tags
+  environment  = "staging"
+  vpc          = module.networking.vpc
+  private_subnets = module.networking.ml_private_subnets
+  instance_type = "r5.xlarge"
 }

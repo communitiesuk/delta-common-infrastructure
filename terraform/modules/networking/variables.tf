@@ -13,3 +13,8 @@ variable "number_of_ad_subnets" {
   type    = number
   default = 2
 }
+
+variable "vpc_cidr_block" {
+  type = string
+  default = "10.0.0.0/16"
+}
