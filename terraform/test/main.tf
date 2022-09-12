@@ -35,6 +35,21 @@ module "cloudfront" {
   public_alb_subnets = module.networking.public_subnets
 }
 
+# TODO: Move to own top level thing?
+module "jaspersoft" {
+  source             = "../modules/jaspersoft"
+  test_public_subnet = module.networking.ad_public_subnet
+  vpc_id             = module.networking.vpc.id
+  prefix             = "test-"
+  environment        = "test"
+  ssh_key_name       = aws_key_pair.bastion_ssh_key.key_name
+  # public_alb_subnets = module.networking.public_subnets
+}
+
+output "jaspersoft_ip" {
+  value = module.jaspersoft.jaspersoft_box_ip
+}
+
 module "networking" {
   source                    = "../modules/networking"
   number_of_private_subnets = 3
