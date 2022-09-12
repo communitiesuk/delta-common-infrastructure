@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ad_management_role" {
-  name = "ad_management_role"
+  name = "ad_management_role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -34,6 +34,6 @@ resource "aws_iam_role_policy_attachment" "ad_management_attach_2" {
 }
 
 resource "aws_iam_instance_profile" "ad_management_profile" {
-  name = "ad_management_profile"
+  name = "ad_management_profile_${var.environment}"
   role = aws_iam_role.ad_management_role.name
 }

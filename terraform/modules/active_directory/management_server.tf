@@ -19,7 +19,7 @@ resource "aws_instance" "ad_management_server" {
 }
 
 resource "aws_ssm_document" "ad_join_domain" {
-  name          = "ad-join-domain"
+  name          = "ad-join-domain-${var.environment}"
   document_type = "Command"
   content = jsonencode(
     {
