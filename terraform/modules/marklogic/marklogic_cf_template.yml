@@ -287,16 +287,13 @@ Parameters:
     Description: The MarkLogic License Key or 'none'. Provide none/none to choose "Pay as you Go"/Enterprise version. Provide valid Licensee/Licensekey to choose BYOL/developer version.
     Type: String
     Default: none
+    NoEcho: 'true'
 Conditions:
   UseLogSNS: !Not [!Equals [!Ref LogSNS, "none"]]
   UseSpot: !Not
     - !Equals
       - !Ref SpotPrice
       - 0
-  #MultiZone (3 zones) and SingleZone conditions used for the conditional resource creation based on number of zones selected.
-  MultiZone:
-    !Not [!Equals [!Ref NumberOfZones, 1]]
-  SingleZone: !Equals [!Ref NumberOfZones, 1]
   EssentialEnterprise:
     !Or [ !And [!Equals [!Ref LicenseKey, ''], !Equals [!Ref Licensee, '']], !And [!Equals [!Ref LicenseKey, 'none'], !Equals [!Ref Licensee, 'none']] ]
   UseVolumeEncryption: !Equals [!Ref VolumeEncryption, 'enable']
@@ -371,7 +368,7 @@ Resources:
         S3Directory: !FindInMap [Variable,"S3Directory","base"]
         NodesPerZone: !Ref NodesPerZone
         NumberOfZones: !Ref NumberOfZones
-        Subnets: !If [MultiZone, !Join [',', [!Ref PrivateSubnet1, !Ref PrivateSubnet2, !Ref PrivateSubnet3]], !Ref PrivateSubnet1]
+        Subnets: !Join [',', [!Ref PrivateSubnet1, !Ref PrivateSubnet2, !Ref PrivateSubnet3]]
         ParentStackName: !Ref 'AWS::StackName'
         ParentStackId: !Ref 'AWS::StackId'
         SecurityGroup: !Ref InstanceSecurityGroup
@@ -406,7 +403,6 @@ Resources:
       'AWS::CloudFormation::Designer':
         id: c81032f7-b0ec-47ca-a236-e24d57b49ae3
   MarklogicVolume2:
-    Condition: MultiZone
     Type: 'AWS::EC2::Volume'
     Properties:
       AvailabilityZone: !Select [1, !Ref AZ]
@@ -421,7 +417,6 @@ Resources:
       'AWS::CloudFormation::Designer':
         id: ddb55ae1-a00b-42ed-addd-5e03e4a2764b
   MarklogicVolume3:
-    Condition: MultiZone
     Type: 'AWS::EC2::Volume'
     Properties:
       AvailabilityZone: !Select [2, !Ref AZ]
@@ -450,52 +445,9 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: e7190602-c2de-47ab-81e7-1315f8c01e2d
-  #AutoScalingGroup used for SingleZone deployments that is connected to Classic Load Balancer.
-  MarkLogicServerGroup:
-    Condition: SingleZone
-    Type: 'AWS::AutoScaling::AutoScalingGroup'
-    DependsOn:
-      - ManagedEniStack
-      - NodeMgrLambdaStack
-    Properties:
-      VPCZoneIdentifier:
-        - !Ref PrivateSubnet1
-      LaunchConfigurationName: !Ref LaunchConfig1
-      MinSize: '0'
-      MaxSize: !Ref NodesPerZone
-      DesiredCapacity: !Ref NodesPerZone
-      Cooldown: '300'
-      HealthCheckType: EC2
-      HealthCheckGracePeriod: '300'
-      NotificationConfiguration: !If
-        - UseLogSNS
-        - TopicARN: !Ref LogSNS
-          NotificationTypes:
-            - 'autoscaling:EC2_INSTANCE_LAUNCH'
-            - 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR'
-            - 'autoscaling:EC2_INSTANCE_TERMINATE'
-            - 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
-        - !Ref 'AWS::NoValue'
-      Tags:
-        - Key: marklogic:stack:name
-          Value: !Ref 'AWS::StackName'
-          PropagateAtLaunch: 'true'
-        - Key: marklogic:stack:id
-          Value: !Ref 'AWS::StackId'
-          PropagateAtLaunch: 'true'
-      LifecycleHookSpecificationList:
-        - LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING'
-          LifecycleHookName: NodeManager
-          HeartbeatTimeout: 4800
-          NotificationTargetARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrSnsArn]
-          RoleARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrIamArn]
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: 31621dd0-4b18-4dcd-b443-db9cef64ebb1
   #AutoScalingGroup used for MultiZone deployments (3 zones) that is connected to Application Load Balancer via 9 TargetGroups.
   #All of the instances in this AutoScalingGroup will be registered to all 9 TargetGroups.
   MarkLogicServerGroup1:
-    Condition: MultiZone
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     DependsOn:
       - ManagedEniStack
@@ -513,7 +465,7 @@ Resources:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet1
       LaunchConfigurationName: !Ref LaunchConfig1
-      MinSize: '0'
+      MinSize: '1'
       MaxSize: !Ref NodesPerZone
       DesiredCapacity: !Ref NodesPerZone
       Cooldown: '300'
@@ -557,7 +509,6 @@ Resources:
   #AutoScalingGroup used for MultiZone deployments (3 zones) that is connected to Application Load Balancer via 9 TargetGroups.
   #All of the instances in this AutoScalingGroup will be registered to all 9 TargetGroups.
   MarkLogicServerGroup2:
-    Condition: MultiZone
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     DependsOn:
       - ManagedEniStack
@@ -619,7 +570,6 @@ Resources:
   #AutoScalingGroup used for MultiZone deployments (3 zones) that is connected to Application Load Balancer via 9 TargetGroups.
   #All of the instances in this AutoScalingGroup will be registered to all 9 TargetGroups.
   MarkLogicServerGroup3:
-    Condition: MultiZone
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     DependsOn:
       - ManagedEniStack
@@ -681,13 +631,9 @@ Resources:
   InstanceSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupDescription: Enable SSH access and HTTP access on the inbound port
+      GroupDescription: Enable access on the inbound ports
       VpcId: !Ref VPC
       SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: '22'
-          ToPort: '22'
-          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '80'
           ToPort: '80'
@@ -698,15 +644,27 @@ Resources:
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '7997'
-          ToPort: '7999'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '8000'
           ToPort: '8010'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
-          FromPort: '8000'
-          ToPort: '8010'
+          FromPort: '8029'
+          ToPort: '8032'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8040'
+          ToPort: '8044'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8050'
+          ToPort: '8058'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8140'
+          ToPort: '8142'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8150'
+          ToPort: '8150'
           CidrIp: 0.0.0.0/0
   InstanceSecurityGroupIngress:
     Type: 'AWS::EC2::SecurityGroupIngress'
@@ -820,7 +778,6 @@ Resources:
       'AWS::CloudFormation::Designer':
         id: 2efb8cfb-df53-401d-8ff2-34af0dd25993
   LaunchConfig2:
-    Condition: MultiZone
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     DependsOn:
       - InstanceSecurityGroup
@@ -900,7 +857,6 @@ Resources:
       'AWS::CloudFormation::Designer':
         id: c8296a50-a29e-4646-aa74-8f1b735a9a3f
   LaunchConfig3:
-    Condition: MultiZone
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     DependsOn:
       - InstanceSecurityGroup
@@ -981,7 +937,6 @@ Resources:
         id: 7fa68c90-39bc-4874-ad20-8cd8c974ed52
   #Application Load Balancer description for MultiZone deployments (3 zones).
   Alb:
-    Condition: MultiZone
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     DependsOn:
       - ElbSecurityGroup
@@ -990,15 +945,14 @@ Resources:
         - !Ref ElbSecurityGroup
       Subnets:
         - !Ref PrivateSubnet1
-        - !If [MultiZone, !Ref PrivateSubnet2, !Ref 'AWS::NoValue']
-        - !If [MultiZone, !Ref PrivateSubnet3, !Ref 'AWS::NoValue']
+        - !Ref PrivateSubnet2
+        - !Ref PrivateSubnet3
     Metadata:
       'AWS::CloudFormation::Designer':
         id: e188e71e-5f01-4816-896e-9bd30b9a96c1
   #Descriptions of the 9 TargetGroups for MultiZone deployments (3 zones). TargetGroups route requests to registered targets.
   #Health checks are performed on each TargetGroup.
   AlbTargetGroup1:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
@@ -1019,7 +973,6 @@ Resources:
           Value: 60
       VpcId: !Ref VPC
   AlbTargetGroup2:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
@@ -1040,7 +993,6 @@ Resources:
           Value: 60
       VpcId: !Ref VPC
   AlbTargetGroup3:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
@@ -1061,7 +1013,6 @@ Resources:
           Value: 60
       VpcId: !Ref VPC
   AlbTargetGroup4:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
@@ -1082,7 +1033,6 @@ Resources:
           Value: 60
       VpcId: !Ref VPC
   AlbTargetGroup5:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
@@ -1103,7 +1053,6 @@ Resources:
           Value: 60
       VpcId: !Ref VPC
   AlbTargetGroup6:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
@@ -1124,7 +1073,6 @@ Resources:
           Value: 60
       VpcId: !Ref VPC
   AlbTargetGroup7:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
@@ -1145,7 +1093,6 @@ Resources:
           Value: 60
       VpcId: !Ref VPC
   AlbTargetGroup8:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
@@ -1166,7 +1113,6 @@ Resources:
           Value: 60
       VpcId: !Ref VPC
   AlbTargetGroup9:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
@@ -1188,7 +1134,6 @@ Resources:
       VpcId: !Ref VPC
   #Descriptions of the 9 Listeners for MultiZone deployments (3 zones). Each Listener connects Application Load Balancer to a TargetGroup with a particular port.
   AlbListener1:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     DependsOn:
       - Alb
@@ -1201,7 +1146,6 @@ Resources:
       Port: 8000
       Protocol: HTTP
   AlbListener2:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     DependsOn:
       - Alb
@@ -1214,7 +1158,6 @@ Resources:
       Port: 8001
       Protocol: HTTP
   AlbListener3:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     DependsOn:
       - Alb
@@ -1227,7 +1170,6 @@ Resources:
       Port: 8002
       Protocol: HTTP
   AlbListener4:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     DependsOn:
       - Alb
@@ -1240,7 +1182,6 @@ Resources:
       Port: 8003
       Protocol: HTTP
   AlbListener5:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     DependsOn:
       - Alb
@@ -1253,7 +1194,6 @@ Resources:
       Port: 8004
       Protocol: HTTP
   AlbListener6:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     DependsOn:
       - Alb
@@ -1266,7 +1206,6 @@ Resources:
       Port: 8005
       Protocol: HTTP
   AlbListener7:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     DependsOn:
       - Alb
@@ -1279,7 +1218,6 @@ Resources:
       Port: 8006
       Protocol: HTTP
   AlbListener8:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     DependsOn:
       - Alb
@@ -1292,7 +1230,6 @@ Resources:
       Port: 8007
       Protocol: HTTP
   AlbListener9:
-    Condition: MultiZone
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     DependsOn:
       - Alb
@@ -1310,5 +1247,5 @@ Outputs:
     Value: !Join
       - ''
       - - 'http://'
-        - !If [MultiZone, !GetAtt [Alb, DNSName], !GetAtt [ManagedEniStack, Outputs.ENI]]
+        - !GetAtt [Alb, DNSName]
         - ':8001'

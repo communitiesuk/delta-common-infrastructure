@@ -21,6 +21,6 @@ output "ad_management_private_key" {
 }
 
 output "directory_admin_password" {
-  value     = random_password.directory_admin_password
+  value     = random_password.directory_admin_password.result
   sensitive = true
 }

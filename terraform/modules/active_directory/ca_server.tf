@@ -11,7 +11,7 @@ resource "aws_kms_key" "ad_secrets_key" {
 }
 
 resource "aws_secretsmanager_secret" "ca_install_credentials" {
-  name = "ldaps_ca_credentials-${var.environment}"
+  name = "ldaps-ca-credentials-${var.environment}"
   kms_key_id = aws_kms_key.ad_secrets_key.arn
 }
 
