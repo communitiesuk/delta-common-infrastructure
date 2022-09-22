@@ -36,3 +36,18 @@ docker run --rm -it -v "$(pwd):/src" aquasec/tfsec /src
 It's also available via Chocolately + other package managers, but the Docker image seems to be more up to date.
 
 Individual rules can be ignored with a comment on the line above with the form `tfsec:ignore:<rule-name>` e.g. `tfsec:ignore:aws-dynamodb-enable-at-rest-encryption`.
+
+## Bastion
+
+There's an SSH bastion server for each environment.
+You can create an account by uploading your SSH public key to the relevant bucket, i.e.
+
+```sh
+aws s3 cp ~/.ssh/id_rsa.pub s3://$(terraform output -raw bastion_ssh_keys_bucket)/<username>.pub
+```
+
+After five minutes you should be able to SSH in to the bastion server, provided your current IP is allowlisted.
+
+```sh
+ssh <username>@$(terraform output -raw bastion_dns_name)
+```

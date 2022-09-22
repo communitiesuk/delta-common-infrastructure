@@ -43,3 +43,23 @@ module "active_directory" {
   ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
   environment                  = "test"
 }
+
+resource "aws_key_pair" "bastion_ssh_key" {
+  key_name   = "bastion_ssh_key"
+  public_key = file("delta_test.pub")
+}
+
+module "bastion" {
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=34554d5b603e97d3adb2e06bcdf3b02d9d2a7e95"
+
+  region                  = "eu-west-1"
+  name_prefix             = "tst"
+  vpc_id                  = module.networking.vpc.id
+  public_subnet_ids       = [for subnet in module.networking.public_subnets : subnet.id]
+  instance_subnet_ids     = [for subnet in module.networking.private_subnets : subnet.id]
+  admin_ssh_key_pair_name = aws_key_pair.bastion_ssh_key.key_name
+  external_allowed_cidrs  = ["31.221.86.178/32", "167.98.33.82/32", "82.163.115.98/32", "87.224.105.250/32", "87.224.18.46/32"]
+  instance_count          = 1
+
+  tags_default = var.default_tags
+}

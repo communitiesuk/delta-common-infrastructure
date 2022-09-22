@@ -25,3 +25,11 @@ output "directory_admin_password" {
   value     = module.active_directory.directory_admin_password
   sensitive = true
 }
+
+output "bastion_dns_name" {
+  value = module.bastion.bastion_dns_name
+}
+
+output "bastion_ssh_keys_bucket" {
+  value = module.bastion.ssh_keys_bucket
+}
