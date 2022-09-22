@@ -1,6 +1,6 @@
 # JasperReports Server
 
-Requires S3 bucket `dluhc-jaspersoft-bin` with JasperReports Server binaries in, currently expects 7.8.0 and the 7.8.1 Service Pack.
+Requires S3 bucket (var.jaspersoft_binaries_s3_bucket) in the current AWS account with JasperReports Server binaries in, currently expects 7.8.0 and the 7.8.1 Service Pack.
 
 ```sh
 aws s3api create-bucket --bucket dluhc-jaspersoft-bin --acl private --region eu-west-1 --create-bucket-configuration LocationConstraint=eu-west-1

@@ -88,6 +88,9 @@ systemctl stop tomcat
 # "./js-install-ce.sh minimal" to stop sample reports being setup
 su tomcat -c "./js-install-ce.sh"
 
+# Fix for invalid CSRF header name, ALB will drop headers with underscores in
+sed -i 's/^org.owasp.csrfguard.TokenName=OWASP_CSRFTOKEN/org.owasp.csrfguard.TokenName=OWASPCSRFTOKEN/' /opt/tomcat/base/webapps/jasperserver/WEB-INF/csrf/jrs.csrfguard.properties
+
 systemctl start tomcat
 
 echo "Done"

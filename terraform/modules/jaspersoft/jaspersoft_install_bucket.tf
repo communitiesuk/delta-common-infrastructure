@@ -3,12 +3,12 @@ data "aws_s3_bucket" "jaspersoft_binaries" {
 }
 
 resource "aws_iam_instance_profile" "read_jaspersoft_binaries" {
-  name = "${var.prefix}jaspersoft-s3-access-${var.environment}"
+  name = "${var.prefix}jaspersoft-s3-access"
   role = aws_iam_role.read_jaspersoft_binaries.name
 }
 
 resource "aws_iam_role" "read_jaspersoft_binaries" {
-  name = "${var.prefix}jaspersoft-s3-access-${var.environment}"
+  name = "${var.prefix}jaspersoft-s3-access"
   path = "/"
 
   assume_role_policy = <<EOF
@@ -28,6 +28,8 @@ resource "aws_iam_role" "read_jaspersoft_binaries" {
 EOF
 }
 
+# Allowing access to a single bucket seems reasonable
+# tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_role_policy" "read_jaspersoft_binaries" {
   name = "read_jaspersoft_binaries"
   role = aws_iam_role.read_jaspersoft_binaries.id

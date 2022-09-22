@@ -38,3 +38,11 @@ output "bastion_ssh_private_key" {
   value     = tls_private_key.bastion_ssh_key.private_key_openssh
   sensitive = true
 }
+
+output "jaspersoft_alb_domain" {
+  value = module.jaspersoft.jaspersoft_alb_domain
+}
+
+output "jaspersoft_private_ip" {
+  value = module.jaspersoft.instance_private_ip
+}
