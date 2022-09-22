@@ -12,6 +12,11 @@ output "public_subnets" {
   description = "var.number_of_public_subnets public /24 subnets"
 }
 
+output "private_subnets" {
+  value       = aws_subnet.private_subnet
+  description = "var.number_of_private_subnets private /24 subnets"
+}
+
 output "ad_private_subnets" {
   value = aws_subnet.ad_subnet
 }
