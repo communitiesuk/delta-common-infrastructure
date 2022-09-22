@@ -4,7 +4,7 @@ data "aws_availability_zones" "available" {
 
 resource "aws_subnet" "private_subnet" {
   count                   = var.number_of_private_subnets
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 4, count.index)
+  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index)
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
@@ -13,11 +13,21 @@ resource "aws_subnet" "private_subnet" {
 
 resource "aws_subnet" "ad_subnet" {
   count                   = var.number_of_ad_subnets
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 4, count.index + var.number_of_private_subnets)
+  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index + var.number_of_private_subnets)
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
   tags                    = var.default_tags
+}
+
+# tfsec:ignore:aws-ec2-no-public-ip-subnet
+resource "aws_subnet" "public_subnet" {
+  count                   = var.number_of_public_subnets
+  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index + 128)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = true
+  tags                    = merge({ Name = "Public subnet ${count.index}" }, var.default_tags)
 }
 
 resource "aws_subnet" "ad_management_server" {

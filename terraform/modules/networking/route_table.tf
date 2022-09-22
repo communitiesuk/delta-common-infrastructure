@@ -34,6 +34,12 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
+resource "aws_route_table_association" "public" {
+  count          = var.number_of_public_subnets
+  subnet_id      = aws_subnet.public_subnet[count.index].id
+  route_table_id = aws_route_table.to_internet_gateway.id
+}
+
 resource "aws_route_table_association" "ldaps_ca_server" {
   subnet_id      = aws_subnet.ldaps_ca_server.id
   route_table_id = aws_route_table.private.id
