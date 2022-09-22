@@ -20,10 +20,12 @@ terraform {
 
 provider "aws" {
   region = "eu-west-1"
+
+  default_tags {
+    tags = var.default_tags
+  }
 }
 
 module "networking" {
   source = "../modules/networking"
-
-  default_tags = var.default_tags
 }

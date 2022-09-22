@@ -14,8 +14,6 @@ resource "aws_iam_role" "ad_management_role" {
       },
     ]
   })
-
-  tags = var.default_tags
 }
 
 data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {

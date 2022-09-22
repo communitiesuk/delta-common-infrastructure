@@ -15,7 +15,7 @@ resource "aws_instance" "ad_management_server" {
     encrypted = true
   }
 
-  tags = merge(var.default_tags, { name = "AD management server" })
+  tags = { Name = "AD management server" }
 }
 
 resource "aws_ssm_document" "ad_join_domain" {

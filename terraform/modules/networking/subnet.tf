@@ -8,7 +8,6 @@ resource "aws_subnet" "private_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
-  tags                    = var.default_tags
 }
 
 resource "aws_subnet" "ad_subnet" {
@@ -17,7 +16,6 @@ resource "aws_subnet" "ad_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
-  tags                    = var.default_tags
 }
 
 # tfsec:ignore:aws-ec2-no-public-ip-subnet
@@ -27,7 +25,7 @@ resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = true
-  tags                    = merge({ Name = "Public subnet ${count.index}" }, var.default_tags)
+  tags                    = { Name = "Public subnet ${count.index}" }
 }
 
 resource "aws_subnet" "ad_management_server" {
@@ -36,7 +34,6 @@ resource "aws_subnet" "ad_management_server" {
   vpc_id            = aws_vpc.vpc.id
   # tfsec:ignore:aws-ec2-no-public-ip-subnet Intentionally public
   map_public_ip_on_launch = true
-  tags                    = var.default_tags
 }
 
 resource "aws_subnet" "ldaps_ca_server" {
@@ -44,12 +41,10 @@ resource "aws_subnet" "ldaps_ca_server" {
   cidr_block              = "10.0.225.0/24"
   vpc_id                  = aws_vpc.vpc.id
   map_public_ip_on_launch = false
-  tags                    = var.default_tags
 }
 
 resource "aws_subnet" "nat_gateway" {
   availability_zone = data.aws_availability_zones.available.names[0]
   cidr_block        = "10.0.240.0/24"
   vpc_id            = aws_vpc.vpc.id
-  tags              = var.default_tags
 }

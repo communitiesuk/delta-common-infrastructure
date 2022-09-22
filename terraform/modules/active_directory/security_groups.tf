@@ -3,8 +3,6 @@ resource "aws_security_group" "ad_management_server" {
   description = "Controls access to the management server"
   vpc_id      = var.vpc.id
 
-  tags = var.default_tags
-
   ingress {
     description = "RDP from Softwire"
     from_port   = 3389
