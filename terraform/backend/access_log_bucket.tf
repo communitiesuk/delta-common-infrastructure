@@ -12,7 +12,7 @@ resource "aws_s3_bucket" "state_access_log_bucket" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "terraform_state" {
+resource "aws_s3_bucket_public_access_block" "state_access_log_bucket" {
   bucket = aws_s3_bucket.state_access_log_bucket.id
 
   block_public_acls       = true
@@ -22,7 +22,7 @@ resource "aws_s3_bucket_public_access_block" "terraform_state" {
 }
 
 resource "aws_s3_bucket_policy" "allow_log_writes" {
-  bucket = aws_s3_bucket.example.id
+  bucket = aws_s3_bucket.state_access_log_bucket.id
   policy = data.aws_iam_policy_document.allow_log_writes.json
 }
 
