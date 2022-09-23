@@ -11,14 +11,6 @@ resource "aws_security_group" "ad_management_server" {
     security_groups = [var.rdp_ingress_sg_id]
   }
 
-  ingress {
-    description     = "Ping from Bastion"
-    from_port       = 8
-    to_port         = 0
-    protocol        = "icmp"
-    security_groups = [var.rdp_ingress_sg_id]
-  }
-
   egress {
     from_port = 0
     to_port   = 0
