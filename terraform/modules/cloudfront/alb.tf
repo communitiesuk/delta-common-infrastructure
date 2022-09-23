@@ -1,10 +1,8 @@
 # Treating access logs as non-sensitive
 # tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
 resource "aws_s3_bucket" "alb_logs" {
-  bucket = "${var.prefix}alb-access-logs-${var.environment}"
-  lifecycle {
-    prevent_destroy = true
-  }
+  bucket        = "${var.prefix}cf-alb-access-logs"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "alb_logs" {
@@ -35,7 +33,7 @@ resource "aws_s3_bucket_public_access_block" "alb_logs" {
 }
 
 locals {
-  alb_log_prefix = "${var.prefix}alb-${var.environment}"
+  alb_log_prefix = "${var.prefix}alb"
 }
 
 data "aws_elb_service_account" "main" {}
@@ -68,7 +66,7 @@ POLICY
 # Public ALB. Only accepts connections from CloudFront, enforced by header.
 # tfsec:ignore:aws-elb-alb-not-public
 resource "aws_lb" "main" {
-  name                       = "${var.prefix}alb-${var.environment}"
+  name                       = "${var.prefix}cf-alb"
   internal                   = false
   load_balancer_type         = "application"
   security_groups            = [aws_security_group.alb.id]
@@ -81,10 +79,6 @@ resource "aws_lb" "main" {
     enabled = true
   }
 
-  tags = {
-    Environment = var.environment
-  }
-
   depends_on = [
     aws_s3_bucket_policy.allow_alb_logging
   ]
@@ -95,7 +89,7 @@ resource "aws_lb" "main" {
 resource "aws_security_group" "alb" {
   vpc_id      = var.vpc.id
   description = "Public ALB"
-  name        = "${var.prefix}alb-sg-${var.environment}"
+  name        = "${var.prefix}cf-alb-sg"
 
   egress {
     from_port   = 80
@@ -150,7 +144,7 @@ resource "aws_lb_listener_rule" "static" {
 }
 
 resource "aws_lb_target_group" "main" {
-  name        = "${var.prefix}alb-tg-${var.environment}"
+  name        = "${var.prefix}cf-alb-tg"
   port        = 80
   protocol    = "HTTP"
   target_type = "instance"

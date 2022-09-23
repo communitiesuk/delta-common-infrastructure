@@ -1,10 +1,8 @@
 # Treating access logs as non-sensitive
 # tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
 resource "aws_s3_bucket" "cloudfront_logs" {
-  bucket = "${var.prefix}cloudfront-access-logs-${var.environment}"
-  lifecycle {
-    prevent_destroy = true
-  }
+  bucket        = "${var.prefix}cloudfront-access-logs"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "cloudfront_logs" {
@@ -64,7 +62,7 @@ resource "aws_s3_bucket_acl" "cloudfront_logs" {
 }
 
 resource "aws_cloudfront_response_headers_policy" "main" {
-  name    = "${var.prefix}cloudfront-policy-${var.environment}"
+  name    = "${var.prefix}cloudfront-policy"
   comment = "Default security headers for responses"
 
   security_headers_config {
@@ -168,7 +166,7 @@ resource "aws_cloudfront_distribution" "main" {
   }
 
   tags = {
-    Name = "${var.prefix}cloudfront-${var.environment}"
+    Name = "${var.prefix}cloudfront"
   }
 
   # TODO: Set up a domain for this and enforce ssl versions

@@ -1,10 +1,8 @@
 # Treating access logs as non-sensitive
 # tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
 resource "aws_s3_bucket" "alb_logs" {
-  bucket = "${var.prefix}jaspersoft-alb-access-logs"
-  lifecycle {
-    prevent_destroy = true
-  }
+  bucket        = "${var.prefix}jaspersoft-alb-access-logs"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "alb_logs" {

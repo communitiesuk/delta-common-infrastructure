@@ -64,7 +64,8 @@ locals {
 }
 
 resource "aws_backup_vault" "jasperserver_backup" {
-  name = "${var.prefix}jaspersoft-backup-vault"
+  name          = "${var.prefix}jaspersoft-backup-vault"
+  force_destroy = true
 }
 
 resource "aws_backup_plan" "jasperserver_backup" {
