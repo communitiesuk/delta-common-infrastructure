@@ -1,5 +1,15 @@
 provider "aws" {
   region = "eu-west-1"
+  default_tags {
+    tags = {
+      project           = "Data Collection Service"
+      business-unit     = "Digital Delivery"
+      technical-contact = "Team-DLUHC@softwire.com"
+      environment       = "staging"
+      repository        = "https://github.com/communitiesuk/delta-common-infrastructure"
+      is-backend        = "true"
+    }
+  }
 }
 
 resource "aws_kms_key" "state_bucket_encryption_key" {
@@ -15,19 +25,21 @@ resource "aws_s3_bucket_logging" "terraform_state" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "data-collection-service-tfstate-production"
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.state_bucket_encryption_key.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
+  bucket = "data-collection-service-tfstate-dev"
 
   lifecycle {
     prevent_destroy = true
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.state_bucket_encryption_key.arn
+      sse_algorithm     = "aws:kms"
+    }
   }
 }
 
