@@ -1,12 +1,11 @@
 resource "aws_instance" "ad_management_server" {
-  subnet_id                   = var.public_subnet.id
-  ami                         = data.aws_ami.windows_server.id
-  instance_type               = var.management_instance_type
-  key_name                    = aws_key_pair.ad_management_key_pair.key_name
-  vpc_security_group_ids      = [aws_security_group.ad_management_server.id]
-  associate_public_ip_address = true
-  get_password_data           = true
-  iam_instance_profile        = aws_iam_instance_profile.ad_management_profile.name
+  subnet_id              = var.management_server_subnet.id
+  ami                    = data.aws_ami.windows_server.id
+  instance_type          = var.management_instance_type
+  key_name               = aws_key_pair.ad_management_key_pair.key_name
+  vpc_security_group_ids = [aws_security_group.ad_management_server.id]
+  get_password_data      = true
+  iam_instance_profile   = aws_iam_instance_profile.ad_management_profile.name
   metadata_options {
     http_tokens   = "required"
     http_endpoint = "enabled"

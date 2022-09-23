@@ -1,9 +1,5 @@
-output "ad_management_server_ip" {
-  value = module.active_directory.ad_management_server_ip
-}
-
-output "ad_management_server_dns" {
-  value = module.active_directory.ad_management_server_dns
+output "ad_management_server_private_ip" {
+  value = module.active_directory.ad_management_server_private_ip
 }
 
 output "ad_management_server_password" {
@@ -35,6 +31,6 @@ output "bastion_ssh_keys_bucket" {
 }
 
 output "bastion_ssh_private_key" {
-  value = tls_private_key.bastion_ssh_key.private_key_openssh
+  value     = tls_private_key.bastion_ssh_key.private_key_openssh
   sensitive = true
 }
