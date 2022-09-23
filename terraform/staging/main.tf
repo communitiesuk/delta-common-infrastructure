@@ -30,10 +30,16 @@ module "networking" {
   source = "../modules/networking"
 }
 
-resource "aws_key_pair" "bastion_ssh_key" {
-  key_name   = "bastion_ssh_key"
-  public_key = file("delta_test.pub")
+resource "tls_private_key" "bastion_ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
 }
+
+resource "aws_key_pair" "bastion_ssh_key" {
+  key_name   = "stg-bastion-ssh-key"
+  public_key = tls_private_key.bastion_ssh_key.public_key_openssh
+}
+
 
 module "bastion" {
   source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=34554d5b603e97d3adb2e06bcdf3b02d9d2a7e95"

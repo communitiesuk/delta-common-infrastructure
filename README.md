@@ -46,7 +46,7 @@ You can create an account by uploading your SSH public key to the relevant bucke
 aws s3 cp ~/.ssh/id_rsa.pub s3://$(terraform output -raw bastion_ssh_keys_bucket)/<username>.pub
 ```
 
-After five minutes you should be able to SSH in to the bastion server, provided your current IP is allowlisted.
+After five minutes you should be able to SSH in to the bastion server. Currently the Softwire London and Cambridge office IPs are allowlisted.
 
 ```sh
 ssh <username>@$(terraform output -raw bastion_dns_name)

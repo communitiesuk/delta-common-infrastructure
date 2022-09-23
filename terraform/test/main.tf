@@ -44,9 +44,14 @@ module "active_directory" {
   environment                  = "test"
 }
 
+resource "tls_private_key" "bastion_ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
 resource "aws_key_pair" "bastion_ssh_key" {
-  key_name   = "bastion_ssh_key"
-  public_key = file("delta_test.pub")
+  key_name   = "tst-bastion-ssh-key"
+  public_key = tls_private_key.bastion_ssh_key.public_key_openssh
 }
 
 module "bastion" {
