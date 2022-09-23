@@ -3,12 +3,7 @@ output "ad_management_server_private_ip" {
 }
 
 output "ad_management_server_password" {
-  # this is encrypted, so not sensitive
-  value = module.active_directory.ad_management_server_password
-}
-
-output "ad_management_private_key" {
-  value     = module.active_directory.ad_management_private_key
+  value     = module.active_directory.ad_management_server_password
   sensitive = true
 }
 
