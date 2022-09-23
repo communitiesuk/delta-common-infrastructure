@@ -30,8 +30,8 @@ output "nginx_test_box_ip" {
   value = module.cloudfront.nginx_test_box_ip
 }
 
-output "cf_domain_name" {
-  value = module.cloudfront.cf_domain_name
+output "cloudfront_domain_name" {
+  value = module.cloudfront.cloudfront_domain_name
 }
 
 output "bastion_ssh_private_key" {
@@ -50,4 +50,15 @@ output "jaspersoft_private_ip" {
 output "jaspersoft_ssh_private_key" {
   value     = tls_private_key.jaspersoft_ssh_key.private_key_openssh
   sensitive = true
+}
+
+output "dns_delegation_details" {
+  value = {
+    domain      = var.delegated_domain
+    nameservers = module.dns.name_servers
+  }
+}
+
+output "dns_acm_validation_record" {
+  value = module.dns.cloudfront_domains_certificate_required_validation_records
 }

@@ -26,12 +26,42 @@ provider "aws" {
   }
 }
 
+# This module must be created, along with relevant DNS records, before other modules
+module "dns" {
+  source = "../modules/dns"
+
+  primary_domain   = var.primary_domain
+  delegated_domain = var.delegated_domain
+  prefix           = "delta-test-"
+}
+
+locals {
+  cloudfront_subdomains = ["nginx-test", "reporting"]
+}
+
 module "cloudfront" {
   source             = "../modules/cloudfront"
   nginx_test_subnet  = module.networking.public_subnets[0]
   vpc                = module.networking.vpc
   prefix             = "dluhc-test-"
   public_alb_subnets = module.networking.public_subnets
+  cloudfront_domain = {
+    aliases             = flatten([for s in local.cloudfront_subdomains : ["${s}.${var.delegated_domain}", "${s}.${var.primary_domain}"]])
+    acm_certificate_arn = module.dns.cloudfront_domains_certificate_arn
+  }
+}
+
+resource "aws_route53_record" "delegated_cloudfront_domains" {
+  for_each = toset([for s in local.cloudfront_subdomains : "${s}.${var.delegated_domain}"])
+  zone_id  = module.dns.delegated_zone_id
+  name     = each.key
+  type     = "A"
+
+  alias {
+    name                   = module.cloudfront.cloudfront_domain_name
+    zone_id                = module.cloudfront.cloudfront_hosted_zone_id
+    evaluate_target_health = false
+  }
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
