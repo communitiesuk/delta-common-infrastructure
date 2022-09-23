@@ -20,19 +20,21 @@ terraform {
 
 provider "aws" {
   region = "eu-west-1"
+
+  default_tags {
+    tags = var.default_tags
+  }
 }
 
 module "networking" {
   source                    = "../modules/networking"
   number_of_private_subnets = 3
   number_of_ad_subnets      = 2
-  default_tags              = var.default_tags
 }
 
 module "active_directory" {
   source = "../modules/active_directory"
 
-  default_tags                 = var.default_tags
   edition                      = "Standard"
   vpc                          = module.networking.vpc
   subnets                      = module.networking.ad_private_subnets

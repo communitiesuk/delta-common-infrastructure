@@ -5,8 +5,6 @@ resource "aws_route_table" "to_internet_gateway" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.internet_gateway.id
   }
-
-  tags = var.default_tags
 }
 
 resource "aws_route_table_association" "ad_management_server" {
@@ -25,7 +23,6 @@ resource "aws_route_table" "private" {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat_gateway.id
   }
-  tags = var.default_tags
 }
 
 resource "aws_route_table_association" "private" {

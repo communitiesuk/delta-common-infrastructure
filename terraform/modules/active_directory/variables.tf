@@ -1,8 +1,3 @@
-variable "default_tags" {
-  type        = map(string)
-  description = "Tags to use for each resource"
-}
-
 variable "environment" {
   description = "test, staging or production"
   type        = string

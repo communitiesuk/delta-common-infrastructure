@@ -1,12 +1,10 @@
 resource "aws_s3_bucket" "cf_bucket" {
   bucket = "data-collections-service-cloudfront-${var.suffix}"
-  tags   = var.default_tags
 }
 
 resource "aws_s3_bucket_acl" "b_acl" {
   bucket = aws_s3_bucket.cf_bucket.id
   acl    = "private"
-  tags   = var.default_tags
 }
 
 locals {

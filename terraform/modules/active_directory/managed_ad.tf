@@ -16,6 +16,4 @@ resource "aws_directory_service_directory" "directory_service" {
     vpc_id     = var.vpc.id
     subnet_ids = var.subnets[*].id
   }
-
-  tags = var.default_tags
 }
