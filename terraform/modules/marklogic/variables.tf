@@ -14,7 +14,7 @@ variable "vpc" {
 
 variable "instance_type" {
   description = "EC2 instance type for MarkLogic"
-  default = "r5.4xlarge"
+  default     = "r5.4xlarge"
 }
 
 variable "private_subnets" {

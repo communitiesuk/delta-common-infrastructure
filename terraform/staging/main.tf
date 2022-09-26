@@ -27,8 +27,8 @@ provider "aws" {
 }
 
 module "networking" {
-  source = "../modules/networking"
-  default_tags              = var.default_tags
+  source         = "../modules/networking"
+  default_tags   = var.default_tags
   vpc_cidr_block = "10.20.0.0/16"
 }
 
@@ -47,9 +47,9 @@ module "active_directory" {
 module "marklogic" {
   source = "../modules/marklogic"
 
-  default_tags = var.default_tags
-  environment  = "staging"
-  vpc          = module.networking.vpc
+  default_tags    = var.default_tags
+  environment     = "staging"
+  vpc             = module.networking.vpc
   private_subnets = module.networking.ml_private_subnets
-  instance_type = "r5.xlarge"
+  instance_type   = "r5.xlarge"
 }

@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ml_iam_role" {
-  name = "ml_role_${var.environment}"
+  name = "ml-role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -22,10 +22,11 @@ resource "aws_iam_role_policy_attachment" "ml_attach" {
 }
 
 resource "aws_iam_instance_profile" "ml_instance_profile" {
-  name = "ml_profile_${var.environment}"
+  name = "ml-profile-${var.environment}"
   role = aws_iam_role.ml_iam_role.name
 }
 
+#tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "ml_instance_policy" {
   name        = "ml_instance_policy"
   path        = "/"

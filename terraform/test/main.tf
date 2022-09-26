@@ -27,8 +27,8 @@ provider "aws" {
 }
 
 module "networking" {
-  source                    = "../modules/networking"
-  number_of_ad_subnets      = 2
+  source               = "../modules/networking"
+  number_of_ad_subnets = 2
 }
 
 module "active_directory" {
