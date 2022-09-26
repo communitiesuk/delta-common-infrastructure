@@ -14,8 +14,6 @@ resource "aws_iam_role" "ml_iam_role" {
       },
     ]
   })
-
-  tags = var.default_tags
 }
 
 resource "aws_iam_role_policy_attachment" "ml_attach" {

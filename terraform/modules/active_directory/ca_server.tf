@@ -22,7 +22,6 @@ resource "aws_s3_bucket" "ldaps_crl_and_certs" {
   lifecycle {
     prevent_destroy = true
   }
-  tags = var.default_tags
 }
 
 resource "aws_s3_bucket_versioning" "ldaps_crl_and_certs" {

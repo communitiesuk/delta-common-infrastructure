@@ -35,7 +35,6 @@ module "networking" {
 module "active_directory" {
   source = "../modules/active_directory"
 
-  default_tags                 = var.default_tags
   edition                      = "Standard"
   vpc                          = module.networking.vpc
   subnets                      = module.networking.ad_private_subnets

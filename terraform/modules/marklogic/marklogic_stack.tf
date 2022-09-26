@@ -35,7 +35,6 @@ resource "aws_cloudformation_stack" "marklogic" {
   template_body = file("${path.module}/marklogic_cf_template.yml")
   timeout_in_minutes = 30
   capabilities = ["CAPABILITY_IAM"]
-  tags = var.default_tags
   lifecycle {
     # prevent_destroy = true
     ignore_changes = [
