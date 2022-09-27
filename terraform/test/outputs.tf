@@ -23,6 +23,15 @@ output "bastion_dns_name" {
 
 output "bastion_ssh_keys_bucket" {
   value = module.bastion.ssh_keys_bucket
+
+}
+
+output "nginx_test_box_ip" {
+  value = module.cloudfront.nginx_test_box_ip
+}
+
+output "cf_domain_name" {
+  value = module.cloudfront.cf_domain_name
 }
 
 output "bastion_ssh_private_key" {
