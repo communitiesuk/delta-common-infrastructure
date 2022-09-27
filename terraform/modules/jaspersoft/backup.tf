@@ -1,7 +1,5 @@
 # AWS Backup set to backup the JasperSoft EC2 instance
 
-# TODO: We should check this is working correctly once we have console access
-
 data "aws_iam_policy_document" "aws_backup_assume_role" {
   statement {
     sid     = "AssumeServiceRole"

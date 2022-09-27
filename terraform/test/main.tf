@@ -34,12 +34,22 @@ module "cloudfront" {
   public_alb_subnets = module.networking.public_subnets
 }
 
+resource "tls_private_key" "jaspersoft_ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "aws_key_pair" "jaspersoft_ssh_key" {
+  key_name   = "tst-jaspersoft-ssh-key"
+  public_key = tls_private_key.jaspersoft_ssh_key.public_key_openssh
+}
+
 module "jaspersoft" {
   source                        = "../modules/jaspersoft"
   private_instance_subnet       = module.networking.private_subnets[0]
   vpc_id                        = module.networking.vpc.id
-  prefix                        = "test-"
-  ssh_key_name                  = aws_key_pair.bastion_ssh_key.key_name
+  prefix                        = "dluhc-test-"
+  ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
   public_alb_subnets            = module.networking.public_subnets
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = "dluhc-jaspersoft-bin"
