@@ -1,10 +1,15 @@
-resource "aws_route53_delegation_set" "main" {
-  reference_name = "${var.prefix}main"
+# Temporarily removed from terraform state so it doesn't get destroyed
+# resource "aws_route53_delegation_set" "main" {
+#   reference_name = "${var.prefix}main"
+# }
+
+data "aws_route53_delegation_set" "main" {
+  id = "N00840011JQMVT3XEAYQT"
 }
 
 resource "aws_route53_zone" "delegated_zone" {
   name              = var.delegated_domain
-  delegation_set_id = aws_route53_delegation_set.main.id
+  delegation_set_id = data.aws_route53_delegation_set.main.id
 }
 
 provider "aws" {
