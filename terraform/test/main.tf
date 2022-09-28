@@ -65,7 +65,7 @@ resource "aws_key_pair" "bastion_ssh_key" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=34554d5b603e97d3adb2e06bcdf3b02d9d2a7e95"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=d7c3bdd827852c919e4943a2b9aaf956d5e4874f"
 
   region                  = "eu-west-1"
   name_prefix             = "tst"
@@ -76,5 +76,5 @@ module "bastion" {
   external_allowed_cidrs  = ["31.221.86.178/32", "167.98.33.82/32", "82.163.115.98/32", "87.224.105.250/32", "87.224.18.46/32"]
   instance_count          = 1
 
-  tags_default = var.default_tags
+  tags_asg = var.default_tags
 }
