@@ -4,7 +4,7 @@ variable "primary_domain" {
 }
 
 variable "delegated_domain" {
-  description = "A domain delegated for us to manage, e.g. infra.communities.gov.uk"
+  description = "A domain delegated for us to manage, e.g. internal.communities.gov.uk"
   type        = string
 }
 
