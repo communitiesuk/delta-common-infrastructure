@@ -28,7 +28,6 @@ provider "aws" {
 
 module "networking" {
   source         = "../modules/networking"
-  default_tags   = var.default_tags
   vpc_cidr_block = "10.20.0.0/16"
 }
 
