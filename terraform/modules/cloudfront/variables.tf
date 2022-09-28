@@ -1,7 +1,3 @@
-variable "environment" {
-  type = string
-}
-
 variable "prefix" {
   description = "Name prefix for all resources"
   type        = string

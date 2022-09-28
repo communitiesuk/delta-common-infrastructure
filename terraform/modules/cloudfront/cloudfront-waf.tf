@@ -1,6 +1,6 @@
 resource "aws_waf_rate_based_rule" "overall_rate_limit" {
-  name        = "${var.prefix}cloudfront-waf-overall-rate-limit-${var.environment}"
-  metric_name = replace("${var.prefix}cloudfront-waf-overall-rate-limit-${var.environment}", "-", "")
+  name        = "${var.prefix}cloudfront-waf-overall-rate-limit"
+  metric_name = replace("${var.prefix}cloudfront-waf-overall-rate-limit", "-", "")
 
   rate_key   = "IP"
   rate_limit = 500
@@ -8,8 +8,8 @@ resource "aws_waf_rate_based_rule" "overall_rate_limit" {
 
 # WAF rules adapted from https://github.com/binbashar/terraform-aws-waf-owasp/tree/v1.0.1/modules/waf-global (MIT License)
 resource "aws_waf_rule" "xss_rule" {
-  name        = "${var.prefix}cloudfront-waf-xss-${var.environment}"
-  metric_name = replace("${var.prefix}cloudfront-waf-xss-${var.environment}", "-", "")
+  name        = "${var.prefix}cloudfront-waf-xss"
+  metric_name = replace("${var.prefix}cloudfront-waf-xss", "-", "")
 
   predicates {
     data_id = aws_waf_xss_match_set.xss_match_set.id
@@ -19,7 +19,7 @@ resource "aws_waf_rule" "xss_rule" {
 }
 
 resource "aws_waf_xss_match_set" "xss_match_set" {
-  name = "${var.prefix}cloudfront-waf-xss-match-set-${var.environment}"
+  name = "${var.prefix}cloudfront-waf-xss-match-set"
 
   xss_match_tuples {
     text_transformation = "HTML_ENTITY_DECODE"
@@ -89,8 +89,8 @@ resource "aws_waf_xss_match_set" "xss_match_set" {
 }
 
 resource "aws_waf_rule" "traversal" {
-  name        = "${var.prefix}cloudfront-waf-traversal-${var.environment}"
-  metric_name = replace("${var.prefix}cloudfront-waf-traversal-${var.environment}", "-", "")
+  name        = "${var.prefix}cloudfront-waf-traversal"
+  metric_name = replace("${var.prefix}cloudfront-waf-traversal", "-", "")
 
   predicates {
     data_id = aws_waf_byte_match_set.traversal.id
@@ -100,7 +100,7 @@ resource "aws_waf_rule" "traversal" {
 }
 
 resource "aws_waf_byte_match_set" "traversal" {
-  name = "${var.prefix}cloudfront-waf-traversal-${var.environment}"
+  name = "${var.prefix}cloudfront-waf-traversal"
 
   byte_match_tuples {
     text_transformation   = "HTML_ENTITY_DECODE"
@@ -185,8 +185,8 @@ resource "aws_waf_byte_match_set" "traversal" {
 
 
 resource "aws_waf_rule" "ssi_private_files" {
-  name        = "${var.prefix}cloudfront-waf-ssi-${var.environment}"
-  metric_name = replace("${var.prefix}cloudfront-waf-ssi-${var.environment}", "-", "")
+  name        = "${var.prefix}cloudfront-waf-ssi"
+  metric_name = replace("${var.prefix}cloudfront-waf-ssi", "-", "")
 
   predicates {
     data_id = aws_waf_byte_match_set.ssi_private_files.id
@@ -196,7 +196,7 @@ resource "aws_waf_rule" "ssi_private_files" {
 }
 
 resource "aws_waf_byte_match_set" "ssi_private_files" {
-  name = "${var.prefix}cloudfront-waf-ssi-${var.environment}"
+  name = "${var.prefix}cloudfront-waf-ssi"
 
   byte_match_tuples {
     text_transformation   = "LOWERCASE"
@@ -290,8 +290,8 @@ resource "aws_waf_byte_match_set" "ssi_private_files" {
 }
 
 resource "aws_waf_web_acl" "waf_acl" {
-  name        = "${var.prefix}cloudfront-waf-acl-${var.environment}"
-  metric_name = replace("${var.prefix}cloudfront-waf-acl-${var.environment}", "-", "")
+  name        = "${var.prefix}cloudfront-waf-acl"
+  metric_name = replace("${var.prefix}cloudfront-waf-acl", "-", "")
 
   default_action {
     type = "ALLOW"
