@@ -36,3 +36,8 @@ resource "aws_route_table_association" "ldaps_ca_server" {
   subnet_id      = aws_subnet.ldaps_ca_server.id
   route_table_id = aws_route_table.private.id
 }
+
+resource "aws_route_table_association" "japsersoft_private_subnet" {
+  subnet_id      = aws_subnet.japsersoft_private_subnet.id
+  route_table_id = aws_route_table.private.id
+}

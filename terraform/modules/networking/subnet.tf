@@ -18,6 +18,13 @@ resource "aws_subnet" "ad_subnet" {
   map_public_ip_on_launch = false
 }
 
+resource "aws_subnet" "japsersoft_private_subnet" {
+  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 8)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[0]
+  map_public_ip_on_launch = false
+}
+
 # tfsec:ignore:aws-ec2-no-public-ip-subnet
 resource "aws_subnet" "public_subnet" {
   count                   = var.number_of_public_subnets

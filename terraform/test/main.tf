@@ -46,7 +46,7 @@ resource "aws_key_pair" "jaspersoft_ssh_key" {
 
 module "jaspersoft" {
   source                        = "../modules/jaspersoft"
-  private_instance_subnet       = module.networking.private_subnets[0]
+  private_instance_subnet       = module.networking.japsersoft_private_subnet
   vpc_id                        = module.networking.vpc.id
   prefix                        = "dluhc-test-"
   ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
