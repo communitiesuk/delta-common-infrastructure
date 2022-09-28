@@ -35,6 +35,16 @@ module "dns" {
   prefix           = "delta-test-"
 }
 
+module "dns_check" {
+  source = "../modules/dns-external-record-check"
+
+  acm_validation_cnames = module.dns.cloudfront_domains_certificate_required_validation_records
+  delegation_details = {
+    domain      = var.delegated_domain
+    nameservers = module.dns.name_servers
+  }
+}
+
 locals {
   cloudfront_subdomains = ["nginx-test", "reporting"]
 }

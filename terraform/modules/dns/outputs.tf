@@ -11,5 +11,5 @@ output "cloudfront_domains_certificate_required_validation_records" {
 }
 
 output "name_servers" {
-  value = data.aws_route53_delegation_set.main.name_servers
+  value = [for s in data.aws_route53_delegation_set.main.name_servers : "${s}."]
 }
