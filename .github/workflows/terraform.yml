@@ -27,6 +27,7 @@ jobs:
   plan:
     name: Terraform plan
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment == 'production' && 'production' || '' }}
     outputs:
       plan: ${{ steps.plan.outputs.stdout }}
       plan_exitcode: ${{ steps.plan.outputs.exitcode }}

@@ -25,12 +25,22 @@ jobs:
       secret_key: "${{secrets.secret_key_dev}}"
   validate_production:
     name: Validate production Terraform config
-    uses: ./.github/workflows/terraform.yml
-    with:
-      workdir: terraform/production
-    secrets:
-      access_key: "${{secrets.access_key_prod}}"
-      secret_key: "${{secrets.secret_key_prod}}"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3      
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.9
+      - name: Check formatting of all Terraform files
+        run: terraform fmt -check -diff -recursive
+      - name: Terraform Init
+        run: terraform init -input=false -backend=false
+        working-directory: terraform/production
+      - name: Terraform validate
+        run: terraform validate
+        working-directory: terraform/production
   tfsec:
     name: tfsec PR commenter
     runs-on: ubuntu-latest
