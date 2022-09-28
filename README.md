@@ -56,7 +56,7 @@ ssh <username>@$(terraform output -raw bastion_dns_name)
 
 Environments require some manual DNS configuration before the bulk of the resources can be brought up.
 
-When setting up a new environment, make sure the `primary_domain` (e.g. `communities.gov.uk`) and `delegated_domain` (e.g. `infra.communities.gov.uk`) variables are set correctly, the create the DNS module.
+When setting up a new environment, make sure the `primary_domain` (e.g. `communities.gov.uk`) and `delegated_domain` (e.g. `internal.communities.gov.uk`) variables are set correctly, the create the DNS module.
 
 ```sh
 terraform apply -target module.dns

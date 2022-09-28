@@ -16,5 +16,5 @@ variable "primary_domain" {
 
 variable "delegated_domain" {
   type    = string
-  default = "infra.delta-test.ramchandani.dev"
+  default = "internal.delta-test.ramchandani.dev"
 }
