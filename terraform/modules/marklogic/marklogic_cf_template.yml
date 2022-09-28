@@ -947,6 +947,7 @@ Resources:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
         - !Ref PrivateSubnet3
+    Scheme: internal
     Metadata:
       'AWS::CloudFormation::Designer':
         id: e188e71e-5f01-4816-896e-9bd30b9a96c1
