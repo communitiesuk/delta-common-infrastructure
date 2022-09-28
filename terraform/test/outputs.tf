@@ -59,6 +59,6 @@ output "dns_delegation_details" {
   }
 }
 
-output "dns_acm_validation_record" {
+output "dns_acm_validation_records" {
   value = module.dns.cloudfront_domains_certificate_required_validation_records
 }
