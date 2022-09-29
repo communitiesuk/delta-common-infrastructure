@@ -114,8 +114,12 @@ resource "aws_key_pair" "bastion_ssh_key" {
   public_key = tls_private_key.bastion_ssh_key.public_key_openssh
 }
 
+locals {
+  bastion_domain = "bastion.${var.delegated_domain}"
+}
+
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=d7c3bdd827852c919e4943a2b9aaf956d5e4874f"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=defd0b730d75c1b64cc1e1c76cdd5dc442d6fde6"
 
   region                  = "eu-west-1"
   name_prefix             = "tst"
@@ -125,6 +129,10 @@ module "bastion" {
   admin_ssh_key_pair_name = aws_key_pair.bastion_ssh_key.key_name
   external_allowed_cidrs  = ["31.221.86.178/32", "167.98.33.82/32", "82.163.115.98/32", "87.224.105.250/32", "87.224.18.46/32"]
   instance_count          = 1
+  dns_config = {
+    zone_id = module.dns.delegated_zone_id
+    domain  = local.bastion_domain
+  }
 
   tags_asg = var.default_tags
 }
