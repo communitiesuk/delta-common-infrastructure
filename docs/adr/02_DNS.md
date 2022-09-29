@@ -34,7 +34,7 @@ Note that the delegation of delta.communities.gov.uk currently has a high TTL th
 
 ## Explanation
 
-We avoid delegating the `delta.communities.gov.uk` subdomain. This returns more control to DLUHC, simplifies the switch over
+We avoid delegating the `delta.communities.gov.uk` subdomain. This returns more control to DLUHC and simplifies the switch over, both in terms of reasoning about TTLs and meaning we can have SSL certificates in place with no need to change validation method after the switch over.
 
 We can create an ACM certificate for `*.communities.gov.uk`, `api.delta.communities.gov.uk` and `*.internal.communities.gov.uk`, which we will attach to the CloudFront distribution.
 This should never need to change, even if new domains are added (e.g. for KeyCloak or EClaims), so the validation record can stay static.
