@@ -109,6 +109,8 @@ locals {
 
 resource "aws_cloudfront_distribution" "main" {
 
+  aliases = var.cloudfront_domain.aliases
+
   origin {
     domain_name = aws_lb.main.dns_name
     origin_id   = "nginx_test_origin"
@@ -169,13 +171,9 @@ resource "aws_cloudfront_distribution" "main" {
     Name = "${var.prefix}cloudfront"
   }
 
-  # TODO: Set up a domain for this and enforce ssl versions
-  # tfsec:ignore:aws-cloudfront-use-secure-tls-policy
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate_validation.cloudfront_domains.certificate_arn
+    minimum_protocol_version = "TLSv1.2_2021"
+    ssl_support_method       = "sni-only"
   }
-}
-
-output "cf_domain_name" {
-  value = aws_cloudfront_distribution.main.domain_name
 }
