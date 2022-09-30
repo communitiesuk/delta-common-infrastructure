@@ -7,11 +7,6 @@ resource "aws_route_table" "to_internet_gateway" {
   }
 }
 
-resource "aws_route_table_association" "ad_management_server" {
-  subnet_id      = aws_subnet.ad_management_server.id
-  route_table_id = aws_route_table.to_internet_gateway.id
-}
-
 resource "aws_route_table_association" "nat_gateway" {
   subnet_id      = aws_subnet.nat_gateway.id
   route_table_id = aws_route_table.to_internet_gateway.id
@@ -39,5 +34,10 @@ resource "aws_route_table_association" "public" {
 
 resource "aws_route_table_association" "ldaps_ca_server" {
   subnet_id      = aws_subnet.ldaps_ca_server.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "japsersoft_private_subnet" {
+  subnet_id      = aws_subnet.japsersoft_private_subnet.id
   route_table_id = aws_route_table.private.id
 }

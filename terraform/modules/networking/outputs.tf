@@ -18,12 +18,13 @@ output "ml_private_subnets" {
   description = "var.number_of_private_subnets private /24 subnets"
 }
 
-output "ad_private_subnets" {
-  value = aws_subnet.ad_subnet
+output "japsersoft_private_subnet" {
+  value       = aws_subnet.japsersoft_private_subnet
+  description = "private /24 subnet for Jaspersoft instance"
 }
 
-output "ad_public_subnet" {
-  value = aws_subnet.ad_management_server
+output "ad_private_subnets" {
+  value = aws_subnet.ad_subnet
 }
 
 output "ldaps_ca_subnet" {
