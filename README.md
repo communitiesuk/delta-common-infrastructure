@@ -52,6 +52,8 @@ After five minutes you should be able to SSH in to the bastion server. Currently
 ssh <username>@$(terraform output -raw bastion_dns_name)
 ```
 
+Confirm the host key fingerprint matches the terraform output `bastion_host_key_fingerprint`.
+
 ## DNS setup
 
 Environments require some manual DNS configuration before the bulk of the resources can be brought up.
