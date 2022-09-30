@@ -41,7 +41,7 @@ output "jaspersoft_ssh_private_key" {
 output "dns_delegation_details" {
   value = {
     domain      = var.delegated_domain
-    nameservers = module.dns.name_servers
+    nameservers = [for s in aws_route53_delegation_set.main.name_servers : "${s}."]
   }
 }
 

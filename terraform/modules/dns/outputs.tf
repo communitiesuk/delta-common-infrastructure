@@ -9,7 +9,3 @@ output "delegated_zone_id" {
 output "cloudfront_domains_certificate_required_validation_records" {
   value = local.non_delegated_validations
 }
-
-output "name_servers" {
-  value = [for s in aws_route53_delegation_set.main.name_servers : "${s}."]
-}

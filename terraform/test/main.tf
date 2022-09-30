@@ -26,13 +26,18 @@ provider "aws" {
   }
 }
 
+resource "aws_route53_delegation_set" "main" {
+  reference_name = "delta-test"
+}
+
 # This module must be created, along with relevant DNS records, before other modules
 module "dns" {
   source = "../modules/dns"
 
-  primary_domain   = var.primary_domain
-  delegated_domain = var.delegated_domain
-  prefix           = "delta-test-"
+  primary_domain    = var.primary_domain
+  delegated_domain  = var.delegated_domain
+  delegation_set_id = aws_route53_delegation_set.main.id
+  prefix            = "delta-test-"
 }
 
 locals {

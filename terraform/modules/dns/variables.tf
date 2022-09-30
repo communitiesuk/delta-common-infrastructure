@@ -8,6 +8,10 @@ variable "delegated_domain" {
   type        = string
 }
 
+variable "delegation_set_id" {
+  type = string
+}
+
 variable "prefix" {
   type = string
 }
