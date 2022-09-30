@@ -1,3 +1,7 @@
+output "bastion_host_key_fingerprint" {
+  value = module.bastion.bastion_host_key_fingerprint_sha256
+}
+
 output "bastion_dns_name" {
   value = module.bastion.bastion_dns_name
 }
