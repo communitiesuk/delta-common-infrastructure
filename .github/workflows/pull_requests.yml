@@ -32,7 +32,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.2.9
+          terraform_version: 1.3.1
       - name: Check formatting of all Terraform files
         run: terraform fmt -check -diff -recursive
       - name: Terraform Init
