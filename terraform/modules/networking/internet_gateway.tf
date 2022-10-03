@@ -4,4 +4,8 @@ resource "aws_internet_gateway" "internet_gateway" {
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = {
+    Name = "igw-${var.environment}"
+  }
 }

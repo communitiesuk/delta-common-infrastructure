@@ -8,7 +8,7 @@ resource "aws_subnet" "private_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
-  tags                    = { Name = "Private subnet ${count.index}" }
+  tags                    = { Name = "private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
 resource "aws_subnet" "ad_subnet" {
@@ -17,7 +17,7 @@ resource "aws_subnet" "ad_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
-  tags                    = { Name = "Active Directory subnet ${count.index}" }
+  tags                    = { Name = "domain-controller-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
 resource "aws_subnet" "ml_private_subnets" {
@@ -26,7 +26,7 @@ resource "aws_subnet" "ml_private_subnets" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
-  tags                    = { Name = "MarkLogic subnet ${count.index}" }
+  tags                    = { Name = "marklogic-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
 resource "aws_subnet" "japsersoft_private_subnet" {
@@ -34,7 +34,7 @@ resource "aws_subnet" "japsersoft_private_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = false
-  tags                    = { Name = "Jaspersoft private subnet" }
+  tags                    = { Name = "jasper-server-private-subnet-${var.environment}" }
 }
 
 # tfsec:ignore:aws-ec2-no-public-ip-subnet
@@ -44,7 +44,7 @@ resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = true
-  tags                    = { Name = "Public subnet ${count.index}" }
+  tags                    = { Name = "public-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
 resource "aws_subnet" "ldaps_ca_server" {
@@ -52,10 +52,12 @@ resource "aws_subnet" "ldaps_ca_server" {
   cidr_block              = "10.0.225.0/24"
   vpc_id                  = aws_vpc.vpc.id
   map_public_ip_on_launch = false
+  tags                    = { Name = "ca-server-private-subnet-${var.environment}" }
 }
 
 resource "aws_subnet" "nat_gateway" {
   availability_zone = data.aws_availability_zones.available.names[0]
   cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 226)
   vpc_id            = aws_vpc.vpc.id
+  tags              = { Name = "nat-gateway-${var.environment}" }
 }
