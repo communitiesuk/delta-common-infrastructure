@@ -27,7 +27,31 @@ provider "aws" {
 }
 
 module "networking" {
-  source = "../modules/networking"
+  source         = "../modules/networking"
+  vpc_cidr_block = "10.20.0.0/16"
+}
+
+module "active_directory" {
+  source  = "../modules/active_directory"
+  edition = "Standard"
+
+  vpc                          = module.networking.vpc
+  domain_controller_subnets    = module.networking.ad_private_subnets
+  management_server_subnet     = module.networking.private_subnets[0]
+  number_of_domain_controllers = 2
+  ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
+  environment                  = "staging"
+  rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
+}
+
+module "marklogic" {
+  source = "../modules/marklogic"
+
+  default_tags    = var.default_tags
+  environment     = "staging"
+  vpc             = module.networking.vpc
+  private_subnets = module.networking.ml_private_subnets
+  instance_type   = "r5.xlarge"
 }
 
 resource "tls_private_key" "bastion_ssh_key" {

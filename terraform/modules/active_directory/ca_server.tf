@@ -11,7 +11,7 @@ resource "aws_kms_key" "ad_secrets_key" {
 }
 
 resource "aws_secretsmanager_secret" "ca_install_credentials" {
-  name       = "ldaps_ca_credentials"
+  name       = "ldaps-ca-credentials-${var.environment}"
   kms_key_id = aws_kms_key.ad_secrets_key.arn
 }
 
@@ -41,7 +41,7 @@ resource "aws_s3_bucket_public_access_block" "ldaps_crl_and_certs" {
 }
 
 resource "aws_cloudformation_stack" "ca_server" {
-  name = "ca-server"
+  name = "ca-server-${var.environment}"
 
   parameters = {
     # Network Configuration

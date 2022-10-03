@@ -91,9 +91,9 @@ module "jaspersoft" {
 }
 
 module "networking" {
-  source                    = "../modules/networking"
-  number_of_private_subnets = 3
-  number_of_ad_subnets      = 2
+  source               = "../modules/networking"
+  number_of_ad_subnets = 2
+  vpc_cidr_block       = "10.0.0.0/16"
 }
 
 module "active_directory" {
