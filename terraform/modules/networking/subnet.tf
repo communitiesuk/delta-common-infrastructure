@@ -18,8 +18,16 @@ resource "aws_subnet" "ad_subnet" {
   map_public_ip_on_launch = false
 }
 
+resource "aws_subnet" "private_subnets" {
+  count                   = 3
+  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index + 6)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = false
+}
+
 resource "aws_subnet" "japsersoft_private_subnet" {
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 8)
+  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 9)
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = false

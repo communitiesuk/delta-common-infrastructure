@@ -33,14 +33,15 @@ module "networking" {
 
 module "active_directory" {
   source = "../modules/active_directory"
-
   edition                      = "Standard"
+  
   vpc                          = module.networking.vpc
-  subnets                      = module.networking.ad_private_subnets
-  public_subnet                = module.networking.ad_public_subnet
+  domain_controller_subnets    = module.networking.ad_private_subnets
+  management_server_subnet     = module.networking.private_subnets[0]
   number_of_domain_controllers = 2
   ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
   environment                  = "staging"
+  rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
 }
 
 module "marklogic" {
