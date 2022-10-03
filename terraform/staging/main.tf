@@ -29,6 +29,7 @@ provider "aws" {
 module "networking" {
   source         = "../modules/networking"
   vpc_cidr_block = "10.20.0.0/16"
+  environment    = "staging"
 }
 
 module "active_directory" {
