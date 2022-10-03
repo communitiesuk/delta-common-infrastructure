@@ -17,3 +17,8 @@ variable "vpc_cidr_block" {
 variable "environment" {
   type = string
 }
+
+variable "ssh_cidr_allowlist" {
+  description = "CIDR"
+  type        = list(string)
+}
