@@ -2,13 +2,13 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-resource "aws_subnet" "ml_private_subnets" {
+resource "aws_subnet" "private_subnet" {
   count                   = 3
   cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index)
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
-  tags                    = { Name = "MarkLogic subnet ${count.index}" }
+  tags                    = { Name = "Private subnet ${count.index}" }
 }
 
 resource "aws_subnet" "ad_subnet" {
@@ -17,14 +17,16 @@ resource "aws_subnet" "ad_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
+  tags                    = { Name = "Active Directory subnet ${count.index}" }
 }
 
-resource "aws_subnet" "private_subnets" {
+resource "aws_subnet" "ml_private_subnets" {
   count                   = 3
   cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index + 6)
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
+  tags                    = { Name = "MarkLogic subnet ${count.index}" }
 }
 
 resource "aws_subnet" "japsersoft_private_subnet" {
@@ -32,6 +34,7 @@ resource "aws_subnet" "japsersoft_private_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = false
+  tags                    = { Name = "Jaspersoft private subnet" }
 }
 
 # tfsec:ignore:aws-ec2-no-public-ip-subnet

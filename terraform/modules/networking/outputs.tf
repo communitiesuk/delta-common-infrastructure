@@ -18,7 +18,7 @@ output "ml_private_subnets" {
 }
 
 output "private_subnets" {
-  value       = aws_subnet.private_subnets
+  value       = aws_subnet.private_subnet
   description = "var.number_of_private_subnets private /24 subnets"
 }
 
