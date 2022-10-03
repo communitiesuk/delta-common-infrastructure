@@ -103,7 +103,7 @@ module "active_directory" {
   edition                      = "Standard"
   vpc                          = module.networking.vpc
   domain_controller_subnets    = module.networking.ad_private_subnets
-  management_server_subnet     = module.networking.private_subnets[0]
+  management_server_subnet     = module.networking.ad_management_server_subnet
   number_of_domain_controllers = 2
   ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
   environment                  = "test"
@@ -131,7 +131,7 @@ module "bastion" {
   name_prefix             = "tst"
   vpc_id                  = module.networking.vpc.id
   public_subnet_ids       = [for subnet in module.networking.public_subnets : subnet.id]
-  instance_subnet_ids     = [for subnet in module.networking.private_subnets : subnet.id]
+  instance_subnet_ids     = [for subnet in module.networking.bastion_private_subnets : subnet.id]
   admin_ssh_key_pair_name = aws_key_pair.bastion_ssh_key.key_name
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1

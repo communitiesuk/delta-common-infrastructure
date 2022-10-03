@@ -2,62 +2,80 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-resource "aws_subnet" "private_subnet" {
-  count                   = 3
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index)
-  vpc_id                  = aws_vpc.vpc.id
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
-  map_public_ip_on_launch = false
-  tags                    = { Name = "private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
-}
-
-resource "aws_subnet" "ad_subnet" {
-  count                   = var.number_of_ad_subnets
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index + 3)
-  vpc_id                  = aws_vpc.vpc.id
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
-  map_public_ip_on_launch = false
-  tags                    = { Name = "domain-controller-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
-}
-
-resource "aws_subnet" "ml_private_subnets" {
-  count                   = 3
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index + 6)
-  vpc_id                  = aws_vpc.vpc.id
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
-  map_public_ip_on_launch = false
-  tags                    = { Name = "marklogic-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
-}
-
-resource "aws_subnet" "japsersoft_private_subnet" {
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 9)
-  vpc_id                  = aws_vpc.vpc.id
-  availability_zone       = data.aws_availability_zones.available.names[0]
-  map_public_ip_on_launch = false
-  tags                    = { Name = "jasper-server-private-subnet-${var.environment}" }
+locals {
+  bastion_subnet_cidr_10 = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 0)   # 0.0/10
+  ad_dc_subnet_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 1)   # 4.0/10
+  ad_other_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 2)   # 8.0/10
+  ml_subnet_cidr_10      = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 3)   # 12.0/10
+  jaspersoft_cidr_10     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4)   # 16.0/10
+  public_cidr_10         = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/10
+  nat_gateway_cidr_8     = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/8
 }
 
 # tfsec:ignore:aws-ec2-no-public-ip-subnet
-resource "aws_subnet" "public_subnet" {
+resource "aws_subnet" "public_subnets" {
   count                   = var.number_of_public_subnets
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index + 128)
+  cidr_block              = cidrsubnet(local.public_cidr_10, 2, count.index)
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = true
   tags                    = { Name = "public-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
+resource "aws_subnet" "bastion_private_subnets" {
+  count                   = 3
+  cidr_block              = cidrsubnet(local.bastion_subnet_cidr_10, 2, count.index)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = false
+  tags                    = { Name = "bastion-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+}
+
+resource "aws_subnet" "ad_dc_private_subnets" {
+  count                   = var.number_of_ad_subnets
+  cidr_block              = cidrsubnet(local.ad_dc_subnet_cidr_10, 2, count.index)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = false
+  tags                    = { Name = "domain-controller-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+}
+
 resource "aws_subnet" "ldaps_ca_server" {
   availability_zone       = data.aws_availability_zones.available.names[0]
-  cidr_block              = "10.0.225.0/24"
+  cidr_block              = cidrsubnet(local.ad_other_cidr_10, 2, 0)
   vpc_id                  = aws_vpc.vpc.id
   map_public_ip_on_launch = false
   tags                    = { Name = "ca-server-private-subnet-${var.environment}" }
 }
 
+resource "aws_subnet" "ad_management_server" {
+  availability_zone       = data.aws_availability_zones.available.names[0]
+  cidr_block              = cidrsubnet(local.ad_other_cidr_10, 2, 1)
+  vpc_id                  = aws_vpc.vpc.id
+  map_public_ip_on_launch = false
+  tags                    = { Name = "ad-management-private-subnet-${var.environment}" }
+}
+
+resource "aws_subnet" "ml_private_subnets" {
+  count                   = 3
+  cidr_block              = cidrsubnet(local.ml_subnet_cidr_10, 2, count.index)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = false
+  tags                    = { Name = "marklogic-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+}
+
+resource "aws_subnet" "japsersoft" {
+  cidr_block              = cidrsubnet(local.jaspersoft_cidr_10, 2, 0)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[0]
+  map_public_ip_on_launch = false
+  tags                    = { Name = "jasper-server-private-subnet-${var.environment}" }
+}
+
 resource "aws_subnet" "nat_gateway" {
   availability_zone = data.aws_availability_zones.available.names[0]
-  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 226)
+  cidr_block        = local.nat_gateway_cidr_8
   vpc_id            = aws_vpc.vpc.id
   tags              = { Name = "nat-gateway-${var.environment}" }
 }
