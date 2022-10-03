@@ -70,7 +70,7 @@ resource "aws_backup_plan" "jasperserver_backup" {
   name = "${var.prefix}jaspersoft-backup-plan"
 
   rule {
-    rule_name         = "${var.prefix}-jaspersoft-backup-rule"
+    rule_name         = "${var.prefix}jaspersoft-backup-rule"
     target_vault_name = aws_backup_vault.jasperserver_backup.name
     schedule          = local.backups.schedule
     completion_window = 300

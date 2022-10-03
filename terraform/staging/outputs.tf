@@ -3,7 +3,7 @@ output "ad_management_server_private_ip" {
 }
 
 output "ad_management_server_password" {
-  value = module.active_directory.ad_management_server_password
+  value     = module.active_directory.ad_management_server_password
   sensitive = true
 }
 output "ca_server_private_key" {
@@ -18,6 +18,10 @@ output "directory_admin_password" {
 
 output "ml_url" {
   value = module.marklogic.ml_url
+}
+
+output "bastion_host_key_fingerprint" {
+  value = module.bastion.bastion_host_key_fingerprint_sha256
 }
 
 output "bastion_dns_name" {

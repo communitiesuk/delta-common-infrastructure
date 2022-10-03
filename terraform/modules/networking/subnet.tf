@@ -8,6 +8,7 @@ resource "aws_subnet" "ml_private_subnets" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
+  tags                    = { Name = "MarkLogic subnet ${count.index}" }
 }
 
 resource "aws_subnet" "ad_subnet" {

@@ -17,26 +17,12 @@ output "directory_admin_password" {
   sensitive = true
 }
 
-output "bastion_dns_name" {
-  value = module.bastion.bastion_dns_name
-}
-
-output "bastion_ssh_keys_bucket" {
-  value = module.bastion.ssh_keys_bucket
-
-}
-
 output "nginx_test_box_ip" {
   value = module.cloudfront.nginx_test_box_ip
 }
 
-output "cf_domain_name" {
-  value = module.cloudfront.cf_domain_name
-}
-
-output "bastion_ssh_private_key" {
-  value     = tls_private_key.bastion_ssh_key.private_key_openssh
-  sensitive = true
+output "cloudfront_domain_name" {
+  value = module.cloudfront.cloudfront_domain_name
 }
 
 output "jaspersoft_alb_domain" {
@@ -49,5 +35,33 @@ output "jaspersoft_private_ip" {
 
 output "jaspersoft_ssh_private_key" {
   value     = tls_private_key.jaspersoft_ssh_key.private_key_openssh
+  sensitive = true
+}
+
+output "dns_delegation_details" {
+  value = {
+    domain      = var.delegated_domain
+    nameservers = [for s in aws_route53_delegation_set.main.name_servers : "${s}."]
+  }
+}
+
+output "dns_acm_validation_records" {
+  value = module.dns.cloudfront_domains_certificate_required_validation_records
+}
+
+output "bastion_host_key_fingerprint" {
+  value = module.bastion.bastion_host_key_fingerprint_sha256
+}
+
+output "bastion_dns_name" {
+  value = module.bastion.bastion_dns_name
+}
+
+output "bastion_ssh_keys_bucket" {
+  value = module.bastion.ssh_keys_bucket
+}
+
+output "bastion_ssh_private_key" {
+  value     = tls_private_key.bastion_ssh_key.private_key_openssh
   sensitive = true
 }

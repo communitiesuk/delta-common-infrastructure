@@ -8,3 +8,13 @@ variable "default_tags" {
     repository        = "https://github.com/communitiesuk/delta-common-infrastructure"
   }
 }
+
+variable "primary_domain" {
+  type    = string
+  default = "delta-test.ramchandani.dev"
+}
+
+variable "delegated_domain" {
+  type    = string
+  default = "internal.delta-test.ramchandani.dev"
+}
