@@ -66,3 +66,9 @@ resource "aws_route_table_association" "japsersoft_private_subnet" {
   subnet_id      = aws_subnet.japsersoft.id
   route_table_id = aws_route_table.private.id
 }
+
+resource "aws_route_table_association" "delta_internal_private_subnet" {
+  count = 3
+  subnet_id      = aws_subnet.delta_internal[count.index].id
+  route_table_id = aws_route_table.private.id
+}

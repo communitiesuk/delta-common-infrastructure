@@ -8,6 +8,7 @@ locals {
   ad_other_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 2)   # 8.0/10
   ml_subnet_cidr_10      = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 3)   # 12.0/10
   jaspersoft_cidr_10     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4)   # 16.0/10
+  delta_internal_cidr_10 = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 16.0/10
   public_cidr_10         = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/10
   nat_gateway_cidr_8     = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/8
 }
@@ -63,6 +64,15 @@ resource "aws_subnet" "ml_private_subnets" {
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
   tags                    = { Name = "marklogic-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+}
+
+resource "aws_subnet" "delta_internal" {
+  count                   = 3
+  cidr_block              = cidrsubnet(local.delta_internal_cidr_10, 2, count.index)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = false
+  tags                    = { Name = "delta-internal-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
 resource "aws_subnet" "japsersoft" {

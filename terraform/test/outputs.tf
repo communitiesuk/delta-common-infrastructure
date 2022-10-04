@@ -65,3 +65,7 @@ output "bastion_ssh_private_key" {
   value     = tls_private_key.bastion_ssh_key.private_key_openssh
   sensitive = true
 }
+
+output "delta_internal_subnets" {
+  value = module.networking.delta_internal_subnets
+}

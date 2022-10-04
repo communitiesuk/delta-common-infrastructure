@@ -35,6 +35,11 @@ output "ml_private_subnets" {
   description = "Three private /24 subnets for MarkLogic"
 }
 
+output "delta_internal_subnets" {
+  value       = aws_subnet.delta_internal
+  description = "Three private /24 subnets for internal Delta apps"
+}
+
 output "japsersoft_private_subnet" {
   value       = aws_subnet.japsersoft
   description = "Private /24 subnet for Jaspersoft instance"
