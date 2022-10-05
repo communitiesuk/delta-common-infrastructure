@@ -465,7 +465,7 @@ Resources:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet1
       LaunchConfigurationName: !Ref LaunchConfig1
-      MinSize: '1'
+      MinSize: '0'
       MaxSize: !Ref NodesPerZone
       DesiredCapacity: !Ref NodesPerZone
       Cooldown: '300'
@@ -947,7 +947,7 @@ Resources:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
         - !Ref PrivateSubnet3
-    Scheme: internal
+      Scheme: 'internal'
     Metadata:
       'AWS::CloudFormation::Designer':
         id: e188e71e-5f01-4816-896e-9bd30b9a96c1
