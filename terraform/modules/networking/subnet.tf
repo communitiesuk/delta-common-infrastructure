@@ -8,7 +8,7 @@ locals {
   ad_other_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 2)   # 8.0/10
   ml_subnet_cidr_10      = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 3)   # 12.0/10
   jaspersoft_cidr_10     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4)   # 16.0/10
-  delta_internal_cidr_10 = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 16.0/10
+  delta_internal_cidr_10 = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 20.0/10
   public_cidr_10         = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/10
   nat_gateway_cidr_8     = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/8
 }
