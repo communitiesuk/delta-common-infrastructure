@@ -47,3 +47,8 @@ module "bastion" {
 
   tags_asg = var.default_tags
 }
+
+module "codeartifact" {
+  source                   = "../modules/codeartifact"
+  codeartifact_domain_name = "delta"
+}
