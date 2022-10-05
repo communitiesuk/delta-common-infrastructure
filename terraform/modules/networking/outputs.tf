@@ -40,7 +40,7 @@ output "delta_internal_subnets" {
   description = "Three private /24 subnets for internal Delta apps"
 }
 
-output "japsersoft_private_subnet" {
-  value       = aws_subnet.japsersoft
+output "jaspersoft_private_subnet" {
+  value       = aws_subnet.jaspersoft
   description = "Private /24 subnet for Jaspersoft instance"
 }

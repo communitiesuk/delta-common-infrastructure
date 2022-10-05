@@ -62,8 +62,8 @@ resource "aws_route_table_association" "ml_private" {
   route_table_id = aws_route_table.private.id
 }
 
-resource "aws_route_table_association" "japsersoft_private_subnet" {
-  subnet_id      = aws_subnet.japsersoft.id
+resource "aws_route_table_association" "jaspersoft_private_subnet" {
+  subnet_id      = aws_subnet.jaspersoft.id
   route_table_id = aws_route_table.private.id
 }
 

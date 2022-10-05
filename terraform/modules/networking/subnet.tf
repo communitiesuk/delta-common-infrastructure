@@ -75,7 +75,7 @@ resource "aws_subnet" "delta_internal" {
   tags                    = { Name = "delta-internal-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
-resource "aws_subnet" "japsersoft" {
+resource "aws_subnet" "jaspersoft" {
   cidr_block              = cidrsubnet(local.jaspersoft_cidr_10, 2, 0)
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[0]
