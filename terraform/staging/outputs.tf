@@ -40,3 +40,7 @@ output "bastion_ssh_private_key" {
 output "delta_internal_subnets" {
   value = module.networking.delta_internal_subnets
 }
+
+output "vpc_id" {
+  value = module.networking.vpc.id
+}
