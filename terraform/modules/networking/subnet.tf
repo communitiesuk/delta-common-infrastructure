@@ -10,6 +10,7 @@ locals {
   jaspersoft_cidr_10     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4)   # 16.0/10
   delta_internal_cidr_10 = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 20.0/10
   public_cidr_10         = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/10
+  vpc_endpoints_cidr_8   = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 253) # 253.0/8
   nat_gateway_cidr_8     = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/8
 }
 
@@ -88,4 +89,11 @@ resource "aws_subnet" "nat_gateway" {
   cidr_block        = local.nat_gateway_cidr_8
   vpc_id            = aws_vpc.vpc.id
   tags              = { Name = "nat-gateway-${var.environment}" }
+}
+
+resource "aws_subnet" "vpc_endpoints_subnet" {
+  availability_zone = data.aws_availability_zones.available.names[0]
+  cidr_block        = local.vpc_endpoints_cidr_8
+  vpc_id            = aws_vpc.vpc.id
+  tags              = { Name = "vpc-endpoints-subnet-${var.environment}" }
 }
