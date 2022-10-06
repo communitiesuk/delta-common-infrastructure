@@ -13,7 +13,7 @@ resource "aws_vpc_endpoint" "s3" {
 }
 
 resource "aws_vpc_endpoint_route_table_association" "s3" {
-  route_table_id  = aws_route_table.private.id
+  route_table_id  = aws_route_table.private_to_firewall.id
   vpc_endpoint_id = aws_vpc_endpoint.s3.id
 }
 
