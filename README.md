@@ -40,7 +40,7 @@ Individual rules can be ignored with a comment on the line above with the form `
 ## Bastion
 
 There's an SSH bastion server for each environment.
-You can create an account by uploading your SSH public key to the relevant bucket, i.e.
+You can create an account by uploading your SSH public key to the relevant bucket (your username will be all lowercase), i.e.
 
 ```sh
 aws s3 cp ~/.ssh/id_rsa.pub s3://$(terraform output -raw bastion_ssh_keys_bucket)/<username>.pub
