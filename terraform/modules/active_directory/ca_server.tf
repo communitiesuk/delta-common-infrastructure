@@ -33,11 +33,6 @@ resource "aws_s3_bucket_versioning" "ldaps_crl_and_certs" {
 
 resource "aws_s3_bucket_public_access_block" "ldaps_crl_and_certs" {
   bucket = aws_s3_bucket.ldaps_crl_and_certs.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
 }
 
 resource "aws_cloudformation_stack" "ca_server" {
@@ -67,7 +62,7 @@ resource "aws_cloudformation_stack" "ca_server" {
   template_body      = file("${path.module}/one_tier_ca.yml")
   timeout_in_minutes = 60
   timeouts {
-    create = "60m"
+    create = "90m"
   }
   capabilities = ["CAPABILITY_IAM"]
 }
