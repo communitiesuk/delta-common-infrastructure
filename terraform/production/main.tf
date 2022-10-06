@@ -32,3 +32,18 @@ module "networking" {
   environment        = "prod"
   ssh_cidr_allowlist = var.allowed_ssh_cidrs
 }
+
+module "bastion" {
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=defd0b730d75c1b64cc1e1c76cdd5dc442d6fde6"
+
+  region                  = "eu-west-1"
+  name_prefix             = "prd"
+  vpc_id                  = module.networking.vpc.id
+  public_subnet_ids       = [for subnet in module.networking.public_subnets : subnet.id]
+  instance_subnet_ids     = [for subnet in module.networking.bastion_private_subnets : subnet.id]
+  admin_ssh_key_pair_name = "bastion-ssh-prod" # private key stored in AWS Secrets Manager as "bastion-ssh-private-key"
+  external_allowed_cidrs  = var.allowed_ssh_cidrs
+  instance_count          = 1
+
+  tags_asg = var.default_tags
+}
