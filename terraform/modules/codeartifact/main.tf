@@ -11,7 +11,7 @@ resource "aws_codeartifact_domain" "codeartifact_domain" {
 # Policy allow generation of authorization token for codeartifact
 data "aws_iam_policy_document" "codeartifact_access" {
   statement {
-    effect  = "Allow",
+    effect = "Allow"
     actions = [
       "codeartifact:GetAuthorizationToken"
     ]
@@ -21,10 +21,10 @@ data "aws_iam_policy_document" "codeartifact_access" {
     effect    = "Allow"
     actions   = ["sts:GetServiceBearerToken"]
     resources = ["*"]
-    condition = {
+    condition {
       test     = "StringEquals"
       variable = "sts:AWSServiceName"
-      values   = [
+      values = [
         "codeartifact.amazonaws.com"
       ]
     }
