@@ -31,21 +31,18 @@ resource "aws_networkfirewall_firewall_policy" "main" {
       }
       action_name = "DropUnmatchedFragment"
     }
+
+    stateful_rule_group_reference {
+      resource_arn = aws_networkfirewall_rule_group.stateful_main.arn
+    }
   }
 }
 
+# Just flow logs, should not have anything sensitive in
+# tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "firewall" {
   name              = "network-firewall-flow-${var.environment}"
   retention_in_days = 60
-}
-
-resource "aws_networkfirewall_firewall_policy" "drop_all" {
-  name = "network-firewall-policy-drop-${var.environment}"
-
-  firewall_policy {
-    stateless_default_actions          = ["aws:drop"]
-    stateless_fragment_default_actions = ["aws:drop"]
-  }
 }
 
 resource "aws_networkfirewall_logging_configuration" "main" {
@@ -71,8 +68,7 @@ resource "aws_networkfirewall_firewall" "main" {
 }
 
 locals {
-  all_private_subnet_cidr = cidrsubnet(aws_vpc.vpc.cidr_block, 1, 0) # 0.0/17
-  tcp_protocol_number     = 6
+  tcp_protocol_number = 6
 }
 
 resource "aws_networkfirewall_rule_group" "stateless_main" {
@@ -80,7 +76,7 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
     create_before_destroy = true
   }
 
-  description = "Allow returning traffic"
+  description = "Main stateless rule group for ${var.environment} environment firewall"
   capacity    = 5
   name        = "stateless-rules-${var.environment}"
   type        = "STATELESS"
@@ -114,43 +110,15 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
           }
         }
 
-        # Allow returning HTTP(S) traffic
-        stateless_rule {
-          priority = 2
-          rule_definition {
-            actions = ["aws:pass"]
-            match_attributes {
-              source {
-                address_definition = "0.0.0.0/0"
-              }
-              source_port {
-                from_port = 443
-                to_port   = 443
-              }
-              source_port {
-                from_port = 80
-                to_port   = 80
-              }
-              destination {
-                address_definition = local.all_private_subnet_cidr
-              }
-              destination_port {
-                from_port = 1024
-                to_port   = 65535
-              }
-              protocols = [local.tcp_protocol_number]
-            }
-          }
-        }
-
-        # Outbound TLS
+        # Send HTTP(S) traffic to the stateful engine to filter
+        # Outbound
         stateless_rule {
           priority = 3
           rule_definition {
-            actions = ["aws:pass"] ## qq forward
+            actions = ["aws:forward_to_sfe"]
             match_attributes {
               source {
-                address_definition = local.all_private_subnet_cidr
+                address_definition = local.all_private_subnets_cidr
               }
               source_port {
                 from_port = 1024
@@ -163,30 +131,38 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
                 from_port = 443
                 to_port   = 443
               }
+              destination_port {
+                from_port = 80
+                to_port   = 80
+              }
               protocols = [local.tcp_protocol_number]
             }
           }
         }
 
-        # Outbound HTTP
+        # Inbound
         stateless_rule {
-          priority = 4
+          priority = 2
           rule_definition {
-            actions = ["aws:pass"] # qq forward
+            actions = ["aws:forward_to_sfe"]
             match_attributes {
               source {
-                address_definition = local.all_private_subnet_cidr
-              }
-              source_port {
-                from_port = 1024
-                to_port   = 65535
-              }
-              destination {
                 address_definition = "0.0.0.0/0"
               }
-              destination_port {
+              source_port {
+                from_port = 443
+                to_port   = 443
+              }
+              source_port {
                 from_port = 80
                 to_port   = 80
+              }
+              destination {
+                address_definition = local.all_private_subnets_cidr
+              }
+              destination_port {
+                from_port = 1024
+                to_port   = 65535
               }
               protocols = [local.tcp_protocol_number]
             }
@@ -197,3 +173,13 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
   }
 }
 
+resource "aws_networkfirewall_rule_group" "stateful_main" {
+  description = "Main stateful rule group for ${var.environment} environment firewall"
+  capacity    = 100
+  name        = "stateful-rules-${var.environment}"
+  type        = "STATEFUL"
+
+  rules = templatefile("${path.module}/firewall.rules", {
+    BASTION_SUBNETS = local.bastion_subnet_cidr_10
+  })
+}
