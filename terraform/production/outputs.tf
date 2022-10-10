@@ -22,6 +22,3 @@ output "codeartifact_domain" {
   value = module.codeartifact.domain
 }
 
-output "codeartifact_domain_access_policy" {
-  value = module.codeartifact.access_policy
-}
