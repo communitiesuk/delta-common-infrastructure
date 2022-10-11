@@ -1,9 +1,10 @@
 SamAccountName,Password,UserPrincipalName,DisplayName,Name,Path
-$ABC111,password,joe.bloggs@dluhcdata.local,Joe Bloggs,joe.bloggs,CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local
-$ABC112,password,delta.app@dluhcdata.local,Delta App,delta.app,CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local
-$ABC113,password,delta.admin@dluhcdata.local,Delta Admin,delta.admin,CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local
-$ABC114,password,report.user@dluhcdata.local,Report User,report.user,CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local
-$ABC115,password,payment.approver@dluhcdata.local,Payment Approver,payment.approver,CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local
-$ABC116,password,cpm.app@dluhcdata.local,CPM App,cpm.app,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local
-$ABC117,password,sap@dluhcdata.local,SAP,sap,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local
-$ABC118,password,eclaims@dluhcdata.local,Eclaims,eclaims,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local
+joebloggs,password,joe.bloggs@dluhcdata.local,Joe Bloggs,joe.bloggs,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+deltaapp,password,delta.app@dluhcdata.local,Delta App,delta.app,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+deltaadmin,password,delta.admin@dluhcdata.local,Delta Admin,delta.admin,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+deltauser,password,delta.admin@dluhcdata.local,Delta Admin,delta.admin,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+reportuser,password,report.user@dluhcdata.local,Report User,report.user,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+paymentapprover,password,payment.approver@dluhcdata.local,Payment Approver,payment.approver,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+cpmapp,password,cpm.app@dluhcdata.local,CPM App,cpm.app,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+sap,password,sap@dluhcdata.local,SAP,sap,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+eclaims,password,eclaims@dluhcdata.local,Eclaims,eclaims,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"

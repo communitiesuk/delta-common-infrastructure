@@ -15,26 +15,21 @@ resource "aws_secretsmanager_secret" "ca_install_credentials" {
   kms_key_id = aws_kms_key.ad_secrets_key.arn
 }
 
-# Currently used to store a CRL, so encryption + logging are not required
+# Currently used to store a CRL, so encryption + logging + strictly private access are not required
 # tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging
-resource "aws_s3_bucket" "ldaps_crl_and_certs" {
-  bucket = "data-collection-service-ldaps-crl-certs-${var.environment}"
+# tfsec:ignore:aws-s3-block-public-acls tfsec:ignore:aws-s3-block-public-policy tfsec:ignore:aws-s3-ignore-public-acls tfsec:ignore:aws-s3-no-public-buckets
+resource "aws_s3_bucket" "ldaps_crl" {
+  bucket = "data-collection-service-ldaps-crl-${var.environment}"
   lifecycle {
     prevent_destroy = true
   }
 }
 
-# Currently used to store a CRL, so encryption + logging are not required
-# tfsec:ignore:aws-s3-block-public-acls tfsec:ignore:aws-s3-block-public-policy tfsec:ignore:aws-s3-ignore-public-acls tfsec:ignore:aws-s3-no-public-buckets
-resource "aws_s3_bucket_versioning" "ldaps_crl_and_certs" {
-  bucket = aws_s3_bucket.ldaps_crl_and_certs.id
+resource "aws_s3_bucket_versioning" "ldaps_crl" {
+  bucket = aws_s3_bucket.ldaps_crl.id
   versioning_configuration {
     status = "Enabled"
   }
-}
-
-resource "aws_s3_bucket_public_access_block" "ldaps_crl_and_certs" {
-  bucket = aws_s3_bucket.ldaps_crl_and_certs.id
 }
 
 resource "aws_cloudformation_stack" "ca_server" {
@@ -58,7 +53,7 @@ resource "aws_cloudformation_stack" "ca_server" {
     AdministratorSecret = aws_secretsmanager_secret.ca_install_credentials.arn
     # Certificate Services Configuration
     UseS3ForCRL     = "Yes"
-    S3CRLBucketName = aws_s3_bucket.ldaps_crl_and_certs.id
+    S3CRLBucketName = aws_s3_bucket.ldaps_crl.id
   }
 
   template_body      = file("${path.module}/one_tier_ca.yml")

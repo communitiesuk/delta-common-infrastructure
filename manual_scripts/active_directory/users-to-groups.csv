@@ -1,6 +1,8 @@
-Group,AccountName
-"CN=datamart-delta-admin,OU=Groups,DC=dluhcdata,DC=local","CN=delta-admin,CN=datamart,OU=Users,OU=dluhc,DC=dluhcdata,DC=local"
-"CN=datamart-delta-user,OU=Groups,DC=dluhcdata,DC=local","CN=joe.bloggs,CN=Datamart,OU=Users,OU=dluhc,DC=dluhcdata,DC=local"
-"CN=datamart-delta-payments-approvers,OU=Groups,DC=dluhcdata,DC=local","CN=payment.approver,CN=Datamart,OU=Users,OU=dluhc,DC=dluhcdata,DC=local"
-"CN=datamart-delta-report-users,OU=Groups,DC=dluhcdata,DC=local","CN=report.user,CN=Datamart,OU=Users,OU=dluhc,DC=dluhcdata,DC=local"
-"CN=datamart-cpm-soap-api,OU=Groups,DC=dluhcdata,DC=local","CN=sap,OU=Users,OU=dluhc,DC=dluhcdata,DC=local"
+Group,SamAccountName
+datamart-delta-app-role,deltaapp
+AWS Delegated Administrators,deltaapp
+datamart-delta-admin,deltaadmin
+datamart-delta-user,deltauser
+datamart-delta-payments-approvers,paymentapprover
+datamart-delta-report-users,reportuser
+datamart-cpm-soap-api,sap

@@ -11,7 +11,7 @@ Foreach($user in $users){
 }
  
 Foreach($user in $usersToGroups){       
-    Add-ADGroupMember -Identity $usersToGroups.Group $usersToGroups.AccountName
-    Write-Host "Added Group Member: $usersToGroups.Group $usersToGroups.AccountName"
+    Add-ADGroupMember -Identity $usersToGroups.Group $usersToGroups.SamAccountName
+    Write-Host "Added Group Member: $usersToGroups.Group $usersToGroups.SamAccountName"
 }
  
