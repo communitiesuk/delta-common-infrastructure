@@ -15,7 +15,7 @@ resource "aws_secretsmanager_secret" "ca_install_credentials" {
   kms_key_id = aws_kms_key.ad_secrets_key.arn
 }
 
-# Currenly used to store a CRL, so encryption + logging are not required
+# Currently used to store a CRL, so encryption + logging are not required
 # tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging
 resource "aws_s3_bucket" "ldaps_crl_and_certs" {
   bucket = "data-collection-service-ldaps-crl-certs-${var.environment}"
@@ -24,6 +24,8 @@ resource "aws_s3_bucket" "ldaps_crl_and_certs" {
   }
 }
 
+# Currently used to store a CRL, so encryption + logging are not required
+# tfsec:ignore:aws-s3-block-public-acls tfsec:ignore:aws-s3-block-public-policy tfsec:ignore:aws-s3-ignore-public-acls tfsec:ignore:aws-s3-no-public-buckets
 resource "aws_s3_bucket_versioning" "ldaps_crl_and_certs" {
   bucket = aws_s3_bucket.ldaps_crl_and_certs.id
   versioning_configuration {
