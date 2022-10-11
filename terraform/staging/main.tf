@@ -31,6 +31,7 @@ module "networking" {
   vpc_cidr_block     = "10.20.0.0/16"
   environment        = "staging"
   ssh_cidr_allowlist = var.allowed_ssh_cidrs
+  dns_servers        = module.active_directory.dns_servers
 }
 
 module "active_directory" {
@@ -46,15 +47,15 @@ module "active_directory" {
   rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
 }
 
-# module "marklogic" {
-#   source = "../modules/marklogic"
+module "marklogic" {
+  source = "../modules/marklogic"
 
-#   default_tags    = var.default_tags
-#   environment     = "staging"
-#   vpc             = module.networking.vpc
-#   private_subnets = module.networking.ml_private_subnets
-#   instance_type   = "r5.xlarge"
-# }
+  default_tags    = var.default_tags
+  environment     = "staging"
+  vpc             = module.networking.vpc
+  private_subnets = module.networking.ml_private_subnets
+  instance_type   = "r5.xlarge"
+}
 
 resource "tls_private_key" "bastion_ssh_key" {
   algorithm = "RSA"

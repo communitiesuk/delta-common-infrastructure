@@ -10,6 +10,10 @@ jobs:
     name: "Check it's running"
     runs-on: self-hosted
     steps:
+      - name: Check out CPM code
+        uses: actions/checkout@v3
+        with:
+          repository: 'communitiesuk/common-payments-module'
+          ref: 'develop'
       - run: echo "hello world"
-      - name: Checkout
-        uses: actions/checkout@v3   
+        working-directory: marklogic

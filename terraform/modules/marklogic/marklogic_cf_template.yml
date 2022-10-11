@@ -461,11 +461,12 @@ Resources:
       - AlbTargetGroup7      
       - AlbTargetGroup8
       - AlbTargetGroup9
+      - AlbTargetGroup10
     Properties:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet1
       LaunchConfigurationName: !Ref LaunchConfig1
-      MinSize: '0'
+      MinSize: '1'
       MaxSize: !Ref NodesPerZone
       DesiredCapacity: !Ref NodesPerZone
       Cooldown: '300'
@@ -503,6 +504,7 @@ Resources:
         - !Ref AlbTargetGroup7
         - !Ref AlbTargetGroup8
         - !Ref AlbTargetGroup9
+        - !Ref AlbTargetGroup10
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 31621dd0-4b18-4dcd-b443-db9cef64ebb1
@@ -522,6 +524,7 @@ Resources:
       - AlbTargetGroup7      
       - AlbTargetGroup8
       - AlbTargetGroup9
+      - AlbTargetGroup10
     Properties:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet2
@@ -564,6 +567,7 @@ Resources:
         - !Ref AlbTargetGroup7
         - !Ref AlbTargetGroup8
         - !Ref AlbTargetGroup9
+        - !Ref AlbTargetGroup10
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 87d75478-787a-41d5-bb21-9de6fe4b662e
@@ -583,6 +587,7 @@ Resources:
       - AlbTargetGroup7      
       - AlbTargetGroup8
       - AlbTargetGroup9
+      - AlbTargetGroup10
     Properties:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet3
@@ -625,6 +630,7 @@ Resources:
         - !Ref AlbTargetGroup7
         - !Ref AlbTargetGroup8
         - !Ref AlbTargetGroup9
+        - !Ref AlbTargetGroup10
     Metadata:
       'AWS::CloudFormation::Designer':
         id: bbd8314a-6e59-4102-9ed5-232739dd0dfa
@@ -637,6 +643,10 @@ Resources:
         - IpProtocol: tcp
           FromPort: '80'
           ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '443'
@@ -693,6 +703,10 @@ Resources:
         - IpProtocol: tcp
           FromPort: '8000'
           ToPort: '8010'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8140'
+          ToPort: '8140'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '7997'
@@ -1133,6 +1147,26 @@ Resources:
         - Key: deregistration_delay.timeout_seconds
           Value: 60
       VpcId: !Ref VPC
+  AlbTargetGroup10:
+    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      HealthCheckPort: 7997
+      UnhealthyThresholdCount: 5
+      Port: 8140
+      Protocol: HTTP
+      TargetGroupAttributes:
+        - Key: stickiness.enabled
+          Value: true
+        - Key: stickiness.type
+          Value: lb_cookie
+        - Key: stickiness.lb_cookie.duration_seconds
+          Value: 3600
+        - Key: deregistration_delay.timeout_seconds
+          Value: 60
+      VpcId: !Ref VPC
   #Descriptions of the 9 Listeners for MultiZone deployments (3 zones). Each Listener connects Application Load Balancer to a TargetGroup with a particular port.
   AlbListener1:
     Type: "AWS::ElasticLoadBalancingV2::Listener"
@@ -1241,6 +1275,18 @@ Resources:
           Type: forward
       LoadBalancerArn: !Ref Alb
       Port: 8008
+      Protocol: HTTP
+  AlbListener10:
+    Type: "AWS::ElasticLoadBalancingV2::Listener"
+    DependsOn:
+      - Alb
+      - AlbTargetGroup10
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref AlbTargetGroup10
+          Type: forward
+      LoadBalancerArn: !Ref Alb
+      Port: 8140
       Protocol: HTTP
 Outputs:
   URL:

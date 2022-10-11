@@ -40,7 +40,9 @@ resource "aws_iam_policy" "ml_instance_policy" {
       {
         Action = [
           "ec2:DescribeInstances",
+          "ec2:DescribeVolumes",
           "ec2messages:GetMessages",
+          "ec2:CreateTags",
 
           "ssm:UpdateInstanceInformation",
           "ssm:ListInstanceAssociations",
@@ -63,6 +65,14 @@ resource "aws_iam_policy" "ml_instance_policy" {
         ]
         Effect   = "Allow"
         Resource = "arn:aws:dynamodb:*:*:table/*MarkLogicDDBTable*"
+      },
+      {
+        Action = [
+          "ec2:AttachVolume",
+          "ec2:CreateVolume"
+        ]
+        Effect   = "Allow"
+        Resource = ["arn:aws:ec2:*:*:volume/*", "arn:aws:ec2:*:*:instance/*"]
       }
     ]
   })
