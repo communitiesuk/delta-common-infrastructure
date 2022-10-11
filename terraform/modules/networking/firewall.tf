@@ -38,10 +38,15 @@ resource "aws_networkfirewall_firewall_policy" "main" {
   }
 }
 
-# Just flow logs, should not have anything sensitive in
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
-resource "aws_cloudwatch_log_group" "firewall" {
+resource "aws_cloudwatch_log_group" "firewall_flow" {
   name              = "network-firewall-flow-${var.environment}"
+  retention_in_days = 60
+}
+
+# tfsec:ignore:aws-cloudwatch-log-group-customer-key
+resource "aws_cloudwatch_log_group" "firewall_alert" {
+  name              = "network-firewall-alert-${var.environment}"
   retention_in_days = 60
 }
 
@@ -50,10 +55,17 @@ resource "aws_networkfirewall_logging_configuration" "main" {
   logging_configuration {
     log_destination_config {
       log_destination = {
-        logGroup = aws_cloudwatch_log_group.firewall.name
+        logGroup = aws_cloudwatch_log_group.firewall_flow.name
       }
       log_destination_type = "CloudWatchLogs"
       log_type             = "FLOW"
+    }
+    log_destination_config {
+      log_destination = {
+        logGroup = aws_cloudwatch_log_group.firewall_alert.name
+      }
+      log_destination_type = "CloudWatchLogs"
+      log_type             = "ALERT"
     }
   }
 }
