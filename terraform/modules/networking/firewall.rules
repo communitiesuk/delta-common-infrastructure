@@ -1,5 +1,15 @@
-pass http ${BASTION_SUBNETS}    [1024:]  -> any                   80      (http.host; content:"example.com"; startswith; endswith; msg:"Allow HTTP traffic to example.com"; flow:to_server; sid:1; rev:1;)
-pass tls  ${BASTION_SUBNETS}    [1024:]  -> any                   443     (tls.sni; content:"http.cat"; startswith; nocase; endswith; msg:"Allow TLS (HTTPS) traffic to http.cat"; flow:to_server; sid:2; rev:1;)
+# Bastion
+pass http ${BASTION_CIDR}    [1024:]  -> any                   80      (http.host; content:"example.com"; startswith; endswith; msg:"Allow HTTP traffic to example.com"; flow:to_server; sid:1; rev:1;)
+pass tls  ${BASTION_CIDR}    [1024:]  -> any                   443     (tls.sni; content:"http.cat"; startswith; nocase; endswith; msg:"Allow TLS (HTTPS) traffic to http.cat"; flow:to_server; sid:2; rev:1;)
+
+# Jaspersoft
+pass tls  ${JASPERSOFT_CIDR} [1024:]  -> any                   443     (tls.sni; content:".ubuntu.com"; nocase; endswith; msg:"Allow TLS (HTTPS) traffic to *.ubuntu.com"; flow:to_server; sid:101; rev:1;)
+pass http ${JASPERSOFT_CIDR} [1024:]  -> any                   80      (http.host; content:".ubuntu.com"; endswith; msg:"Allow HTTP traffic to *.ubuntu.com"; flow:to_server; sid:102; rev:1;)
+pass tls  ${JASPERSOFT_CIDR} [1024:]  -> any                   443     (tls.sni; content:".launchpad.net"; nocase; endswith; msg:"Allow TLS (HTTPS) traffic to *.launchpad.net"; flow:to_server; sid:103; rev:1;)
+pass http ${JASPERSOFT_CIDR} [1024:]  -> any                   80      (http.host; content:".ubuntu.com"; endswith; msg:"Allow HTTP traffic to *.launchpad.net"; flow:to_server; sid:104; rev:1;)
+pass tls  ${JASPERSOFT_CIDR} [1024:]  -> any                   443     (tls.sni; content:"archive.apache.org"; startswith; nocase; endswith; msg:"Allow TLS (HTTPS) traffic to archive.apache.org"; flow:to_server; sid:105; rev:1;)
+pass tls  ${JASPERSOFT_CIDR} [1024:]  -> any                   443     (tls.sni; content:".postgresql.org"; nocase; endswith; msg:"Allow TLS (HTTPS) traffic to *.postgresql.org"; flow:to_server; sid:106; rev:1;)
+pass http ${JASPERSOFT_CIDR} [1024:]  -> any                   80      (http.host; content:".postgresql.org"; endswith; msg:"Allow HTTP traffic to *.postgresql.org"; flow:to_server; sid:107; rev:1;)
 
 
 # The drop http and tls seem to kick in earlier than only dropping established TCP flows

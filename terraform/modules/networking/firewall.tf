@@ -192,6 +192,7 @@ resource "aws_networkfirewall_rule_group" "stateful_main" {
   type        = "STATEFUL"
 
   rules = templatefile("${path.module}/firewall.rules", {
-    BASTION_SUBNETS = local.bastion_subnet_cidr_10
+    BASTION_CIDR    = local.bastion_subnet_cidr_10
+    JASPERSOFT_CIDR = local.jaspersoft_cidr_10
   })
 }

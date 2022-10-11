@@ -14,9 +14,10 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.to_internet_gateway.id
 }
 
-resource "aws_route_table_association" "bastion" {
-  count          = 3
-  subnet_id      = aws_subnet.bastion_private_subnets[count.index].id
+resource "aws_route_table_association" "firewalled" {
+  for_each = {for subnet in local.firewalled_subnets: subnet.tags.Name => subnet }
+
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.private_to_firewall.id
 }
 
@@ -39,11 +40,6 @@ resource "aws_route_table_association" "ad_management_server" {
 resource "aws_route_table_association" "ml_private" {
   count          = 3
   subnet_id      = aws_subnet.ml_private_subnets[count.index].id
-  route_table_id = aws_route_table.to_nat_gateway.id
-}
-
-resource "aws_route_table_association" "jaspersoft_private_subnet" {
-  subnet_id      = aws_subnet.jaspersoft.id
   route_table_id = aws_route_table.to_nat_gateway.id
 }
 
