@@ -4,12 +4,7 @@ data "aws_s3_bucket" "jaspersoft_binaries" {
 
 data "aws_s3_object" "jaspersoft_install_zip" {
   bucket = data.aws_s3_bucket.jaspersoft_binaries.bucket
-  key    = "TIB_js-jrs-cp_7.8.0_bin.zip"
-}
-
-data "aws_s3_object" "jaspersoft_service_pack_zip" {
-  bucket = data.aws_s3_bucket.jaspersoft_binaries.bucket
-  key    = "TIB_js-jrs_cp_7.8.1_sp.zip"
+  key    = "js-7.8.1_hotfixed_2022-04-15.zip"
 }
 
 resource "aws_iam_instance_profile" "read_jaspersoft_binaries" {
