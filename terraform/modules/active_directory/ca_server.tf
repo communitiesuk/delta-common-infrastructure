@@ -15,29 +15,20 @@ resource "aws_secretsmanager_secret" "ca_install_credentials" {
   kms_key_id = aws_kms_key.ad_secrets_key.arn
 }
 
-# Currenly used to store a CRL, so encryption + logging are not required
-# tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging
-resource "aws_s3_bucket" "ldaps_crl_and_certs" {
-  bucket = "data-collection-service-ldaps-crl-certs-${var.environment}"
+# Currently used to store a CRL, so encryption + logging + strictly private access are not required
+# tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-block-public-acls tfsec:ignore:aws-s3-block-public-policy tfsec:ignore:aws-s3-ignore-public-acls tfsec:ignore:aws-s3-no-public-buckets tfsec:ignore:aws-s3-specify-public-access-block
+resource "aws_s3_bucket" "ldaps_crl" {
+  bucket = "data-collection-service-ldaps-crl-${var.environment}"
   lifecycle {
     prevent_destroy = true
   }
 }
 
-resource "aws_s3_bucket_versioning" "ldaps_crl_and_certs" {
-  bucket = aws_s3_bucket.ldaps_crl_and_certs.id
+resource "aws_s3_bucket_versioning" "ldaps_crl" {
+  bucket = aws_s3_bucket.ldaps_crl.id
   versioning_configuration {
     status = "Enabled"
   }
-}
-
-resource "aws_s3_bucket_public_access_block" "ldaps_crl_and_certs" {
-  bucket = aws_s3_bucket.ldaps_crl_and_certs.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
 }
 
 resource "aws_cloudformation_stack" "ca_server" {
@@ -61,13 +52,13 @@ resource "aws_cloudformation_stack" "ca_server" {
     AdministratorSecret = aws_secretsmanager_secret.ca_install_credentials.arn
     # Certificate Services Configuration
     UseS3ForCRL     = "Yes"
-    S3CRLBucketName = aws_s3_bucket.ldaps_crl_and_certs.id
+    S3CRLBucketName = aws_s3_bucket.ldaps_crl.id
   }
 
   template_body      = file("${path.module}/one_tier_ca.yml")
   timeout_in_minutes = 60
   timeouts {
-    create = "60m"
+    create = "90m"
   }
   capabilities = ["CAPABILITY_IAM"]
 }
