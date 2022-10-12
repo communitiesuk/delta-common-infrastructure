@@ -25,5 +25,5 @@ variable "ssh_cidr_allowlist" {
 
 variable "dns_servers" {
   description = "List of DNS server IP addresses to be used by thh VPC"
-  default = ["AmazonProvidedDNS"]
+  default = []
 }

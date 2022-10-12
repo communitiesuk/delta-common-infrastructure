@@ -21,11 +21,11 @@ resource "aws_s3_bucket_logging" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state.id
 
   target_bucket = aws_s3_bucket.state_access_log_bucket.id
-  target_prefix = "production/"
+  target_prefix = "staging/"
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "data-collection-service-tfstate-dev"
+  bucket = "data-collection-service-tfstate-sandbox"
 
   lifecycle {
     prevent_destroy = true

@@ -17,3 +17,12 @@ resource "aws_directory_service_directory" "directory_service" {
     subnet_ids = var.domain_controller_subnets[*].id
   }
 }
+
+# resource "aws_directory_service_conditional_forwarder" "example" {
+#   directory_id       = aws_directory_service_directory.ad.id
+#   remote_domain_name = "example.com"
+
+#   dns_ips = [
+#     cidrsubnet(var.vpc.cidr_block, 16, 2)
+#   ]
+# }

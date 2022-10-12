@@ -10,9 +10,9 @@ variable "subnet_id" {
 }
 
 variable "github_token" {
-  default = "ACP2LWPD53MPMVBXJBVUJUTDIDAEE"
+  description = "short-lived token to register the runner with the repo"
 }
 
-variable "vpc_id" {
+variable "vpc" {
   
 }

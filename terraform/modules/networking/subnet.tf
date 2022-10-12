@@ -10,6 +10,7 @@ locals {
   ml_subnet_cidr_10        = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 3)   # 12.0/22
   jaspersoft_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4)   # 16.0/22
   delta_internal_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 20.0/22
+  # dns_resolver_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 6)   # 24.0/10
   public_cidr_10           = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/22
   vpc_endpoints_cidr_8     = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 253) # 253.0/24
   firewall_cidr_8          = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 254) # 254.0/24
@@ -106,3 +107,11 @@ resource "aws_subnet" "nat_gateway" {
   vpc_id            = aws_vpc.vpc.id
   tags              = { Name = "nat-gateway-${var.environment}" }
 }
+
+# resource "aws_subnet" "dns_resolver" {
+#   count             = 2
+#   availability_zone = data.aws_availability_zones.available.names[count.index]
+#   cidr_block        = cidrsubnet(local.dns_resolver_cidr_10, 1, count.index)
+#   vpc_id            = aws_vpc.vpc.id
+#   tags              = { Name = "route-53-outbound-resolver-${var.environment}" }
+# }

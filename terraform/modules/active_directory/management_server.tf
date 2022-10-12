@@ -13,6 +13,7 @@ resource "aws_instance" "ad_management_server" {
   root_block_device {
     encrypted = true
   }
+  user_data = file("${path.module}/user_data.txt")
 
   tags = { Name = "ad-management-server-${var.environment}" }
 }

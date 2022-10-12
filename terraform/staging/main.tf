@@ -88,5 +88,6 @@ module "gh_runner" {
 
   subnet_id = module.networking.ml_private_subnets[0].id
   environment = "staging"
-  vpc_id = module.networking.vpc.id
+  vpc = module.networking.vpc
+  github_token = "ACP2LWN4D5WDD5B2SOAUTD3DJF47Y"
 }

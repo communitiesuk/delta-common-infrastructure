@@ -50,7 +50,12 @@ resource "aws_iam_policy" "ml_instance_policy" {
           "ssm:PutInventory",
           "ssm:UpdateInstanceAssociationStatus",
           "ssmmessages:OpenControlChannel",
-          "ssmmessages:CreateControlChannel"
+          "ssmmessages:CreateControlChannel",
+
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:GenerateDataKey",
+          "kms:Decrypt"
         ]
         Effect   = "Allow"
         Resource = "*"
@@ -73,6 +78,13 @@ resource "aws_iam_policy" "ml_instance_policy" {
         ]
         Effect   = "Allow"
         Resource = ["arn:aws:ec2:*:*:volume/*", "arn:aws:ec2:*:*:instance/*"]
+      },
+      {
+        Action = [
+          "sns:Publish"
+        ]
+        Effect   = "Allow"
+        Resource = [aws_sns_topic.ml_logs.arn]
       }
     ]
   })

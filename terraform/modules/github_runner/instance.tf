@@ -8,15 +8,18 @@ data "aws_ami" "amazon_linux" {
   owners = ["amazon"]
 }
 
+# tfsec:ignore:aws-vpc-no-public-egress-sgr
 resource "aws_security_group" "main" {
   name = "github-runner-${var.environment}"
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.id
+  description = "Allow SSH access and allow requests out to contact GitHub"
 
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.vpc.cidr_block]
+    description = "SSH ingress"
   }
 
   egress {
@@ -24,6 +27,7 @@ resource "aws_security_group" "main" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all egress"
   }
 }
 
@@ -42,12 +46,25 @@ resource "aws_instance" "gh_runner" {
     })
   }))
   key_name = aws_key_pair.gh_runner.key_name
+
+  metadata_options {
+    http_tokens   = "required"
+    http_endpoint = "enabled"
+  }
+  root_block_device {
+    encrypted = true
+  }
 	tags = {
 		Name = "GitHub-Runner-${var.environment}"	
 	}
 }
 
+resource "tls_private_key" "gh_runner_ssh" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
 resource "aws_key_pair" "gh_runner" {
   key_name   = "gh-runner-key-${var.environment}"
-  public_key = file("${path.module}/id_rsa.pub")
+  public_key = tls_private_key.gh_runner_ssh.public_key_openssh
 }

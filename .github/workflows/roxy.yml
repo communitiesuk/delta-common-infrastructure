@@ -1,0 +1,60 @@
+name: "Deploy MarkLogic config"
+
+on:
+  # Change from push to workflow_dispatch once merged (only available via website once on main branch)
+  # workflow_dispatch:
+  #   inputs:
+  #     git_ref:
+  #       description: 'Commit or branch to deploy'
+  #       required: true
+  #       type: string
+  #     environment:
+  #       description: 'Environment to run against'
+  #       required: true
+  #       type: environment
+
+  push:
+    branches:
+      - "DT-58"
+
+jobs:
+  get_terraform_outputs:
+    name: "Get Terraform outputs"
+    runs-on: ubuntu-latest
+    outputs:
+      ml_hostname: ${{ steps.get_ml_hostname.outputs.test }}
+    defaults:
+      run:
+        working-directory: terraform/staging # use inputs.environment once this is workflow_dispatch
+    steps:
+      - uses: actions/checkout@v3
+      - run: terraform init
+      - id: get_ml_hostname
+        run: echo "ml_hostname=$(terraform output ml_hostname)" >> $GITHUB_OUTPUT
+
+  deploy_ml:
+    name: "Deploy MarkLogic config"
+    runs-on: ["self-hosted","staging"] # ${{ inputs.environment }}
+    needs: get_terraform_outputs
+    environment: staging # ${{ inputs.environment }}
+    env:
+      dluhc_server: needs.get_terraform_outputs.ml_hostname # Picked up by Roxy
+      ldap_password: ${{ secrets.CPM_LDAP_PASSWORD }}
+      password: ${{ secrets.CPM_ML_ADMIN_PASSWORD }}
+    defaults:
+      run:
+        working-directory: marklogic
+    steps:
+      - name: Check out CPM code
+        uses: actions/checkout@v3
+        with:
+          repository: 'communitiesuk/common-payments-module'
+          ref: DT-58 # ${{ inputs.git_ref }}
+          token: ${{ secrets.GIT_PAT }} # TODO: create a dedicated Git account for this purpose? 
+      - run: chmod +x ./ml
+      - run: ./ml dluhc bootstrap # --apply-changes=privileges,amps,indexes <--- unsure what the implications of this are
+      - run: ./ml dluhc clean modules
+      - run: ./ml dluhc clean schemas
+      - run: ./ml dluhc deploy modules
+      - run: ./ml dluhc deploy schemas
+      # - run: ./ml dluhc deploy content <--- would deploy dummy data from the /data folder

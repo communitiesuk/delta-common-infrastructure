@@ -1,5 +1,5 @@
-output "ml_url" {
-  value = aws_cloudformation_stack.marklogic.outputs["URL"]
+output "ml_hostname" {
+  value = aws_lb.ml_lb.dns_name
 }
 
 output "ml_ssh_private_key" {

@@ -24,15 +24,21 @@ If you need to connect to the CA server, RDP to the management server first and 
 * Username: Administrator
 * Password: get password data and decrypt it
 
-## First time setup - install management tools:
+## First time setup
 
-### For general AD management
+### Install AD management tools
 
-From [AWS documentation](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_install_ad_tools.html):
+This should happen automatically via the instance's user data, but you can also perform the installation manually. From [AWS documentation](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_install_ad_tools.html):
 
 * Open `Server manager`
 * Add Roles and Features
 * On the "Features" page of the wizard, open up `Remote Server Administration Tools` -> `Role Administration Tools` and tick both `AD DS and AD LDS Tools` and `DNS Server Tools`
+
+### Set up DNS forwarding
+
+From [AWS documentation](https://aws.amazon.com/blogs/networking-and-content-delivery/integrating-your-directory-services-dns-resolution-with-amazon-route-53-resolvers/).
+
+RDP to the AD management server, and open up the DNS Manager application. Enter the IP address of one of the DNS servers. You can get their IP addresses from `terraform output dns_servers`. Right click on "Forwarders" and ensure there is a single forwarder with the IP address of the Amazon Provided DNS server, which is the VPC's base IP address + 2, i.e. `*.*.0.2`
 
 ### For migrating data between AD domains
 
