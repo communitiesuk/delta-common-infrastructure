@@ -8,7 +8,6 @@ This is from exploring existing relevant DNS records.
 * delta.communities.gov.uk - delegated to Route53, and aliased to CloudFront
 * api.delta.communities.gov.uk - Returns A records, likely aliased to an ALB
 * auth.delta.communities.gov.uk - Returns A records, likely aliased to an ALB
-  * We're not sure what this is and are asking currently
 * reporting.communities.gov.uk - CNAME to an ALB
 * cpm.communities.gov.uk - CNAME to an ALB
 
@@ -56,6 +55,6 @@ Setting this up the same as production requires DLUHC to maintain a few extra re
 So:
 
 * `internal.stage.communities.gov.uk` delegated to Route53
-* ACM validation records for an SSL certificate on `*.stage.communities.gov.uk`, `api.delta.stage.communities.gov.uk` and `auth.delta.stage.communities.gov.uk`
+* ACM validation records for an SSL certificate on `*.stage.communities.gov.uk`, `*.delta.stage.communities.gov.uk`
 * `delta.stage.communities.gov.uk` CNAME to `delta.internal.stage.communities.gov.uk` etc.
 * Same for `test.communities.gov.uk`
