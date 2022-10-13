@@ -121,6 +121,6 @@ Setting up AWS Vault:
 5. To use these credentials you use the command `aws-vault exec <profile>` - you will be prompted to enter an MFA code
    for the mhclg account, this is used to create a session which will last a short period of time, during which you
    won't need to enter them again
-    1. To run a single command run `aws-vault exec <profile> -- aws <aws command` (where profile is one of 'delta',
+    1. To run a single command run `aws-vault exec <profile> -- aws <aws command>` (where profile is one of 'delta',
        'delta-dev' and 'delta-prod')
     2. To authenticate your terminal (required for e.g. running terraform commands) run `aws-vault exec <profile>`
