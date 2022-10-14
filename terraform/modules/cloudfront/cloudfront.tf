@@ -146,13 +146,13 @@ resource "aws_cloudfront_distribution" "main" {
 
     viewer_protocol_policy     = "redirect-to-https"
     min_ttl                    = 0
-    default_ttl                = 3600
+    default_ttl                = 0
     max_ttl                    = 86400
     response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
   }
 
   price_class = "PriceClass_100"
-  web_acl_id  = aws_waf_web_acl.waf_acl.id
+  web_acl_id  = aws_wafv2_web_acl.waf_acl.arn
 
   logging_config {
     bucket          = aws_s3_bucket.cloudfront_logs.bucket_domain_name
