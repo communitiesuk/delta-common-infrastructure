@@ -6,7 +6,7 @@ Foreach($user in $users){
     New-ADUser -SamAccountName $user.SamAccountName -DisplayName $user.DisplayName `
         -AccountPassword $(ConvertTo-SecureString -AsPlainText $user.Password -Force) `
         -UserPrincipalName $user.UserPrincipalName -Name $user.Name -Enabled $true `
-        -Path $user.Path
+        -Path $user.Path -PasswordNeverExpires $true
     Write-Host "Added User: $user.Name"
 }
  
