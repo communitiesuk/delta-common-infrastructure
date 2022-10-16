@@ -1,14 +1,9 @@
 resource "aws_lb" "ml_lb" {
   name = "marklogic-lb-${var.environment}"
   internal = true
-  # load_balancer_type = "network"
   subnets = var.private_subnets[*].id
-  # access_logs {
-  #   bucket  = aws_s3_bucket.lb_logs.bucket
-  #   prefix  = "test-lb"
-  #   enabled = true
-  # }
   security_groups = [aws_security_group.ml_lb.id]
+  drop_invalid_header_fields = true
 }
 
 resource "aws_lb_target_group" "ml" {
@@ -37,6 +32,7 @@ resource "aws_lb_listener" "ml" {
 
   load_balancer_arn = aws_lb.ml_lb.arn
   port              = aws_lb_target_group.ml[count.index].port
+  # tfsec:ignore:aws-elb-http-not-used
   protocol          = "HTTP"
 
   default_action {

@@ -43,7 +43,7 @@ jobs:
     needs: get_terraform_outputs
     environment: staging # ${{ inputs.environment }}
     env:
-      dluhc_server: needs.get_terraform_outputs.ml_hostname # Picked up by Roxy
+      dluhc_server: needs.get_terraform_outputs.outputs.ml_hostname # Picked up by Roxy
       ldap_password: ${{ secrets.CPM_LDAP_PASSWORD }}
       password: ${{ secrets.CPM_ML_ADMIN_PASSWORD }}
     defaults:
