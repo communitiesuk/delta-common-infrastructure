@@ -21,8 +21,13 @@ jobs:
   get_terraform_outputs:
     name: "Get Terraform outputs"
     runs-on: ubuntu-latest
+    environment: staging # ${{ inputs.environment }}
     outputs:
       ml_hostname: ${{ steps.get_ml_hostname.outputs.test }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.access_key }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.secret_key }}
+      AWS_REGION: "eu-west-1"
     defaults:
       run:
         working-directory: terraform/staging # use inputs.environment once this is workflow_dispatch
