@@ -4,4 +4,5 @@ output "instance_ip" {
 
 output "private_key" {
   value = tls_private_key.gh_runner_ssh.private_key_openssh
+  sensitive = true
 }

@@ -21,10 +21,12 @@ jobs:
   get_terraform_outputs:
     name: "Get Terraform outputs"
     runs-on: ubuntu-latest
+    # unfortunately this means a reviewer needs to approve each job, even when a reviewer triggers the job 
     environment: staging # ${{ inputs.environment }}
     outputs:
-      ml_hostname: ${{ steps.get_ml_hostname.outputs.test }}
+      ml_hostname: ${{ steps.get_ml_hostname.outputs.ml_hostname }}
     env:
+      # TODO: rename e.g. prod_access_key to just "access_key"
       AWS_ACCESS_KEY_ID: ${{ secrets.access_key }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.secret_key }}
       AWS_REGION: "eu-west-1"
@@ -35,7 +37,7 @@ jobs:
       - uses: actions/checkout@v3
       - run: terraform init
       - id: get_ml_hostname
-        run: echo "ml_hostname=$(terraform output ml_hostname)" >> $GITHUB_OUTPUT
+        run: echo "ml_hostname=$(terraform output -raw ml_hostname)" >> $GITHUB_OUTPUT
 
   deploy_ml:
     name: "Deploy MarkLogic config"
@@ -43,9 +45,9 @@ jobs:
     needs: get_terraform_outputs
     environment: staging # ${{ inputs.environment }}
     env:
-      dluhc_server: needs.get_terraform_outputs.outputs.ml_hostname # Picked up by Roxy
-      ldap_password: ${{ secrets.CPM_LDAP_PASSWORD }}
-      password: ${{ secrets.CPM_ML_ADMIN_PASSWORD }}
+      ml_dluhc_server: ${{ needs.get_terraform_outputs.outputs.ml_hostname }} # ml_* vars override Roxy's properties
+      ml_ldap_password: ${{ secrets.CPM_LDAP_PASSWORD }}
+      ml_password: ${{ secrets.CPM_ML_ADMIN_PASSWORD }}
     defaults:
       run:
         working-directory: marklogic

@@ -13,6 +13,15 @@ resource "aws_security_group" "ml_lb" {
       description = ingress.value["description"]
     }
   }
+  
+  # tfsec:ignore:aws-vpc-no-public-egress-sgr
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    description = "Allow all egress"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_security_group" "ml_instance" {
@@ -37,5 +46,14 @@ resource "aws_security_group" "ml_instance" {
     protocol    = "-1"
     self = true
     description = "Allow all traffic within the security group"
+  }
+
+  # tfsec:ignore:aws-vpc-no-public-egress-sgr
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    description = "Allow all egress"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }

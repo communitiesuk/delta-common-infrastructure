@@ -7,3 +7,6 @@ You can manually ssh onto a MarkLogic instance and check the service logs with:
 * Port forwarding: `ssh hugeme@$(terraform output -raw bastion_dns_name) -L localhost:9001:instance.ip.here:22`
 * SSH (with private key taken from module.marklogic.ml_ssh_private_key): `ssh -i ~/.ssh/privatekey ec2-user@localhost -p 9001`
 * On the instance: `journalctl -u MarkLogic`
+
+Restart server:
+* sudo /sbin/service MarkLogic start

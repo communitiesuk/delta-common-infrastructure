@@ -21,9 +21,13 @@ output "dns_servers" {
   value     = module.active_directory.dns_servers
 }
 
-
 output "ml_hostname" {
   value = module.marklogic.ml_hostname
+}
+
+output "ml_ssh_private_key" {
+  value = module.marklogic.ml_ssh_private_key
+  sensitive = true
 }
 
 output "bastion_host_key_fingerprint" {
