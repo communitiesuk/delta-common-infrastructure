@@ -3,18 +3,18 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  all_private_subnets_cidr = cidrsubnet(aws_vpc.vpc.cidr_block, 1, 0)   # 0.0/17
-  bastion_subnet_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 0)   # 0.0/22
-  ad_dc_subnet_cidr_10     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 1)   # 4.0/22
-  ad_other_cidr_10         = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 2)   # 8.0/22
-  ml_subnet_cidr_10        = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 3)   # 12.0/22
-  jaspersoft_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4)   # 16.0/22
-  delta_internal_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 20.0/22
+  all_private_subnets_cidr = cidrsubnet(aws_vpc.vpc.cidr_block, 1, 0) # 0.0/17
+  bastion_subnet_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 0) # 0.0/22
+  ad_dc_subnet_cidr_10     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 1) # 4.0/22
+  ad_other_cidr_10         = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 2) # 8.0/22
+  ml_subnet_cidr_10        = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 3) # 12.0/22
+  jaspersoft_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4) # 16.0/22
+  delta_internal_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5) # 20.0/22
   # dns_resolver_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 6)   # 24.0/10
-  public_cidr_10           = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/22
-  vpc_endpoints_cidr_8     = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 253) # 253.0/24
-  firewall_cidr_8          = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 254) # 254.0/24
-  nat_gateway_cidr_8       = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/24
+  public_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/22
+  vpc_endpoints_cidr_8 = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 253) # 253.0/24
+  firewall_cidr_8      = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 254) # 254.0/24
+  nat_gateway_cidr_8   = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/24
 }
 
 # tfsec:ignore:aws-ec2-no-public-ip-subnet
