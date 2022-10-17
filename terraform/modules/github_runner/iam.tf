@@ -1,7 +1,7 @@
 resource "aws_iam_role" "runner" {
-  name                 = "runner-role-${var.environment}"
-  assume_role_policy   = templatefile("${path.module}/policies/instance_role_trust_policy.json", {})
-  path                 = "/gh-runner-${var.environment}/"
+  name               = "runner-role-${var.environment}"
+  assume_role_policy = templatefile("${path.module}/policies/instance_role_trust_policy.json", {})
+  path               = "/gh-runner-${var.environment}/"
 }
 
 resource "aws_iam_instance_profile" "runner" {

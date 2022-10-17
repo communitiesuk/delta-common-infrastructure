@@ -14,5 +14,5 @@ variable "github_token" {
 }
 
 variable "vpc" {
-  
+
 }

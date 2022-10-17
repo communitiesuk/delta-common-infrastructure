@@ -24,7 +24,7 @@ resource "aws_cloudformation_stack" "marklogic" {
     PrivateSubnet2 = var.private_subnets[1].id
     PrivateSubnet3 = var.private_subnets[2].id
 
-    TargetGroupARNs = join(",", aws_lb_target_group.ml[*].arn)
+    TargetGroupARNs       = join(",", aws_lb_target_group.ml[*].arn)
     InstanceSecurityGroup = aws_security_group.ml_instance.id
 
     InstanceType = var.instance_type

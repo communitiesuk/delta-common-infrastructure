@@ -18,6 +18,6 @@ output "directory_admin_password" {
 }
 
 output "dns_servers" {
-  value = aws_directory_service_directory.directory_service.dns_ip_addresses
+  value       = aws_directory_service_directory.directory_service.dns_ip_addresses
   description = "IP addresses of the managed AD's DNS servers"
 }

@@ -1,5 +1,6 @@
 resource "aws_vpc_dhcp_options" "dns_resolver" {
-  domain_name_servers = var.dns_servers 
+  domain_name_servers = var.dns_servers
+  # TODO DT-58 is this intentional?
   domain_name = "eu-west-1.compute.internal"
 }
 

@@ -34,8 +34,8 @@ locals {
 }
 
 resource "aws_ssm_parameter" "cloudwatch_agent_config_runner" {
-  name  = "${var.environment}-cloudwatch-agent-config-github-runner"
-  type  = "String"
+  name = "${var.environment}-cloudwatch-agent-config-github-runner"
+  type = "String"
   value = templatefile("${path.module}/templates/cloudwatch_config.json", {
     logfiles = jsonencode(local.logfiles)
   })
@@ -43,10 +43,10 @@ resource "aws_ssm_parameter" "cloudwatch_agent_config_runner" {
 
 resource "aws_kms_key" "gh_log_groups" {
   enable_key_rotation = true
-  description = "Used by GitHub Runner logs - ${var.environment}"
+  description         = "Used by GitHub Runner logs - ${var.environment}"
   policy = templatefile("${path.module}/templates/logging_kms_policy.json", {
-    account_id = data.aws_caller_identity.current.account_id
-    region = data.aws_region.current.name
+    account_id        = data.aws_caller_identity.current.account_id
+    region            = data.aws_region.current.name
     log_group_pattern = "/github-self-hosted-runner/${var.environment}/*"
   })
 }
@@ -59,8 +59,8 @@ resource "aws_cloudwatch_log_group" "gh_runners" {
 }
 
 resource "aws_iam_role_policy" "cloudwatch" {
-  name  = "CloudWatchLoggingAndMetrics-${var.environment}"
-  role  = aws_iam_role.runner.name
+  name = "CloudWatchLoggingAndMetrics-${var.environment}"
+  role = aws_iam_role.runner.name
   policy = templatefile("${path.module}/policies/instance_cloudwatch_policy.json",
     {
       ssm_parameter_arn = aws_ssm_parameter.cloudwatch_agent_config_runner.arn

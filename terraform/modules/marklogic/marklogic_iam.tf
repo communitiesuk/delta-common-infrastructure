@@ -52,6 +52,7 @@ resource "aws_iam_policy" "ml_instance_policy" {
           "ssmmessages:OpenControlChannel",
           "ssmmessages:CreateControlChannel",
 
+          # TODO DT-58 Should be limited to specific keys
           "kms:GenerateDataKey",
           "kms:DescribeKey",
           "kms:GenerateDataKey",

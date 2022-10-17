@@ -18,7 +18,7 @@ output "directory_admin_password" {
 }
 
 output "dns_servers" {
-  value     = module.active_directory.dns_servers
+  value = module.active_directory.dns_servers
 }
 
 output "ml_hostname" {
@@ -26,7 +26,7 @@ output "ml_hostname" {
 }
 
 output "ml_ssh_private_key" {
-  value = module.marklogic.ml_ssh_private_key
+  value     = module.marklogic.ml_ssh_private_key
   sensitive = true
 }
 
@@ -60,6 +60,6 @@ output "gh_runner_ip" {
 }
 
 output "gh_runner_private_key" {
-  value = module.gh_runner.private_key
+  value     = module.gh_runner.private_key
   sensitive = true
 }

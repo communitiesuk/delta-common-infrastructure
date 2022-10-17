@@ -6,14 +6,14 @@ resource "aws_security_group" "ml_lb" {
   dynamic "ingress" {
     for_each = local.ml_sg_ingress_port_ranges
     content {
-      from_port = ingress.value["from_port"]
-      to_port = ingress.value["to_port"]
+      from_port   = ingress.value["from_port"]
+      to_port     = ingress.value["to_port"]
       protocol    = "tcp"
       cidr_blocks = [var.vpc.cidr_block]
       description = ingress.value["description"]
     }
   }
-  
+
   # tfsec:ignore:aws-vpc-no-public-egress-sgr
   egress {
     from_port   = 0
@@ -32,8 +32,8 @@ resource "aws_security_group" "ml_instance" {
   dynamic "ingress" {
     for_each = local.ml_sg_ingress_port_ranges
     content {
-      from_port = ingress.value["from_port"]
-      to_port = ingress.value["to_port"]
+      from_port   = ingress.value["from_port"]
+      to_port     = ingress.value["to_port"]
       protocol    = "tcp"
       cidr_blocks = [var.vpc.cidr_block]
       description = ingress.value["description"]
@@ -44,7 +44,7 @@ resource "aws_security_group" "ml_instance" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    self = true
+    self        = true
     description = "Allow all traffic within the security group"
   }
 

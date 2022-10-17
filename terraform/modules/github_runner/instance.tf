@@ -2,7 +2,7 @@ data "aws_ami" "amazon_linux" {
   most_recent = true
 
   filter {
-    name = "name"
+    name   = "name"
     values = ["amzn2-ami-hvm-*-x86_64-ebs"]
   }
   owners = ["amazon"]
@@ -10,10 +10,11 @@ data "aws_ami" "amazon_linux" {
 
 # tfsec:ignore:aws-vpc-no-public-egress-sgr
 resource "aws_security_group" "main" {
-  name = "github-runner-${var.environment}"
-  vpc_id = var.vpc.id
+  name        = "github-runner-${var.environment}"
+  vpc_id      = var.vpc.id
   description = "Allow SSH access and allow requests out to contact GitHub"
 
+  # TODO DT-58: Should limit to bastion
   ingress {
     from_port   = 22
     to_port     = 22
@@ -32,17 +33,17 @@ resource "aws_security_group" "main" {
 }
 
 resource "aws_instance" "gh_runner" {
-  subnet_id = var.subnet_id
+  subnet_id              = var.subnet_id
   vpc_security_group_ids = [aws_security_group.main.id]
-  ami           = data.aws_ami.amazon_linux.id
-  instance_type = var.instance_type
-  iam_instance_profile = aws_iam_instance_profile.runner.name
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = var.instance_type
+  iam_instance_profile   = aws_iam_instance_profile.runner.name
   user_data = base64encode(templatefile("${path.module}/scripts/instance_user_data.sh", {
     install_runner = templatefile("${path.module}/scripts/install_runner.sh", {})
-    start_runner    = templatefile("${path.module}/scripts/start_runner.sh", {
+    start_runner = templatefile("${path.module}/scripts/start_runner.sh", {
       ssm_parameter_name = aws_ssm_parameter.cloudwatch_agent_config_runner.name
-      github_token = var.github_token
-      environment = var.environment
+      github_token       = var.github_token
+      environment        = var.environment
     })
   }))
   key_name = aws_key_pair.gh_runner.key_name
@@ -54,9 +55,9 @@ resource "aws_instance" "gh_runner" {
   root_block_device {
     encrypted = true
   }
-	tags = {
-		Name = "GitHub-Runner-${var.environment}"	
-	}
+  tags = {
+    Name = "GitHub-Runner-${var.environment}"
+  }
 }
 
 resource "tls_private_key" "gh_runner_ssh" {

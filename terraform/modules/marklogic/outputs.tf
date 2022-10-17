@@ -3,6 +3,6 @@ output "ml_hostname" {
 }
 
 output "ml_ssh_private_key" {
-  value = tls_private_key.ml_ec2.private_key_openssh
+  value     = tls_private_key.ml_ec2.private_key_openssh
   sensitive = true
 }
