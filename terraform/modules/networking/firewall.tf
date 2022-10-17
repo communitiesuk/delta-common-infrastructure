@@ -185,14 +185,37 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
   }
 }
 
+locals {
+  subnet_firewall_rules = [
+    for name, config in local.firewall_config : join("\n", ["# ${name}", join("\n", concat(
+      [
+        for idx, http_domain in config.http_allowed_domains : startswith(http_domain, ".")
+        ? "pass http ${config.cidr} [1024:] -> any 80 (http.host; content:\"${http_domain}\"; endswith; msg:\"Allow HTTP traffic from ${name} to *${http_domain}\"; flow:to_server; sid:${config.sid_offset + idx};)"
+        : "pass http ${config.cidr} [1024:] -> any 80 (http.host; content:\"${http_domain}\"; startswith; endswith; msg:\"Allow HTTP traffic from ${name} to ${http_domain}\"; flow:to_server; sid:${config.sid_offset + idx};)"
+      ],
+      [
+        for idx, tls_domain in config.tls_allowed_domains : startswith(tls_domain, ".")
+        ? "pass tls ${config.cidr} [1024:] -> any 443 (tls.sni; content:\"${tls_domain}\"; nocase; endswith; msg:\"Allow TLS (HTTPS) traffic from ${name} to *${tls_domain}\"; flow:to_server; sid:${config.sid_offset + length(config.http_allowed_domains) + idx};)"
+        : "pass tls ${config.cidr} [1024:] -> any 443 (tls.sni; content:\"${tls_domain}\"; startswith; nocase; endswith; msg:\"Allow TLS (HTTPS) traffic from ${name} to ${tls_domain}\"; flow:to_server; sid:${config.sid_offset + length(config.http_allowed_domains) + idx};)"
+      ]
+    ))])
+  ]
+  base_firewall_rules = <<EOT
+# The drop http and tls seem to kick in earlier than only dropping established TCP flows
+drop http any any -> any any (msg:"Drop HTTP traffic without allowlisted Host header"; sid:5001; rev:1;)
+drop tls  any any -> any any (msg:"Drop TLS traffic without allowlisted SNI"; sid:5002; rev:1;)
+drop tcp  any any -> any any (msg:"Drop remaining estabilshed TCP traffic"; flow:established; sid:5003; rev:1;)
+# Non-TCP traffic should already have been dropped by the stateless rules, but just to be sure
+drop ip   any any <> any any (msg:"Drop non-TCP traffic"; ip_proto:!TCP;sid:5004; rev:1;)
+  EOT
+  all_firewall_rules  = join("\n\n", [join("\n\n", local.subnet_firewall_rules), local.base_firewall_rules])
+}
+
 resource "aws_networkfirewall_rule_group" "stateful_main" {
   description = "Main stateful rule group for ${var.environment} environment firewall"
   capacity    = 100
   name        = "stateful-rules-${var.environment}"
   type        = "STATEFUL"
 
-  rules = templatefile("${path.module}/firewall.rules", {
-    BASTION_CIDR    = local.bastion_subnet_cidr_10
-    JASPERSOFT_CIDR = local.jaspersoft_cidr_10
-  })
+  rules = local.all_firewall_rules
 }
