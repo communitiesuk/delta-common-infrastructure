@@ -61,6 +61,5 @@ resource "aws_instance" "jaspersoft_server" {
     aws_s3_object.jaspersoft_root_index_jsp,
     aws_s3_object.jaspersoft_root_web_xml,
     data.aws_s3_object.jaspersoft_install_zip,
-    data.aws_s3_object.jaspersoft_service_pack_zip,
   ]
 }
