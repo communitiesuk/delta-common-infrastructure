@@ -32,7 +32,8 @@ resource "aws_s3_bucket_versioning" "ldaps_crl" {
 }
 
 resource "aws_cloudformation_stack" "ca_server" {
-  name = "ca-server-${var.environment}"
+  name       = "ca-server-${var.environment}"
+  on_failure = "DO_NOTHING"
 
   parameters = {
     # Network Configuration
@@ -41,8 +42,9 @@ resource "aws_cloudformation_stack" "ca_server" {
     EntCaServerSubnet = var.ldaps_ca_subnet.id
     DomainMembersSG   = aws_security_group.ad_management_server.id
     # Amazon EC2 Configuration
-    KeyPairName = aws_key_pair.ca_server.id
-    AMI         = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-Base"
+    KeyPairName            = aws_key_pair.ca_server.id
+    AMI                    = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-Base"
+    EntCaServerNetBIOSName = "CASRV${var.environment}"
     # AD Domain Services Configuration
     DirectoryType       = "AWSManaged"
     DomainDNSName       = "dluhcdata.local"
@@ -50,6 +52,7 @@ resource "aws_cloudformation_stack" "ca_server" {
     DomainController1IP = sort(aws_directory_service_directory.directory_service.dns_ip_addresses)[0]
     DomainController2IP = sort(aws_directory_service_directory.directory_service.dns_ip_addresses)[1]
     AdministratorSecret = aws_secretsmanager_secret.ca_install_credentials.arn
+    SecretKMSKeyARN     = aws_kms_key.ad_secrets_key.arn
     # Certificate Services Configuration
     UseS3ForCRL     = "Yes"
     S3CRLBucketName = aws_s3_bucket.ldaps_crl.id
