@@ -27,14 +27,14 @@ resource "aws_security_group" "secrets_manager_endpoint" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [local.bastion_subnet_cidr_10]
+    cidr_blocks = [aws_vpc.vpc.cidr_block]
   }
 }
 
 # Note that endpoint policies only limit access, credentials to access a given secret are still required
 data "aws_iam_policy_document" "secret_manager_endpoint" {
   statement {
-    actions = ["secretsmanager:GetSecretValue"]
+    actions = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
     principals {
       type        = "AWS"
       identifiers = [data.aws_caller_identity.current.account_id]

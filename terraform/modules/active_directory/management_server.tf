@@ -14,7 +14,7 @@ resource "aws_instance" "ad_management_server" {
     encrypted = true
   }
 
-  tags = { Name = "AD management server" }
+  tags = { Name = "ad-management-server-${var.environment}" }
 }
 
 resource "aws_ssm_document" "ad_join_domain" {

@@ -36,6 +36,7 @@ Metadata:
           - DomainController1IP
           - DomainController2IP
           - AdministratorSecret
+          - SecretKMSKeyARN
       - Label:
           default: Microsoft Active Directory Certificate Services Configuration
         Parameters:
@@ -57,6 +58,8 @@ Metadata:
         default: AMI ID passed in from parent stack
       AdministratorSecret:
         default: Secret ARN Containing CA Install Credentials
+      SecretKMSKeyARN:
+        default: KMS key for CA Install Credentials Secret
       DirectoryType:
         default: Active Directory Domain Services Type
       DomainController1IP:
@@ -110,6 +113,9 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
   AdministratorSecret:
     Description: ARN for the Enterprise Root CA Install Credentials Secret used to to install the CA (Must be a member of Enterpise Admins)
+    Type: String
+  SecretKMSKeyARN:
+    Description: KMS key ARN for AdministratorSecret
     Type: String
   DirectoryType:
     AllowedValues:
@@ -334,8 +340,10 @@ Resources:
                 Action:
                   - secretsmanager:GetSecretValue
                   - secretsmanager:DescribeSecret
+                  - kms:Decrypt
                 Resource:
                   - !Ref AdministratorSecret
+                  - !Ref SecretKMSKeyARN
           PolicyName: AWS-Quick-Start-Secret-Policy
       Path: /
       ManagedPolicyArns:

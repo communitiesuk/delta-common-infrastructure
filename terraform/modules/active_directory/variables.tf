@@ -1,6 +1,11 @@
 variable "environment" {
   description = "test, staging or production"
   type        = string
+
+  validation {
+    condition     = length(var.environment) <= 10
+    error_message = "Max 10 characters"
+  }
 }
 
 variable "vpc" {
