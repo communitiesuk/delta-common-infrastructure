@@ -3,7 +3,7 @@ joebloggs,Password123,joe.bloggs@dluhcdata.local,Joe Bloggs,joe.bloggs,"CN=Datam
 deltaapp,Password123,delta.app@dluhcdata.local,Delta App,delta.app,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 deltainternal,Password123,delta.internal@dluhcdata.local,Delta Internal App,delta.internal,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 deltaadmin,Password123,delta.admin@dluhcdata.local,Delta Admin,delta.admin,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
-deltauser,Password123,delta.admin@dluhcdata.local,Delta Admin,delta.admin,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+deltauser,Password123,delta.user@dluhcdata.local,Delta User,delta.user,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 reportuser,Password123,report.user@dluhcdata.local,Report User,report.user,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 paymentapprover,Password123,payment.approver@dluhcdata.local,Payment Approver,payment.approver,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 cpmapp,Password123,cpm.app@dluhcdata.local,CPM App,cpm.app,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"

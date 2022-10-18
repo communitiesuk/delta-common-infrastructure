@@ -42,6 +42,11 @@ resource "aws_iam_role" "backup_service_role" {
 resource "aws_iam_role_policy" "backup_service_backup_policy" {
   policy = data.aws_iam_policy.aws_backup_service_policy.policy
   role   = aws_iam_role.backup_service_role.name
+
+  lifecycle {
+    # Temporarily ignored, the policy is too long "Maximum policy size of 10240 bytes exceeded"
+    ignore_changes = [policy]
+  }
 }
 
 resource "aws_iam_role_policy" "backup_service_restore_policy" {
