@@ -18,8 +18,8 @@ resource "aws_instance" "ad_management_server" {
   tags = { Name = "ad-management-server-${var.environment}" }
 }
 
-resource "aws_ssm_document" "ad_join_domain" {
-  name          = "ad-join-domain-${var.environment}"
+resource "aws_ssm_document" "ad_management_server_setup" {
+  name          = "ad-management-server-setup-${var.environment}"
   document_type = "Command"
   content = jsonencode(
     {
@@ -34,14 +34,25 @@ resource "aws_ssm_document" "ad_join_domain" {
             "directoryName" : aws_directory_service_directory.directory_service.name
             "dnsIpAddresses" : sort(aws_directory_service_directory.directory_service.dns_ip_addresses)
           }
+        },
+        {
+          "action" = "aws:runPowerShellScript"
+          "name"   = "updateDNSForwarders"
+          "inputs" = {
+            "timeoutSeconds" : "60"
+            "runCommand" : [
+              for dns_ip in aws_directory_service_directory.directory_service.dns_ip_addresses :
+              "Set-DnsServerForwarder -ComputerName ${dns_ip} -IpAddress ${cidrhost(var.vpc.cidr_block, 2)}"
+            ]
+          }
         }
       ]
     }
   )
 }
 
-resource "aws_ssm_association" "domain_join_ad_management_server" {
-  name = aws_ssm_document.ad_join_domain.name
+resource "aws_ssm_association" "ad_management_server_setup" {
+  name = aws_ssm_document.ad_management_server_setup.name
   targets {
     key    = "InstanceIds"
     values = [aws_instance.ad_management_server.id]
