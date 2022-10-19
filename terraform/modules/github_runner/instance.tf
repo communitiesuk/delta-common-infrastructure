@@ -57,6 +57,10 @@ resource "aws_instance" "gh_runner" {
   tags = {
     Name = "GitHub-Runner-${var.environment}"
   }
+
+  lifecycle {
+    ignore_changes = [user_data]
+  }
 }
 
 resource "tls_private_key" "gh_runner_ssh" {
