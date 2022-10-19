@@ -94,33 +94,33 @@ Setting up AWS Vault:
       file if it doesn't exist yet
 2. Add the following contents to the file, filling in your username where needed
     ```
-   [profile delta]
+   [profile mhclg]
    region = eu-west-1
    mfa_serial = arn:aws:iam::448312965134:mfa/<your AWS username>
     
    [profile delta-dev]
-   source_profile = delta
-   include_profile = delta
+   source_profile = mhclg
+   include_profile = mhclg
    role_arn=arn:aws:iam::486283582667:role/developer
     
    [profile delta-prod]
-   source_profile = delta
-   include_profile = delta
+   source_profile = mhclg
+   include_profile = mhclg
    role_arn=arn:aws:iam::468442790030:role/developer       
    ```
-3. From your terminal run `aws-vault add delta` and enter your Access Key ID and Secret Access Key when prompted
+3. From your terminal run `aws-vault add mhclg` and enter your Access Key ID and Secret Access Key when prompted
     - Note, when you enter the secret access key you will not be able to see your input
 4. If you run `aws-vault list` you should see something like
     ```
    Profile                  Credentials              Sessions                 
    =======                  ===========              ========
-   delta                    delta                    -
+   mhclg                    mhclg                    -
    delta-dev                -                        -
    delta-prod               -                        -
    ```
 5. To use these credentials you use the command `aws-vault exec <profile>` - you will be prompted to enter an MFA code
    for the mhclg account, this is used to create a session which will last a short period of time, during which you
    won't need to enter them again
-    1. To run a single command run `aws-vault exec <profile> -- aws <aws command>` (where profile is one of 'delta',
+    1. To run a single command run `aws-vault exec <profile> -- aws <aws command>` (where profile is one of 'mhclg',
        'delta-dev' and 'delta-prod')
     2. To authenticate your terminal (required for e.g. running terraform commands) run `aws-vault exec <profile>`
