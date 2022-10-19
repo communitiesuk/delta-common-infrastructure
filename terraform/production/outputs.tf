@@ -17,3 +17,12 @@ output "bastion_dns_name" {
 output "bastion_ssh_keys_bucket" {
   value = module.bastion.ssh_keys_bucket
 }
+
+output "codeartifact_domain" {
+  value = module.codeartifact.domain
+}
+
+output "codeartifact_domain_arn" {
+  value = module.codeartifact.domain_arn
+}
+

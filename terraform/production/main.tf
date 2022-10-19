@@ -47,3 +47,9 @@ module "bastion" {
 
   tags_asg = var.default_tags
 }
+
+# We create the codeartifact domain only in the production environment, and it is be shared across all environments
+module "codeartifact" {
+  source                   = "../modules/codeartifact"
+  codeartifact_domain_name = "delta"
+}
