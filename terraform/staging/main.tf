@@ -31,10 +31,6 @@ module "networking" {
   vpc_cidr_block     = "10.20.0.0/16"
   environment        = "staging"
   ssh_cidr_allowlist = var.allowed_ssh_cidrs
-  # TODO DT-58 Circular dependency sadness
-  # Should we add 10.20.0.2 as a fallback?
-  # Will this break VPC interface endpoint DNS fiddling
-  dns_servers = module.active_directory.dns_servers
 }
 
 module "active_directory" {
@@ -50,9 +46,11 @@ module "active_directory" {
   rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
 }
 
-# qq
-output "dns" {
-  value = module.active_directory.dns_servers
+module "active_directory_dns_resolver" {
+  source = "../modules/active_directory_dns_resolver"
+
+  vpc               = module.networking.vpc
+  ad_dns_server_ips = module.active_directory.dns_servers
 }
 
 module "marklogic" {

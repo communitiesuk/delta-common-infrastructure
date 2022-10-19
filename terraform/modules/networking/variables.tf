@@ -22,8 +22,3 @@ variable "ssh_cidr_allowlist" {
   description = "CIDR"
   type        = list(string)
 }
-
-variable "dns_servers" {
-  description = "List of DNS server IP addresses to be used by the VPC"
-  default     = []
-}
