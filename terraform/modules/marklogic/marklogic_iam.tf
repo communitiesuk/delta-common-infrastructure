@@ -32,8 +32,6 @@ resource "aws_iam_policy" "ml_instance_policy" {
   path        = "/"
   description = "Allows MarkLogic instances to perform necessary actions"
 
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -51,15 +49,18 @@ resource "aws_iam_policy" "ml_instance_policy" {
           "ssm:UpdateInstanceAssociationStatus",
           "ssmmessages:OpenControlChannel",
           "ssmmessages:CreateControlChannel",
-
-          # TODO DT-58 Should be limited to specific keys
-          "kms:GenerateDataKey",
-          "kms:DescribeKey",
-          "kms:GenerateDataKey",
-          "kms:Decrypt"
         ]
         Effect   = "Allow"
         Resource = "*"
+      },
+      {
+        Action = [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ]
+        Effect   = "Allow"
+        Resource = [aws_kms_key.ml_logs_encryption_key.arn]
       },
       {
         Action = [

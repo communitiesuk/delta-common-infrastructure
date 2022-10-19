@@ -8,6 +8,7 @@ resource "aws_secretsmanager_secret_version" "ca_install_credentials" {
 
 resource "aws_kms_key" "ad_secrets_key" {
   enable_key_rotation = true
+  description         = "ad-secretsmanager-key-${var.environment}"
 }
 
 resource "aws_secretsmanager_secret" "ca_install_credentials" {

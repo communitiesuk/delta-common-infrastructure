@@ -1,6 +1,6 @@
 resource "aws_lb" "ml_lb" {
   name               = "marklogic-lb-${var.environment}"
-  load_balancer_type = "network"
+  load_balancer_type = "network" # The apps use some non-HTTP protocols
   internal           = true
   subnets            = var.private_subnets[*].id
 }

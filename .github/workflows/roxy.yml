@@ -26,7 +26,6 @@ jobs:
     outputs:
       ml_hostname: ${{ steps.get_ml_hostname.outputs.ml_hostname }}
     env:
-      # TODO: rename e.g. prod_access_key to just "access_key"
       AWS_ACCESS_KEY_ID: ${{ secrets.access_key }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.secret_key }}
       AWS_REGION: "eu-west-1"
