@@ -59,9 +59,9 @@ jobs:
           ref: DT-58 # ${{ inputs.git_ref }}
           token: ${{ secrets.GIT_PAT }} # TODO: create a dedicated Git account for this purpose? 
       - run: chmod +x ./ml
-      - run: ./ml dluhc bootstrap # --apply-changes=privileges,amps,indexes <--- unsure what the implications of this are
-      - run: ./ml dluhc clean modules
-      - run: ./ml dluhc clean schemas
+      - run: ./ml dluhc bootstrap -v # --apply-changes=privileges,amps,indexes <--- unsure what the implications of this are
+      - run: ./ml dluhc clean modules -v
+      - run: ./ml dluhc clean schemas -v
       - run: ./ml dluhc deploy modules -v
       - run: ./ml dluhc deploy schemas -v
       # - run: ./ml dluhc deploy content <--- would deploy dummy data from the /data folder
