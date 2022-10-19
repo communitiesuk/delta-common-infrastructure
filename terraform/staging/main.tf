@@ -75,7 +75,6 @@ resource "aws_key_pair" "bastion_ssh_key" {
   public_key = tls_private_key.bastion_ssh_key.public_key_openssh
 }
 
-
 module "bastion" {
   source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=defd0b730d75c1b64cc1e1c76cdd5dc442d6fde6"
 
@@ -97,5 +96,6 @@ module "gh_runner" {
   subnet_id         = module.networking.ml_private_subnets[0].id
   environment       = "staging"
   vpc               = module.networking.vpc
+  github_token      = var.github_actions_runner_token
   ssh_ingress_sg_id = module.bastion.bastion_security_group_id
 }
