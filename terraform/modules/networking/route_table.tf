@@ -12,10 +12,6 @@ resource "aws_route_table" "to_internet_gateway" {
   }
 }
 
-locals {
-  firewalled_subnets = aws_subnet.bastion_private_subnets
-}
-
 # Private subnets should instead have all non-local traffic routed to the Firewall
 resource "aws_route_table" "private_to_firewall" {
   vpc_id = aws_vpc.vpc.id
