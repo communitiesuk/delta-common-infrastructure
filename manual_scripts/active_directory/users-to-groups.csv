@@ -1,0 +1,13 @@
+Group,SamAccountName
+datamart-delta-app-role,deltaapp
+AWS Delegated Administrators,deltaapp
+datamart-delta-admin,deltaapp
+AWS Delegated Administrators,deltainternal
+datamart-delta-admin,deltaadmin
+datamart-delta-user,deltauser
+datamart-delta-payments-approvers,paymentapprover
+datamart-delta-report-users,reportuser
+datamart-cpm-soap-api,sap
+datamart-delta-admin,sap
+datamart-delta-admin,cpmapp
+AWS Delegated Administrators,cpmapp

@@ -66,3 +66,61 @@ terraform apply -target module.dns
 
 Create the delegation and ACM validation records as specified by the `dns_delegation_details` and `dns_acm_validation_record` outputs.
 Once that is done you can continue with a full `terraform apply`.
+
+## Authenticating with the AWS CLI
+
+In order to run terraform commands locally you will need to be authenticated to the AWS CLI.
+For security we use [aws-vault](https://github.com/99designs/aws-vault) for securely storing credentials locally.
+
+Prerequisites:
+
+1. Install aws-vault as per the [instructions](https://github.com/99designs/aws-vault#installing)
+2. Have an account in the mhclg AWS account which has permissions to assume the developer role in the Delta-Dev and
+   Delta-Prod accounts
+3. Set up MFA on your account in the mhclg account (required for assuming the role in the other accounts)
+    1. To do this log in to your account in the web console and navigate to IAM
+    2. On the right hand side use the 'Quick links' section to quickly get to the tab 'My security credentials'
+    3. Scroll down to the 'Multi-factor authentication' section and work through the wizard to add an MFA
+4. Generate and AWS Access Key in the mhclg account
+    1. To do this log in to your account in the web console and navigate to IAM
+    2. On the right hand side use the 'Quick links' section to quickly get to the tab 'My security credentials'
+    3. Scroll down to the 'Access keys' section and select 'Create access key'
+    4. Ensure you save your access key somewhere safe - such as in a private folder in Keeper
+
+Setting up AWS Vault:
+
+1. Open your AWS config file in whatever text editor you like
+    - This lives at ~/.aws/config, you can do this from bash by running `nano ~/.aws/config`, this will also create the
+      file if it doesn't exist yet
+2. Add the following contents to the file, filling in your username where needed
+    ```
+   [profile mhclg]
+   region = eu-west-1
+   mfa_serial = arn:aws:iam::448312965134:mfa/<your AWS username>
+    
+   [profile delta-dev]
+   source_profile = mhclg
+   include_profile = mhclg
+   role_arn=arn:aws:iam::486283582667:role/developer
+    
+   [profile delta-prod]
+   source_profile = mhclg
+   include_profile = mhclg
+   role_arn=arn:aws:iam::468442790030:role/developer       
+   ```
+3. From your terminal run `aws-vault add mhclg` and enter your Access Key ID and Secret Access Key when prompted
+    - Note, when you enter the secret access key you will not be able to see your input
+4. If you run `aws-vault list` you should see something like
+    ```
+   Profile                  Credentials              Sessions                 
+   =======                  ===========              ========
+   mhclg                    mhclg                    -
+   delta-dev                -                        -
+   delta-prod               -                        -
+   ```
+5. To use these credentials you use the command `aws-vault exec <profile>` - you will be prompted to enter an MFA code
+   for the mhclg account, this is used to create a session which will last a short period of time, during which you
+   won't need to enter them again
+    1. To run a single command run `aws-vault exec <profile> -- aws <aws command>` (where profile is one of 'mhclg',
+       'delta-dev' and 'delta-prod')
+    2. To authenticate your terminal (required for e.g. running terraform commands) run `aws-vault exec <profile>`

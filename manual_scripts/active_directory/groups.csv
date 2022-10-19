@@ -8,3 +8,11 @@ datamart-delta-form-designers
 datamart-delta-lead-testers
 datamart-delta-testers
 datamart-delta-user
+datamart-delta-report-users
+datamart-delta-payments-reviewers
+datamart-delta-payments-approvers
+datamart-delta-data-auditors
+datamart-delta-data-certifiers
+datamart-delta-admin
+datamart-user
+datamart-cpm-soap-api

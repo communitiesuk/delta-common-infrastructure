@@ -1,3 +1,4 @@
+# Simple one first, public subnets should route internet traffic to the Internet Gateway
 resource "aws_route_table" "to_internet_gateway" {
   vpc_id = aws_vpc.vpc.id
 
@@ -11,18 +12,22 @@ resource "aws_route_table" "to_internet_gateway" {
   }
 }
 
-resource "aws_route_table_association" "nat_gateway" {
-  subnet_id      = aws_subnet.nat_gateway.id
-  route_table_id = aws_route_table.to_internet_gateway.id
+# Private subnets should instead have all non-local traffic routed to the Firewall
+resource "aws_route_table" "private_to_firewall" {
+  vpc_id = aws_vpc.vpc.id
+  route {
+    cidr_block      = "0.0.0.0/0"
+    vpc_endpoint_id = one(one(one(aws_networkfirewall_firewall.main.firewall_status).sync_states).attachment).endpoint_id
+  }
+
+  tags = {
+    Name = "to-firewall-route-table-${var.environment}"
+  }
 }
 
-resource "aws_route_table_association" "public" {
-  count          = var.number_of_public_subnets
-  subnet_id      = aws_subnet.public_subnets[count.index].id
-  route_table_id = aws_route_table.to_internet_gateway.id
-}
-
-resource "aws_route_table" "private" {
+# Then the Firewall should forward to the NAT Gateway
+# Private subnets that aren't yet firewalled can also route traffic straight here
+resource "aws_route_table" "to_nat_gateway" {
   vpc_id = aws_vpc.vpc.id
   route {
     cidr_block     = "0.0.0.0/0"
@@ -34,41 +39,28 @@ resource "aws_route_table" "private" {
   }
 }
 
-resource "aws_route_table_association" "bastion" {
-  count          = 3
-  subnet_id      = aws_subnet.bastion_private_subnets[count.index].id
-  route_table_id = aws_route_table.private.id
+# And finally the NAT gateway should send internet bound traffic out to the gateway
+resource "aws_route" "nat_gateway_to_internet" {
+  route_table_id         = aws_route_table.nat_gateway_subnet_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.internet_gateway.id
 }
 
-resource "aws_route_table_association" "private_ad_subnets" {
-  count          = var.number_of_ad_subnets
-  subnet_id      = aws_subnet.ad_dc_private_subnets[count.index].id
-  route_table_id = aws_route_table.private.id
+# Coming back the Internet Gateway will route traffic to the NAT Gateway - that's the default, all good
+# Then the NAT Gateway should route traffic destined for firewalled subnets back through the firewall first
+resource "aws_route" "nat_gateway_back_to_firewall" {
+  for_each = { for subnet in local.firewalled_subnets : subnet.tags.Name => subnet }
+
+  # More specific routes override less specific ones (by prefix length)
+  route_table_id         = aws_route_table.nat_gateway_subnet_route_table.id
+  destination_cidr_block = each.value.cidr_block
+  vpc_endpoint_id        = one(one(one(aws_networkfirewall_firewall.main.firewall_status).sync_states).attachment).endpoint_id
 }
 
-resource "aws_route_table_association" "ldaps_ca_server" {
-  subnet_id      = aws_subnet.ldaps_ca_server.id
-  route_table_id = aws_route_table.private.id
-}
+resource "aws_route_table" "nat_gateway_subnet_route_table" {
+  vpc_id = aws_vpc.vpc.id
 
-resource "aws_route_table_association" "ad_management_server" {
-  subnet_id      = aws_subnet.ad_management_server.id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "ml_private" {
-  count          = 3
-  subnet_id      = aws_subnet.ml_private_subnets[count.index].id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "jaspersoft_private_subnet" {
-  subnet_id      = aws_subnet.jaspersoft.id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "delta_internal_private_subnet" {
-  count          = 3
-  subnet_id      = aws_subnet.delta_internal[count.index].id
-  route_table_id = aws_route_table.private.id
+  tags = {
+    Name = "nat-gateway-subnet-route-table-${var.environment}"
+  }
 }
