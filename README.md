@@ -54,19 +54,6 @@ ssh <username>@$(terraform output -raw bastion_dns_name)
 
 Confirm the host key fingerprint matches the terraform output `bastion_host_key_fingerprint`.
 
-## DNS setup
-
-Environments require some manual DNS configuration before the bulk of the resources can be brought up.
-
-When setting up a new environment, make sure the `primary_domain` (e.g. `communities.gov.uk`) and `delegated_domain` (e.g. `internal.communities.gov.uk`) variables are set correctly, the create the DNS module.
-
-```sh
-terraform apply -target module.dns
-```
-
-Create the delegation and ACM validation records as specified by the `dns_delegation_details` and `dns_acm_validation_record` outputs.
-Once that is done you can continue with a full `terraform apply`.
-
 ## Authenticating with the AWS CLI
 
 In order to run terraform commands locally you will need to be authenticated to the AWS CLI.
@@ -90,10 +77,11 @@ Prerequisites:
 Setting up AWS Vault:
 
 1. Open your AWS config file in whatever text editor you like
-    - This lives at ~/.aws/config, you can do this from bash by running `nano ~/.aws/config`, this will also create the
+    * This lives at ~/.aws/config, you can do this from bash by running `nano ~/.aws/config`, this will also create the
       file if it doesn't exist yet
 2. Add the following contents to the file, filling in your username where needed
-    ```
+
+   ```text
    [profile mhclg]
    region = eu-west-1
    mfa_serial = arn:aws:iam::448312965134:mfa/<your AWS username>
@@ -108,19 +96,82 @@ Setting up AWS Vault:
    include_profile = mhclg
    role_arn=arn:aws:iam::468442790030:role/developer       
    ```
+
 3. From your terminal run `aws-vault add mhclg` and enter your Access Key ID and Secret Access Key when prompted
-    - Note, when you enter the secret access key you will not be able to see your input
+    * Note, when you enter the secret access key you will not be able to see your input
 4. If you run `aws-vault list` you should see something like
-    ```
+
+   ```text
    Profile                  Credentials              Sessions                 
    =======                  ===========              ========
    mhclg                    mhclg                    -
    delta-dev                -                        -
    delta-prod               -                        -
    ```
+
 5. To use these credentials you use the command `aws-vault exec <profile>` - you will be prompted to enter an MFA code
    for the mhclg account, this is used to create a session which will last a short period of time, during which you
    won't need to enter them again
     1. To run a single command run `aws-vault exec <profile> -- aws <aws command>` (where profile is one of 'mhclg',
        'delta-dev' and 'delta-prod')
     2. To authenticate your terminal (required for e.g. running terraform commands) run `aws-vault exec <profile>`
+
+## Creating an environment
+
+### 1 DNS setup
+
+Environments require some manual DNS configuration before the bulk of the resources can be brought up.
+
+When setting up a new environment, make sure the `primary_domain` (e.g. `communities.gov.uk`) and `delegated_domain` (e.g. `internal.communities.gov.uk`) variables are set correctly, the create the DNS module.
+
+```sh
+terraform apply -target module.dns
+```
+
+Create the delegation and ACM validation records as specified by the `dns_delegation_details` and `dns_acm_validation_record` outputs.
+
+### 2 Network + Bastion
+
+Bring up the VPC and the SSH bastion. Other components implicitly depend on the VPC endpoints, firewall, NAT Gateway etc.
+
+```sh
+terraform apply -target module.networking -target module.bastion
+```
+
+### 3 Active Directory
+
+MarkLogic can't be configured without AD, so bring this up next.
+
+```sh
+terraform apply -target module.active_directory
+```
+
+Complete the manual setup steps in the module README, then configure the VPC DHCP to use the AD DNS servers.
+
+```sh
+terraform apply -target module.active_directory_dns_resolver
+```
+
+### 4 MarkLogic
+
+Follow the instructions in the module README to set up the required secrets then bring the MarkLogic cluster up.
+
+```sh
+terraform apply -target module.active_directory
+```
+
+### 5 MarkLogic configuration - GitHub Runner
+
+Follow the instructions in the GitHub Runner module README to get the runner creation token, bring the module up.
+
+```sh
+terraform apply -target module.gh_runner -var="github_actions_runner_token=<token>"
+```
+
+Now run the MarkLogic setup jobs from GitHub.
+
+### 6 TODO
+
+```sh
+terraform apply
+```
