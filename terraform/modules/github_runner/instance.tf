@@ -14,13 +14,12 @@ resource "aws_security_group" "main" {
   vpc_id      = var.vpc.id
   description = "Allow SSH access and allow requests out to contact GitHub"
 
-  # TODO DT-58: Should limit to bastion
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc.cidr_block]
-    description = "SSH ingress"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [var.ssh_ingress_sg_id]
+    description     = "SSH ingress"
   }
 
   egress {

@@ -94,9 +94,8 @@ module "bastion" {
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id   = module.networking.ml_private_subnets[0].id
-  environment = "staging"
-  vpc         = module.networking.vpc
-  # TODO DT-58: Should be a variable I assume?
-  github_token = "ACP2LWN4D5WDD5B2SOAUTD3DJF47Y"
+  subnet_id         = module.networking.ml_private_subnets[0].id
+  environment       = "staging"
+  vpc               = module.networking.vpc
+  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
 }
