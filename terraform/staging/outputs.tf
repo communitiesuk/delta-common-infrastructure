@@ -17,7 +17,7 @@ output "directory_admin_password" {
   sensitive = true
 }
 
-output "dns_servers" {
+output "ad_dns_servers" {
   value = module.active_directory.dns_servers
 }
 
