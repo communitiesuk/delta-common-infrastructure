@@ -44,3 +44,8 @@ output "jaspersoft_private_subnet" {
   value       = aws_subnet.jaspersoft
   description = "Private /24 subnet for Jaspersoft instance"
 }
+
+output "github_runner_private_subnet" {
+  value       = aws_subnet.github_runner
+  description = "Private /24 subnet for GitHub runner instance"
+}
