@@ -7,7 +7,7 @@ To connect to the AD servers you will first need to forward port 3389 through th
 For setup see the top level README, then port forward with
 
 ```sh
-ssh <username>@$(terraform output -raw bastion_dns_name) -L localhost:3388:$(terraform output -raw ad_management_server_private_ip):3389
+ssh <username>@$(terraform output -raw bastion_dns_name) -L localhost:3388:ad_management.vpc.local:3389
 ```
 
 then connect with RDP to localhost:3388

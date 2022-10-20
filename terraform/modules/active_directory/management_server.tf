@@ -18,6 +18,14 @@ resource "aws_instance" "ad_management_server" {
   tags = { Name = "ad-management-server-${var.environment}" }
 }
 
+resource "aws_route53_record" "ad_management_server" {
+  zone_id = var.private_dns.zone_id
+  name    = "ad_management.${var.private_dns.base_domain}"
+  type    = "A"
+  ttl     = 60
+  records = [aws_instance.ad_management_server.private_ip]
+}
+
 resource "aws_ssm_document" "ad_management_server_setup" {
   name          = "ad-management-server-setup-${var.environment}"
   document_type = "Command"

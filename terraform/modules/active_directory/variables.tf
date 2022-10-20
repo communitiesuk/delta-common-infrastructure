@@ -47,3 +47,10 @@ variable "rdp_ingress_sg_id" {
   description = "Id of security group to allow ingress to the AD Management server"
   type        = string
 }
+
+variable "private_dns" {
+  type = object({
+    zone_id     = string
+    base_domain = string
+  })
+}

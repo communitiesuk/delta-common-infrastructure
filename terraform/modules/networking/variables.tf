@@ -22,3 +22,7 @@ variable "ssh_cidr_allowlist" {
   description = "CIDR"
   type        = list(string)
 }
+
+variable "private_dns_domain" {
+  default = "vpc.local"
+}

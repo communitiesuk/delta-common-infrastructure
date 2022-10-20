@@ -49,3 +49,10 @@ output "github_runner_private_subnet" {
   value       = aws_subnet.github_runner
   description = "Private /24 subnet for GitHub runner instance"
 }
+
+output "private_dns" {
+  value = {
+    zone_id     = aws_route53_zone.private.zone_id
+    base_domain = aws_route53_zone.private.name
+  }
+}
