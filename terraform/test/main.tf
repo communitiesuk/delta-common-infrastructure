@@ -107,6 +107,7 @@ module "jaspersoft" {
   public_alb_subnets            = module.networking.public_subnets
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = "dluhc-jaspersoft-bin"
+  enable_backup                 = true
 }
 
 locals {

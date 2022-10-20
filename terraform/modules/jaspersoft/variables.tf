@@ -44,3 +44,7 @@ variable "java_max_heap" {
   default     = "4096m"
   type        = string
 }
+
+variable "enable_backup" {
+  type = bool
+}
