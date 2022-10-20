@@ -88,6 +88,13 @@ module "active_directory" {
   rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
 }
 
+module "active_directory_dns_resolver" {
+  source = "../modules/active_directory_dns_resolver"
+
+  vpc               = module.networking.vpc
+  ad_dns_server_ips = module.active_directory.dns_servers
+}
+
 resource "tls_private_key" "jaspersoft_ssh_key" {
   algorithm = "RSA"
   rsa_bits  = 2048
