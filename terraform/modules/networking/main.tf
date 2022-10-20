@@ -20,3 +20,17 @@ locals {
   }
   firewalled_subnets = flatten([for name, config in local.firewall_config : config.subnets])
 }
+
+resource "aws_security_group" "aws_service_vpc_endpoints" {
+  name        = "vpc-endpoints-${var.environment}"
+  description = "VPC Endpoint security group"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    description = "Connections from VPC"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [aws_vpc.vpc.cidr_block]
+  }
+}
