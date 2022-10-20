@@ -1,4 +1,4 @@
-name: "Deploy MarkLogic config"
+name: "Roxy - Deploy MarkLogic config"
 
 on:
   # Change from push to workflow_dispatch once merged (only available via website once on main branch)
@@ -21,7 +21,7 @@ jobs:
   get_terraform_outputs:
     name: "Get Terraform outputs"
     runs-on: ubuntu-latest
-    # unfortunately this means a reviewer needs to approve each job, even when a reviewer triggers the job 
+    # unfortunately this means a reviewer needs to approve each job, even when a reviewer triggers the job
     environment: staging # ${{ inputs.environment }}
     outputs:
       ml_hostname: ${{ steps.get_ml_hostname.outputs.ml_hostname }}
@@ -40,11 +40,12 @@ jobs:
 
   deploy_ml:
     name: "Deploy MarkLogic config"
-    runs-on: ["self-hosted","staging"] # ${{ inputs.environment }}
+    runs-on: ["self-hosted", "staging"] # ${{ inputs.environment }}
     needs: get_terraform_outputs
     environment: staging # ${{ inputs.environment }}
     env:
-      ml_dluhc_server: ${{ needs.get_terraform_outputs.outputs.ml_hostname }} # ml_* vars override Roxy's properties
+      # ml_* vars override Roxy's properties
+      ml_dluhc_server: ${{ needs.get_terraform_outputs.outputs.ml_hostname }}
       ml_ldap_password: ${{ secrets.CPM_LDAP_PASSWORD }}
       ml_password: ${{ secrets.CPM_ML_ADMIN_PASSWORD }}
     defaults:
@@ -54,9 +55,9 @@ jobs:
       - name: Check out CPM code
         uses: actions/checkout@v3
         with:
-          repository: 'communitiesuk/common-payments-module'
+          repository: "communitiesuk/common-payments-module"
           ref: DT-58 # ${{ inputs.git_ref }}
-          token: ${{ secrets.GIT_PAT }} # TODO: create a dedicated Git account for this purpose? 
+          token: ${{ secrets.GIT_PAT }} # TODO: create a dedicated Git account for this purpose?
       - run: chmod +x ./ml
       - run: ./ml dluhc bootstrap -v # --apply-changes=privileges,amps,indexes <--- unsure what the implications of this are
       - run: ./ml dluhc clean modules -v
