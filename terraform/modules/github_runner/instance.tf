@@ -59,7 +59,7 @@ resource "aws_instance" "gh_runner" {
   }
 
   lifecycle {
-    ignore_changes = [user_data]
+    ignore_changes = [user_data, ami]
   }
 }
 
