@@ -94,7 +94,17 @@ module "active_directory_dns_resolver" {
 
   vpc               = module.networking.vpc
   ad_dns_server_ips = module.active_directory.dns_servers
-  dns_search        = module.networking.private_dns.base_domain
+}
+
+module "marklogic" {
+  source = "../modules/marklogic"
+
+  default_tags    = var.default_tags
+  environment     = "test"
+  vpc             = module.networking.vpc
+  private_subnets = module.networking.ml_private_subnets
+  instance_type   = "t3.xlarge"
+  private_dns     = module.networking.private_dns
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {

@@ -28,7 +28,7 @@ resource "aws_iam_instance_profile" "ml_instance_profile" {
 
 #tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "ml_instance_policy" {
-  name        = "ml_instance_policy"
+  name        = "ml-instance-policy-${var.environment}"
   path        = "/"
   description = "Allows MarkLogic instances to perform necessary actions"
 

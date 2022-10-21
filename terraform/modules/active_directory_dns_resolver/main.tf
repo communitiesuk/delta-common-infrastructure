@@ -16,11 +16,6 @@ variable "vpc" {
   })
 }
 
-variable "dns_search" {
-  type    = string
-  default = null
-}
-
 locals {
   # Always at VPC CIDR base + 2, e.g. 10.0.0.2
   amazon_provided_vpc_dns = cidrhost(var.vpc.cidr_block, 2)
@@ -28,9 +23,13 @@ locals {
   dns_servers = concat(var.ad_dns_server_ips, [local.amazon_provided_vpc_dns])
 }
 
+data "aws_region" "current" {}
+
 resource "aws_vpc_dhcp_options" "dns_resolver" {
   domain_name_servers = local.dns_servers
-  domain_name         = var.dns_search
+  # Marklogic needs to be able to resolve other hosts in the cluster by their hostnames,
+  # which default to e.g. ip-1-2-3-4 which need this search base to resolve correctly.
+  domain_name = "${data.aws_region.current.name}.compute.internal"
 }
 
 resource "aws_vpc_dhcp_options_association" "dns_resolver" {

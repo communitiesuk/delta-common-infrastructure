@@ -77,7 +77,6 @@ module "active_directory_dns_resolver" {
 
   vpc               = module.networking.vpc
   ad_dns_server_ips = module.active_directory.dns_servers
-  dns_search        = module.networking.private_dns.base_domain
 }
 
 module "marklogic" {
