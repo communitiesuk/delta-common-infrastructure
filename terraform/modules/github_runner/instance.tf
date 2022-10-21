@@ -72,3 +72,11 @@ resource "aws_key_pair" "gh_runner" {
   key_name   = "gh-runner-key-${var.environment}"
   public_key = tls_private_key.gh_runner_ssh.public_key_openssh
 }
+
+resource "aws_route53_record" "gh_runner" {
+  zone_id = var.private_dns.zone_id
+  name    = "gh-runner.${var.private_dns.base_domain}"
+  type    = "A"
+  ttl     = 60
+  records = [aws_instance.gh_runner.private_ip]
+}

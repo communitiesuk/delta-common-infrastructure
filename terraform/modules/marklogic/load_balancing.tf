@@ -34,3 +34,15 @@ resource "aws_lb_listener" "ml" {
     target_group_arn = aws_lb_target_group.ml[count.index].arn
   }
 }
+
+resource "aws_route53_record" "marklogic_internal_nlb" {
+  zone_id = var.private_dns.zone_id
+  name    = "marklogic.${var.private_dns.base_domain}"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.ml_lb.dns_name
+    zone_id                = aws_lb.ml_lb.zone_id
+    evaluate_target_health = false
+  }
+}

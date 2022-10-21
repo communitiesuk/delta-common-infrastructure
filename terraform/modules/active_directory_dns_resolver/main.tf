@@ -16,6 +16,11 @@ variable "vpc" {
   })
 }
 
+variable "dns_search" {
+  type    = string
+  default = null
+}
+
 locals {
   # Always at VPC CIDR base + 2, e.g. 10.0.0.2
   amazon_provided_vpc_dns = cidrhost(var.vpc.cidr_block, 2)
@@ -25,6 +30,7 @@ locals {
 
 resource "aws_vpc_dhcp_options" "dns_resolver" {
   domain_name_servers = local.dns_servers
+  domain_name         = var.dns_search
 }
 
 resource "aws_vpc_dhcp_options_association" "dns_resolver" {
