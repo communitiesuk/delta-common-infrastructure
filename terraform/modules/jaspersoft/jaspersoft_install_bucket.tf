@@ -64,7 +64,7 @@ resource "aws_s3_object" "tomcat_systemd_service_file" {
   key     = "tomcat.service"
   content = local.tomcat_systemd_service_file_templated
   etag    = md5(local.tomcat_systemd_service_file_templated)
-  tags   = { environment = "shared" }
+  tags    = { environment = "shared" }
 }
 
 resource "aws_s3_object" "jaspersoft_config_file" {

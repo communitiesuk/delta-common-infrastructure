@@ -116,6 +116,6 @@ module "jaspersoft" {
   ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
   public_alb_subnets            = module.networking.public_subnets
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
-  jaspersoft_binaries_s3_bucket = "dluhc-jaspersoft-bin"
+  jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   enable_backup                 = false
 }

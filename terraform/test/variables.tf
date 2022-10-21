@@ -23,3 +23,9 @@ variable "allowed_ssh_cidrs" {
   type    = list(string)
   default = ["31.221.86.178/32", "167.98.33.82/32", "82.163.115.98/32", "87.224.105.250/32", "87.224.18.46/32"]
 }
+
+# Bucket containing JasperReports zip, see modules/jaspersoft/README for details
+variable "jasper_s3_bucket" {
+  type    = string
+  default = "dluhc-jaspersoft-bin"
+}
