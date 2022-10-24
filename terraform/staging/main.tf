@@ -31,6 +31,7 @@ module "networking" {
   vpc_cidr_block     = "10.20.0.0/16"
   environment        = "staging"
   ssh_cidr_allowlist = var.allowed_ssh_cidrs
+  open_ingress_cidrs = [local.peering_vpc_cidr]
 }
 
 resource "tls_private_key" "bastion_ssh_key" {
@@ -44,7 +45,7 @@ resource "aws_key_pair" "bastion_ssh_key" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=defd0b730d75c1b64cc1e1c76cdd5dc442d6fde6"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=33ed83e0ae4d2c4c955ad05fd3377786fdc31b68"
 
   region                  = "eu-west-1"
   name_prefix             = "stg"

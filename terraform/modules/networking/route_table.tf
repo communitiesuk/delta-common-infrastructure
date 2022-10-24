@@ -13,12 +13,14 @@ resource "aws_route_table" "to_internet_gateway" {
 }
 
 # Private subnets should instead have all non-local traffic routed to the Firewall
+resource "aws_route" "private_to_firewall" {
+  route_table_id         = aws_route_table.private_to_firewall.id
+  destination_cidr_block = "0.0.0.0/0"
+  vpc_endpoint_id        = one(one(one(aws_networkfirewall_firewall.main.firewall_status).sync_states).attachment).endpoint_id
+}
+
 resource "aws_route_table" "private_to_firewall" {
   vpc_id = aws_vpc.vpc.id
-  route {
-    cidr_block      = "0.0.0.0/0"
-    vpc_endpoint_id = one(one(one(aws_networkfirewall_firewall.main.firewall_status).sync_states).attachment).endpoint_id
-  }
 
   tags = {
     Name = "to-firewall-route-table-${var.environment}"
@@ -27,12 +29,14 @@ resource "aws_route_table" "private_to_firewall" {
 
 # Then the Firewall should forward to the NAT Gateway
 # Private subnets that aren't yet firewalled can also route traffic straight here
+resource "aws_route" "to_nat_gateway" {
+  route_table_id         = aws_route_table.to_nat_gateway.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat_gateway.id
+}
+
 resource "aws_route_table" "to_nat_gateway" {
   vpc_id = aws_vpc.vpc.id
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway.id
-  }
 
   tags = {
     Name = "to-nat-route-table-${var.environment}"
