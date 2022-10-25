@@ -57,7 +57,7 @@ resource "aws_key_pair" "bastion_ssh_key" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=defd0b730d75c1b64cc1e1c76cdd5dc442d6fde6"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=33ed83e0ae4d2c4c955ad05fd3377786fdc31b68"
 
   region                  = "eu-west-1"
   name_prefix             = "tst"
@@ -87,6 +87,9 @@ module "active_directory" {
   environment                  = "test"
   rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
   private_dns                  = module.networking.private_dns
+  ad_domain                    = "dluhctest.local"
+  ad_netbios_name              = "DLUHCTEST"
+  management_instance_type     = "t3.xlarge"
 }
 
 module "active_directory_dns_resolver" {

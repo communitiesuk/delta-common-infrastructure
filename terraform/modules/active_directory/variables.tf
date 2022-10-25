@@ -54,3 +54,11 @@ variable "private_dns" {
     base_domain = string
   })
 }
+
+variable "ad_domain" {
+  default = "dluhcdata.local"
+}
+
+variable "ad_netbios_name" {
+  default = "DLUHCDATA"
+}

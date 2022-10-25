@@ -6,7 +6,7 @@ resource "random_password" "directory_admin_password" {
 }
 
 resource "aws_directory_service_directory" "directory_service" {
-  name                                 = "dluhcdata.local"
+  name                                 = var.ad_domain
   password                             = random_password.directory_admin_password.result
   edition                              = var.edition
   type                                 = "MicrosoftAD"

@@ -21,6 +21,18 @@ resource "aws_default_network_acl" "main" {
     to_port    = 0
   }
 
+  dynamic "ingress" {
+    for_each = var.open_ingress_cidrs
+    content {
+      protocol   = "-1"
+      rule_no    = ingress.key + 110
+      action     = "allow"
+      cidr_block = ingress.value
+      from_port  = 0
+      to_port    = 0
+    }
+  }
+
   # Allow HTTPS
   ingress {
     protocol   = "tcp"

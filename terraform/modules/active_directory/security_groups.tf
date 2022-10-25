@@ -1,5 +1,5 @@
 resource "aws_security_group" "ad_management_server" {
-  name        = "adms-sg"
+  name        = "adms-sg-${var.environment}"
   description = "Controls access to the management server"
   vpc_id      = var.vpc.id
 

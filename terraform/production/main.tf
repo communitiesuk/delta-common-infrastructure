@@ -34,7 +34,7 @@ module "networking" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=defd0b730d75c1b64cc1e1c76cdd5dc442d6fde6"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=33ed83e0ae4d2c4c955ad05fd3377786fdc31b68"
 
   region                  = "eu-west-1"
   name_prefix             = "prd"

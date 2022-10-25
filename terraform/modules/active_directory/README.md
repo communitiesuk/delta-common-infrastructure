@@ -72,3 +72,46 @@ Terraform is unaware of an aws_ssm_association failing to run.
 ### CA Server setup
 
 * The logs from the CA server "QuickStart" SSM document run go to CloudWatch
+
+## Active Directory Migration Tool setup
+
+Optional, but recommended: Make sure the AD Management Server is at least a t3.xlarge, apply that change with terraform if necessary.
+
+We're roughly following this blog post: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/>
+
+### Domain setup
+
+RDP into the AD Management Server as domain admin.
+
+Following the instructions here: <https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_tutorial_setup_trust_prepare_onprem.html>
+
+* Open up the security groups and ACL. Easiest to allow all traffic. DCs definitely need to be able to send DNS requests to each other.
+  * Done in terraform
+* Run through the other prerequisites, check Windows Firewall and that Kerberos pre-authentication enabled, was all fine on our side
+* Configure conditional DNS forwarders on both sides and make sure you can resolve both domains using either AD - I'm not sure this is required for the managed side since you set them up when you create the trust, but I did it anyway
+* Set the Local Security Policy for Named pipes as detailed here, I think it's the default: <https://docs.aws.amazon.com/directoryservice/latest/admin-guide/before_you_start.html>
+* Set up the two-way forest trust using Active Directory Domains and Trusts on the non-managed side and the AWS console on the managed side (currently not in terraform)
+* Log in as an admin of the source domain, and add the admin user of the target domain to the Administrators group (the memberOf tab is a bit buggy for this, use the members list of the group instead)
+  * We'll then use the target domain admin for the rest of the process, as they now have permissions across both domains
+
+### Installation
+
+Install SQL Server Express 2019.
+
+```powershell
+Write-Host "Downloading SQL Server Express 2019..."
+$Path = $env:TEMP
+$Installer = "SQL2019-SSEI-Expr.exe"
+$URL = "https://go.microsoft.com/fwlink/?linkid=866658"
+Invoke-WebRequest $URL -OutFile $Path\$Installer
+
+Write-Host "Installing SQL Server Express..."
+Start-Process -FilePath $Path\$Installer -Args "/ACTION=INSTALL /IACCEPTSQLSERVERLICENSETERMS /QUIET" -Verb RunAs -Wait
+Remove-Item $Path\$Installer
+```
+
+Download and install ADMT from here <https://www.microsoft.com/en-us/download/details.aspx?id=56570>.
+
+When it asks for a database server to use, get the name of the management server (`hostname` in PowerShell) and tell it to connect to `<hostname>\SQLEXPRESS`.
+
+Set up PES on the source domain, step 3 here: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/>

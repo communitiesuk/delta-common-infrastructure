@@ -26,3 +26,9 @@ variable "ssh_cidr_allowlist" {
 variable "private_dns_domain" {
   default = "vpc.local"
 }
+
+variable "open_ingress_cidrs" {
+  description = "Extra CIDRs to allow ingress through the default VPC ACL, for example, from a trusted peered VPC"
+  type        = list(string)
+  default     = []
+}

@@ -20,9 +20,6 @@ resource "aws_secretsmanager_secret" "ca_install_credentials" {
 # tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-block-public-acls tfsec:ignore:aws-s3-block-public-policy tfsec:ignore:aws-s3-ignore-public-acls tfsec:ignore:aws-s3-no-public-buckets tfsec:ignore:aws-s3-specify-public-access-block
 resource "aws_s3_bucket" "ldaps_crl" {
   bucket = "data-collection-service-ldaps-crl-${var.environment}"
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_s3_bucket_versioning" "ldaps_crl" {
@@ -48,8 +45,8 @@ resource "aws_cloudformation_stack" "ca_server" {
     EntCaServerNetBIOSName = "CASRV${var.environment}"
     # AD Domain Services Configuration
     DirectoryType       = "AWSManaged"
-    DomainDNSName       = "dluhcdata.local"
-    DomainNetBIOSName   = "DLUHCDATA"
+    DomainDNSName       = aws_directory_service_directory.directory_service.name
+    DomainNetBIOSName   = var.ad_netbios_name
     DomainController1IP = sort(aws_directory_service_directory.directory_service.dns_ip_addresses)[0]
     DomainController2IP = sort(aws_directory_service_directory.directory_service.dns_ip_addresses)[1]
     AdministratorSecret = aws_secretsmanager_secret.ca_install_credentials.arn
