@@ -46,4 +46,5 @@ resource "aws_cloudformation_stack" "marklogic" {
       parameters["LicenseKey"]
     ]
   }
+  depends_on = [aws_iam_role_policy_attachment.ml_attach]
 }

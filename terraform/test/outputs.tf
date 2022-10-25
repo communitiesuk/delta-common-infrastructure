@@ -22,6 +22,15 @@ output "ad_dns_servers" {
   description = "IP addresses of the managed AD's DNS servers"
 }
 
+output "ml_hostname" {
+  value = module.marklogic.ml_hostname
+}
+
+output "ml_ssh_private_key" {
+  value     = module.marklogic.ml_ssh_private_key
+  sensitive = true
+}
+
 output "nginx_test_box_ip" {
   value = module.cloudfront.nginx_test_box_ip
 }
