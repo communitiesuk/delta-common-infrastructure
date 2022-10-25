@@ -21,3 +21,7 @@ output "dns_servers" {
   value       = aws_directory_service_directory.directory_service.dns_ip_addresses
   description = "IP addresses of the managed AD's DNS servers"
 }
+
+output "domain_controller_security_group_id" {
+  value = aws_directory_service_directory.directory_service.security_group_id
+}

@@ -71,6 +71,7 @@ module "active_directory" {
   environment                  = "staging"
   rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
   private_dns                  = module.networking.private_dns
+  management_instance_type     = "t3.xlarge"
 }
 
 module "active_directory_dns_resolver" {

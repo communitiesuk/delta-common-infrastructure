@@ -89,4 +89,16 @@ resource "aws_network_acl_association" "ad_peering_replacement_acl" {
   subnet_id      = module.networking.ad_private_subnets[count.index].id
 }
 
-# The security group for the managed DCs already permits open ingress on relevant ports.
+# As recommended here https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_tutorial_setup_trust_prepare_mad_between_2_managed_ad_domains.html#tutorial_setup_trust_open_vpc_between_2_managed_ad_domains
+# Presumably egress to the other DCs would be enough, definitely needed for DNS, not sure if anything else
+# tfsec:ignore:aws-vpc-no-public-egress-sgr
+resource "aws_security_group_rule" "domain_controller_egress" {
+
+  security_group_id = module.active_directory.domain_controller_security_group_id
+  description       = "DC Open Egress"
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+}

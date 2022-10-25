@@ -89,6 +89,7 @@ module "active_directory" {
   private_dns                  = module.networking.private_dns
   ad_domain                    = "dluhctest.local"
   ad_netbios_name              = "DLUHCTEST"
+  management_instance_type     = "t3.xlarge"
 }
 
 module "active_directory_dns_resolver" {
