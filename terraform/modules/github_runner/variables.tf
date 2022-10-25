@@ -26,3 +26,10 @@ variable "ssh_ingress_sg_id" {
   type        = string
   description = "Security id to allow SSH ingress from"
 }
+
+variable "private_dns" {
+  type = object({
+    zone_id     = string
+    base_domain = string
+  })
+}

@@ -63,3 +63,11 @@ resource "aws_instance" "jaspersoft_server" {
     data.aws_s3_object.jaspersoft_install_zip,
   ]
 }
+
+resource "aws_route53_record" "jaspersoft_server" {
+  zone_id = var.private_dns.zone_id
+  name    = "jaspersoft.${var.private_dns.base_domain}"
+  type    = "A"
+  ttl     = 60
+  records = [aws_instance.jaspersoft_server.private_ip]
+}

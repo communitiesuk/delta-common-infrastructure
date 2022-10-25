@@ -69,6 +69,7 @@ module "active_directory" {
   ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
   environment                  = "staging"
   rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
+  private_dns                  = module.networking.private_dns
 }
 
 module "active_directory_dns_resolver" {
@@ -76,6 +77,7 @@ module "active_directory_dns_resolver" {
 
   vpc               = module.networking.vpc
   ad_dns_server_ips = module.active_directory.dns_servers
+  dns_search        = module.networking.private_dns.base_domain
 }
 
 module "marklogic" {
@@ -86,6 +88,7 @@ module "marklogic" {
   vpc             = module.networking.vpc
   private_subnets = module.networking.ml_private_subnets
   instance_type   = "r5.xlarge"
+  private_dns     = module.networking.private_dns
 }
 
 module "gh_runner" {
@@ -96,6 +99,7 @@ module "gh_runner" {
   vpc               = module.networking.vpc
   github_token      = var.github_actions_runner_token
   ssh_ingress_sg_id = module.bastion.bastion_security_group_id
+  private_dns       = module.networking.private_dns
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
@@ -118,4 +122,5 @@ module "jaspersoft" {
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   enable_backup                 = false
+  private_dns                   = module.networking.private_dns
 }

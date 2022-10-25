@@ -20,3 +20,10 @@ variable "instance_type" {
 variable "private_subnets" {
   description = "Three private subnets"
 }
+
+variable "private_dns" {
+  type = object({
+    zone_id     = string
+    base_domain = string
+  })
+}

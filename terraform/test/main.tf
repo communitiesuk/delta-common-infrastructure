@@ -86,6 +86,7 @@ module "active_directory" {
   ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
   environment                  = "test"
   rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
+  private_dns                  = module.networking.private_dns
 }
 
 module "active_directory_dns_resolver" {
@@ -93,6 +94,7 @@ module "active_directory_dns_resolver" {
 
   vpc               = module.networking.vpc
   ad_dns_server_ips = module.active_directory.dns_servers
+  dns_search        = module.networking.private_dns.base_domain
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
@@ -115,6 +117,7 @@ module "jaspersoft" {
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   enable_backup                 = true
+  private_dns                   = module.networking.private_dns
 }
 
 locals {
