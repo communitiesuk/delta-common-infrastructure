@@ -91,7 +91,7 @@ module "bastion" {
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id         = module.networking.ml_private_subnets[0].id
+  subnet_id         = module.networking.github_runner_private_subnet.id
   environment       = "staging"
   vpc               = module.networking.vpc
   github_token      = var.github_actions_runner_token
