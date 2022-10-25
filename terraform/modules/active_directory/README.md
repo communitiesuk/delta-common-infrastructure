@@ -75,7 +75,15 @@ Terraform is unaware of an aws_ssm_association failing to run.
 
 ## Active Directory Migration Tool setup
 
-Optional, but recommended: Make sure the AD Management Server is at least a t3.xlarge, apply that change with terraform if necessary.
+Optional, but recommended:
+
+* Make sure the AD Management Server is at least a t3.xlarge, apply that change with terraform if necessary.
+* Install Firefox (note that the AD server is behind the Network Firewall, so most sites will not load)
+
+  ```powershell
+  Invoke-WebRequest "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US" -OutFile firefox.exe
+  .\firefox.exe
+  ```
 
 We're roughly following this blog post: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/>
 
@@ -110,7 +118,7 @@ Start-Process -FilePath $Path\$Installer -Args "/ACTION=INSTALL /IACCEPTSQLSERVE
 Remove-Item $Path\$Installer
 ```
 
-Download and install ADMT from here <https://www.microsoft.com/en-us/download/details.aspx?id=56570>.
+Download and install ADMT from here <https://www.microsoft.com/en-us/download/details.aspx?id=56570>, direct link: <https://download.microsoft.com/download/9/1/5/9156937F-1DF7-4734-9BEB-5F0A4400B29E/admtsetup32.exe>
 
 When it asks for a database server to use, get the name of the management server (`hostname` in PowerShell) and tell it to connect to `<hostname>\SQLEXPRESS`.
 

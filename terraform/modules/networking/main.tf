@@ -29,6 +29,24 @@ locals {
       ]
       sid_offset = 300
     }
+    ad_dc_private_subnets = {
+      subnets              = aws_subnet.ad_dc_private_subnets
+      cidr                 = local.ad_dc_subnet_cidr_10
+      http_allowed_domains = []
+      tls_allowed_domains  = []
+      sid_offset           = 400
+    }
+    ad_other_subnets = {
+      subnets              = [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server]
+      cidr                 = local.ad_other_cidr_10
+      http_allowed_domains = ["windowsupdate.microsoft.com", ".windowsupdate.microsoft.com", ".microsoft.com", ".windows.com", ".digicert.com"]
+      tls_allowed_domains = [
+        "windowsupdate.microsoft.com", ".windowsupdate.microsoft.com", ".microsoft.com", ".windows.com", # Windows update
+        "download.mozilla.org", ".mozilla.net",                                                          # Firefox
+        ".digicert.com",                                                                                 # CRL
+      ]
+      sid_offset = 500
+    }
   }
   firewalled_subnets = flatten([for name, config in local.firewall_config : config.subnets])
 }
