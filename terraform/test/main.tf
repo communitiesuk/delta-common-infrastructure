@@ -106,7 +106,7 @@ module "marklogic" {
   environment     = "test"
   vpc             = module.networking.vpc
   private_subnets = module.networking.ml_private_subnets
-  instance_type   = "t3.xlarge"
+  instance_type   = "t3.large"
   private_dns     = module.networking.private_dns
 }
 
