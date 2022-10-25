@@ -17,8 +17,17 @@ output "directory_admin_password" {
   sensitive = true
 }
 
-output "ml_url" {
-  value = module.marklogic.ml_url
+output "dns_servers" {
+  value = module.active_directory.dns_servers
+}
+
+output "ml_hostname" {
+  value = module.marklogic.ml_hostname
+}
+
+output "ml_ssh_private_key" {
+  value     = module.marklogic.ml_ssh_private_key
+  sensitive = true
 }
 
 output "bastion_host_key_fingerprint" {
@@ -44,4 +53,13 @@ output "delta_internal_subnet_ids" {
 
 output "vpc_id" {
   value = module.networking.vpc.id
+}
+
+output "gh_runner_ip" {
+  value = module.gh_runner.instance_ip
+}
+
+output "gh_runner_private_key" {
+  value     = module.gh_runner.private_key
+  sensitive = true
 }

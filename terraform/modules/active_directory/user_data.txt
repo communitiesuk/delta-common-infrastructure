@@ -1,0 +1,4 @@
+<powershell>
+Install-WindowsFeature -Name RSAT-AD-Tools
+Install-WindowsFeature -Name RSAT-DNS-Server
+</powershell>

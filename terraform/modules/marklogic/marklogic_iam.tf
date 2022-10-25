@@ -32,15 +32,15 @@ resource "aws_iam_policy" "ml_instance_policy" {
   path        = "/"
   description = "Allows MarkLogic instances to perform necessary actions"
 
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Action = [
           "ec2:DescribeInstances",
+          "ec2:DescribeVolumes",
           "ec2messages:GetMessages",
+          "ec2:CreateTags",
 
           "ssm:UpdateInstanceInformation",
           "ssm:ListInstanceAssociations",
@@ -48,10 +48,19 @@ resource "aws_iam_policy" "ml_instance_policy" {
           "ssm:PutInventory",
           "ssm:UpdateInstanceAssociationStatus",
           "ssmmessages:OpenControlChannel",
-          "ssmmessages:CreateControlChannel"
+          "ssmmessages:CreateControlChannel",
         ]
         Effect   = "Allow"
         Resource = "*"
+      },
+      {
+        Action = [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ]
+        Effect   = "Allow"
+        Resource = [aws_kms_key.ml_logs_encryption_key.arn]
       },
       {
         Action = [
@@ -63,6 +72,21 @@ resource "aws_iam_policy" "ml_instance_policy" {
         ]
         Effect   = "Allow"
         Resource = "arn:aws:dynamodb:*:*:table/*MarkLogicDDBTable*"
+      },
+      {
+        Action = [
+          "ec2:AttachVolume",
+          "ec2:CreateVolume"
+        ]
+        Effect   = "Allow"
+        Resource = ["arn:aws:ec2:*:*:volume/*", "arn:aws:ec2:*:*:instance/*"]
+      },
+      {
+        Action = [
+          "sns:Publish"
+        ]
+        Effect   = "Allow"
+        Resource = [aws_sns_topic.ml_logs.arn]
       }
     ]
   })

@@ -1,6 +1,6 @@
 # tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
 resource "aws_s3_bucket" "state_access_log_bucket" {
-  bucket = "data-collection-service-tfstate-access-logs-dev"
+  bucket = "data-collection-service-tfstate-access-logs-sandbox"
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "state_access_log_bucket" {

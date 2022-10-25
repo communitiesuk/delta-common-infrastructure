@@ -16,3 +16,8 @@ output "directory_admin_password" {
   value     = random_password.directory_admin_password.result
   sensitive = true
 }
+
+output "dns_servers" {
+  value       = aws_directory_service_directory.directory_service.dns_ip_addresses
+  description = "IP addresses of the managed AD's DNS servers"
+}

@@ -12,7 +12,7 @@ ssh <username>@$(terraform output -raw bastion_dns_name) -L localhost:3388:$(ter
 
 then connect with RDP to localhost:3388
 
-## RDP to management server as directory admin:
+## RDP to management server as directory admin
 
 * Username: dluhcdata.local\admin
 * Password: from output directory_admin_password
@@ -24,15 +24,31 @@ If you need to connect to the CA server, RDP to the management server first and 
 * Username: Administrator
 * Password: get password data and decrypt it
 
-## First time setup - install management tools:
+## First time setup
 
-### For general AD management
+### Install AD management tools
 
-From [AWS documentation](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_install_ad_tools.html):
+This should happen automatically via the instance's user data, but you can also perform the installation manually. From [AWS documentation](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_install_ad_tools.html):
 
 * Open `Server manager`
 * Add Roles and Features
 * On the "Features" page of the wizard, open up `Remote Server Administration Tools` -> `Role Administration Tools` and tick both `AD DS and AD LDS Tools` and `DNS Server Tools`
+
+### Set up DNS forwarding
+
+This should happen automatically via SSM, but check it next time we create a domain.
+
+From [AWS documentation](https://aws.amazon.com/blogs/networking-and-content-delivery/integrating-your-directory-services-dns-resolution-with-amazon-route-53-resolvers/).
+
+RDP to the AD management server, and open up the DNS Manager application. Enter the IP address of one of the DNS servers. You can get their IP addresses from `terraform output dns_servers`. Right click on "Forwarders" and ensure there is a single forwarder with the IP address of the Amazon Provided DNS server, which is the VPC's base IP address + 2, i.e. `*.*.0.2`.
+
+Or using PowerShell
+
+```powershell
+Set-DnsServerForwarder -ComputerName <dns-server> -IpAddress x.x.0.2
+```
+
+Do the same for the other server and check that `nslookup secretsmanager.eu-west-1.amazonaws.com` returns an IP address inside the VPC.
 
 ### For migrating data between AD domains
 
@@ -43,7 +59,7 @@ From [AWS documentation](https://aws.amazon.com/blogs/security/how-to-migrate-yo
 
 ## Troubleshooting
 
-### You can also connect as the ec2 server admin:
+### You can also connect as the ec2 server admin
 
 * Username: `Administrator`
 * Password: `ad_management_server_password` terraform output
@@ -54,3 +70,7 @@ Terraform is unaware of an aws_ssm_association failing to run.
 
 * Run `aws ssm list-commands` to see the status.
 * RDP to the server to find the logs. Check under `C:\ProgramData\Amazon\SSM`
+
+### CA Server setup
+
+* The logs from the CA server "QuickStart" SSM document run go to CloudWatch

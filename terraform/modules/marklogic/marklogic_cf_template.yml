@@ -24,6 +24,7 @@ Metadata:
           default: "Network Configuration"
         Parameters:
           - VPC
+          - TargetGroupARNs
           - PrivateSubnet1
           - PrivateSubnet2
           - PrivateSubnet3
@@ -77,6 +78,9 @@ Metadata:
         default: Private Subnet 3
 Parameters:
   # resource configuration
+  TargetGroupARNs:
+    Description: Target Group ARNs for the ML instances
+    Type: CommaDelimitedList
   IAMRole:
     Description: IAM Role
     Type: String
@@ -271,6 +275,9 @@ Parameters:
   PrivateSubnet3:
     Description: The private subnet 3 in the VPC. This subnet must reside within the third selected Availability Zone (AZ). You must provide values for all three private subnets. If you only select one AZ, the second and third subnets will be ignored.
     Type: 'AWS::EC2::Subnet::Id'
+  InstanceSecurityGroup:
+    Description: Security Group id for the ML instances
+    Type: String
   # marklogic configuration
   AdminUser:
     Description: The MarkLogic administrator username
@@ -355,8 +362,6 @@ Mappings:
 Resources:
   ManagedEniStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn:
-      - InstanceSecurityGroup
     Properties:
       NotificationARNs:
         - !If
@@ -452,20 +457,11 @@ Resources:
     DependsOn:
       - ManagedEniStack
       - NodeMgrLambdaStack
-      - AlbTargetGroup1
-      - AlbTargetGroup2
-      - AlbTargetGroup3
-      - AlbTargetGroup4
-      - AlbTargetGroup5
-      - AlbTargetGroup6
-      - AlbTargetGroup7      
-      - AlbTargetGroup8
-      - AlbTargetGroup9
     Properties:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet1
       LaunchConfigurationName: !Ref LaunchConfig1
-      MinSize: '0'
+      MinSize: '1'
       MaxSize: !Ref NodesPerZone
       DesiredCapacity: !Ref NodesPerZone
       Cooldown: '300'
@@ -493,16 +489,7 @@ Resources:
           HeartbeatTimeout: 4800
           NotificationTargetARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrSnsArn]
           RoleARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrIamArn]
-      TargetGroupARNs:
-        - !Ref AlbTargetGroup1
-        - !Ref AlbTargetGroup2
-        - !Ref AlbTargetGroup3
-        - !Ref AlbTargetGroup4
-        - !Ref AlbTargetGroup5
-        - !Ref AlbTargetGroup6
-        - !Ref AlbTargetGroup7
-        - !Ref AlbTargetGroup8
-        - !Ref AlbTargetGroup9
+      TargetGroupARNs: !Ref TargetGroupARNs
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 31621dd0-4b18-4dcd-b443-db9cef64ebb1
@@ -513,15 +500,6 @@ Resources:
     DependsOn:
       - ManagedEniStack
       - NodeMgrLambdaStack
-      - AlbTargetGroup1
-      - AlbTargetGroup2
-      - AlbTargetGroup3
-      - AlbTargetGroup4
-      - AlbTargetGroup5
-      - AlbTargetGroup6
-      - AlbTargetGroup7      
-      - AlbTargetGroup8
-      - AlbTargetGroup9
     Properties:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet2
@@ -554,16 +532,7 @@ Resources:
           HeartbeatTimeout: 4800
           NotificationTargetARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrSnsArn]
           RoleARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrIamArn]
-      TargetGroupARNs:
-        - !Ref AlbTargetGroup1
-        - !Ref AlbTargetGroup2
-        - !Ref AlbTargetGroup3
-        - !Ref AlbTargetGroup4
-        - !Ref AlbTargetGroup5
-        - !Ref AlbTargetGroup6
-        - !Ref AlbTargetGroup7
-        - !Ref AlbTargetGroup8
-        - !Ref AlbTargetGroup9
+      TargetGroupARNs: !Ref TargetGroupARNs
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 87d75478-787a-41d5-bb21-9de6fe4b662e
@@ -574,15 +543,6 @@ Resources:
     DependsOn:
       - ManagedEniStack
       - NodeMgrLambdaStack
-      - AlbTargetGroup1
-      - AlbTargetGroup2
-      - AlbTargetGroup3
-      - AlbTargetGroup4
-      - AlbTargetGroup5
-      - AlbTargetGroup6
-      - AlbTargetGroup7      
-      - AlbTargetGroup8
-      - AlbTargetGroup9
     Properties:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet3
@@ -615,93 +575,12 @@ Resources:
           HeartbeatTimeout: 4800
           NotificationTargetARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrSnsArn]
           RoleARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrIamArn]
-      TargetGroupARNs:
-        - !Ref AlbTargetGroup1
-        - !Ref AlbTargetGroup2
-        - !Ref AlbTargetGroup3
-        - !Ref AlbTargetGroup4
-        - !Ref AlbTargetGroup5
-        - !Ref AlbTargetGroup6
-        - !Ref AlbTargetGroup7
-        - !Ref AlbTargetGroup8
-        - !Ref AlbTargetGroup9
+      TargetGroupARNs: !Ref TargetGroupARNs
     Metadata:
       'AWS::CloudFormation::Designer':
         id: bbd8314a-6e59-4102-9ed5-232739dd0dfa
-  InstanceSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      GroupDescription: Enable access on the inbound ports
-      VpcId: !Ref VPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: '80'
-          ToPort: '80'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '443'
-          ToPort: '443'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '7997'
-          ToPort: '8010'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '8029'
-          ToPort: '8032'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '8040'
-          ToPort: '8044'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '8050'
-          ToPort: '8058'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '8140'
-          ToPort: '8142'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '8150'
-          ToPort: '8150'
-          CidrIp: 0.0.0.0/0
-  InstanceSecurityGroupIngress:
-    Type: 'AWS::EC2::SecurityGroupIngress'
-    DependsOn:
-      - InstanceSecurityGroup
-    Properties:
-      IpProtocol: tcp
-      FromPort: '0'
-      ToPort: '65355'
-      GroupId: !Ref InstanceSecurityGroup
-      SourceSecurityGroupId: !Ref InstanceSecurityGroup
-  ElbSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      GroupDescription: Enable SSH access and HTTP access on the inbound port
-      VpcId: !Ref VPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: '22'
-          ToPort: '22'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '7998'
-          ToPort: '7998'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '8000'
-          ToPort: '8010'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '7997'
-          ToPort: '7997'
-          CidrIp: 0.0.0.0/0
   LaunchConfig1:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
-    DependsOn:
-      - InstanceSecurityGroup
     Properties:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -779,8 +658,6 @@ Resources:
         id: 2efb8cfb-df53-401d-8ff2-34af0dd25993
   LaunchConfig2:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
-    DependsOn:
-      - InstanceSecurityGroup
     Properties:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -858,8 +735,6 @@ Resources:
         id: c8296a50-a29e-4646-aa74-8f1b735a9a3f
   LaunchConfig3:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
-    DependsOn:
-      - InstanceSecurityGroup
     Properties:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -935,318 +810,3 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 7fa68c90-39bc-4874-ad20-8cd8c974ed52
-  #Application Load Balancer description for MultiZone deployments (3 zones).
-  Alb:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    DependsOn:
-      - ElbSecurityGroup
-    Properties: 
-      SecurityGroups: 
-        - !Ref ElbSecurityGroup
-      Subnets:
-        - !Ref PrivateSubnet1
-        - !Ref PrivateSubnet2
-        - !Ref PrivateSubnet3
-      Scheme: 'internal'
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: e188e71e-5f01-4816-896e-9bd30b9a96c1
-  #Descriptions of the 9 TargetGroups for MultiZone deployments (3 zones). TargetGroups route requests to registered targets.
-  #Health checks are performed on each TargetGroup.
-  AlbTargetGroup1:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      HealthCheckPort: 7997
-      UnhealthyThresholdCount: 5
-      Port: 8000
-      Protocol: HTTP
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
-        - Key: stickiness.type
-          Value: lb_cookie
-        - Key: stickiness.lb_cookie.duration_seconds
-          Value: 3600
-        - Key: deregistration_delay.timeout_seconds
-          Value: 60
-      VpcId: !Ref VPC
-  AlbTargetGroup2:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      HealthCheckPort: 7997
-      UnhealthyThresholdCount: 5
-      Port: 8001
-      Protocol: HTTP
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
-        - Key: stickiness.type
-          Value: lb_cookie
-        - Key: stickiness.lb_cookie.duration_seconds
-          Value: 3600
-        - Key: deregistration_delay.timeout_seconds
-          Value: 60
-      VpcId: !Ref VPC
-  AlbTargetGroup3:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      HealthCheckPort: 7997
-      UnhealthyThresholdCount: 5
-      Port: 8002
-      Protocol: HTTP
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
-        - Key: stickiness.type
-          Value: lb_cookie
-        - Key: stickiness.lb_cookie.duration_seconds
-          Value: 3600
-        - Key: deregistration_delay.timeout_seconds
-          Value: 60
-      VpcId: !Ref VPC
-  AlbTargetGroup4:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      HealthCheckPort: 7997
-      UnhealthyThresholdCount: 5
-      Port: 8003
-      Protocol: HTTP
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
-        - Key: stickiness.type
-          Value: lb_cookie
-        - Key: stickiness.lb_cookie.duration_seconds
-          Value: 3600
-        - Key: deregistration_delay.timeout_seconds
-          Value: 60
-      VpcId: !Ref VPC
-  AlbTargetGroup5:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      HealthCheckPort: 7997
-      UnhealthyThresholdCount: 5
-      Port: 8004
-      Protocol: HTTP
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
-        - Key: stickiness.type
-          Value: lb_cookie
-        - Key: stickiness.lb_cookie.duration_seconds
-          Value: 3600
-        - Key: deregistration_delay.timeout_seconds
-          Value: 60
-      VpcId: !Ref VPC
-  AlbTargetGroup6:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      HealthCheckPort: 7997
-      UnhealthyThresholdCount: 5
-      Port: 8005
-      Protocol: HTTP
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
-        - Key: stickiness.type
-          Value: lb_cookie
-        - Key: stickiness.lb_cookie.duration_seconds
-          Value: 3600
-        - Key: deregistration_delay.timeout_seconds
-          Value: 60
-      VpcId: !Ref VPC
-  AlbTargetGroup7:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      HealthCheckPort: 7997
-      UnhealthyThresholdCount: 5
-      Port: 8006
-      Protocol: HTTP
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
-        - Key: stickiness.type
-          Value: lb_cookie
-        - Key: stickiness.lb_cookie.duration_seconds
-          Value: 3600
-        - Key: deregistration_delay.timeout_seconds
-          Value: 60
-      VpcId: !Ref VPC
-  AlbTargetGroup8:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      HealthCheckPort: 7997
-      UnhealthyThresholdCount: 5
-      Port: 8007
-      Protocol: HTTP
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
-        - Key: stickiness.type
-          Value: lb_cookie
-        - Key: stickiness.lb_cookie.duration_seconds
-          Value: 3600
-        - Key: deregistration_delay.timeout_seconds
-          Value: 60
-      VpcId: !Ref VPC
-  AlbTargetGroup9:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      HealthCheckPort: 7997
-      UnhealthyThresholdCount: 5
-      Port: 8008
-      Protocol: HTTP
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
-        - Key: stickiness.type
-          Value: lb_cookie
-        - Key: stickiness.lb_cookie.duration_seconds
-          Value: 3600
-        - Key: deregistration_delay.timeout_seconds
-          Value: 60
-      VpcId: !Ref VPC
-  #Descriptions of the 9 Listeners for MultiZone deployments (3 zones). Each Listener connects Application Load Balancer to a TargetGroup with a particular port.
-  AlbListener1:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    DependsOn:
-      - Alb
-      - AlbTargetGroup1
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref AlbTargetGroup1
-          Type: forward
-      LoadBalancerArn: !Ref Alb
-      Port: 8000
-      Protocol: HTTP
-  AlbListener2:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    DependsOn:
-      - Alb
-      - AlbTargetGroup2
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref AlbTargetGroup2
-          Type: forward
-      LoadBalancerArn: !Ref Alb
-      Port: 8001
-      Protocol: HTTP
-  AlbListener3:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    DependsOn:
-      - Alb
-      - AlbTargetGroup3
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref AlbTargetGroup3
-          Type: forward
-      LoadBalancerArn: !Ref Alb
-      Port: 8002
-      Protocol: HTTP
-  AlbListener4:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    DependsOn:
-      - Alb
-      - AlbTargetGroup4
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref AlbTargetGroup4
-          Type: forward
-      LoadBalancerArn: !Ref Alb
-      Port: 8003
-      Protocol: HTTP
-  AlbListener5:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    DependsOn:
-      - Alb
-      - AlbTargetGroup5
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref AlbTargetGroup5
-          Type: forward
-      LoadBalancerArn: !Ref Alb
-      Port: 8004
-      Protocol: HTTP
-  AlbListener6:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    DependsOn:
-      - Alb
-      - AlbTargetGroup6
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref AlbTargetGroup6
-          Type: forward
-      LoadBalancerArn: !Ref Alb
-      Port: 8005
-      Protocol: HTTP
-  AlbListener7:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    DependsOn:
-      - Alb
-      - AlbTargetGroup7
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref AlbTargetGroup7
-          Type: forward
-      LoadBalancerArn: !Ref Alb
-      Port: 8006
-      Protocol: HTTP
-  AlbListener8:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    DependsOn:
-      - Alb
-      - AlbTargetGroup8
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref AlbTargetGroup8
-          Type: forward
-      LoadBalancerArn: !Ref Alb
-      Port: 8007
-      Protocol: HTTP
-  AlbListener9:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    DependsOn:
-      - Alb
-      - AlbTargetGroup9
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref AlbTargetGroup9
-          Type: forward
-      LoadBalancerArn: !Ref Alb
-      Port: 8008
-      Protocol: HTTP
-Outputs:
-  URL:
-    Description: The URL of the MarkLogic Cluster
-    Value: !Join
-      - ''
-      - - 'http://'
-        - !GetAtt [Alb, DNSName]
-        - ':8001'
