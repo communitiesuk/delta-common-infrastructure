@@ -36,7 +36,7 @@ EOF
 # Allowing access to a single bucket seems reasonable
 # tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_role_policy" "read_jaspersoft_binaries" {
-  name = "read_jaspersoft_binaries"
+  name = "${var.prefix}read-jaspersoft-binaries"
   role = aws_iam_role.read_jaspersoft_binaries.id
 
   policy = <<EOF
@@ -64,6 +64,7 @@ resource "aws_s3_object" "tomcat_systemd_service_file" {
   key     = "tomcat.service"
   content = local.tomcat_systemd_service_file_templated
   etag    = md5(local.tomcat_systemd_service_file_templated)
+  tags    = { environment = "shared" }
 }
 
 resource "aws_s3_object" "jaspersoft_config_file" {
@@ -71,6 +72,7 @@ resource "aws_s3_object" "jaspersoft_config_file" {
   key    = "default_master.properties"
   source = "${path.module}/install_files/default_master.properties"
   etag   = filemd5("${path.module}/install_files/default_master.properties")
+  tags   = { environment = "shared" }
 }
 
 resource "aws_s3_object" "jaspersoft_root_index_jsp" {
@@ -78,6 +80,7 @@ resource "aws_s3_object" "jaspersoft_root_index_jsp" {
   key    = "root_index.jsp"
   source = "${path.module}/install_files/root_index.jsp"
   etag   = filemd5("${path.module}/install_files/root_index.jsp")
+  tags   = { environment = "shared" }
 }
 
 resource "aws_s3_object" "jaspersoft_root_web_xml" {
@@ -85,4 +88,5 @@ resource "aws_s3_object" "jaspersoft_root_web_xml" {
   key    = "root_web.xml"
   source = "${path.module}/install_files/root_web.xml"
   etag   = filemd5("${path.module}/install_files/root_web.xml")
+  tags   = { environment = "shared" }
 }

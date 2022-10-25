@@ -17,6 +17,11 @@ output "directory_admin_password" {
   sensitive = true
 }
 
+output "ad_dns_servers" {
+  value       = module.active_directory.dns_servers
+  description = "IP addresses of the managed AD's DNS servers"
+}
+
 output "nginx_test_box_ip" {
   value = module.cloudfront.nginx_test_box_ip
 }

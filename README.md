@@ -170,7 +170,16 @@ terraform apply -target module.gh_runner -var="github_actions_runner_token=<toke
 
 Now run the MarkLogic setup jobs from GitHub.
 
-### 6 TODO
+### 6 JasperReports server
+
+Ensure the Jasper binaries S3 bucket exists and has the expected JasperReports zip in, follow the instructions in the module readme to create the S3 bucket if not.
+Make sure the `jasper_s3_bucket` variable is set correctly.
+
+```sh
+terraform apply -target module.jaspersoft
+```
+
+### 7 TODO
 
 ```sh
 terraform apply

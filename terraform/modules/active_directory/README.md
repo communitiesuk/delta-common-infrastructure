@@ -36,11 +36,9 @@ This should happen automatically via the instance's user data, but you can also 
 
 ### Set up DNS forwarding
 
-This should happen automatically via SSM, but check it next time we create a domain.
-
 From [AWS documentation](https://aws.amazon.com/blogs/networking-and-content-delivery/integrating-your-directory-services-dns-resolution-with-amazon-route-53-resolvers/).
 
-RDP to the AD management server, and open up the DNS Manager application. Enter the IP address of one of the DNS servers. You can get their IP addresses from `terraform output dns_servers`. Right click on "Forwarders" and ensure there is a single forwarder with the IP address of the Amazon Provided DNS server, which is the VPC's base IP address + 2, i.e. `*.*.0.2`.
+RDP to the AD management server, and open up the DNS Manager application. Enter the IP address of one of the DNS servers. You can get their IP addresses from `terraform output ad_dns_servers`. Right click on "Forwarders" and ensure there is a single forwarder with the IP address of the Amazon Provided DNS server, which is the VPC's base IP address + 2, i.e. `*.*.0.2`.
 
 Or using PowerShell
 
