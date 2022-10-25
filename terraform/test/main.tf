@@ -110,6 +110,17 @@ module "marklogic" {
   private_dns     = module.networking.private_dns
 }
 
+module "gh_runner" {
+  source = "../modules/github_runner"
+
+  subnet_id         = module.networking.github_runner_private_subnet.id
+  environment       = "test"
+  vpc               = module.networking.vpc
+  github_token      = var.github_actions_runner_token
+  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
+  private_dns       = module.networking.private_dns
+}
+
 resource "tls_private_key" "jaspersoft_ssh_key" {
   algorithm = "RSA"
   rsa_bits  = 2048
