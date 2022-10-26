@@ -14,7 +14,7 @@ locals {
       subnets              = [aws_subnet.jaspersoft]
       cidr                 = local.jaspersoft_cidr_10
       http_allowed_domains = [".ubuntu.com", ".launchpad.net", ".postgresql.org"]
-      tls_allowed_domains  = [".ubuntu.com", ".launchpad.net", "archive.apache.org", ".postgresql.org"]
+      tls_allowed_domains  = [".ubuntu.com", ".launchpad.net", "archive.apache.org", ".postgresql.org", "api.snapcraft.io"]
       sid_offset           = 200
     }
     github_runner = {
@@ -39,16 +39,85 @@ locals {
     ad_other_subnets = {
       subnets              = [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server]
       cidr                 = local.ad_other_cidr_10
-      http_allowed_domains = ["windowsupdate.microsoft.com", ".windowsupdate.microsoft.com", ".microsoft.com", ".windows.com", ".digicert.com"]
+      http_allowed_domains = [".microsoft.com", ".windows.com", ".windowsupdate.com", ".digicert.com"]
       tls_allowed_domains = [
-        "windowsupdate.microsoft.com", ".windowsupdate.microsoft.com", ".microsoft.com", ".windows.com", # Windows update
-        "download.mozilla.org", ".mozilla.net",                                                          # Firefox
-        ".digicert.com",                                                                                 # CRL
+        ".microsoft.com", ".windows.com", ".windowsupdate.com", # Windows update
+        "download.mozilla.org", ".mozilla.net",                 # Firefox
+        ".digicert.com",                                        # CRL
       ]
       sid_offset = 500
     }
+    marklogic = {
+      subnets              = aws_subnet.ml_private_subnets
+      cidr                 = local.ml_subnet_cidr_10
+      http_allowed_domains = concat(["repo.ius.io", "mirrors.fedoraproject.org"])
+      tls_allowed_domains = concat(local.marklogic_repo_mirror_tls_domains, [
+        ".marklogic.com",
+        "repo.ius.io", "mirrors.fedoraproject.org",                                     # Yum repos
+        "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com",              # The instances make some requests to us-east-1 services on startup
+        "ec2-instance-connect.eu-west-1.amazonaws.com", "d2lzkl7pfhq30w.cloudfront.net" # Mystery, CF is for yum, but not sure where it comes from
+      ])
+      sid_offset = 4000
+    }
   }
   firewalled_subnets = flatten([for name, config in local.firewall_config : config.subnets])
+
+  # /etc/yum.repos.d on the MarkLogic hosts references https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=x86_64
+  # This is the list of https enabled mirrors as of 2022-10-26, I ignored the non-HTTPS ones
+  # Hardcoding them here obviously isn't a great solution, but I don't think they change quickly and yum will try a few before giving up
+  marklogic_repo_mirror_tls_domains = [
+    "mirrors.ukfast.co.uk",
+    "mirrors.20i.com",
+    "fedora.mirrorservice.org",
+    "mirror.netcologne.de",
+    "eu.edge.kernel.org",
+    "mirrors.mivocloud.com",
+    "ftp.cc.uoc.gr",
+    "fedora.cu.be",
+    "mirrors.xtom.de",
+    "mirror.efect.ro",
+    "mirrors.ptisp.pt",
+    "ftp.lysator.liu.se",
+    "ftp.fau.de",
+    "mirror.netsite.dk",
+    "mirror.23m.com",
+    "mirror.serverion.com",
+    "ftp.acc.umu.se",
+    "mirror.init7.net",
+    "mirror.karneval.cz",
+    "mirror.vpsnet.com",
+    "pkg.adfinis.com",
+    "centos.anexia.at",
+    "mirror.telepoint.bg",
+    "mirror.vsys.host",
+    "mirror.lanet.network",
+    "ftp.upjs.sk",
+    "mirror.alwyzon.net",
+    "mirrors.nic.cz",
+    "mirrors.netix.net",
+    "linuxsoft.cern.ch",
+    "ftp.plusline.net",
+    "mirror.netzwerge.de",
+    "mirror.yandex.ru",
+    "ge.mirror.cloud9.ge",
+    "mirror.dogado.de",
+    "www.fedora.is",
+    "fr2.rpmfind.net",
+    "mirror.niif.hu",
+    "mirror.in2p3.fr",
+    "mirrors.nxthost.com",
+    "epel.mirror.wearetriple.com",
+    "epel.srv.magticom.ge",
+    "ftp.nsc.ru",
+    "ftp.arnes.si",
+    "repos.silknet.com",
+    "epel.silknet.com",
+    "mir01.syntis.net",
+    "mirror.im.jku.at",
+    "mirror.cspacehostings.com",
+    "fastmirror.pp.ua",
+    "mirror.wd6.net",
+  ]
 }
 
 resource "aws_security_group" "aws_service_vpc_endpoints" {

@@ -17,8 +17,8 @@ resource "aws_lb_target_group" "ml" {
   health_check {
     interval            = 10 #seconds
     port                = 7997
-    unhealthy_threshold = 5
-    healthy_threshold   = 5
+    unhealthy_threshold = 10
+    healthy_threshold   = 10
   }
 }
 
