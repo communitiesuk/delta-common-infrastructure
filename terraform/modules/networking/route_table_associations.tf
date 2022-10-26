@@ -20,9 +20,3 @@ resource "aws_route_table_association" "firewalled" {
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private_to_firewall.id
 }
-
-resource "aws_route_table_association" "delta_internal_private_subnet" {
-  count          = 3
-  subnet_id      = aws_subnet.delta_internal[count.index].id
-  route_table_id = aws_route_table.to_nat_gateway.id
-}

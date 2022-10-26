@@ -35,3 +35,9 @@ variable "jasper_s3_bucket" {
   type    = string
   default = "dluhc-jaspersoft-bin"
 }
+
+variable "ecr_repo_account_id" {
+  type        = string
+  description = "AWS account id containing the ECR repo that ECS services will pull from"
+  default     = "468442790030"
+}

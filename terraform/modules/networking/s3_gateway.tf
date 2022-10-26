@@ -90,6 +90,8 @@ data "aws_iam_policy_document" "s3_gateway" {
       "arn:aws:s3:::aws-ssm-document-attachments-${data.aws_region.current.name}/*",
       # For the CA Server quickstart
       "arn:aws:s3:::aws-quickstart-${data.aws_region.current.name}/*",
+      # ECS https://docs.aws.amazon.com/AmazonECR/latest/userguide/vpc-endpoints.html#ecr-minimum-s3-perms
+      "arn:aws:s3:::prod-${data.aws_region.current.name}-starport-layer-bucket/*",
     ]
   }
 }

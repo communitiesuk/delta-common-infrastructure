@@ -40,10 +40,11 @@ module "dns" {
 }
 
 module "networking" {
-  source             = "../modules/networking"
-  vpc_cidr_block     = "10.0.0.0/16"
-  environment        = "test"
-  ssh_cidr_allowlist = var.allowed_ssh_cidrs
+  source              = "../modules/networking"
+  vpc_cidr_block      = "10.0.0.0/16"
+  environment         = "test"
+  ssh_cidr_allowlist  = var.allowed_ssh_cidrs
+  ecr_repo_account_id = var.ecr_repo_account_id
 }
 
 resource "tls_private_key" "bastion_ssh_key" {

@@ -47,6 +47,13 @@ locals {
       ]
       sid_offset = 500
     }
+    delta_internal_subnets = {
+      subnets              = aws_subnet.delta_internal
+      cidr                 = local.delta_internal_cidr_10
+      http_allowed_domains = []
+      tls_allowed_domains  = []
+      sid_offset           = 600
+    }
     marklogic = {
       subnets              = aws_subnet.ml_private_subnets
       cidr                 = local.ml_subnet_cidr_10

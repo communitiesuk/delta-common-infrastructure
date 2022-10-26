@@ -32,3 +32,7 @@ variable "open_ingress_cidrs" {
   type        = list(string)
   default     = []
 }
+
+variable "ecr_repo_account_id" {
+  type = string
+}
