@@ -211,11 +211,19 @@ drop ip   any any <> any any (msg:"Drop non-TCP traffic"; ip_proto:!TCP;sid:5004
   all_firewall_rules  = join("\n\n", [join("\n\n", local.subnet_firewall_rules), local.base_firewall_rules])
 }
 
+locals {
+  stateful_firewall_group_capacity = 120
+}
+
 resource "aws_networkfirewall_rule_group" "stateful_main" {
   description = "Main stateful rule group for ${var.environment} environment firewall"
-  capacity    = 100
-  name        = "stateful-rules-${var.environment}"
+  capacity    = local.stateful_firewall_group_capacity
+  name        = "stateful-rules-${local.stateful_firewall_group_capacity}-${var.environment}"
   type        = "STATEFUL"
 
   rules = local.all_firewall_rules
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }

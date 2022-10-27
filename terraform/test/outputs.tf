@@ -95,3 +95,8 @@ output "public_subnet_ids" {
 output "vpc_id" {
   value = module.networking.vpc.id
 }
+
+output "gh_runner_private_key" {
+  value     = module.gh_runner.private_key
+  sensitive = true
+}

@@ -63,10 +63,6 @@ output "vpc_id" {
   value = module.networking.vpc.id
 }
 
-output "gh_runner_ip" {
-  value = module.gh_runner.instance_ip
-}
-
 output "gh_runner_private_key" {
   value     = module.gh_runner.private_key
   sensitive = true

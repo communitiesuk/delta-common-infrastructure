@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.34"
+      version = "~> 4.36"
     }
   }
 
@@ -40,10 +40,11 @@ module "dns" {
 }
 
 module "networking" {
-  source             = "../modules/networking"
-  vpc_cidr_block     = "10.0.0.0/16"
-  environment        = "test"
-  ssh_cidr_allowlist = var.allowed_ssh_cidrs
+  source              = "../modules/networking"
+  vpc_cidr_block      = "10.0.0.0/16"
+  environment         = "test"
+  ssh_cidr_allowlist  = var.allowed_ssh_cidrs
+  ecr_repo_account_id = var.ecr_repo_account_id
 }
 
 resource "tls_private_key" "bastion_ssh_key" {
@@ -106,8 +107,19 @@ module "marklogic" {
   environment     = "test"
   vpc             = module.networking.vpc
   private_subnets = module.networking.ml_private_subnets
-  instance_type   = "t3.xlarge"
+  instance_type   = "t3.large"
   private_dns     = module.networking.private_dns
+}
+
+module "gh_runner" {
+  source = "../modules/github_runner"
+
+  subnet_id         = module.networking.github_runner_private_subnet.id
+  environment       = "test"
+  vpc               = module.networking.vpc
+  github_token      = var.github_actions_runner_token
+  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
+  private_dns       = module.networking.private_dns
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {

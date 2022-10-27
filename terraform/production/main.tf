@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.25"
+      version = "~> 4.36"
     }
   }
 
@@ -27,10 +27,11 @@ provider "aws" {
 }
 
 module "networking" {
-  source             = "../modules/networking"
-  vpc_cidr_block     = "10.30.0.0/16"
-  environment        = "prod"
-  ssh_cidr_allowlist = var.allowed_ssh_cidrs
+  source              = "../modules/networking"
+  vpc_cidr_block      = "10.30.0.0/16"
+  environment         = "prod"
+  ssh_cidr_allowlist  = var.allowed_ssh_cidrs
+  ecr_repo_account_id = var.ecr_repo_account_id
 }
 
 module "bastion" {
