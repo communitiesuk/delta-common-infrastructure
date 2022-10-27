@@ -11,6 +11,7 @@ locals {
   jaspersoft_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4)   # 16.0/22
   delta_internal_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 20.0/22
   github_runner_cidr_10    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 6)   # 24.0/22
+  delta_api_cidr_10        = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 7)   # 28.0/22
   public_cidr_10           = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/22
   vpc_endpoints_cidr_8     = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 253) # 253.0/24
   firewall_cidr_8          = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 254) # 254.0/24
@@ -77,6 +78,15 @@ resource "aws_subnet" "delta_internal" {
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
   tags                    = { Name = "delta-internal-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+}
+
+resource "aws_subnet" "delta_api" {
+  count                   = 3
+  cidr_block              = cidrsubnet(local.delta_api_cidr_10, 2, count.index)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = false
+  tags                    = { Name = "delta-api-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
 resource "aws_subnet" "jaspersoft" {

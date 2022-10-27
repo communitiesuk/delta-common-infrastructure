@@ -29,6 +29,13 @@ locals {
       ]
       sid_offset = 300
     }
+    delta_api_subnets = {
+      subnets              = [aws_subnet.delta_api]
+      cidr                 = local.delta_api_cidr_10
+      http_allowed_domains = []
+      tls_allowed_domains  = []
+      sid_offset           = 400
+    }
   }
   firewalled_subnets = flatten([for name, config in local.firewall_config : config.subnets])
 }
