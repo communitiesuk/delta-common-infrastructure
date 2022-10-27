@@ -34,7 +34,24 @@ data "aws_iam_policy_document" "s3_gateway" {
 
   statement {
     sid     = "ReadBucketsInCurrentAccount"
-    actions = ["s3:GetObject", "s3:ListBucket"]
+    actions = ["s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket"]
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    resources = [
+      "arn:aws:s3:::*"
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "s3:ResourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+  }
+
+  statement {
+    sid     = "WriteBucketsInCurrentAccount"
+    actions = ["s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket", "s3:PutObject", "s3:PutObjectAcl", "s3:DeleteObject"]
     principals {
       type        = "*"
       identifiers = ["*"]
@@ -52,5 +69,29 @@ data "aws_iam_policy_document" "s3_gateway" {
       variable = "aws:PrincipalAccount"
       values   = [data.aws_caller_identity.current.account_id]
     }
+  }
+
+  statement {
+    sid     = "AWSBuckets"
+    actions = ["s3:GetObject", "s3:ListBucket"]
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    resources = [
+      # https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-minimum-s3-permissions.html
+      "arn:aws:s3:::aws-ssm-${data.aws_region.current.name}/*",
+      "arn:aws:s3:::aws-windows-downloads-${data.aws_region.current.name}/*",
+      "arn:aws:s3:::amazon-ssm-${data.aws_region.current.name}/*",
+      "arn:aws:s3:::amazon-ssm-packages-${data.aws_region.current.name}/*",
+      "arn:aws:s3:::${data.aws_region.current.name}-birdwatcher-prod/*",
+      "arn:aws:s3:::patch-baseline-snapshot-${data.aws_region.current.name}/*",
+      "arn:aws:s3:::aws-ssm-distributor-file-${data.aws_region.current.name}/*",
+      "arn:aws:s3:::aws-ssm-document-attachments-${data.aws_region.current.name}/*",
+      # For the CA Server quickstart
+      "arn:aws:s3:::aws-quickstart-${data.aws_region.current.name}/*",
+      # ECS https://docs.aws.amazon.com/AmazonECR/latest/userguide/vpc-endpoints.html#ecr-minimum-s3-perms
+      "arn:aws:s3:::prod-${data.aws_region.current.name}-starport-layer-bucket/*",
+    ]
   }
 }
