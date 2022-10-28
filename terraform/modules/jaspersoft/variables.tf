@@ -3,6 +3,10 @@ variable "prefix" {
   type        = string
 }
 
+variable "environment" {
+  type = string
+}
+
 variable "vpc_id" {
   type = string
 }
@@ -54,4 +58,8 @@ variable "private_dns" {
     zone_id     = string
     base_domain = string
   })
+}
+
+variable "ad_domain" {
+  default = "dluhcdata"
 }

@@ -34,16 +34,30 @@ resource "aws_security_group_rule" "jaspersoft_server_http_ingress" {
   security_group_id        = aws_security_group.jaspersoft_server.id
 }
 
+data "aws_region" "current" {}
+
+data "aws_secretsmanager_secret" "ldap_bind_password" {
+  name = "jasperserver-ldap-bind-password-${var.environment}"
+}
+
 resource "aws_instance" "jaspersoft_server" {
   ami           = "ami-034943c569985ba6e" #	eu-west-1 bionic 18.04 LTS amd64 ebs-ssd
   instance_type = var.instance_type
   tags          = { Name = "${var.prefix}jaspersoft-server" }
 
-  subnet_id                   = var.private_instance_subnet.id
-  vpc_security_group_ids      = [aws_security_group.jaspersoft_server.id]
-  key_name                    = var.ssh_key_name
-  iam_instance_profile        = aws_iam_instance_profile.read_jaspersoft_binaries.name
-  user_data                   = templatefile("${path.module}/setup_script.sh", { JASPERSOFT_INSTALL_S3_BUCKET = data.aws_s3_bucket.jaspersoft_binaries.bucket })
+  subnet_id              = var.private_instance_subnet.id
+  vpc_security_group_ids = [aws_security_group.jaspersoft_server.id]
+  key_name               = var.ssh_key_name
+  iam_instance_profile   = aws_iam_instance_profile.jasperserver.name
+  user_data = templatefile(
+    "${path.module}/setup_script.sh",
+    {
+      JASPERSOFT_INSTALL_S3_BUCKET = data.aws_s3_bucket.jaspersoft_binaries.bucket
+      ENVIRONMENT                  = var.environment
+      AWS_REGION                   = data.aws_region.current.name
+      LDAP_BIND_PASSWORD_SECRET_ID = data.aws_secretsmanager_secret.ldap_bind_password.id
+    }
+  )
   user_data_replace_on_change = true
 
   root_block_device {
@@ -60,6 +74,7 @@ resource "aws_instance" "jaspersoft_server" {
     aws_s3_object.tomcat_systemd_service_file,
     aws_s3_object.jaspersoft_root_index_jsp,
     aws_s3_object.jaspersoft_root_web_xml,
+    aws_s3_object.jaspersoft_ldap_config,
     data.aws_s3_object.jaspersoft_install_zip,
   ]
 }

@@ -1,5 +1,7 @@
 # JasperReports Server
 
+The password for the "jasperreports" ldap user must be in a secret named `jasperserver-ldap-bind-password-${var.environment}` using the AWS managed KMS key.
+
 Requires S3 bucket (var.jaspersoft_binaries_s3_bucket) in the current AWS account with JasperReports Server binaries in.
 
 ```sh
@@ -7,7 +9,7 @@ aws s3api create-bucket --bucket dluhc-jaspersoft-bin --acl private --region eu-
 aws s3api put-bucket-versioning --bucket dluhc-jaspersoft-bin --versioning-configuration Status=Enabled
 ```
 
-We've combined Jasper Reports Community edition 7.8.0, the 7.8.1 Service Pack and 2022-04-15 cumulative hotfix into one zip:
+We've combined Jasper Reports Community edition 7.8.0, the 7.8.1 Service Pack, the 2022-04-15 cumulative hotfix and web services plugin into one zip:
 
 ```sh
 #!/bin/bash -ex
@@ -15,6 +17,7 @@ We've combined Jasper Reports Community edition 7.8.0, the 7.8.1 Service Pack an
 unzip -q TIB_js-jrs-cp_7.8.0_bin.zip
 unzip -q TIB_js-jrs_cp_7.8.1_sp.zip -d js-sp-7.8.1
 unzip -q hotfix_jrspro7.8.1_cumulative_20220415_1823.zip -d js-hotfix-7.8.1
+unzip -q jaspersoft_webserviceds_v1.5.zip -d webservices
 # Update postgres driver
 rm jasperreports-server-cp-7.8.0-bin/buildomatic/conf_source/db/postgresql/jdbc/postgresql-42.2.5.jar
 wget -O jasperreports-server-cp-7.8.0-bin/buildomatic/conf_source/db/postgresql/jdbc/postgresql-42.5.0.jar "https://jdbc.postgresql.org/download/postgresql-42.5.0.jar"
@@ -49,6 +52,10 @@ cd ../../jasperreports-server-cp-7.8.0-bin/jasperserver/WEB-INF/lib
 rm log4j-1.2-api-2.13.3.jar log4j-api-2.13.3.jar log4j-core-2.13.3.jar log4j-jcl-2.13.3.jar log4j-jul-2.13.3.jar log4j-slf4j-impl-2.13.3.jar log4j-web-2.13.3.jar
 cd ../../../..
 rsync -a war-hotfix/WEB-INF/ jasperreports-server-cp-7.8.0-bin/jasperserver/WEB-INF/
+
+## Web services plugin
+sed -i 's/queryLanguagesPro/queryLanguagesCe/' webservices/JRS/WEB-INF/applicationContext-WebServiceDataSource.xml
+cp -r webservices/JRS/WEB-INF/* jasperreports-server-cp-7.8.0-bin/jasperserver/WEB-INF/
 
 ## Recreate WAR
 rm jasperreports-server-cp-7.8.0-bin/jasperserver.war

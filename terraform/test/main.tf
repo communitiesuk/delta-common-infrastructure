@@ -143,6 +143,8 @@ module "jaspersoft" {
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   enable_backup                 = true
   private_dns                   = module.networking.private_dns
+  ad_domain                     = "dluhctest"
+  environment                   = "test"
 }
 
 locals {
