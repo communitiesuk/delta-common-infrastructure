@@ -11,3 +11,6 @@ datamart-cpm-soap-api,sap
 datamart-delta-admin,sap
 datamart-delta-admin,cpmapp
 AWS Delegated Administrators,cpmapp
+jasperreports-admins,jasperadminuser
+jasperreports-users,jasperuser
+jasperreports-users,jasperreports-admins
