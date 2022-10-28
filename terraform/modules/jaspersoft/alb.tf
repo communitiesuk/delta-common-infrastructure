@@ -131,6 +131,11 @@ resource "aws_lb_target_group" "main" {
   target_type = "instance"
   vpc_id      = var.vpc_id
 
+  health_check {
+    path                = "/jasperserver/rest_v2/serverInfo"
+    unhealthy_threshold = 5
+  }
+
   lifecycle {
     create_before_destroy = true
   }
