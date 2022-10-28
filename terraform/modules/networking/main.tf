@@ -25,7 +25,8 @@ locals {
       tls_allowed_domains = [
         "github.com", "api.github.com", "codeload.github.com",
         "objects.githubusercontent.com", "objects-origin.githubusercontent.com", "github-releases.githubusercontent.com", "github-registry-files.githubusercontent.com",
-        ".actions.githubusercontent.com"
+        ".actions.githubusercontent.com", 
+        "logs.${data.aws_region.current.name}.amazonaws.com", "ec2messages.${data.aws_region.current.name}.amazonaws.com"
       ]
       sid_offset = 300
     }
@@ -42,8 +43,10 @@ locals {
       http_allowed_domains = [".microsoft.com", ".windows.com", ".windowsupdate.com", ".digicert.com"]
       tls_allowed_domains = [
         ".microsoft.com", ".windows.com", ".windowsupdate.com", # Windows update
+        "onegetcdn.azureedge.net", "www.powershellgallery.com", "psg-prod-eastus.azureedge.net", # Install PowerShell tools
         "download.mozilla.org", ".mozilla.net",                 # Firefox
         ".digicert.com",                                        # CRL
+        ".eu-west-1.amazonaws.com",                             # Test if this can possibly be removed when setting up production in the correct order.
       ]
       sid_offset = 500
     }
@@ -61,6 +64,13 @@ locals {
       tls_allowed_domains  = []
       sid_offset           = 700
     }
+    cpm_subnets = {
+      subnets              = aws_subnet.cpm_private
+      cidr                 = local.cpm_private_cidr_10
+      http_allowed_domains = []
+      tls_allowed_domains  = []
+      sid_offset           = 800
+    }
     marklogic = {
       subnets              = aws_subnet.ml_private_subnets
       cidr                 = local.ml_subnet_cidr_10
@@ -69,7 +79,10 @@ locals {
         ".marklogic.com",
         "repo.ius.io", "mirrors.fedoraproject.org",                                     # Yum repos
         "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com",              # The instances make some requests to us-east-1 services on startup
-        "ec2-instance-connect.eu-west-1.amazonaws.com", "d2lzkl7pfhq30w.cloudfront.net" # Mystery, CF is for yum, but not sure where it comes from
+        "ec2-instance-connect.eu-west-1.amazonaws.com", "d2lzkl7pfhq30w.cloudfront.net",# Mystery, CF is for yum, but not sure where it comes from
+
+        # Added to silence the noisy firewall alerts. Should check why it's not going via VPC endpoints
+        "ec2messages.${data.aws_region.current.name}.amazonaws.com", "ssm.${data.aws_region.current.name}.amazonaws.com"
       ])
       sid_offset = 4000
     }

@@ -257,7 +257,7 @@ locals {
 # The drop http and tls seem to kick in earlier than only dropping established TCP flows
 drop http any any -> any any (msg:"Drop HTTP traffic without allowlisted Host header"; sid:5001; rev:1;)
 drop tls  any any -> any any (msg:"Drop TLS traffic without allowlisted SNI"; sid:5002; rev:1;)
-drop tcp  any any -> any any (msg:"Drop remaining estabilshed TCP traffic"; flow:established; sid:5003; rev:1;)
+drop tcp  any any -> any any (msg:"Drop remaining established TCP traffic"; flow:established; sid:5003; rev:1;)
 # Non-TCP traffic should already have been dropped by the stateless rules, but just to be sure
 drop ip   any any <> any any (msg:"Drop non-TCP traffic"; ip_proto:!TCP;sid:5004; rev:1;)
   EOT

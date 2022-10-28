@@ -9,7 +9,7 @@ resource "aws_vpc_endpoint" "cloudwatch" {
   vpc_endpoint_type = "Interface"
 
   security_group_ids  = [aws_security_group.aws_service_vpc_endpoints.id]
-  subnet_ids          = [aws_subnet.vpc_endpoints_subnet.id]
+  subnet_ids          = aws_subnet.vpc_endpoints_subnets[*].id
   policy              = data.aws_iam_policy_document.cloudwatch_endpoint.json
   private_dns_enabled = true
   tags = {
@@ -39,7 +39,7 @@ resource "aws_vpc_endpoint" "cloudwatch_logs" {
   vpc_endpoint_type = "Interface"
 
   security_group_ids  = [aws_security_group.aws_service_vpc_endpoints.id]
-  subnet_ids          = [aws_subnet.vpc_endpoints_subnet.id]
+  subnet_ids          = aws_subnet.vpc_endpoints_subnets[*].id
   policy              = data.aws_iam_policy_document.cloudwatch_logs_endpoint.json
   private_dns_enabled = true
   tags = {
