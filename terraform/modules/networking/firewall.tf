@@ -80,7 +80,8 @@ resource "aws_networkfirewall_firewall" "main" {
 }
 
 locals {
-  tcp_protocol_number = 6
+  tcp_protocol_number                    = 6
+  stateless_firewall_rule_group_capacity = 10
 }
 
 resource "aws_networkfirewall_rule_group" "stateless_main" {
@@ -89,8 +90,8 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
   }
 
   description = "Main stateless rule group for ${var.environment} environment firewall"
-  capacity    = 5
-  name        = "stateless-rules-${var.environment}"
+  capacity    = local.stateless_firewall_rule_group_capacity
+  name        = "stateless-rules-${local.stateless_firewall_rule_group_capacity}-${var.environment}"
   type        = "STATELESS"
   rule_group {
     rules_source {
@@ -125,7 +126,7 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
         # Send HTTP(S) traffic to the stateful engine to filter
         # Outbound
         stateless_rule {
-          priority = 3
+          priority = 2
           rule_definition {
             actions = ["aws:forward_to_sfe"]
             match_attributes {
@@ -154,7 +155,7 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
 
         # Inbound
         stateless_rule {
-          priority = 2
+          priority = 3
           rule_definition {
             actions = ["aws:forward_to_sfe"]
             match_attributes {
@@ -180,6 +181,58 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
             }
           }
         }
+
+        # Allow SSH from the GitHub Runner so it can clone from GitHub
+        # Outbound
+        stateless_rule {
+          priority = 4
+          rule_definition {
+            actions = ["aws:pass"]
+            match_attributes {
+              source {
+                address_definition = local.github_runner_cidr_10
+              }
+              source_port {
+                from_port = 1024
+                to_port   = 65535
+              }
+              destination {
+                address_definition = "0.0.0.0/0"
+              }
+              destination_port {
+                from_port = 22
+                to_port   = 22
+              }
+              protocols = [local.tcp_protocol_number]
+            }
+          }
+        }
+
+        # Inbound
+        stateless_rule {
+          priority = 5
+          rule_definition {
+            actions = ["aws:pass"]
+            match_attributes {
+              source {
+                address_definition = "0.0.0.0/0"
+              }
+              source_port {
+                from_port = 22
+                to_port   = 22
+              }
+              destination {
+                address_definition = local.github_runner_cidr_10
+              }
+              destination_port {
+                from_port = 1024
+                to_port   = 65535
+              }
+              protocols = [local.tcp_protocol_number]
+            }
+          }
+        }
+
       }
     }
   }
