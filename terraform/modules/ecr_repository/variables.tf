@@ -8,3 +8,7 @@ variable "dev_aws_account_id" {
 variable "push_user" {
   description = "IAM user who should have push permissions"
 }
+
+variable "kms_alias" {
+  description = "Alias name for the repository's KMS key"
+}

@@ -1,3 +1,5 @@
+# Only required for production. The test/staging environments share produciton's build artifacts.
+
 # tfsec:ignore:aws-iam-no-user-attached-policies
 resource "aws_iam_user" "cpm_ci" {
   name = "cpm-ci"
@@ -38,9 +40,9 @@ locals {
 }
 
 module "ecr" {
-  for_each = local.repositories
-  source   = "../modules/ecr_repository"
-
+  for_each  = local.repositories
+  source    = "../modules/ecr_repository"
+  kms_alias = "alias/${each.key}_ecr"
   repo_name = each.value["repo_name"]
   push_user = each.value["push_user"]
 }
