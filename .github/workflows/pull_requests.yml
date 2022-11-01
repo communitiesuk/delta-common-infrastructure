@@ -7,6 +7,14 @@ on:
       - ".github/workflows/**"
 
 jobs:
+  tf_fmt:
+    name: Validate Terraform formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Check formatting of all Terraform files
+        run: terraform fmt -check -diff -recursive
   validate_test:
     name: Validate test Terraform config
     uses: ./.github/workflows/terraform.yml
@@ -33,8 +41,6 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.3.1
-      - name: Check formatting of all Terraform files
-        run: terraform fmt -check -diff -recursive
       - name: Terraform Init
         run: terraform init -input=false -backend=false
         working-directory: terraform/production

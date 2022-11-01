@@ -1,0 +1,27 @@
+{
+  "rules": [{
+    "rulePriority": 1,
+    "description": "Only keep 20 most recent snapshot images",
+    "selection": {
+      "tagStatus": "tagged",
+      "tagPrefixList": ["snapshot-"],
+      "countType": "imageCountMoreThan",
+      "countNumber": 20
+    },
+    "action": {
+      "type": "expire"
+    }
+  },{
+    "rulePriority": 2,
+    "description": "Only keep 20 most recent release images",
+    "selection": {
+      "tagStatus": "tagged",
+      "tagPrefixList": ["release-"],
+      "countType": "imageCountMoreThan",
+      "countNumber": 20
+    },
+    "action": {
+      "type": "expire"
+    }
+  }]
+}
