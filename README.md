@@ -146,7 +146,7 @@ MarkLogic can't be configured without AD, so bring this up next.
 terraform apply -target module.active_directory
 ```
 
-Complete the manual setup steps in the module README, then configure the VPC DHCP to use the AD DNS servers.
+Complete the manual setup steps in the module README, then configure the VPC DHCP to use the AD DNS servers by running:
 
 ```sh
 terraform apply -target module.active_directory_dns_resolver
@@ -172,7 +172,7 @@ Now run the MarkLogic setup jobs from GitHub.
 
 ### 6 JasperReports server
 
-Ensure the Jasper binaries S3 bucket exists and has the expected JasperReports zip in, follow the instructions in the module readme to create the S3 bucket if not.
+Follow the setup instructions in the module readme.
 Make sure the `jasper_s3_bucket` variable is set correctly.
 
 ```sh
