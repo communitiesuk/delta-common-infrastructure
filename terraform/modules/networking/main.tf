@@ -54,6 +54,13 @@ locals {
       tls_allowed_domains  = []
       sid_offset           = 600
     }
+    delta_api_subnets = {
+      subnets              = [aws_subnet.delta_api]
+      cidr                 = local.delta_api_cidr_10
+      http_allowed_domains = []
+      tls_allowed_domains  = []
+      sid_offset           = 700
+    }
     marklogic = {
       subnets              = aws_subnet.ml_private_subnets
       cidr                 = local.ml_subnet_cidr_10

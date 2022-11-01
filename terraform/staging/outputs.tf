@@ -51,6 +51,14 @@ output "delta_internal_subnet_ids" {
   value = module.networking.delta_internal_subnets[*].id
 }
 
+output "delta_api_subnet_ids" {
+  value = module.networking.delta_api_subnets[*].id
+}
+
+output "public_subnet_ids" {
+  value = module.networking.public_subnets[*].id
+}
+
 output "vpc_id" {
   value = module.networking.vpc.id
 }
