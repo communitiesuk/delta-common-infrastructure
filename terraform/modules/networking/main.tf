@@ -44,6 +44,10 @@ locals {
         ".microsoft.com", ".windows.com", ".windowsupdate.com", # Windows update
         "download.mozilla.org", ".mozilla.net",                 # Firefox
         ".digicert.com",                                        # CRL
+        # Allow connections to SSM.
+        # These would normally flow through the VPC endpoint, but if Active Directory's DNS forwarding is misconfigured they will instead go to the main region endpoint.
+        # The AD Management server relies on SSM to join the domian, so allowing those connections makes it easier to fix.
+        "ssm.${data.aws_region.current.name}.amazonaws.com", "ssmmessages.${data.aws_region.current.name}.amazonaws.com", "ec2messages.${data.aws_region.current.name}.amazonaws.com"
       ]
       sid_offset = 500
     }
@@ -55,7 +59,7 @@ locals {
       sid_offset           = 600
     }
     delta_api_subnets = {
-      subnets              = [aws_subnet.delta_api]
+      subnets              = aws_subnet.delta_api
       cidr                 = local.delta_api_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = []
@@ -67,9 +71,9 @@ locals {
       http_allowed_domains = concat(["repo.ius.io", "mirrors.fedoraproject.org"])
       tls_allowed_domains = concat(local.marklogic_repo_mirror_tls_domains, [
         ".marklogic.com",
-        "repo.ius.io", "mirrors.fedoraproject.org",                                     # Yum repos
-        "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com",              # The instances make some requests to us-east-1 services on startup
-        "ec2-instance-connect.eu-west-1.amazonaws.com", "d2lzkl7pfhq30w.cloudfront.net" # Mystery, CF is for yum, but not sure where it comes from
+        "repo.ius.io", "mirrors.fedoraproject.org",                                                           # Yum repos
+        "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com",                                    # The instances make some requests to us-east-1 services on startup
+        "ec2-instance-connect.${data.aws_region.current.name}.amazonaws.com", "d2lzkl7pfhq30w.cloudfront.net" # Mystery, CF is for yum, but not sure where it comes from
       ])
       sid_offset = 4000
     }
