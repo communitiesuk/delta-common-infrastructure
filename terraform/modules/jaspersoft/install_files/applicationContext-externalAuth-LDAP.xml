@@ -126,7 +126,7 @@
     <bean id="userSearch"
         class="com.jaspersoft.jasperserver.api.security.externalAuth.wrappers.spring.ldap.JSFilterBasedLdapUserSearch">
         <constructor-arg index="0">
-            <value>ou=users,ou=${AD_DOMAIN}</value>
+            <value>cn=datamart,ou=users,ou=${AD_DOMAIN}</value>
         </constructor-arg>
         <constructor-arg index="1">
             <value>(&amp;(cn={0})(objectclass=user))</value>
