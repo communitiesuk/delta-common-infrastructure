@@ -2,12 +2,14 @@
 
 We use a GitHub Actions runner instance inside the VPC to deploy MarkLogic configuration changes through GitHub actions.
 
+The runners are attached to a separate private repository <https://github.com/communitiesuk/delta-marklogic-deploy/>
+
 ## First time setup
 
 The GitHub actions runner requires a short lived token to register with GitHub, this must be provided to terraform in the apply where the runner is created.
 
 * Delete any existing runner for the environment
-* Go to the create new runner page for the repo on GitHub: <https://github.com/communitiesuk/delta-common-infrastructure/settings/actions/runners/new?arch=x64&os=linux>
+* Go to the create new runner page for the repo on GitHub: <https://github.com/communitiesuk/delta-marklogic-deploy/settings/actions/runners/new?arch=x64&os=linux>
 * Copy the token from the setup steps
 * Pass it as a variable to Terraform apply
 * Check the runner appears online in GitHub
