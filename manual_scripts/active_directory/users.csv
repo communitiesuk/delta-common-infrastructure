@@ -1,6 +1,6 @@
 SamAccountName,Password,UserPrincipalName,DisplayName,Name,Path
 joebloggs,Password123,joe.bloggs@dluhcdata.local,Joe Bloggs,joe.bloggs,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
-deltaapp,Password123,delta.app@dluhcdata.local,Delta App,delta.app,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+deltaapp,Password123,delta.app@dluhcdata.local,Delta App,delta.app,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 deltainternal,Password123,delta.internal@dluhcdata.local,Delta Internal App,delta.internal,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 deltaadmin,Password123,delta.admin@dluhcdata.local,Delta Admin,delta.admin,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 deltauser,Password123,delta.user@dluhcdata.local,Delta User,delta.user,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
