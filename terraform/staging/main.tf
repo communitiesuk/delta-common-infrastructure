@@ -125,4 +125,5 @@ module "jaspersoft" {
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   enable_backup                 = false
   private_dns                   = module.networking.private_dns
+  environment                   = "staging"
 }

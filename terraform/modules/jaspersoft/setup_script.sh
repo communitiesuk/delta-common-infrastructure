@@ -2,7 +2,7 @@
 
 set -exuo pipefail
 
-export TOMCAT_VERSION=9.0.65
+export TOMCAT_VERSION=9.0.68
 export DEBIAN_FRONTEND=noninteractive
 
 # Let the instance finish booting
@@ -15,6 +15,9 @@ sleep 5
 
 apt-get update && apt-get upgrade -y
 apt-get install wget awscli lsb-release gnupg unzip -y
+
+# Otherwise systemd-resolve blocks .local domains
+ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
 # Block non-root users from accessing the instance metadata service
 iptables -A OUTPUT -m owner ! --uid-owner root -d 169.254.169.254 -j DROP
@@ -52,11 +55,11 @@ mkdir $${CATALINA_BASE}/lib
 # Setup a simple ROOT app that redirects to /jasperserver
 mkdir $${CATALINA_BASE}/webapps/ROOT
 mkdir $${CATALINA_BASE}/webapps/ROOT/WEB-INF
-aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/root_index.jsp $${CATALINA_BASE}/webapps/ROOT/index.jsp
-aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/root_web.xml $${CATALINA_BASE}/webapps/ROOT/WEB-INF/web.xml
+aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/${ENVIRONMENT}/root_index.jsp $${CATALINA_BASE}/webapps/ROOT/index.jsp
+aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/${ENVIRONMENT}/root_web.xml $${CATALINA_BASE}/webapps/ROOT/WEB-INF/web.xml
 chown -R tomcat:tomcat $${CATALINA_BASE}
 
-aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/tomcat.service /etc/systemd/system/tomcat.service
+aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/${ENVIRONMENT}/tomcat.service /etc/systemd/system/tomcat.service
 systemctl daemon-reload
 systemctl enable tomcat
 
@@ -72,7 +75,7 @@ su postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\""
 # Download JasperSoft files
 
 aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/js-7.8.1_hotfixed_2022-04-15.zip /tmp
-aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/default_master.properties /tmp
+aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/${ENVIRONMENT}/default_master.properties /tmp
 
 # We may also need to install Chrome, I haven't done this
 # > You need to install and configure Chrome/Chromium to export the reports to PDF and other output formats.
@@ -88,6 +91,14 @@ chown tomcat:tomcat ./default_master.properties
 # Run install
 su tomcat -c "./js-install-ce.sh minimal"
 
+# LDAP setup
+aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/${ENVIRONMENT}/applicationContext-externalAuth-LDAP.xml $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
+set +x
+LDAP_BIND_PASSWORD=`aws secretsmanager get-secret-value --region ${AWS_REGION} --secret-id ${LDAP_BIND_PASSWORD_SECRET_ID} --query SecretString --output text`
+sed -i "s/JASPERSOFT_BIND_USER_PASSWORD/$${LDAP_BIND_PASSWORD}/" $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
+set -x
+chown tomcat:tomcat $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
+
 # Fix for invalid CSRF header name, ALB will drop headers with underscores in
 sed -i 's/^org.owasp.csrfguard.TokenName=OWASP_CSRFTOKEN/org.owasp.csrfguard.TokenName=OWASPCSRFTOKEN/' $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/csrf/jrs.csrfguard.properties
 
@@ -96,5 +107,3 @@ sudo -u tomcat cp /opt/tomcat/jaspersoft_install/buildomatic/conf_source/db/post
 systemctl start tomcat
 
 echo "Done"
-
-# TODO: LDAP config

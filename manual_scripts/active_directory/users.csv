@@ -9,3 +9,6 @@ paymentapprover,Password123,payment.approver@dluhcdata.local,Payment Approver,pa
 cpmapp,Password123,cpm.app@dluhcdata.local,CPM App,cpm.app,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 sap,Password123,sap@dluhcdata.local,SAP,sap,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 eclaims,Password123,eclaims@dluhcdata.local,Eclaims,eclaims,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+jasperreports,Password123,jasperreports@dluhcdata.local,Jasper Reports app,jasperreports,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+jasperuser,Password123,jasperuser@dluhcdata.local,Jasper User,jasperuser,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+jasperadminuser,Password123,jasperadminuser@dluhcdata.local,Jasper Admin User,jasperadminuser,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
