@@ -4,6 +4,7 @@ AWS Delegated Administrators,deltaapp
 datamart-delta-admin,deltaapp
 AWS Delegated Administrators,deltainternal
 datamart-delta-admin,deltaadmin
+datamart-delta-user,deltaadmin
 datamart-delta-user,deltauser
 datamart-delta-payments-approvers,paymentapprover
 datamart-delta-report-users,reportuser
