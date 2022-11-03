@@ -71,10 +71,6 @@ output "cpm_private_subnet_ids" {
   value = module.networking.cpm_private_subnets[*].id
 }
 
-output "gh_runner_ip" {
-  value = module.gh_runner.instance_ip
-}
-
 output "gh_runner_private_key" {
   value     = module.gh_runner.private_key
   sensitive = true
