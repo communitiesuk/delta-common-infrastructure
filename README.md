@@ -157,7 +157,7 @@ terraform apply -target module.active_directory_dns_resolver
 Follow the instructions in the module README to set up the required secrets then bring the MarkLogic cluster up.
 
 ```sh
-terraform apply -target module.active_directory
+terraform apply -target module.marklogic
 ```
 
 ### 5 MarkLogic configuration - GitHub Runner
