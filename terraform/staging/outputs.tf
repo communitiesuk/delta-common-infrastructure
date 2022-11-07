@@ -59,10 +59,6 @@ output "public_subnet_ids" {
   value = module.networking.public_subnets[*].id
 }
 
-output "cpm_subnet_ids" {
-  value = module.networking.cpm_private_subnets[*].id
-}
-
 output "vpc_id" {
   value = module.networking.vpc.id
 }
