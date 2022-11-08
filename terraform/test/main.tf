@@ -59,7 +59,7 @@ resource "aws_key_pair" "bastion_ssh_key" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=33ed83e0ae4d2c4c955ad05fd3377786fdc31b68"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=11b10ed6805a4bdd7a5e983f8c90cf40a4c43bad"
 
   region                  = "eu-west-1"
   name_prefix             = "tst"
@@ -73,6 +73,7 @@ module "bastion" {
     zone_id = module.dns.delegated_zone_id
     domain  = "bastion.${var.delegated_domain}"
   }
+  extra_userdata = "yum install openldap-clients -y"
 
   tags_asg = var.default_tags
 }

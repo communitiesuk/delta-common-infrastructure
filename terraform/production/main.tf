@@ -35,7 +35,7 @@ module "networking" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=33ed83e0ae4d2c4c955ad05fd3377786fdc31b68"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=11b10ed6805a4bdd7a5e983f8c90cf40a4c43bad"
 
   region                  = "eu-west-1"
   name_prefix             = "prd"
@@ -45,6 +45,7 @@ module "bastion" {
   admin_ssh_key_pair_name = "bastion-ssh-prod" # private key stored in AWS Secrets Manager as "bastion-ssh-private-key"
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1
+  extra_userdata          = "yum install openldap-clients -y"
 
   tags_asg = var.default_tags
 }
