@@ -53,11 +53,11 @@ resource "aws_route" "nat_gateway_to_internet" {
 # Coming back the Internet Gateway will route traffic to the NAT Gateway - that's the default, all good
 # Then the NAT Gateway should route traffic destined for firewalled subnets back through the firewall first
 resource "aws_route" "nat_gateway_back_to_firewall" {
-  for_each = { for subnet in local.firewalled_subnets : subnet.tags.Name => subnet }
+  count = length(local.firewall_config)
 
   # More specific routes override less specific ones (by prefix length)
   route_table_id         = aws_route_table.nat_gateway_subnet_route_table.id
-  destination_cidr_block = each.value.cidr_block
+  destination_cidr_block = local.firewalled_subnets[count.index].cidr_block
   vpc_endpoint_id        = one(one(one(aws_networkfirewall_firewall.main.firewall_status).sync_states).attachment).endpoint_id
 }
 
