@@ -36,3 +36,8 @@ variable "open_ingress_cidrs" {
 variable "ecr_repo_account_id" {
   type = string
 }
+
+variable "number_of_vpc_endpoint_subnets" {
+  default = 3
+  type    = number
+}

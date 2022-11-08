@@ -116,7 +116,7 @@ resource "aws_subnet" "cpm_private" {
 }
 
 resource "aws_subnet" "vpc_endpoints_subnets" {
-  count             = 3
+  count             = var.number_of_vpc_endpoint_subnets
   availability_zone = data.aws_availability_zones.available.names[count.index]
   cidr_block        = cidrsubnet(local.vpc_endpoints_cidr_10, 2, count.index)
   vpc_id            = aws_vpc.vpc.id

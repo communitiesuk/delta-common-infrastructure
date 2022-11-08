@@ -57,7 +57,7 @@ output "github_runner_private_subnet" {
 
 output "cpm_private_subnets" {
   value       = aws_subnet.cpm_private
-  description = "Three /24 subnets for GitHub runner instance"
+  description = "Three private /24 subnets for CPM"
 }
 
 output "private_dns" {
