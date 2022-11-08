@@ -12,8 +12,9 @@ locals {
   delta_internal_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 20.0/22
   github_runner_cidr_10    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 6)   # 24.0/22
   delta_api_cidr_10        = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 7)   # 28.0/22
+  cpm_private_cidr_10      = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 8)   # 32.0/22
+  vpc_endpoints_cidr_10    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 9)   # 36.0/22
   public_cidr_10           = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/22
-  vpc_endpoints_cidr_8     = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 253) # 253.0/24
   firewall_cidr_8          = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 254) # 254.0/24
   nat_gateway_cidr_8       = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/24
 }
@@ -105,11 +106,21 @@ resource "aws_subnet" "github_runner" {
   tags                    = { Name = "github-runner-private-subnet-${var.environment}" }
 }
 
-resource "aws_subnet" "vpc_endpoints_subnet" {
-  availability_zone = data.aws_availability_zones.available.names[0]
-  cidr_block        = local.vpc_endpoints_cidr_8
+resource "aws_subnet" "cpm_private" {
+  count                   = 3
+  cidr_block              = cidrsubnet(local.cpm_private_cidr_10, 2, count.index)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = false
+  tags                    = { Name = "cpm-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+}
+
+resource "aws_subnet" "vpc_endpoints_subnets" {
+  count             = var.number_of_vpc_endpoint_subnets
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+  cidr_block        = cidrsubnet(local.vpc_endpoints_cidr_10, 2, count.index)
   vpc_id            = aws_vpc.vpc.id
-  tags              = { Name = "vpc-endpoints-subnet-${var.environment}" }
+  tags              = { Name = "vpc-endpoints-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
 resource "aws_subnet" "firewall" {

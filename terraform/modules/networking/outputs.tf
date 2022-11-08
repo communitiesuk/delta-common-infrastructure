@@ -55,6 +55,11 @@ output "github_runner_private_subnet" {
   description = "Private /24 subnet for GitHub runner instance"
 }
 
+output "cpm_private_subnets" {
+  value       = aws_subnet.cpm_private
+  description = "Three private /24 subnets for CPM"
+}
+
 output "private_dns" {
   value = {
     zone_id     = aws_route53_zone.private.zone_id

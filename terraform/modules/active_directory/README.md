@@ -67,7 +67,7 @@ From [AWS documentation](https://aws.amazon.com/blogs/security/how-to-migrate-yo
 Terraform is unaware of an aws_ssm_association failing to run.
 
 * Run `aws ssm list-commands` to see the status.
-* RDP to the server to find the logs. Check under `C:\ProgramData\Amazon\SSM`
+* RDP to the server to find the logs. Check under `C:\ProgramData\Amazon\SSM\Logs`
 
 ### CA Server setup
 
