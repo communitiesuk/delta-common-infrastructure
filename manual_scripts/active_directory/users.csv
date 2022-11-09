@@ -12,3 +12,4 @@ eclaims,Password123,eclaims@dluhcdata.local,Eclaims,eclaims,"OU=Users,OU=dluhcda
 jasperreports,Password123,jasperreports@dluhcdata.local,Jasper Reports app,jasperreports,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 jasperuser,Password123,jasperuser@dluhcdata.local,Jasper User,jasperuser,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 jasperadminuser,Password123,jasperadminuser@dluhcdata.local,Jasper Admin User,jasperadminuser,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+keycloak,Password123,keycloak@dluhcdata.local,Keycloak app,keycloak,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
