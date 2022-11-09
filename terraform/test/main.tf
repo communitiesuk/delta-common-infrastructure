@@ -93,6 +93,7 @@ module "active_directory" {
   ad_domain                    = "dluhctest.local"
   ad_netbios_name              = "DLUHCTEST"
   management_instance_type     = "t3.xlarge"
+  include_ca                   = false
 }
 
 module "active_directory_dns_resolver" {

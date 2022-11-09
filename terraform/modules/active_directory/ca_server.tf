@@ -30,6 +30,7 @@ resource "aws_s3_bucket_versioning" "ldaps_crl" {
 }
 
 resource "aws_cloudformation_stack" "ca_server" {
+  count      = var.include_ca ? 1 : 0
   name       = "ca-server-${var.environment}"
   on_failure = "DO_NOTHING"
 
@@ -66,5 +67,6 @@ resource "aws_cloudformation_stack" "ca_server" {
 }
 
 data "aws_instance" "ca_server" {
-  instance_id = aws_cloudformation_stack.ca_server.outputs["EntRootCAInstanceId"]
+  count       = var.include_ca ? 1 : 0
+  instance_id = aws_cloudformation_stack.ca_server[0].outputs["EntRootCAInstanceId"]
 }

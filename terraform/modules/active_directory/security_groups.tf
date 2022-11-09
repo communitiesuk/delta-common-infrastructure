@@ -23,21 +23,23 @@ resource "aws_security_group" "ad_management_server" {
 }
 
 resource "aws_security_group_rule" "domain_controllers_to_ca_1" {
+  count             = var.include_ca ? 1 : 0
   description       = "Directory Services to CA port 135"
   type              = "egress"
   from_port         = 135
   to_port           = 135
   protocol          = "tcp"
-  cidr_blocks       = ["${data.aws_instance.ca_server.private_ip}/32"]
+  cidr_blocks       = ["${data.aws_instance.ca_server[0].private_ip}/32"]
   security_group_id = aws_directory_service_directory.directory_service.security_group_id
 }
 
 resource "aws_security_group_rule" "domain_controllers_to_ca_2" {
+  count             = var.include_ca ? 1 : 0
   description       = "Directory Services to CA ports 49152+"
   type              = "egress"
   from_port         = 49152
   to_port           = 65535
   protocol          = "tcp"
-  cidr_blocks       = ["${data.aws_instance.ca_server.private_ip}/32"]
+  cidr_blocks       = ["${data.aws_instance.ca_server[0].private_ip}/32"]
   security_group_id = aws_directory_service_directory.directory_service.security_group_id
 }

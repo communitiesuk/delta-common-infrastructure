@@ -67,3 +67,8 @@ variable "ent_ca_validity_years" {
   description = "Validity period of the root CA"
   default     = "20"
 }
+
+variable "include_ca" {
+  type    = bool
+  default = true
+}
