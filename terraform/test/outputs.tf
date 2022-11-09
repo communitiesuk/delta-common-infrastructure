@@ -104,3 +104,14 @@ output "gh_runner_private_key" {
   value     = module.gh_runner.private_key
   sensitive = true
 }
+
+output "private_dns" {
+  value = module.networking.private_dns
+}
+
+output "delegated_dns" {
+  value = {
+    zone_id     = module.dns.delegated_zone_id
+    base_domain = var.delegated_domain
+  }
+}
