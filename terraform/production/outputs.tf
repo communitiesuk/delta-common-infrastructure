@@ -14,6 +14,10 @@ output "cpm_private_subnet_ids" {
   value = module.networking.cpm_private_subnets[*].id
 }
 
+output "keycloak_private_subnet_ids" {
+  value = module.networking.keycloak_private_subnets[*].id
+}
+
 output "vpc_id" {
   value = module.networking.vpc.id
 }
