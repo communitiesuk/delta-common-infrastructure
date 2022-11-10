@@ -12,6 +12,10 @@ variable "kms_key_arn" {
   description = "Optional. KMS key to encrypt bucket and access logs bucket."
 }
 
+output "bucket" {
+  value = aws_s3_bucket.main.bucket
+}
+
 output "bucket_arn" {
   value = aws_s3_bucket.main.arn
 }
