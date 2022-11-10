@@ -459,6 +459,9 @@ Resources:
         - Key: marklogic:stack:id
           Value: !Ref 'AWS::StackId'
           PropagateAtLaunch: 'true'
+        - Key: Name
+          Value: MarkLogic-ASG-1
+          PropagateAtLaunch: 'true'
       LifecycleHookSpecificationList:
         - LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING'
           LifecycleHookName: NodeManager
@@ -502,6 +505,9 @@ Resources:
         - Key: marklogic:stack:id
           Value: !Ref 'AWS::StackId'
           PropagateAtLaunch: 'true'
+        - Key: Name
+          Value: MarkLogic-ASG-2
+          PropagateAtLaunch: 'true'
       LifecycleHookSpecificationList:
         - LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING'
           LifecycleHookName: NodeManager
@@ -544,6 +550,9 @@ Resources:
           PropagateAtLaunch: 'true'
         - Key: marklogic:stack:id
           Value: !Ref 'AWS::StackId'
+          PropagateAtLaunch: 'true'
+        - Key: Name
+          Value: MarkLogic-ASG-3
           PropagateAtLaunch: 'true'
       LifecycleHookSpecificationList:
         - LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING'
