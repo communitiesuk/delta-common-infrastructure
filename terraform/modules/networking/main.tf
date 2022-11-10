@@ -14,7 +14,7 @@ locals {
       subnets              = [aws_subnet.jaspersoft]
       cidr                 = local.jaspersoft_cidr_10
       http_allowed_domains = [".ubuntu.com", ".launchpad.net", ".postgresql.org"]
-      tls_allowed_domains  = [".ubuntu.com", ".launchpad.net", "archive.apache.org", ".postgresql.org", "api.snapcraft.io"]
+      tls_allowed_domains  = [".ubuntu.com", ".launchpad.net", "archive.apache.org", ".postgresql.org", "api.snapcraft.io", ".snapcraftcontent.com"]
       sid_offset           = 200
     }
     github_runner = {
@@ -49,7 +49,9 @@ locals {
         # Allow connections to SSM.
         # These would normally flow through the VPC endpoint, but if Active Directory's DNS forwarding is misconfigured they will instead go to the main region endpoint.
         # The AD Management server relies on SSM to join the domain, so allowing those connections makes it easier to fix.
-        "ssm.${data.aws_region.current.name}.amazonaws.com", "ssmmessages.${data.aws_region.current.name}.amazonaws.com", "ec2messages.${data.aws_region.current.name}.amazonaws.com"
+        "ssm.${data.aws_region.current.name}.amazonaws.com", "ssmmessages.${data.aws_region.current.name}.amazonaws.com", "ec2messages.${data.aws_region.current.name}.amazonaws.com",
+        # Does not currently have an endpoint
+        "ds.${data.aws_region.current.name}.amazonaws.com"
       ]
       sid_offset = 500
     }
