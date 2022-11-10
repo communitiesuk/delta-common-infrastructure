@@ -60,6 +60,11 @@ output "cpm_private_subnets" {
   description = "Three private /24 subnets for CPM"
 }
 
+output "keycloak_private_subnets" {
+  value       = aws_subnet.keycloak_private
+  description = "Three private /24 subnets for Keycloak"
+}
+
 output "private_dns" {
   value = {
     zone_id     = aws_route53_zone.private.zone_id

@@ -31,6 +31,10 @@ locals {
     "delta_fo_to_pdf" = {
       repo_name = "delta-fo-to-pdf",
       push_user = data.aws_iam_user.delta_ci.user_name
+    },
+    "keycloak" = {
+      repo_name = "keycloak",
+      push_user = data.aws_iam_user.delta_ci.user_name
     }
   }
 }
