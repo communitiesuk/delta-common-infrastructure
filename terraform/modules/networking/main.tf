@@ -35,12 +35,13 @@ locals {
     }
     ad_other_subnets = {
       cidr                 = local.ad_other_cidr_10
-      http_allowed_domains = [".microsoft.com", ".windows.com", ".windowsupdate.com", ".digicert.com"]
+      http_allowed_domains = [".microsoft.com", ".windows.com", ".windowsupdate.com", ".digicert.com",".firefox.com"]
       tls_allowed_domains = [
         ".microsoft.com", ".windows.com", ".windowsupdate.com",                                  # Windows update
         "onegetcdn.azureedge.net", "www.powershellgallery.com", "psg-prod-eastus.azureedge.net", # Install PowerShell tools
-        "download.mozilla.org", ".mozilla.net",                                                  # Firefox
+        "download.mozilla.org", ".mozilla.net", "contile.services.mozilla.com",                  # Firefox
         ".digicert.com",                                                                         # CRL
+        ""                                          # Migration tools
         # Allow connections to SSM.
         # These would normally flow through the VPC endpoint, but if Active Directory's DNS forwarding is misconfigured they will instead go to the main region endpoint.
         # The AD Management server relies on SSM to join the domain, so allowing those connections makes it easier to fix.

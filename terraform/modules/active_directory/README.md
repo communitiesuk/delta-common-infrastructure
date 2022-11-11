@@ -48,13 +48,6 @@ Set-DnsServerForwarder -ComputerName <dns-server> -IpAddress x.x.0.2
 
 Do the same for the other server and check that `nslookup secretsmanager.eu-west-1.amazonaws.com` returns an IP address inside the VPC.
 
-### For migrating data between AD domains
-
-From [AWS documentation](https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/) for prerequisites for AD migration:
-
-* Download SQL Server Express: <https://www.microsoft.com/en-au/sql-server/sql-server-downloads>
-* Download ADMT: <https://www.microsoft.com/en-us/download/details.aspx?id=56570>
-
 ## Troubleshooting
 
 ### You can also connect as the ec2 server admin
@@ -91,7 +84,7 @@ We're roughly following this blog post: <https://aws.amazon.com/blogs/security/h
 
 RDP into the AD Management Server as domain admin.
 
-Following the instructions here: <https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_tutorial_setup_trust_prepare_onprem.html>
+Following the instructions here: <https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_tutorial_setup_trust_prepare_onprem.html> or [AWS documentation](https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/) for prerequisites
 
 * Open up the security groups and ACL. Easiest to allow all traffic. DCs definitely need to be able to send DNS requests to each other.
   * Done in terraform
