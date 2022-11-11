@@ -56,6 +56,12 @@ locals {
       tls_allowed_domains  = []
       sid_offset           = 600
     }
+    delta_website_subnets = {
+      cidr                 = local.delta_website_cidr_10
+      http_allowed_domains = []
+      tls_allowed_domains  = [".amazonaws.com", "archive.apache.org"]
+      sid_offset           = 600
+    }
     delta_api_subnets = {
       cidr                 = local.delta_api_cidr_10
       http_allowed_domains = []
@@ -95,6 +101,7 @@ locals {
     aws_subnet.ad_dc_private_subnets,
     aws_subnet.delta_internal,
     aws_subnet.delta_api,
+    aws_subnet.delta_website,
     aws_subnet.cpm_private,
     aws_subnet.ml_private_subnets,
     aws_subnet.keycloak_private,
