@@ -395,6 +395,7 @@ Resources:
       TimeoutInMinutes: 5
   MarklogicVolume1:
     Type: 'AWS::EC2::Volume'
+    DeletionPolicy: Retain
     Properties:
       AvailabilityZone: !Select [0, !Ref AZ]
       Size: !Ref VolumeSize
@@ -409,6 +410,7 @@ Resources:
         id: c81032f7-b0ec-47ca-a236-e24d57b49ae3
   MarklogicVolume2:
     Type: 'AWS::EC2::Volume'
+    DeletionPolicy: Retain
     Properties:
       AvailabilityZone: !Select [1, !Ref AZ]
       Size: !Ref VolumeSize
@@ -423,6 +425,7 @@ Resources:
         id: ddb55ae1-a00b-42ed-addd-5e03e4a2764b
   MarklogicVolume3:
     Type: 'AWS::EC2::Volume'
+    DeletionPolicy: Retain
     Properties:
       AvailabilityZone: !Select [2, !Ref AZ]
       Size: !Ref VolumeSize
