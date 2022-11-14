@@ -8,7 +8,7 @@ module "dap_export_bucket" {
 
 resource "aws_ssm_maintenance_window" "dap_s3_upload" {
   name              = "marklogic-dap-s3-upload-${var.environment}"
-  schedule          = "cron(00 06 ? * * *)" # 6 AM every day
+  schedule          = "cron(00 04 ? * * *)" # 4 AM every day
   schedule_timezone = "Etc/UTC"
   duration          = 2
   cutoff            = 1
