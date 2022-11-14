@@ -1,4 +1,4 @@
-name: "TFSec main branch check"
+name: "TFSec check"
 
 on:
   push:
@@ -6,7 +6,11 @@ on:
       - "main"
     paths:
       - "terraform/**"
-      - ".github/workflows/tfsec-main.yml"
+      - ".github/workflows/**"
+  pull_request:
+    paths:
+      - "terraform/**"
+      - ".github/workflows/**"
 
 jobs:
   tfsec:
