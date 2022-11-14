@@ -91,3 +91,12 @@ resource "aws_iam_policy" "ml_instance_policy" {
     ]
   })
 }
+
+data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
+  arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "ml_ssm_managed" {
+  role       = aws_iam_role.ml_iam_role.name
+  policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
+}

@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "s3_gateway" {
 
   statement {
     sid     = "ReadBucketsInCurrentAccount"
-    actions = ["s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket"]
+    actions = ["s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket", "s3:GetEncryptionConfiguration"]
     principals {
       type        = "*"
       identifiers = ["*"]
@@ -73,7 +73,7 @@ data "aws_iam_policy_document" "s3_gateway" {
 
   statement {
     sid     = "AWSBuckets"
-    actions = ["s3:GetObject", "s3:ListBucket"]
+    actions = ["s3:GetObject", "s3:ListBucket", "s3:GetEncryptionConfiguration"]
     principals {
       type        = "*"
       identifiers = ["*"]
