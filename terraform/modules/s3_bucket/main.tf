@@ -1,4 +1,4 @@
-variable "bcuket_name" {
+variable "bucket_name" {
   type = string
 }
 
@@ -26,7 +26,7 @@ output "bucket_arn" {
 }
 
 resource "aws_s3_bucket" "main" {
-  bucket        = var.bcuket_name
+  bucket        = var.bucket_name
   force_destroy = var.force_destroy
 }
 
