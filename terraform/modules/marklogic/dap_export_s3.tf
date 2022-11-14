@@ -3,6 +3,7 @@ module "dap_export_bucket" {
 
   bcuket_name            = "dluhc-delta-dap-export-${var.environment}"
   access_log_bucket_name = "dluhc-delta-dap-export-access-logs-${var.environment}"
+  force_destroy          = true
 }
 
 resource "aws_ssm_maintenance_window" "dap_s3_upload" {
