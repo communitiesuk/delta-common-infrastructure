@@ -12,6 +12,11 @@ variable "kms_key_arn" {
   description = "Optional. KMS key to encrypt bucket and access logs bucket."
 }
 
+variable "force_destroy" {
+  description = "Allow the buckets to be destroyed by Terraform even if they are not empty."
+  default     = false
+}
+
 output "bucket" {
   value = aws_s3_bucket.main.bucket
 }
@@ -21,7 +26,8 @@ output "bucket_arn" {
 }
 
 resource "aws_s3_bucket" "main" {
-  bucket = var.bucket_name
+  bucket        = var.bcuket_name
+  force_destroy = var.force_destroy
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "main" {
@@ -54,7 +60,8 @@ resource "aws_s3_bucket_versioning" "main" {
 # Access logs bucket
 # tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
 resource "aws_s3_bucket" "log_bucket" {
-  bucket = var.access_log_bucket_name
+  bucket        = var.access_log_bucket_name
+  force_destroy = var.force_destroy
 }
 
 resource "aws_s3_bucket_logging" "main" {
