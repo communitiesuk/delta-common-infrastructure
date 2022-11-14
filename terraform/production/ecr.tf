@@ -1,6 +1,8 @@
 # Only required for production. The test/staging environments share produciton's build artifacts.
 
 # This user is used by the common-payments-module repo's CI workflows
+# One of a kind
+# tfsec:ignore:aws-iam-no-user-attached-policies
 resource "aws_iam_user" "cpm_ci" {
   name = "cpm-ci"
 }
