@@ -24,6 +24,12 @@ resource "aws_cloudformation_stack" "marklogic" {
     PrivateSubnet2 = var.private_subnets[1].id
     PrivateSubnet3 = var.private_subnets[2].id
 
+    DataVolume1 = aws_ebs_volume.marklogic_data_volumes[var.private_subnets[0].tags.Name].id
+    DataVolume2 = aws_ebs_volume.marklogic_data_volumes[var.private_subnets[1].tags.Name].id
+    DataVolume3 = aws_ebs_volume.marklogic_data_volumes[var.private_subnets[2].tags.Name].id
+    VolumeSize  = var.data_volume_size_gb
+    VolumeType  = local.ebs_volume_type
+
     TargetGroupARNs       = join(",", aws_lb_target_group.ml[*].arn)
     InstanceSecurityGroup = aws_security_group.ml_instance.id
 

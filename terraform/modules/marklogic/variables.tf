@@ -27,3 +27,8 @@ variable "private_dns" {
     base_domain = string
   })
 }
+
+variable "data_volume_size_gb" {
+  description = "Size in GB of the data EBS volume for each instace"
+  default     = 20
+}

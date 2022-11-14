@@ -19,6 +19,9 @@ Metadata:
           - NumberOfZones
           - NodesPerZone
           - AZ
+          - DataVolume1
+          - DataVolume2
+          - DataVolume3
           - LogSNS
       - Label:
           default: "Network Configuration"
@@ -76,6 +79,12 @@ Metadata:
         default: Private Subnet 2
       PrivateSubnet3:
         default: Private Subnet 3
+      DataVolume1:
+        default: EBS Volume Id for MarkLogic data in AZ 1
+      DataVolume2:
+        default: EBS Volume Id for MarkLogic data in AZ 2
+      DataVolume3:
+        default: EBS Volume Id for MarkLogic data in AZ 3
 Parameters:
   # resource configuration
   TargetGroupARNs:
@@ -262,6 +271,15 @@ Parameters:
     Description: SNS Topic for logging - optional/advanced.
     Type: String
     Default: none
+  DataVolume1:
+    Description: EBS Volume Id for MarkLogic data in AZ 1
+    Type: 'AWS::EC2::Volume::Id'
+  DataVolume2:
+    Description: EBS Volume Id for MarkLogic data in AZ 2
+    Type: 'AWS::EC2::Volume::Id'
+  DataVolume3:
+    Description: EBS Volume Id for MarkLogic data in AZ 3
+    Type: 'AWS::EC2::Volume::Id'
   # network configuration
   VPC:
     Description: ID of an existing Virtual Private Cloud (VPC)
@@ -393,51 +411,6 @@ Resources:
         S3Directory: !FindInMap [Variable,"S3Directory","base"]
       TemplateURL: !Join ['/', [!FindInMap [Variable,"TemplateUrl","base"],!FindInMap [Variable,"S3Directory","base"],'ml-nodemanager.template']]
       TimeoutInMinutes: 5
-  MarklogicVolume1:
-    Type: 'AWS::EC2::Volume'
-    DeletionPolicy: Retain
-    Properties:
-      AvailabilityZone: !Select [0, !Ref AZ]
-      Size: !Ref VolumeSize
-      Tags:
-        - Key: Name
-          Value: MarkLogic-GroupA-Host1-Volume0
-      VolumeType: !Ref VolumeType
-      Encrypted: !If [UseVolumeEncryption, 'true', 'false']
-      KmsKeyId: !If [HasCustomEBSKey, !Ref VolumeEncryptionKey, !Ref 'AWS::NoValue']
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: c81032f7-b0ec-47ca-a236-e24d57b49ae3
-  MarklogicVolume2:
-    Type: 'AWS::EC2::Volume'
-    DeletionPolicy: Retain
-    Properties:
-      AvailabilityZone: !Select [1, !Ref AZ]
-      Size: !Ref VolumeSize
-      Tags:
-        - Key: Name
-          Value: MarkLogic-GroupB-Host1-Volume0
-      VolumeType: !Ref VolumeType
-      Encrypted: !If [UseVolumeEncryption, 'true', 'false']
-      KmsKeyId: !If [HasCustomEBSKey, !Ref VolumeEncryptionKey, !Ref 'AWS::NoValue']
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: ddb55ae1-a00b-42ed-addd-5e03e4a2764b
-  MarklogicVolume3:
-    Type: 'AWS::EC2::Volume'
-    DeletionPolicy: Retain
-    Properties:
-      AvailabilityZone: !Select [2, !Ref AZ]
-      Size: !Ref VolumeSize
-      Tags:
-        - Key: Name
-          Value: MarkLogic-GroupC-Host1-Volume0
-      VolumeType: !Ref VolumeType
-      Encrypted: !If [UseVolumeEncryption, 'true', 'false']
-      KmsKeyId: !If [HasCustomEBSKey, !Ref VolumeEncryptionKey, !Ref 'AWS::NoValue']
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: 9094a65e-9d01-4c4c-9586-c33720e2cc9c
   MarkLogicDDBTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
@@ -602,7 +575,7 @@ Resources:
             - |+
 
             - MARKLOGIC_EBS_VOLUME=
-            - !Ref MarklogicVolume1
+            - !Ref DataVolume1
             - ',:'
             - !Ref VolumeSize
             - '::'
@@ -679,7 +652,7 @@ Resources:
             - |+
 
             - MARKLOGIC_EBS_VOLUME=
-            - !Ref MarklogicVolume2
+            - !Ref DataVolume2
             - ',:'
             - !Ref VolumeSize
             - '::'
@@ -756,7 +729,7 @@ Resources:
             - |+
 
             - MARKLOGIC_EBS_VOLUME=
-            - !Ref MarklogicVolume3
+            - !Ref DataVolume3
             - ',:'
             - !Ref VolumeSize
             - '::'
