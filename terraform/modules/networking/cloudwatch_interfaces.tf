@@ -54,7 +54,8 @@ data "aws_iam_policy_document" "cloudwatch_logs_endpoint" {
       "logs:DescribeLogStreams",
       "logs:DescribeLogGroups",
       "logs:CreateLogStream",
-      "logs:CreateLogGroup"
+      "logs:CreateLogGroup",
+      "logs:PutRetentionPolicy"
     ]
     principals {
       type        = "AWS"
