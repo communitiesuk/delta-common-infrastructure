@@ -41,7 +41,6 @@ locals {
         "onegetcdn.azureedge.net", "www.powershellgallery.com", "psg-prod-eastus.azureedge.net", # Install PowerShell tools
         "download.mozilla.org", ".mozilla.net", "contile.services.mozilla.com",                  # Firefox
         ".digicert.com",                                                                         # CRL
-        ""                                          # Migration tools
         # Allow connections to SSM.
         # These would normally flow through the VPC endpoint, but if Active Directory's DNS forwarding is misconfigured they will instead go to the main region endpoint.
         # The AD Management server relies on SSM to join the domain, so allowing those connections makes it easier to fix.
