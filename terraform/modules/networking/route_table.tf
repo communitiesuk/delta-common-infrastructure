@@ -54,7 +54,6 @@ resource "aws_route" "nat_gateway_to_internet" {
 # Then the NAT Gateway should route traffic destined for firewalled subnets back through the firewall first
 resource "aws_route" "nat_gateway_back_to_firewall" {
   for_each = { for subnet in local.firewalled_subnets : subnet.tags.Name => subnet }
-
   # More specific routes override less specific ones (by prefix length)
   route_table_id         = aws_route_table.nat_gateway_subnet_route_table.id
   destination_cidr_block = each.value.cidr_block

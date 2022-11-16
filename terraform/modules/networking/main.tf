@@ -4,21 +4,18 @@ data "aws_caller_identity" "current" {}
 locals {
   firewall_config = {
     bastion = {
-      subnets              = aws_subnet.bastion_private_subnets
       cidr                 = local.bastion_subnet_cidr_10
       http_allowed_domains = ["example.com"]
       tls_allowed_domains  = ["http.cat"]
       sid_offset           = 100
     }
     jaspersoft = {
-      subnets              = [aws_subnet.jaspersoft]
       cidr                 = local.jaspersoft_cidr_10
       http_allowed_domains = [".ubuntu.com", ".launchpad.net", ".postgresql.org"]
       tls_allowed_domains  = [".ubuntu.com", ".launchpad.net", "archive.apache.org", ".postgresql.org", "api.snapcraft.io", ".snapcraftcontent.com"]
       sid_offset           = 200
     }
     github_runner = {
-      subnets              = [aws_subnet.github_runner]
       cidr                 = local.github_runner_cidr_10
       http_allowed_domains = []
       # See https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners#communication-between-self-hosted-runners-and-github
@@ -31,20 +28,18 @@ locals {
       sid_offset = 300
     }
     ad_dc_private_subnets = {
-      subnets              = aws_subnet.ad_dc_private_subnets
       cidr                 = local.ad_dc_subnet_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = []
       sid_offset           = 400
     }
     ad_other_subnets = {
-      subnets              = [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server]
       cidr                 = local.ad_other_cidr_10
-      http_allowed_domains = [".microsoft.com", ".windows.com", ".windowsupdate.com", ".digicert.com"]
+      http_allowed_domains = [".microsoft.com", ".windows.com", ".windowsupdate.com", ".digicert.com",".firefox.com"]
       tls_allowed_domains = [
         ".microsoft.com", ".windows.com", ".windowsupdate.com",                                  # Windows update
         "onegetcdn.azureedge.net", "www.powershellgallery.com", "psg-prod-eastus.azureedge.net", # Install PowerShell tools
-        "download.mozilla.org", ".mozilla.net",                                                  # Firefox
+        "download.mozilla.org", ".mozilla.net", "contile.services.mozilla.com",                  # Firefox
         ".digicert.com",                                                                         # CRL
         # Allow connections to SSM.
         # These would normally flow through the VPC endpoint, but if Active Directory's DNS forwarding is misconfigured they will instead go to the main region endpoint.
@@ -56,21 +51,18 @@ locals {
       sid_offset = 500
     }
     delta_internal_subnets = {
-      subnets              = aws_subnet.delta_internal
       cidr                 = local.delta_internal_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = []
       sid_offset           = 600
     }
     delta_api_subnets = {
-      subnets              = aws_subnet.delta_api
       cidr                 = local.delta_api_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = []
       sid_offset           = 700
     }
     cpm_subnets = {
-      subnets              = aws_subnet.cpm_private
       cidr                 = local.cpm_private_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = []
@@ -84,7 +76,6 @@ locals {
       sid_offset           = 900
     }
     marklogic = {
-      subnets              = aws_subnet.ml_private_subnets
       cidr                 = local.ml_subnet_cidr_10
       http_allowed_domains = concat(["repo.ius.io", "mirrors.fedoraproject.org"])
       tls_allowed_domains = concat(local.marklogic_repo_mirror_tls_domains, [
@@ -99,7 +90,15 @@ locals {
       sid_offset = 4000
     }
   }
-  firewalled_subnets = flatten([for name, config in local.firewall_config : config.subnets])
+  firewalled_subnets = concat(
+    aws_subnet.bastion_private_subnets,
+    aws_subnet.ad_dc_private_subnets,
+    aws_subnet.delta_internal,
+    aws_subnet.delta_api,
+    aws_subnet.cpm_private,
+    aws_subnet.ml_private_subnets,
+    [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server, aws_subnet.jaspersoft, aws_subnet.github_runner]
+  )
 
   # /etc/yum.repos.d on the MarkLogic hosts references https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=x86_64
   # This is the list of https enabled mirrors as of 2022-10-26, I ignored the non-HTTPS ones

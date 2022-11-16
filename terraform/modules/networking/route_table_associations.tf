@@ -15,8 +15,7 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_route_table_association" "firewalled" {
-  for_each = { for subnet in local.firewalled_subnets : subnet.tags.Name => subnet }
-
+  for_each       = { for subnet in local.firewalled_subnets : subnet.tags.Name => subnet }
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private_to_firewall.id
 }
