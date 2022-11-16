@@ -35,7 +35,7 @@ locals {
     }
     ad_other_subnets = {
       cidr                 = local.ad_other_cidr_10
-      http_allowed_domains = [".microsoft.com", ".windows.com", ".windowsupdate.com", ".digicert.com",".firefox.com"]
+      http_allowed_domains = [".microsoft.com", ".windows.com", ".windowsupdate.com", ".digicert.com", ".firefox.com"]
       tls_allowed_domains = [
         ".microsoft.com", ".windows.com", ".windowsupdate.com",                                  # Windows update
         "onegetcdn.azureedge.net", "www.powershellgallery.com", "psg-prod-eastus.azureedge.net", # Install PowerShell tools
