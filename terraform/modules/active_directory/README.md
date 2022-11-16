@@ -113,6 +113,6 @@ Remove-Item $Path\$Installer
 
 Download and install ADMT from here <https://www.microsoft.com/en-us/download/details.aspx?id=56570>, direct link: <https://download.microsoft.com/download/9/1/5/9156937F-1DF7-4734-9BEB-5F0A4400B29E/admtsetup32.exe>
 
-When it asks for a database server to use, get the name of the management server (`hostname` in PowerShell) and tell it to connect to `<hostname>\SQLEXPRESS`.
+When it asks for a database server to use, use `.\SQLEXPRESS`.
 
-Set up PES on the source domain, step 3 here: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/>
+Set up PES on the source domain, step 3 here: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/>. Direct download link: <https://download.microsoft.com/download/a/1/0/a10798d3-cc25-4c32-a393-c06cd9f5d854/pwdmig.msi>
