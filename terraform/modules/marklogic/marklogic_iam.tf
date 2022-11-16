@@ -29,7 +29,6 @@ resource "aws_iam_instance_profile" "ml_instance_profile" {
 #tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "ml_instance_policy" {
   name        = "ml-instance-policy-${var.environment}"
-  path        = "/"
   description = "Allows MarkLogic instances to perform necessary actions"
 
   policy = jsonencode({
@@ -90,4 +89,37 @@ resource "aws_iam_policy" "ml_instance_policy" {
       }
     ]
   })
+}
+
+data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
+  arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "ml_ssm_managed" {
+  role       = aws_iam_role.ml_iam_role.name
+  policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ml_dap_s3" {
+  role       = aws_iam_role.ml_iam_role.name
+  policy_arn = aws_iam_policy.ml_dap_s3.arn
+}
+
+resource "aws_iam_policy" "ml_dap_s3" {
+  name        = "ml-instance-dap-s3-${var.environment}"
+  description = "Allows MarkLogic instances to read and write the DAP export S3 bucket"
+
+  policy = data.aws_iam_policy_document.ml_dap_s3.json
+}
+
+#tfsec:ignore:aws-iam-no-policy-wildcards
+data "aws_iam_policy_document" "ml_dap_s3" {
+  statement {
+    actions = ["s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket", "s3:PutObject", "s3:DeleteObject"]
+    effect  = "Allow"
+    resources = [
+      module.dap_export_bucket.bucket_arn,
+      "${module.dap_export_bucket.bucket_arn}/*"
+    ]
+  }
 }
