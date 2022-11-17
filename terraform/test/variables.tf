@@ -11,7 +11,17 @@ variable "default_tags" {
 
 variable "primary_domain" {
   type    = string
-  default = "delta-test.ramchandani.dev"
+  default = "test.communities.gov.uk"
+}
+
+variable "secondary_domain" {
+  type    = string
+  default = "dluhc-dev.uk"
+}
+
+variable "secondary_domain_zone_id" {
+  type    = string
+  default = "Z01933661AZKA62MUJ054"
 }
 
 variable "delegated_domain" {
