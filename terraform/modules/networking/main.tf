@@ -97,6 +97,7 @@ locals {
     aws_subnet.delta_api,
     aws_subnet.cpm_private,
     aws_subnet.ml_private_subnets,
+    aws_subnet.keycloak_private,
     [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server, aws_subnet.jaspersoft, aws_subnet.github_runner]
   )
 
