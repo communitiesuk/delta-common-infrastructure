@@ -1,3 +1,7 @@
+# All public ALBs.
+# We need to give DLUHC the CloudFront distributions to create DNS records, and CloudFront distributions need an origin,
+# so we have these as a separate module and then each app can define its own listeners and targets.
+
 variable "vpc" {
   type = object({
     id         = string

@@ -1,3 +1,5 @@
+# Create a set of DNS records from a hosted zone we manage
+
 variable "records" {
   type = list(object({
     record_name  = string

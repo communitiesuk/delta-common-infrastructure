@@ -1,3 +1,5 @@
+# Unvalidated SSL certificates for one or more base domains
+
 variable "primary_domain" {
   description = "For production this would be communities.gov.uk"
   type        = string
