@@ -109,10 +109,10 @@ module "bastion" {
 module "public_albs" {
   source = "../modules/public_albs"
 
-  vpc              = module.networking.vpc
-  subnet_ids       = module.networking.public_subnets[*].id
-  certificate_arns = module.dluhc_dev_only_ssl_certs.alb_cert_arns
-  environment      = "test"
+  vpc          = module.networking.vpc
+  subnet_ids   = module.networking.public_subnets[*].id
+  certificates = module.dluhc_dev_only_ssl_certs.alb_certs
+  environment  = "test"
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.
@@ -129,35 +129,35 @@ module "cloudfront_distributions" {
     alb = module.public_albs.delta
     domain = {
       aliases             = ["delta.${var.secondary_domain}"]
-      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_cert_arns["delta"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["delta"].arn
     }
   }
   api = {
     alb = module.public_albs.delta_api
     domain = {
       aliases             = ["api.delta.${var.secondary_domain}"]
-      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_cert_arns["api"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["api"].arn
     }
   }
   keycloak = {
     alb = module.public_albs.keycloak
     domain = {
       aliases             = ["auth.delta.${var.secondary_domain}"]
-      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_cert_arns["keycloak"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
   }
   cpm = {
     alb = module.public_albs.cpm
     domain = {
       aliases             = ["cpm.${var.secondary_domain}"]
-      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_cert_arns["cpm"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
     domain = {
       aliases             = ["reporting.${var.secondary_domain}"]
-      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_cert_arns["jaspersoft"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
     }
   }
 }

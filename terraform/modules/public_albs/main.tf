@@ -17,9 +17,12 @@ variable "subnet_ids" {
   type = list(string)
 }
 
-variable "certificate_arns" {
-  description = "Unvalidated certificate ARNs, not used by this module, just re-exported as an output"
-  type        = map(string)
+variable "certificates" {
+  description = "Unvalidated certificates, not used by this module, just re-exported as an output"
+  type = map(object({
+    arn            = string
+    primary_domain = string
+  }))
 }
 
 resource "random_password" "cloudfront_keys" {
@@ -43,7 +46,8 @@ output "delta" {
     dns_name          = module.delta_alb.dns_name
     security_group_id = module.delta_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["delta"].result
-    certificate_arn   = var.certificate_arns["delta"]
+    certificate_arn   = var.certificates["delta"].arn
+    primary_hostname  = var.certificates["delta"].primary_domain
   }
 }
 
@@ -62,7 +66,8 @@ output "delta_api" {
     dns_name          = module.delta_api_alb.dns_name
     security_group_id = module.delta_api_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["api"].result
-    certificate_arn   = var.certificate_arns["api"]
+    certificate_arn   = var.certificates["api"].arn
+    primary_hostname  = var.certificates["api"].primary_domain
   }
 }
 
@@ -81,7 +86,8 @@ output "keycloak" {
     dns_name          = module.keycloak_alb.dns_name
     security_group_id = module.keycloak_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["keycloak"].result
-    certificate_arn   = var.certificate_arns["keycloak"]
+    certificate_arn   = var.certificates["keycloak"].arn
+    primary_hostname  = var.certificates["keycloak"].primary_domain
   }
 }
 
@@ -100,7 +106,8 @@ output "cpm" {
     dns_name          = module.cpm_alb.dns_name
     security_group_id = module.cpm_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["cpm"].result
-    certificate_arn   = var.certificate_arns["cpm"]
+    certificate_arn   = var.certificates["cpm"].arn
+    primary_hostname  = var.certificates["cpm"].primary_domain
   }
 }
 
@@ -119,6 +126,7 @@ output "jaspersoft" {
     dns_name          = module.jaspersoft_alb.dns_name
     security_group_id = module.jaspersoft_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["jaspersoft"].result
-    certificate_arn   = var.certificate_arns["jaspersoft"]
+    certificate_arn   = var.certificates["jaspersoft"].arn
+    primary_hostname  = var.certificates["jaspersoft"].primary_domain
   }
 }

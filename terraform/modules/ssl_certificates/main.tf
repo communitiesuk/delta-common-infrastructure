@@ -35,8 +35,12 @@ resource "aws_acm_certificate" "cloudfront_certs" {
   validation_method         = "DNS"
 }
 
-output "cloudfront_cert_arns" {
-  value = { for key, subdomain in local.subdomains : key => aws_acm_certificate.cloudfront_certs[key].arn }
+output "cloudfront_certs" {
+  value = { for key, subdomain in local.subdomains : key => {
+    arn            = aws_acm_certificate.cloudfront_certs[key].arn
+    primary_domain = "${subdomain}.${var.primary_domain}"
+    }
+  }
 }
 
 resource "aws_acm_certificate" "alb_certs" {
@@ -47,8 +51,12 @@ resource "aws_acm_certificate" "alb_certs" {
   validation_method         = "DNS"
 }
 
-output "alb_cert_arns" {
-  value = { for key, subdomain in local.subdomains : key => aws_acm_certificate.alb_certs[key].arn }
+output "alb_certs" {
+  value = { for key, subdomain in local.subdomains : key => {
+    arn            = aws_acm_certificate.alb_certs[key].arn
+    primary_domain = "${subdomain}.${var.primary_domain}"
+    }
+  }
 }
 
 output "required_validation_records" {
