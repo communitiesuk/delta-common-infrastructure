@@ -44,13 +44,6 @@ output "jaspersoft_ssh_private_key" {
   sensitive = true
 }
 
-output "dns_delegation_details" {
-  value = {
-    domain      = var.delegated_domain
-    nameservers = [for s in aws_route53_delegation_set.main.name_servers : "${s}."]
-  }
-}
-
 output "bastion_host_key_fingerprint" {
   value = module.bastion.bastion_host_key_fingerprint_sha256
 }

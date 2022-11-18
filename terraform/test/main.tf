@@ -26,10 +26,6 @@ provider "aws" {
   }
 }
 
-resource "aws_route53_delegation_set" "main" {
-  reference_name = "delta-test"
-}
-
 # In practice the ACM validation records will all overlap
 # But create three sets anyway to be on the safe side, ACM is free
 module "ssl_certs" {
