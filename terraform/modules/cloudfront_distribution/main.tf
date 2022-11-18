@@ -8,7 +8,7 @@ resource "aws_cloudfront_response_headers_policy" "main" {
 
   security_headers_config {
     frame_options {
-      frame_option = "DENY"
+      frame_option = "SAMEORIGIN"
       override     = false
     }
 
@@ -71,7 +71,7 @@ resource "aws_cloudfront_distribution" "main" {
         forward = "all"
       }
 
-      headers = ["Host"]
+      headers = ["*"]
     }
 
     viewer_protocol_policy     = "redirect-to-https"
