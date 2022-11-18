@@ -58,7 +58,7 @@ locals {
     module.communities_only_ssl_certs.required_validation_records,
     module.dluhc_dev_only_ssl_certs.required_validation_records,
     module.ssl_certs.required_validation_records,
-    [module.ses_identity.validation_record]
+    module.ses_identity.required_validation_records
   )
 }
 
