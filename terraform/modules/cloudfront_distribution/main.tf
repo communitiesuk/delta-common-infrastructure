@@ -7,11 +7,6 @@ resource "aws_cloudfront_response_headers_policy" "main" {
   comment = "Default security headers for responses"
 
   security_headers_config {
-    # content_security_policy {
-    #   content_security_policy = "default-src 'self'"
-    #   override                = false
-    # }
-
     frame_options {
       frame_option = "DENY"
       override     = false
