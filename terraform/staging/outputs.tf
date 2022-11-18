@@ -85,7 +85,7 @@ output "gh_runner_private_key" {
 }
 
 output "jaspersoft_alb_domain" {
-  value = module.jaspersoft.jaspersoft_alb_domain
+  value = module.public_albs.jaspersoft.dns_name
 }
 
 output "jaspersoft_private_ip" {
@@ -94,5 +94,21 @@ output "jaspersoft_private_ip" {
 
 output "jaspersoft_ssh_private_key" {
   value     = tls_private_key.jaspersoft_ssh_key.private_key_openssh
+  sensitive = true
+}
+
+output "required_dns_records" {
+  value = [for record in local.all_dns_records : record if !endswith(record.record_name, "${var.secondary_domain}.")]
+}
+
+output "public_albs" {
+  value = {
+    delta      = module.public_albs.delta
+    api        = module.public_albs.delta_api
+    keycloak   = module.public_albs.keycloak
+    cpm        = module.public_albs.cpm
+    jaspersoft = module.public_albs.jaspersoft
+  }
+  # Includes CloudFront keys
   sensitive = true
 }

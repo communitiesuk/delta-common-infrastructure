@@ -26,6 +26,43 @@ provider "aws" {
   }
 }
 
+# In practice the ACM validation records will all overlap
+# But create three sets anyway to be on the safe side, ACM is free
+module "ssl_certs" {
+  source = "../modules/ssl_certificates"
+
+  primary_domain    = var.primary_domain
+  secondary_domains = [var.secondary_domain]
+}
+
+module "communities_only_ssl_certs" {
+  source = "../modules/ssl_certificates"
+
+  primary_domain = var.primary_domain
+}
+
+module "dluhc_dev_only_ssl_certs" {
+  source = "../modules/ssl_certificates"
+
+  primary_domain = var.secondary_domain
+}
+
+locals {
+  dns_cert_validation_records = setunion(
+    module.communities_only_ssl_certs.required_validation_records,
+    module.dluhc_dev_only_ssl_certs.required_validation_records,
+    module.ssl_certs.required_validation_records,
+  )
+}
+
+# This dynamically creates resources, so the modules it depends on must be created first
+# terraform apply -target module.dluhc_dev_only_ssl_certs -target module.communities_only_ssl_certs -target module.ssl_certs
+module "dluhc_dev_validation_records" {
+  source         = "../modules/dns_records"
+  hosted_zone_id = var.secondary_domain_zone_id
+  records        = [for record in local.dns_cert_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+}
+
 module "networking" {
   source              = "../modules/networking"
   vpc_cidr_block      = "10.20.0.0/16"
@@ -57,8 +94,79 @@ module "bastion" {
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1
   extra_userdata          = "yum install openldap-clients -y"
+  tags_asg                = var.default_tags
+  dns_config = {
+    zone_id = var.secondary_domain_zone_id
+    domain  = "bastion.${var.secondary_domain}"
+  }
+}
 
-  tags_asg = var.default_tags
+module "public_albs" {
+  source = "../modules/public_albs"
+
+  vpc          = module.networking.vpc
+  subnet_ids   = module.networking.public_subnets[*].id
+  certificates = module.dluhc_dev_only_ssl_certs.alb_certs
+  environment  = "staging"
+}
+
+# Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
+# See comment in test/main.tf
+module "cloudfront_distributions" {
+  source = "../modules/cloudfront_distributions"
+
+  environment  = "staging"
+  base_domains = [var.primary_domain, var.secondary_domain]
+  delta = {
+    alb = module.public_albs.delta
+    domain = {
+      aliases             = ["delta.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["delta"].arn
+    }
+  }
+  api = {
+    alb = module.public_albs.delta_api
+    domain = {
+      aliases             = ["api.delta.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["api"].arn
+    }
+  }
+  keycloak = {
+    alb = module.public_albs.keycloak
+    domain = {
+      aliases             = ["auth.delta.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["keycloak"].arn
+    }
+  }
+  cpm = {
+    alb = module.public_albs.cpm
+    domain = {
+      aliases             = ["cpm.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["cpm"].arn
+    }
+  }
+  jaspersoft = {
+    alb = module.public_albs.jaspersoft
+    domain = {
+      aliases             = ["reporting.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
+    }
+  }
+}
+
+locals {
+  all_dns_records = setunion(
+    local.dns_cert_validation_records,
+    module.cloudfront_distributions.required_dns_records,
+  )
+}
+
+# This dynamically creates resources, so the modules it depends on must be created first
+# terraform apply -target module.cloudfront_distributions
+module "dluhc_dev_cloudfront_records" {
+  source         = "../modules/dns_records"
+  hosted_zone_id = var.secondary_domain_zone_id
+  records        = [for record in module.cloudfront_distributions.required_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 module "active_directory" {
@@ -121,7 +229,7 @@ module "jaspersoft" {
   vpc_id                        = module.networking.vpc.id
   prefix                        = "dluhc-stg-"
   ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
-  public_alb_subnets            = module.networking.public_subnets
+  alb                           = module.public_albs.jaspersoft
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   enable_backup                 = false

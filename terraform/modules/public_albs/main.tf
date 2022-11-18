@@ -25,6 +25,7 @@ variable "certificates" {
   }))
 }
 
+# These are sent by CloudFront in the X-Cloudfront-Key header and verified by the ALB listeners
 resource "random_password" "cloudfront_keys" {
   for_each = toset(["delta", "api", "keycloak", "cpm", "jaspersoft"])
   length   = 24
