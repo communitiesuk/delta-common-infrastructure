@@ -30,7 +30,7 @@ This repository uses [tfsec](https://aquasecurity.github.io/tfsec/) to scan the 
 It can be run using Docker
 
 ```sh
-docker run --rm -it -v "$(pwd):/src" aquasec/tfsec /src
+docker run --pull=always --rm -it -v "$(pwd):/src" aquasec/tfsec /src
 ```
 
 It's also available via Chocolately + other package managers, but the Docker image seems to be more up to date.
