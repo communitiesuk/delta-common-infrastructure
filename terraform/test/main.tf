@@ -51,6 +51,22 @@ module "dluhc_dev_only_ssl_certs" {
   primary_domain = var.secondary_domain
 }
 
+locals {
+  dns_cert_validation_records = setunion(
+    module.communities_only_ssl_certs.required_validation_records,
+    module.dluhc_dev_only_ssl_certs.required_validation_records,
+    module.ssl_certs.required_validation_records,
+  )
+}
+
+# This dynamically creates resources, so the modules it depends on must be created first
+# terraform apply -target module.dluhc_dev_only_ssl_certs -target module.communities_only_ssl_certs -target module.ssl_certs
+module "dluhc_dev_validation_records" {
+  source         = "../modules/dns_records"
+  hosted_zone_id = var.secondary_domain_zone_id
+  records        = [for record in local.dns_cert_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+}
+
 module "networking" {
   source                         = "../modules/networking"
   vpc_cidr_block                 = "10.0.0.0/16"
@@ -98,13 +114,12 @@ module "public_albs" {
   environment = "test"
 }
 
-# Circular dependency between Cloudfront and DNS records,
-# both the ones we make (module.dluhc_dev_records) and the ones DLUHC manage.
+# Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage.
 # This is intentional as we want to be able to create a new environment and give DLUHC all
 # the required DNS records in one go as approval can take several weeks.
-# To create a new environment remove all the "domain" values in this module's inputs, then create this module, then the DNS records, then add the "domain" values back in.
+# To create a new environment remove all the "domain" values in this module's inputs (or set them to a domain we control), then create this module,
+# then the DNS records, then add the "domain" values back in.
 
-# tfsec:ignore:aws-cloudfront-use-secure-tls-policy
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
@@ -140,30 +155,26 @@ module "cloudfront_distributions" {
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
-    # Was using for testing and now says conflicting CNAME, try again later
-    # Remove the tfsec:ignore above when you re-enable
-    # domain = {
-    #   aliases             = ["reporting.${var.secondary_domain}"]
-    #   acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_cert_arns["jaspersoft"]
-    # }
+    domain = {
+      aliases             = ["reporting.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_cert_arns["jaspersoft"]
+    }
   }
 }
 
 locals {
   all_dns_records = setunion(
-    module.communities_only_ssl_certs.required_validation_records,
-    module.dluhc_dev_only_ssl_certs.required_validation_records,
-    module.ssl_certs.required_validation_records,
+    local.dns_cert_validation_records,
     module.cloudfront_distributions.required_dns_records,
   )
 }
 
 # This dynamically creates resources, so the modules it depends on must be created first
-# terraform apply -target module.dluhc_dev_only_ssl_certs -target module.communities_only_ssl_certs -target module.ssl_certs -target module.public_albs -target module.cloudfront_distributions
-module "dluhc_dev_records" {
+# terraform apply -target module.cloudfront_distributions
+module "dluhc_dev_cloudfront_records" {
   source         = "../modules/dns_records"
   hosted_zone_id = var.secondary_domain_zone_id
-  records        = [for record in local.all_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+  records        = [for record in module.cloudfront_distributions.required_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 module "active_directory" {
