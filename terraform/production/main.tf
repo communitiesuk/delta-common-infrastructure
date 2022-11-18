@@ -26,6 +26,12 @@ provider "aws" {
   }
 }
 
+module "communities_only_ssl_certs" {
+  source = "../modules/ssl_certificates"
+
+  primary_domain = var.primary_domain
+}
+
 module "networking" {
   source              = "../modules/networking"
   vpc_cidr_block      = "10.30.0.0/16"
