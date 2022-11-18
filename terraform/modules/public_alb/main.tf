@@ -26,12 +26,22 @@ resource "aws_security_group" "alb" {
   name        = "${var.prefix}alb-sg"
 }
 
-resource "aws_security_group_rule" "alb_egress" {
+resource "aws_security_group_rule" "alb_egress_http" {
   security_group_id = aws_security_group.alb.id
   type              = "egress"
   description       = "HTTP egress to VPC"
   from_port         = 8080
   to_port           = 8080
+  protocol          = "tcp"
+  cidr_blocks       = [var.vpc.cidr_block]
+}
+
+resource "aws_security_group_rule" "alb_egress_https" {
+  security_group_id = aws_security_group.alb.id
+  type              = "egress"
+  description       = "HTTPS egress to VPC"
+  from_port         = 8443
+  to_port           = 8443
   protocol          = "tcp"
   cidr_blocks       = [var.vpc.cidr_block]
 }
