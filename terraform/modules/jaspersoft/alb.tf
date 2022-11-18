@@ -1,9 +1,10 @@
 # TODO: Set up a domain for this and use HTTPS
-# tfsec:ignore:aws-elb-http-not-used
 resource "aws_lb_listener" "main" {
   load_balancer_arn = var.alb.arn
-  port              = "80"
-  protocol          = "HTTP"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-FS-1-2-Res-2019-08"
+  certificate_arn   = var.alb.certificate_arn
 
   default_action {
     type             = "forward"

@@ -15,6 +15,7 @@ variable "alb" {
   type = object({
     arn               = string
     security_group_id = string
+    certificate_arn   = string
   })
 }
 

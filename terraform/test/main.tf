@@ -109,17 +109,17 @@ module "bastion" {
 module "public_albs" {
   source = "../modules/public_albs"
 
-  vpc         = module.networking.vpc
-  subnet_ids  = module.networking.public_subnets[*].id
-  environment = "test"
+  vpc              = module.networking.vpc
+  subnet_ids       = module.networking.public_subnets[*].id
+  certificate_arns = module.dluhc_dev_only_ssl_certs.alb_cert_arns
+  environment      = "test"
 }
 
-# Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage.
+# Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.
 # This is intentional as we want to be able to create a new environment and give DLUHC all
 # the required DNS records in one go as approval can take several weeks.
 # To create a new environment remove all the "domain" values in this module's inputs (or set them to a domain we control), then create this module,
 # then the DNS records, then add the "domain" values back in.
-
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 

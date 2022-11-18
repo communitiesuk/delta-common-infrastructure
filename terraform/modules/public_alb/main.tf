@@ -36,18 +36,6 @@ resource "aws_security_group_rule" "alb_egress" {
   cidr_blocks       = [var.vpc.cidr_block]
 }
 
-# TODO: HTTPS Remove
-# tfsec:ignore:aws-vpc-no-public-ingress-sgr
-resource "aws_security_group_rule" "alb__http_ingress" {
-  security_group_id = aws_security_group.alb.id
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  description       = "HTTP Ingress"
-}
-
 # tfsec:ignore:aws-vpc-no-public-ingress-sgr
 resource "aws_security_group_rule" "alb_https_ingress" {
   security_group_id = aws_security_group.alb.id

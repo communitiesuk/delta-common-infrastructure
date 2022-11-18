@@ -17,6 +17,11 @@ variable "subnet_ids" {
   type = list(string)
 }
 
+variable "certificate_arns" {
+  description = "Unvalidated certificate ARNs, not used by this module, just re-exported as an output"
+  type        = map(string)
+}
+
 resource "random_password" "cloudfront_keys" {
   for_each = toset(["delta", "api", "keycloak", "cpm", "jaspersoft"])
   length   = 24
@@ -38,6 +43,7 @@ output "delta" {
     dns_name          = module.delta_alb.dns_name
     security_group_id = module.delta_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["delta"].result
+    certificate_arn   = var.certificate_arns["delta"]
   }
 }
 
@@ -56,6 +62,7 @@ output "delta_api" {
     dns_name          = module.delta_api_alb.dns_name
     security_group_id = module.delta_api_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["api"].result
+    certificate_arn   = var.certificate_arns["api"]
   }
 }
 
@@ -74,6 +81,7 @@ output "keycloak" {
     dns_name          = module.keycloak_alb.dns_name
     security_group_id = module.keycloak_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["keycloak"].result
+    certificate_arn   = var.certificate_arns["keycloak"]
   }
 }
 
@@ -92,6 +100,7 @@ output "cpm" {
     dns_name          = module.cpm_alb.dns_name
     security_group_id = module.cpm_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["cpm"].result
+    certificate_arn   = var.certificate_arns["cpm"]
   }
 }
 
@@ -110,5 +119,6 @@ output "jaspersoft" {
     dns_name          = module.jaspersoft_alb.dns_name
     security_group_id = module.jaspersoft_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["jaspersoft"].result
+    certificate_arn   = var.certificate_arns["jaspersoft"]
   }
 }
