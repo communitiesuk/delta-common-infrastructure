@@ -32,6 +32,12 @@ module "communities_only_ssl_certs" {
   primary_domain = var.primary_domain
 }
 
+module "ses_identity" {
+  source = "../modules/ses_identity"
+
+  domain = "datacollection.levellingup.gov.uk"
+}
+
 module "networking" {
   source              = "../modules/networking"
   vpc_cidr_block      = "10.30.0.0/16"

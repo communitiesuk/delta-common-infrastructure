@@ -47,20 +47,27 @@ module "dluhc_dev_only_ssl_certs" {
   primary_domain = var.secondary_domain
 }
 
+module "ses_identity" {
+  source = "../modules/ses_identity"
+
+  domain = "datacollection.${var.secondary_domain}"
+}
+
 locals {
-  dns_cert_validation_records = setunion(
+  dns_cert_and_email_validation_records = setunion(
     module.communities_only_ssl_certs.required_validation_records,
     module.dluhc_dev_only_ssl_certs.required_validation_records,
     module.ssl_certs.required_validation_records,
+    [module.ses_identity.validation_record]
   )
 }
 
 # This dynamically creates resources, so the modules it depends on must be created first
-# terraform apply -target module.dluhc_dev_only_ssl_certs -target module.communities_only_ssl_certs -target module.ssl_certs
+# terraform apply -target module.dluhc_dev_only_ssl_certs -target module.communities_only_ssl_certs -target module.ssl_certs -target module.ses_identity
 module "dluhc_dev_validation_records" {
   source         = "../modules/dns_records"
   hosted_zone_id = var.secondary_domain_zone_id
-  records        = [for record in local.dns_cert_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+  records        = [for record in local.dns_cert_and_email_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 module "networking" {
@@ -160,7 +167,7 @@ module "cloudfront_distributions" {
 
 locals {
   all_dns_records = setunion(
-    local.dns_cert_validation_records,
+    local.dns_cert_and_email_validation_records,
     module.cloudfront_distributions.required_dns_records,
   )
 }
