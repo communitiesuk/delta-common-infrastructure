@@ -65,5 +65,5 @@ output "delta_ci_secret_key" {
 }
 
 output "required_dns_records" {
-  value = module.communities_only_ssl_certs.required_validation_records
+  value = local.all_validation_dns_records
 }

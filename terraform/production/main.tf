@@ -38,6 +38,10 @@ module "ses_identity" {
   domain = "datacollection.levellingup.gov.uk"
 }
 
+locals {
+  all_validation_dns_records = concat(module.communities_only_ssl_certs.required_validation_records, module.ses_identity.required_validation_records)
+}
+
 module "networking" {
   source              = "../modules/networking"
   vpc_cidr_block      = "10.30.0.0/16"

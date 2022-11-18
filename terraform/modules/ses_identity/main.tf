@@ -42,6 +42,7 @@ output "required_validation_records" {
         record_type = "TXT"
         # TODO: We should add a reporting email (the "rua" field)
         # https://dmarc.org/2015/08/receiving-dmarc-reports-outside-your-domain/
+        # And increase the pct
         record_value = "v=DMARC1;p=quarantine;pct=25"
       },
     ],
