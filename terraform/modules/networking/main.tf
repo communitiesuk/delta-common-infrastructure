@@ -59,8 +59,9 @@ locals {
     delta_website_subnets = {
       cidr                 = local.delta_website_cidr_10
       http_allowed_domains = []
-      tls_allowed_domains  = [".amazonaws.com", "archive.apache.org"]
-      sid_offset           = 600
+      # TODO DT-21: Restrict/use VPC endpoints
+      tls_allowed_domains = [".amazonaws.com", "archive.apache.org"]
+      sid_offset          = 600
     }
     delta_api_subnets = {
       cidr                 = local.delta_api_cidr_10
