@@ -6,6 +6,10 @@ output "delta_api_subnet_ids" {
   value = module.networking.delta_api_subnets[*].id
 }
 
+output "delta_website_subnet_ids" {
+  value = module.networking.delta_website_subnets[*].id
+}
+
 output "public_subnet_ids" {
   value = module.networking.public_subnets[*].id
 }

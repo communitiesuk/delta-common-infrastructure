@@ -16,6 +16,10 @@ resource "aws_instance" "ad_management_server" {
   user_data = file("${path.module}/user_data.txt")
 
   tags = { Name = "ad-management-server-${var.environment}" }
+
+  lifecycle {
+    ignore_changes = [user_data, ami]
+  }
 }
 
 resource "aws_route53_record" "ad_management_server" {
