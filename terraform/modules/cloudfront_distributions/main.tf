@@ -1,12 +1,12 @@
 module "access_logs_bucket" {
   source          = "../cloudfront_access_logs_bucket"
-  environment     = "test"
+  environment     = var.environment
   expiration_days = 180
 }
 
 module "default_waf" {
   source = "../waf"
-  prefix = "test-default-"
+  prefix = "${var.environment}-default-"
 }
 
 module "delta_cloudfront" {
