@@ -1,4 +1,3 @@
-# TODO: Set up a domain for this and use HTTPS
 resource "aws_lb_listener" "main" {
   load_balancer_arn = var.alb.arn
   port              = "443"
