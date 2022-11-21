@@ -78,13 +78,11 @@ Optional, but recommended:
   .\firefox.exe
   ```
 
-We're roughly following this blog post: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/>
-
 ### Domain setup
 
 RDP into the AD Management Server as domain admin.
 
-Following the instructions here: <https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_tutorial_setup_trust_prepare_onprem.html> or [AWS documentation](https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/) for prerequisites
+Following the instructions here: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/> or [AWS documentation](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_tutorial_setup_trust_prepare_onprem.html) for prerequisites
 
 * Open up the security groups and ACL. Easiest to allow all traffic. DCs definitely need to be able to send DNS requests to each other.
   * Done in terraform
@@ -92,8 +90,13 @@ Following the instructions here: <https://docs.aws.amazon.com/directoryservice/l
 * Configure conditional DNS forwarders on both sides and make sure you can resolve both domains using either AD - I'm not sure this is required for the managed side since you set them up when you create the trust, but I did it anyway
 * Set the Local Security Policy for Named pipes as detailed here, I think it's the default: <https://docs.aws.amazon.com/directoryservice/latest/admin-guide/before_you_start.html>
 * Set up the two-way forest trust using Active Directory Domains and Trusts on the non-managed side and the AWS console on the managed side (currently not in terraform)
-* Log in as an admin of the source domain, and add the admin user of the target domain to the Administrators group (the memberOf tab is a bit buggy for this, use the members list of the group instead)
-  * We'll then use the target domain admin for the rest of the process, as they now have permissions across both domains
+* Log in as an admin of the source domain, and add the admin user of the target domain to the Administrators group (the memberOf tab is a bit buggy for this, use the members list of the group instead). You can do this from an Admin powershell:
+```
+$User = Get-ADUser -Identity "CN=Admin,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local" -Server "dluhcdata.local"
+Add-ADGroupMember -Identity Administrators -Members $User -Server "<source domain>.local"
+```
+* We'll then use the target domain admin for the rest of the process, as they now have permissions across both domains
+* Continue with the guide to set up PES. [Direct download link](https://download.microsoft.com/download/a/1/0/a10798d3-cc25-4c32-a393-c06cd9f5d854/pwdmig.msi). Run the pwdmig.msi in admin mode (e.g. from an admin powershell terminal).
 
 ### Installation
 
