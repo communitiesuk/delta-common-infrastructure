@@ -116,3 +116,9 @@ Download and install ADMT from here <https://www.microsoft.com/en-us/download/de
 When it asks for a database server to use, use `.\SQLEXPRESS`.
 
 Set up PES on the source domain, step 3 here: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/>. Direct download link: <https://download.microsoft.com/download/a/1/0/a10798d3-cc25-4c32-a393-c06cd9f5d854/pwdmig.msi>
+
+### Running ADMT
+
+* Use the scripts in manual_scripts/admt/
+* Import all groups by running get_groups.ps1 on the source DC to generate an include file, and then run ADMT. Target the "Groups" OU in the target domain.
+* After completing that big migration, run the tidy_up.ps1 script to finish
