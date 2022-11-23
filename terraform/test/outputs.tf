@@ -31,16 +31,8 @@ output "ml_ssh_private_key" {
   sensitive = true
 }
 
-output "nginx_test_box_ip" {
-  value = module.cloudfront.nginx_test_box_ip
-}
-
-output "cloudfront_domain_name" {
-  value = module.cloudfront.cloudfront_domain_name
-}
-
 output "jaspersoft_alb_domain" {
-  value = module.jaspersoft.jaspersoft_alb_domain
+  value = module.public_albs.jaspersoft.dns_name
 }
 
 output "jaspersoft_private_ip" {
@@ -50,17 +42,6 @@ output "jaspersoft_private_ip" {
 output "jaspersoft_ssh_private_key" {
   value     = tls_private_key.jaspersoft_ssh_key.private_key_openssh
   sensitive = true
-}
-
-output "dns_delegation_details" {
-  value = {
-    domain      = var.delegated_domain
-    nameservers = [for s in aws_route53_delegation_set.main.name_servers : "${s}."]
-  }
-}
-
-output "dns_acm_validation_records" {
-  value = module.dns.cloudfront_domains_certificate_required_validation_records
 }
 
 output "bastion_host_key_fingerprint" {
@@ -117,9 +98,18 @@ output "private_dns" {
   value = module.networking.private_dns
 }
 
-output "delegated_dns" {
+output "required_dns_records" {
+  value = [for record in local.all_dns_records : record if !endswith(record.record_name, "${var.secondary_domain}.")]
+}
+
+output "public_albs" {
   value = {
-    zone_id     = module.dns.delegated_zone_id
-    base_domain = var.delegated_domain
+    delta      = module.public_albs.delta
+    api        = module.public_albs.delta_api
+    keycloak   = module.public_albs.keycloak
+    cpm        = module.public_albs.cpm
+    jaspersoft = module.public_albs.jaspersoft
   }
+  # Includes CloudFront keys
+  sensitive = true
 }

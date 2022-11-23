@@ -1,3 +1,16 @@
+variable "prefix" {
+  type = string
+}
+
+output "acl_arn" {
+  value = aws_wafv2_web_acl.waf_acl.arn
+}
+
+provider "aws" {
+  alias  = "us-east-1"
+  region = "us-east-1"
+}
+
 resource "aws_wafv2_web_acl" "waf_acl" {
   provider = aws.us-east-1
 

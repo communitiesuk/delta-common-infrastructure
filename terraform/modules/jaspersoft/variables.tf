@@ -11,17 +11,16 @@ variable "vpc_id" {
   type = string
 }
 
+variable "alb" {
+  type = object({
+    arn               = string
+    security_group_id = string
+    certificate_arn   = string
+  })
+}
+
 variable "ssh_key_name" {
   type = string
-}
-
-variable "alb_log_expiration_days" {
-  type    = number
-  default = 180
-}
-
-variable "public_alb_subnets" {
-  type = list(object({ id = string }))
 }
 
 variable "private_instance_subnet" {

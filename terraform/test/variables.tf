@@ -11,12 +11,17 @@ variable "default_tags" {
 
 variable "primary_domain" {
   type    = string
-  default = "delta-test.ramchandani.dev"
+  default = "test.communities.gov.uk"
 }
 
-variable "delegated_domain" {
+variable "secondary_domain" {
   type    = string
-  default = "internal.delta-test.ramchandani.dev"
+  default = "dluhc-dev.uk"
+}
+
+variable "secondary_domain_zone_id" {
+  type    = string
+  default = "Z01933661AZKA62MUJ054"
 }
 
 variable "allowed_ssh_cidrs" {

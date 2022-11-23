@@ -120,22 +120,31 @@ Setting up AWS Vault:
 
 ### 1 DNS setup
 
-Environments require some manual DNS configuration before the bulk of the resources can be brought up.
+The terraform supports multiple domains, though one of these will have to be chosen as the primary domain
+which will get passed to the applications to use for links, emails etc.
 
-When setting up a new environment, make sure the `primary_domain` (e.g. `communities.gov.uk`) and `delegated_domain` (e.g. `internal.communities.gov.uk`) variables are set correctly, the create the DNS module.
+The CloudFront distributions require valid certificates before we can configure them properly.
+If we control the DNS zone that's not an issue, we can just create those modules first, but if we are using records managed by DLUHC
+then we will either need to stop after creating the CloudFront distributions and wait for the records to be created,
+or use a secondary domain we do control in the meantime.
+
+Add an ssl_certificates module for each set of certs you want to have available and create them,
+along with an SES identity if the environment will have one.
 
 ```sh
-terraform apply -target module.dns
+terraform apply -target module.ssl_certs -target module.ses_identity
 ```
 
-Create the delegation and ACM validation records as specified by the `dns_delegation_details` and `dns_acm_validation_record` outputs.
+For domains we control create the DNS records to validate the certificates with a dns_records module and apply it now.
+For other domains, request that the records from the `required_dns_records` output are created and continue.
 
 ### 2 Network + Bastion
 
 Bring up the VPC and the SSH bastion. Other components implicitly depend on the VPC endpoints, firewall, NAT Gateway etc.
 
 ```sh
-terraform apply -target module.networking -target module.bastion
+terraform apply -target module.networking
+terraform apply -target module.bastion
 ```
 
 ### 3 Active Directory
@@ -170,7 +179,20 @@ terraform apply -target module.gh_runner -var="github_actions_runner_token=<toke
 
 Now run the MarkLogic setup jobs from GitHub.
 
-### 6 JasperReports server
+### 6 Public ALBs and CloudFront
+
+CloudFront distributions with HTTPS aliases require valid SSL certificates to create successfully.
+If you're creating the distributions without valid SSL certificates (for example, so that you can give DLUHC all the records in one go)
+then set `domain = null` for each distribution to create without aliases.
+
+```sh
+terraform apply -target module.public_albs -target module.cloudfront_distributions
+```
+
+Create the CNAME records with another dns_records module, or by requesting them from DLUHC.
+Restore the "domain" inputs once the records are in place and apply again.
+
+### 7 JasperReports server
 
 Follow the setup instructions in the module readme.
 Make sure the `jasper_s3_bucket` variable is set correctly.
@@ -179,8 +201,8 @@ Make sure the `jasper_s3_bucket` variable is set correctly.
 terraform apply -target module.jaspersoft
 ```
 
-### 7 TODO
+Once the server has initialised JasperReports should be available at `https://reporting.<domain>`.
 
-```sh
-terraform apply
-```
+### 8 Applications
+
+Continue with the setup instructions in the common-payments-module and then delta repositories.

@@ -26,17 +26,48 @@ provider "aws" {
   }
 }
 
-resource "aws_route53_delegation_set" "main" {
-  reference_name = "delta-test"
-}
-
-module "dns" {
-  source = "../modules/dns"
+# In practice the ACM validation records will all overlap
+# But create three sets anyway to be on the safe side, ACM is free
+module "ssl_certs" {
+  source = "../modules/ssl_certificates"
 
   primary_domain    = var.primary_domain
-  delegated_domain  = var.delegated_domain
-  delegation_set_id = aws_route53_delegation_set.main.id
-  prefix            = "delta-test-"
+  secondary_domains = [var.secondary_domain]
+}
+
+module "communities_only_ssl_certs" {
+  source = "../modules/ssl_certificates"
+
+  primary_domain = var.primary_domain
+}
+
+module "dluhc_dev_only_ssl_certs" {
+  source = "../modules/ssl_certificates"
+
+  primary_domain = var.secondary_domain
+}
+
+module "ses_identity" {
+  source = "../modules/ses_identity"
+
+  domain = "datacollection.${var.secondary_domain}"
+}
+
+locals {
+  dns_cert_and_email_validation_records = setunion(
+    module.communities_only_ssl_certs.required_validation_records,
+    module.dluhc_dev_only_ssl_certs.required_validation_records,
+    module.ssl_certs.required_validation_records,
+    module.ses_identity.required_validation_records
+  )
+}
+
+# This dynamically creates resources, so the modules it depends on must be created first
+# terraform apply -target module.dluhc_dev_only_ssl_certs -target module.communities_only_ssl_certs -target module.ssl_certs -target module.ses_identity
+module "dluhc_dev_validation_records" {
+  source         = "../modules/dns_records"
+  hosted_zone_id = var.secondary_domain_zone_id
+  records        = [for record in local.dns_cert_and_email_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 module "networking" {
@@ -70,12 +101,83 @@ module "bastion" {
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1
   dns_config = {
-    zone_id = module.dns.delegated_zone_id
-    domain  = "bastion.${var.delegated_domain}"
+    zone_id = var.secondary_domain_zone_id
+    domain  = "bastion.${var.secondary_domain}"
   }
   extra_userdata = "yum install openldap-clients -y"
 
   tags_asg = var.default_tags
+}
+
+module "public_albs" {
+  source = "../modules/public_albs"
+
+  vpc          = module.networking.vpc
+  subnet_ids   = module.networking.public_subnets[*].id
+  certificates = module.dluhc_dev_only_ssl_certs.alb_certs
+  environment  = "test"
+}
+
+# Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.
+# This is intentional as we want to be able to create a new environment and give DLUHC all
+# the required DNS records in one go as approval can take several weeks.
+# To create a new environment remove all the "domain" values in this module's inputs (or set them to a domain we control), then create this module,
+# then the DNS records, then add the "domain" values back in.
+module "cloudfront_distributions" {
+  source = "../modules/cloudfront_distributions"
+
+  environment  = "test"
+  base_domains = [var.primary_domain, var.secondary_domain]
+  delta = {
+    alb = module.public_albs.delta
+    domain = {
+      aliases             = ["delta.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["delta"].arn
+    }
+  }
+  api = {
+    alb = module.public_albs.delta_api
+    domain = {
+      aliases             = ["api.delta.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["api"].arn
+    }
+  }
+  keycloak = {
+    alb = module.public_albs.keycloak
+    domain = {
+      aliases             = ["auth.delta.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["keycloak"].arn
+    }
+  }
+  cpm = {
+    alb = module.public_albs.cpm
+    domain = {
+      aliases             = ["cpm.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["cpm"].arn
+    }
+  }
+  jaspersoft = {
+    alb = module.public_albs.jaspersoft
+    domain = {
+      aliases             = ["reporting.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_dev_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
+    }
+  }
+}
+
+locals {
+  all_dns_records = setunion(
+    local.dns_cert_and_email_validation_records,
+    module.cloudfront_distributions.required_dns_records,
+  )
+}
+
+# This dynamically creates resources, so the modules it depends on must be created first
+# terraform apply -target module.cloudfront_distributions
+module "dluhc_dev_cloudfront_records" {
+  source         = "../modules/dns_records"
+  hosted_zone_id = var.secondary_domain_zone_id
+  records        = [for record in module.cloudfront_distributions.required_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 module "active_directory" {
@@ -141,40 +243,11 @@ module "jaspersoft" {
   vpc_id                        = module.networking.vpc.id
   prefix                        = "dluhc-test-"
   ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
-  public_alb_subnets            = module.networking.public_subnets
+  alb                           = module.public_albs.jaspersoft
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   enable_backup                 = true
   private_dns                   = module.networking.private_dns
   ad_domain                     = "dluhctest"
   environment                   = "test"
-}
-
-locals {
-  cloudfront_subdomains = ["nginx-test", "reporting"]
-}
-
-module "cloudfront" {
-  source             = "../modules/cloudfront"
-  nginx_test_subnet  = module.networking.public_subnets[0]
-  vpc                = module.networking.vpc
-  prefix             = "dluhc-test-"
-  public_alb_subnets = module.networking.public_subnets
-  cloudfront_domain = {
-    aliases             = flatten([for s in local.cloudfront_subdomains : ["${s}.${var.delegated_domain}", "${s}.${var.primary_domain}"]])
-    acm_certificate_arn = module.dns.cloudfront_domains_certificate_arn
-  }
-}
-
-resource "aws_route53_record" "delegated_cloudfront_domains" {
-  for_each = toset([for s in local.cloudfront_subdomains : "${s}.${var.delegated_domain}"])
-  zone_id  = module.dns.delegated_zone_id
-  name     = each.key
-  type     = "A"
-
-  alias {
-    name                   = module.cloudfront.cloudfront_domain_name
-    zone_id                = module.cloudfront.cloudfront_hosted_zone_id
-    evaluate_target_health = false
-  }
 }

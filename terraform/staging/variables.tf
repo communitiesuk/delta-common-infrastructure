@@ -9,6 +9,21 @@ variable "default_tags" {
   }
 }
 
+variable "primary_domain" {
+  type    = string
+  default = "stage.communities.gov.uk"
+}
+
+variable "secondary_domain" {
+  type    = string
+  default = "stage.dluhc-dev.uk"
+}
+
+variable "secondary_domain_zone_id" {
+  type    = string
+  default = "Z01933661AZKA62MUJ054"
+}
+
 variable "allowed_ssh_cidrs" {
   type    = list(string)
   default = ["31.221.86.178/32", "167.98.33.82/32", "82.163.115.98/32", "87.224.105.250/32", "87.224.18.46/32"]
