@@ -56,9 +56,9 @@ data "aws_iam_policy_document" "kms_ml_export_policy" {
   }
 
   statement {
-    sid       = "Allow access from Datamart"
-    effect    = "Allow"
-    actions   = [
+    sid    = "Allow access from Datamart"
+    effect = "Allow"
+    actions = [
       "kms:Encrypt",
       "kms:Decrypt",
       "kms:ReEncrypt*",
