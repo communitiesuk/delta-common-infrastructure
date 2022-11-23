@@ -12,10 +12,11 @@ resource "aws_kms_key" "ml_backup_from_datamart_encryption" {
 module "datamart_ml_backups" {
   source = "../modules/s3_bucket"
 
-  bucket_name            = "datamart-ml-backups-staging"
-  access_log_bucket_name = "datamart-ml-backups-access-logs-staging"
-  force_destroy          = true
-  kms_key_arn            = aws_kms_key.ml_backup_from_datamart_encryption.arn
+  bucket_name             = "datamart-ml-backups-staging"
+  access_log_bucket_name  = "datamart-ml-backups-access-logs-staging"
+  force_destroy           = true
+  kms_key_arn             = aws_kms_key.ml_backup_from_datamart_encryption.arn
+  restrict_public_buckets = false
 }
 
 resource "aws_s3_bucket_policy" "datamart_ml_backups" {
@@ -72,4 +73,12 @@ data "aws_iam_policy_document" "kms_ml_export_policy" {
       identifiers = [local.datamart_account_id]
     }
   }
+}
+
+output "datamart_ml_backup_bucket" {
+  value = module.datamart_ml_backups.bucket_arn
+}
+
+output "datamart_ml_backup_kms_key" {
+  value = aws_kms_key.ml_backup_from_datamart_encryption.arn
 }
