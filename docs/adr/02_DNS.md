@@ -15,46 +15,33 @@ Note that the delegation of delta.communities.gov.uk currently has a high TTL th
 
 ## Aims
 
+* No domain delegation - decision from DLUHC's Cyber team
 * delta.communities.gov.uk, reporting.communities.gov.uk, api.delta.communities.gov.uk and likely a couple of others pointing at our CloudFront distribution(s)
   * And similar for delta.staging.communities.gov.uk etc.
 * No regular changes required from DLUHC
   * So automated SSL certificate renewal for said CloudFront distribution
-  * Internal changes to our infrastructure shouldn't require changes from DLUHC
-* DLUHC maintain control of the main communities.gov.uk domain, so no delegating it or wildcard subdomains
+  * As far as possible internal changes to our infrastructure shouldn't require changes from DLUHC
 * We can create SSL certificates for our ALBs (without manual changes)
 * Be able to test the sites before switching DNS during go live
 
-## Proposed records from DLUHC
+## Design
 
-* `internal.communities.gov.uk` delegated to Route53 in this account
-* ACM validation records for a wildcard certificate on `*.communities.gov.uk` and `*.delta.communities.gov.uk`
-* `delta.communities.gov.uk` CNAME to `delta.internal.communities.gov.uk`
-  * Similar for reporting etc.
+We've opted to use separate CloudFront distributions for each application (CPM, Delta, Delta API, Keycloak, Jasper Reports).
+Delta is the only application that will benefit to any significant degree, we have used CloudFront for all of them mostly for consistency's sake.
 
-## Explanation
+We'll use ACM for certificates, requesting a certificate for each application domain in both the us-east-1 and eu-west-1 region for CloudFront and ALBs respectively.
+CloudFront will be configured to forward Host headers, and will accept a certificate that matches the host in this case.
+We are doing this to minimise the DNS records DLUHC have to create for each environment, as the current process is manual and has a significant lead time for approval.
+This limits us somewhat in terms of using SSL within the environment, we are planning to primarily use HTTP for intra-VPC traffic rather than making our own CA or having split-horizon DNS.
 
-We avoid delegating the `delta.communities.gov.uk` subdomain. This returns more control to DLUHC and simplifies the switch over, both in terms of reasoning about TTLs and meaning we can have SSL certificates in place with no need to change validation method after the switch over.
+Each application domain will have a CNAME record pointing to the CloudFront distribution.
 
-We can create an ACM certificate for `*.communities.gov.uk`, `api.delta.communities.gov.uk` and `*.internal.communities.gov.uk`, which we will attach to the CloudFront distribution.
-This should never need to change, even if new domains are added (e.g. for KeyCloak or EClaims), so the validation record can stay static.
+To aid in testing pre-migration and mitigate the delay in DNS records being created by DLUHC the terraform can be configured to use multiple domains.
 
-CNAMEing `delta.communities.gov.uk` to a domain we control rather than directly to CloudFront means we can make changes internally, e.g. splitting out a separate CloudFront distribution for delta, without requiring DNS changes from DLUHC, as well as giving us a convenient domain to test on before go-live. Having the internal domain means we can make SSL certificates for ALBs and other resources easily.
-
-We may find that we want separate CloudFront distributions, or to point some domains directly at load balancers, in which case we can request new validation records for smaller scope certificates, using the wildcard certificate in the meantime.
-
-Longer term we may want to move `api.delta.communities.gov.uk` to a non-nested domain like `delta-api.communities.gov.uk`, and the same for auth, they run independently from the main delta website anyway, and this would simplify certificate management.
-
-Note that `infra.communities.gov.uk` is already delegated, "internal" was our second choice.
+Emails will be sent via SES from datacollection.levellingup.gov.uk and relevant DNS records will be requested from DLUHC.
 
 ## Other environments
 
 Other environments (currently test and staging) should be consistent with production. The domain `staging.communities.gov.uk` is currently in use, so we plan to use `stage.communities.gov.uk` and `test.communities.gov.uk`.
 
 Setting this up the same as production requires DLUHC to maintain a few extra records, but means the environments will be consistent.
-
-So:
-
-* `internal.stage.communities.gov.uk` delegated to Route53
-* ACM validation records for an SSL certificate on `*.stage.communities.gov.uk`, `*.delta.stage.communities.gov.uk`
-* `delta.stage.communities.gov.uk` CNAME to `delta.internal.stage.communities.gov.uk` etc.
-* Same for `test.communities.gov.uk`
