@@ -84,6 +84,10 @@ output "gh_runner_private_key" {
   sensitive = true
 }
 
+output "private_dns" {
+  value = module.networking.private_dns
+}
+
 output "jaspersoft_alb_domain" {
   value = module.public_albs.jaspersoft.dns_name
 }
