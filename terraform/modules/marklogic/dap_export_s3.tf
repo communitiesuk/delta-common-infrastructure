@@ -31,6 +31,10 @@ resource "aws_ssm_maintenance_window_target" "ml_server" {
   }
 }
 
+locals {
+  delta_export_path = "/delta/export"
+}
+
 resource "aws_ssm_maintenance_window_task" "dap_s3_upload" {
   window_id       = aws_ssm_maintenance_window.dap_s3_upload.id
   max_concurrency = 1
@@ -59,8 +63,15 @@ resource "aws_ssm_maintenance_window_task" "dap_s3_upload" {
 
       parameter {
         name = "commands"
-        # TODO DT-23: Confirm location once ML job is set up
-        values = ["aws s3 cp /export-data \"s3://${module.dap_export_bucket.bucket}/data\" --recursive"]
+        values = [
+          "set -ex",
+          "if [ -z \"$(ls ${local.delta_export_path})\" ]; then echo 'Error ${local.delta_export_path} is empty nothing to export'; exit 1; fi",
+          "rm -rf /delta/export-workdir && cp -r ${local.delta_export_path} /delta/export-workdir",
+          "cd /delta/export-workdir && find . -type f",
+          "aws s3 sync /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/latest\" --delete",
+          "aws s3 cp /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/archive/$(date +%F)\" --recursive",
+          "rm -rf ${local.delta_export_path}/*",
+        ]
       }
     }
   }
