@@ -1,9 +1,10 @@
 # TODO DT-49
 # tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
 resource "aws_vpc" "vpc" {
-  cidr_block           = var.vpc_cidr_block
-  enable_dns_hostnames = true
-  enable_dns_support   = true
+  cidr_block                           = var.vpc_cidr_block
+  enable_dns_hostnames                 = true
+  enable_dns_support                   = true
+  enable_network_address_usage_metrics = true
 
   tags = {
     "Name" = "delta-vpc-${var.environment}"
@@ -116,5 +117,77 @@ resource "aws_default_network_acl" "main" {
     ignore_changes = [
       subnet_ids
     ]
+  }
+}
+
+resource "aws_flow_log" "vpc_accepted" {
+  iam_role_arn    = aws_iam_role.vpc_flow_logs.arn
+  log_destination = aws_cloudwatch_log_group.vpc_flow_logs_accepted.arn
+  traffic_type    = "ACCEPT"
+  vpc_id          = aws_vpc.vpc.id
+}
+
+resource "aws_flow_log" "vpc_rejected" {
+  iam_role_arn    = aws_iam_role.vpc_flow_logs.arn
+  log_destination = aws_cloudwatch_log_group.vpc_flow_logs_rejected.arn
+  traffic_type    = "REJECT"
+  vpc_id          = aws_vpc.vpc.id
+}
+
+# Flow logs are non-sensitive
+# tfsec:ignore:aws-cloudwatch-log-group-customer-key
+resource "aws_cloudwatch_log_group" "vpc_flow_logs_accepted" {
+  name              = "vpc-flow-logs-accepted-${var.environment}"
+  retention_in_days = 30
+}
+
+# Flow logs are non-sensitive
+# tfsec:ignore:aws-cloudwatch-log-group-customer-key
+resource "aws_cloudwatch_log_group" "vpc_flow_logs_rejected" {
+  name              = "vpc-flow-logs-rejected-${var.environment}"
+  retention_in_days = 30
+}
+
+# https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-cwl.html#flow-logs-iam-role
+resource "aws_iam_role" "vpc_flow_logs" {
+  name = "vpc-flow-logs-role-${var.environment}"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "vpc-flow-logs.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "vpc_flow_logs" {
+  name = "vpc-flow-logs-cloudwatch-policy-${var.environment}"
+  role = aws_iam_role.vpc_flow_logs.id
+
+  policy = data.aws_iam_policy_document.vpc_flow_logs.json
+}
+
+# This does seem slightly excessive, but the AWS documentation insists it "must include at least the following permissions"
+# tfsec:ignore:aws-iam-no-policy-wildcards
+data "aws_iam_policy_document" "vpc_flow_logs" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams"
+    ]
+    effect    = "Allow"
+    resources = ["*"]
   }
 }
