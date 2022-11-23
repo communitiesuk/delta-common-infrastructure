@@ -4,7 +4,7 @@ $targetBase = "OU=dluhcdata,DC=dluhcdata,DC=local"
 Get-AdUser -Filter * -SearchBase "OU=Groups,$targetBase" | ForEach-Object {
     Write-Host "Move ad user" $_.Name
     # Move user to target OU
-    Move-ADObject -Identity $_.ObjectGUID -TargetPath "OU=Users,$targetBase"
+    Move-ADObject -Identity $_.ObjectGUID -TargetPath "CN=Datamart,OU=Users,$targetBase"
 } 
 
 # You could manually delete service users such as superuser, datamart-biz-stag01, cpm-biz-stag01
