@@ -12,8 +12,8 @@ Get-AdUser -Filter * -SearchBase "OU=Groups,$targetBase" | ForEach-Object {
 # ADMT sets –changepasswordatlogonto true. Undo that.
 Get-ADUser -Filter {pwdlastset -eq 0} –searchbase "OU=Users,$targetBase" | Set-ADUser –ChangePasswordAtLogon $false
 
-# Set PasswordNeverExpires for any migrated service users
-$serviceUsers = ["sap-admin", "soap-ui-sap-admin", "eclaims??"] # TODO: DT-107 get correct eclaims service user(s).
-Foreach($user in $serviceUsers){       
+# Set PasswordNeverExpires for any migrated service users that we want to keep
+$serviceUsers = "sap-admin", "soap-ui-sap-admin", "cpm-admin", "achadmin-dclg"
+Foreach($user in $serviceUsers){
     Get-ADUser -Identity $user | Set-ADUser -PasswordNeverExpires $true
 }

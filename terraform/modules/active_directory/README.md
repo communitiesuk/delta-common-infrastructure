@@ -128,4 +128,12 @@ Use the scripts in manual_scripts/admt/
 * Run an ADMT Group migration. Use the `groups-includefile.csv` include file. Target `OU=Groups,...` for both source and target domains. Select the option to include users. We import users as part of the group migration because there are too many users in production for powershell to create a users include file based on membership of datamart-delta-user
 * Run another ADMT Group migration. This time use `nested-groups-includefile.csv`. Target `CN=datamart-delta,OU=Groups...`.
 * Run an ADMT user migration. Use the `registration-requests-includefile.csv` include file. Target `CN=DeltaRegistrationRequests,OU=Users,...` in the target domain.
-* After completing that big migration, run the tidy_up.ps1 script to finish
+* After completing that big migration, put the correct usernames in tidy_up.ps1 and then run it. 
+
+Make sure sap-admin is a member of `datamart-cpm-soap-api`
+
+For E-Claims access to the CPM API, these users need to have been imported and added to the `datamart-user` group:
+* In staging, `cpm-admin`
+* In production, `achadmin-dclg`
+
+Datamart service users that should be deleted if they were imported: superuser, delta-superuser, datamart-app-admin, cpm-biz-prod01, cpm-app-user, admin-dclg (has a different SAM id)
