@@ -126,5 +126,6 @@ Use the scripts in manual_scripts/admt/
 * Update ADMT's exclusion list so that it doesn't exclude the "mail" attribute. To do this, copy the update_exclusion.vbs script onto the server and run `c:\windows\syswow64\cscript.exe update_exclusion.vbs` from an administrator command prompt.
 * Import all groups by running `get_groups.ps1` on the source DC to generate include files.
 * Run an ADMT Group migration. Use the `groups-includefile.csv` include file. Target `OU=Groups,...` for both source and target domains. Select the option to include users. We import users as part of the group migration because there are too many users in production for powershell to create a users include file based on membership of datamart-delta-user
+* Run another ADMT Group migration. This time use `nested-groups-includefile.csv`. Target `CN=datamart-delta,OU=Groups...`.
 * Run an ADMT user migration. Use the `registration-requests-includefile.csv` include file. Target `CN=DeltaRegistrationRequests,OU=Users,...` in the target domain.
 * After completing that big migration, run the tidy_up.ps1 script to finish
