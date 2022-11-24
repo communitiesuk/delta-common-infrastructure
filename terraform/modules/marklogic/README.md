@@ -2,6 +2,7 @@ To use this module you need to manually create two AWS secrets:
 
 * `ml-license-${var.environment}` with a value of the form `{"licensee":"foo","license_key":"bar"}`
 * `ml-admin-user-${var.environment}` with a value of the form `{"username":"foo","password":"bar"}`
+  * Add the tag `"delta-marklogic-deploy-read": "${var.environment}"` so that the delta-marklogic-deploy repo can read it
 
 You can manually ssh onto a MarkLogic instance:
 

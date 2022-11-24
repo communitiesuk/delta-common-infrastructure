@@ -9,16 +9,21 @@ data "aws_secretsmanager_secret" "ml_admin_user" {
   name = "ml-admin-user-${var.environment}"
 }
 
-resource "aws_iam_policy" "read_marklogic_admin_password" {
+resource "aws_iam_policy" "read_marklogic_deploy_secrets" {
   name   = "read-marklogic-admin-password-${var.environment}"
-  policy = data.aws_iam_policy_document.read_marklogic_admin_password.json
+  policy = data.aws_iam_policy_document.read_marklogic_deploy_secrets.json
 }
 
-data "aws_iam_policy_document" "read_marklogic_admin_password" {
+data "aws_iam_policy_document" "read_marklogic_deploy_secrets" {
   statement {
     actions   = ["secretsmanager:GetSecretValue"]
     effect    = "Allow"
-    resources = [data.aws_secretsmanager_secret.ml_admin_user.arn]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/delta-marklogic-deploy-read"
+      values   = [var.environment]
+    }
     condition {
       test     = "StringEquals"
       variable = "aws:SourceVpc"
@@ -27,7 +32,7 @@ data "aws_iam_policy_document" "read_marklogic_admin_password" {
   }
 }
 
-resource "aws_iam_user_policy_attachment" "read_marklogic_admin_password" {
+resource "aws_iam_user_policy_attachment" "read_marklogic_deploy_secrets" {
   user       = aws_iam_user.marklogic_deploy_secret_reader.name
-  policy_arn = aws_iam_policy.read_marklogic_admin_password.arn
+  policy_arn = aws_iam_policy.read_marklogic_deploy_secrets.arn
 }
