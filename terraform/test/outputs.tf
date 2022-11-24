@@ -113,3 +113,7 @@ output "public_albs" {
   # Includes CloudFront keys
   sensitive = true
 }
+
+output "marklogic_deploy_user" {
+  value = module.marklogic.deploy_user
+}
