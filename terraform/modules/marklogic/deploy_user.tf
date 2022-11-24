@@ -7,6 +7,13 @@ resource "aws_iam_user" "marklogic_deploy_secret_reader" {
 
 data "aws_secretsmanager_secret" "ml_admin_user" {
   name = "ml-admin-user-${var.environment}"
+
+  lifecycle {
+    postcondition {
+      condition     = lookup(self.tags, "delta-marklogic-deploy-read", null) == var.environment
+      error_message = "The 'delta-marklogic-deploy-read' tag must be set so that this secret can be read by the MarkLogic deploy jobs"
+    }
+  }
 }
 
 resource "aws_iam_policy" "read_marklogic_deploy_secrets" {
