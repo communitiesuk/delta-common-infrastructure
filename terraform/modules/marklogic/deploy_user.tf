@@ -21,6 +21,8 @@ resource "aws_iam_policy" "read_marklogic_deploy_secrets" {
   policy = data.aws_iam_policy_document.read_marklogic_deploy_secrets.json
 }
 
+# Tag based access control
+# tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "read_marklogic_deploy_secrets" {
   statement {
     actions   = ["secretsmanager:GetSecretValue"]
