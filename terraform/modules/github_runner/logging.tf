@@ -51,6 +51,11 @@ resource "aws_kms_key" "gh_log_groups" {
   })
 }
 
+resource "aws_kms_alias" "gh_log_groups" {
+  name          = "alias/github-runner-log-groups-${var.environment}"
+  target_key_id = aws_kms_key.gh_log_groups.key_id
+}
+
 resource "aws_cloudwatch_log_group" "gh_runners" {
   count             = length(local.loggroups_names)
   name              = local.loggroups_names[count.index]
