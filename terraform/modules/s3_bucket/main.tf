@@ -17,6 +17,11 @@ variable "force_destroy" {
   default     = false
 }
 
+variable "restrict_public_buckets" {
+  description = "Value for the restrict_public_buckets option of the public access block. Must be false to share buckets across accounts"
+  default     = true
+}
+
 output "bucket" {
   value = aws_s3_bucket.main.bucket
 }
@@ -41,13 +46,15 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "main" {
   }
 }
 
+# Some buckets need to be shared across accounts which means no restrict_public_buckets
+# tfsec:ignore:aws-s3-no-public-buckets
 resource "aws_s3_bucket_public_access_block" "main" {
   bucket = aws_s3_bucket.main.id
 
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
-  restrict_public_buckets = true
+  restrict_public_buckets = var.restrict_public_buckets
 }
 
 resource "aws_s3_bucket_versioning" "main" {
