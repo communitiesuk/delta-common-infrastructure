@@ -78,13 +78,11 @@ Optional, but recommended:
   .\firefox.exe
   ```
 
-We're roughly following this blog post: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/>
-
 ### Domain setup
 
 RDP into the AD Management Server as domain admin.
 
-Following the instructions here: <https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_tutorial_setup_trust_prepare_onprem.html> or [AWS documentation](https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/) for prerequisites
+Following the instructions here: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/> or [AWS documentation](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_tutorial_setup_trust_prepare_onprem.html) for prerequisites
 
 * Open up the security groups and ACL. Easiest to allow all traffic. DCs definitely need to be able to send DNS requests to each other.
   * Done in terraform
@@ -92,8 +90,13 @@ Following the instructions here: <https://docs.aws.amazon.com/directoryservice/l
 * Configure conditional DNS forwarders on both sides and make sure you can resolve both domains using either AD - I'm not sure this is required for the managed side since you set them up when you create the trust, but I did it anyway
 * Set the Local Security Policy for Named pipes as detailed here, I think it's the default: <https://docs.aws.amazon.com/directoryservice/latest/admin-guide/before_you_start.html>
 * Set up the two-way forest trust using Active Directory Domains and Trusts on the non-managed side and the AWS console on the managed side (currently not in terraform)
-* Log in as an admin of the source domain, and add the admin user of the target domain to the Administrators group (the memberOf tab is a bit buggy for this, use the members list of the group instead)
-  * We'll then use the target domain admin for the rest of the process, as they now have permissions across both domains
+* Log in as an admin of the source domain, and add the admin user of the target domain to the Administrators group (the memberOf tab is a bit buggy for this, use the members list of the group instead). You can do this from an Admin powershell:
+```
+$User = Get-ADUser -Identity "CN=Admin,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local" -Server "dluhcdata.local"
+Add-ADGroupMember -Identity Administrators -Members $User -Server "<source domain>.local"
+```
+* We'll then use the target domain admin for the rest of the process, as they now have permissions across both domains
+* Continue with the guide to set up PES. [Direct download link](https://download.microsoft.com/download/a/1/0/a10798d3-cc25-4c32-a393-c06cd9f5d854/pwdmig.msi). Run the pwdmig.msi in admin mode (e.g. from an admin powershell terminal).
 
 ### Installation
 
@@ -116,3 +119,21 @@ Download and install ADMT from here <https://www.microsoft.com/en-us/download/de
 When it asks for a database server to use, use `.\SQLEXPRESS`.
 
 Set up PES on the source domain, step 3 here: <https://aws.amazon.com/blogs/security/how-to-migrate-your-on-premises-domain-to-aws-managed-microsoft-ad-using-admt/>. Direct download link: <https://download.microsoft.com/download/a/1/0/a10798d3-cc25-4c32-a393-c06cd9f5d854/pwdmig.msi>
+
+### Running ADMT
+
+Use the scripts in manual_scripts/admt/
+* Update ADMT's exclusion list so that it doesn't exclude the "mail" attribute. To do this, copy the update_exclusion.vbs script onto the server and run `c:\windows\syswow64\cscript.exe update_exclusion.vbs` from an administrator command prompt.
+* Import all groups by running `get_groups.ps1` on the source DC to generate include files.
+* Run an ADMT Group migration. Use the `groups-includefile.csv` include file. Target `OU=Groups,...` for both source and target domains. Select the option to include users. We import users as part of the group migration because there are too many users in production for powershell to create a users include file based on membership of datamart-delta-user
+* Run another ADMT Group migration. This time use `nested-groups-includefile.csv`. Target `CN=datamart-delta,OU=Groups...`.
+* Run an ADMT user migration. Use the `registration-requests-includefile.csv` include file. Target `CN=DeltaRegistrationRequests,OU=Users,...` in the target domain.
+* After completing that big migration, put the correct usernames in tidy_up.ps1 and then run it. 
+
+Make sure sap-admin is a member of `datamart-cpm-soap-api`
+
+For E-Claims access to the CPM API, these users need to have been imported and added to the `datamart-user` group:
+* In staging, `cpm-admin`
+* In production, `achadmin-dclg`
+
+Datamart service users that should be deleted if they were imported: superuser, delta-superuser, datamart-app-admin, cpm-biz-prod01, cpm-app-user, admin-dclg (has a different SAM id)
