@@ -17,6 +17,11 @@ resource "aws_kms_key" "state_bucket_encryption_key" {
   enable_key_rotation = true
 }
 
+resource "aws_kms_alias" "state_bucket_encryption_key" {
+  name          = "alias/terraform-state-encryption-staging"
+  target_key_id = aws_kms_key.state_bucket_encryption_key.key_id
+}
+
 resource "aws_s3_bucket_logging" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state.id
 

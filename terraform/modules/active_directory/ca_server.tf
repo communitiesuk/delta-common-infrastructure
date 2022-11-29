@@ -8,12 +8,19 @@ resource "aws_secretsmanager_secret_version" "ca_install_credentials" {
 
 resource "aws_kms_key" "ad_secrets_key" {
   enable_key_rotation = true
-  description         = "ad-secretsmanager-key-${var.environment}"
+  description         = "ad-secrets-key-${var.environment}"
+}
+
+resource "aws_kms_alias" "ad_secrets_key" {
+  name          = "alias/ad-secrets-key-${var.environment}"
+  target_key_id = aws_kms_key.ad_secrets_key.key_id
 }
 
 resource "aws_secretsmanager_secret" "ca_install_credentials" {
-  name       = "ldaps-ca-credentials-${var.environment}"
-  kms_key_id = aws_kms_key.ad_secrets_key.arn
+  name                    = "tf-ldaps-ca-credentials-${var.environment}"
+  description             = "Managed by Terraform, do not update manually"
+  kms_key_id              = aws_kms_key.ad_secrets_key.arn
+  recovery_window_in_days = 0
 }
 
 # Currently used to store a CRL, so encryption + logging + strictly private access are not required
