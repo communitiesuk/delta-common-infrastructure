@@ -8,7 +8,7 @@ resource "aws_kms_key" "ml_logs_encryption_key" {
   enable_key_rotation = true
 }
 
-resource "aws_kms_alias" "gh_log_groups" {
+resource "aws_kms_alias" "ml_logs_encryption_key" {
   name          = "alias/marklogic-logs-${var.environment}"
   target_key_id = aws_kms_key.ml_logs_encryption_key.key_id
 }
