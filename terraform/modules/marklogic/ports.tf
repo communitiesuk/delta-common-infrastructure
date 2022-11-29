@@ -1,5 +1,5 @@
 locals {
-  lb_ports = [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8140, 8141, 8142, 8050, 8058, 8150]
+  lb_ports = [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8140, 8141, 8142, 8050, 8055, 8058, 8150]
   ml_sg_ingress_port_ranges = [{
     "from_port"   = 22
     "to_port"     = 22
@@ -20,6 +20,10 @@ locals {
     "from_port"   = 8050
     "to_port"     = 8050
     "description" = "HTTP to Delta app-port"
+    }, {
+    "from_port"   = 8055
+    "to_port"     = 8055
+    "description" = "HTTP to Delta store port"
     }, {
     "from_port"   = 8058
     "to_port"     = 8058
