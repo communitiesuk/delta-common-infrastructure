@@ -5,8 +5,9 @@ $usersToGroups = import-csv "users-to-groups.csv"
 Foreach($user in $users){       
     New-ADUser -SamAccountName $user.SamAccountName -DisplayName $user.DisplayName `
         -AccountPassword $(ConvertTo-SecureString -AsPlainText $user.Password -Force) `
-        -UserPrincipalName $user.UserPrincipalName -Name $user.Name -Enabled $true `
-        -Path $user.Path -PasswordNeverExpires $true
+        -UserPrincipalName $user.UserPrincipalName -Name $user.Name -GivenName $user.GivenName `
+        -Surname $user.Surname -EmailAddress $user.Email `
+        -Enabled $true -Path $user.Path -PasswordNeverExpires $true
     Write-Host "Added User: $user.Name"
 }
  
