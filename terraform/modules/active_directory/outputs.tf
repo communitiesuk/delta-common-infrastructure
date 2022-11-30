@@ -8,7 +8,7 @@ output "ad_management_server_password" {
 }
 
 output "ca_server_private_key" {
-  value     = tls_private_key.ca_server_ec2.private_key_pem
+  value     = var.include_ca ? tls_private_key.ca_server_ec2[0].private_key_pem : ""
   sensitive = true
 }
 

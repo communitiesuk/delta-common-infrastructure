@@ -48,7 +48,7 @@ resource "aws_cloudformation_stack" "ca_server" {
     EntCaServerSubnet = var.ldaps_ca_subnet.id
     DomainMembersSG   = aws_security_group.ad_management_server.id
     # Amazon EC2 Configuration
-    KeyPairName = aws_key_pair.ca_server.id
+    KeyPairName = aws_key_pair.ca_server[0].id
     AMI         = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-Base"
     # AD Domain Services Configuration
     DirectoryType       = "AWSManaged"
@@ -71,6 +71,9 @@ resource "aws_cloudformation_stack" "ca_server" {
     create = "90m"
   }
   capabilities = ["CAPABILITY_IAM"]
+  lifecycle {
+    ignore_changes = [ template_body ]
+  }
 }
 
 data "aws_instance" "ca_server" {
