@@ -19,7 +19,11 @@ locals {
     }, {
     "from_port"   = 8050
     "to_port"     = 8050
-    "description" = "HTTP to Delta app-port"
+    "description" = "HTTP to Delta app port"
+    }, {
+    "from_port"   = 8053
+    "to_port"     = 8053
+    "description" = "HTTP to Delta API port"
     }, {
     "from_port"   = 8055
     "to_port"     = 8055
@@ -27,7 +31,7 @@ locals {
     }, {
     "from_port"   = 8058
     "to_port"     = 8058
-    "description" = "HTTP to Delta delta-app-port"
+    "description" = "HTTP to Delta deploy port"
     }, {
     "from_port"   = 8150
     "to_port"     = 8150
