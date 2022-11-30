@@ -7,7 +7,7 @@ output "ad_management_server_password" {
   sensitive = true
 }
 
-output "ca_server_private_key" {
+output "ad_ca_server_private_key" {
   value     = module.active_directory.ca_server_private_key
   sensitive = true
 }
