@@ -7,7 +7,7 @@ output "ad_management_server_password" {
   sensitive = true
 }
 
-output "ca_server_private_key" {
+output "ad_ca_server_private_key" {
   value     = module.active_directory.ca_server_private_key
   sensitive = true
 }
@@ -59,6 +59,10 @@ output "bastion_ssh_keys_bucket" {
 output "bastion_ssh_private_key" {
   value     = tls_private_key.bastion_ssh_key.private_key_openssh
   sensitive = true
+}
+
+output "bastion_sg_id" {
+  value = module.bastion.bastion_security_group_id
 }
 
 output "delta_internal_subnet_ids" {
