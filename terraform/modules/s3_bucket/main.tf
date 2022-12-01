@@ -22,6 +22,11 @@ variable "restrict_public_buckets" {
   default     = true
 }
 
+variable "noncurrent_version_expiration_days" {
+  type    = number
+  default = null
+}
+
 output "bucket" {
   value = aws_s3_bucket.main.bucket
 }
@@ -60,6 +65,26 @@ resource "aws_s3_bucket_public_access_block" "main" {
 resource "aws_s3_bucket_versioning" "main" {
   bucket = aws_s3_bucket.main.id
   versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "main" {
+  count = var.noncurrent_version_expiration_days == null ? 0 : 1
+
+  depends_on = [aws_s3_bucket_versioning.main]
+
+  bucket = aws_s3_bucket.main.id
+
+  rule {
+    id = "expire-old-versions"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = var.noncurrent_version_expiration_days
+    }
+
     status = "Enabled"
   }
 }
