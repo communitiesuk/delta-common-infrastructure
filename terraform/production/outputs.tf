@@ -26,6 +26,10 @@ output "vpc_id" {
   value = module.networking.vpc.id
 }
 
+output "private_dns" {
+  value = module.networking.private_dns
+}
+
 output "bastion_host_key_fingerprint" {
   value = module.bastion.bastion_host_key_fingerprint_sha256
 }
@@ -36,6 +40,10 @@ output "bastion_dns_name" {
 
 output "bastion_ssh_keys_bucket" {
   value = module.bastion.ssh_keys_bucket
+}
+
+output "bastion_sg_id" {
+  value = module.bastion.bastion_security_group_id
 }
 
 output "codeartifact_domain" {
