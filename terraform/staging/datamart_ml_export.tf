@@ -2,11 +2,17 @@ locals {
   datamart_account_id = "090682378586"
 }
 
+# MarkLogic seems to ignore the bucket level KMS settings, so this isn't used
 resource "aws_kms_key" "ml_backup_from_datamart_encryption" {
   enable_key_rotation = true
   description         = "ml-backup-datamart-encryption-staging"
 
   policy = data.aws_iam_policy_document.kms_ml_export_policy.json
+}
+
+resource "aws_kms_alias" "ml_backup_from_datamart_encryption" {
+  name          = "alias/ml-backup-datamart-encryption-staging"
+  target_key_id = aws_kms_key.ml_backup_from_datamart_encryption.key_id
 }
 
 module "datamart_ml_backups" {
@@ -15,7 +21,6 @@ module "datamart_ml_backups" {
   bucket_name             = "datamart-ml-backups-staging"
   access_log_bucket_name  = "datamart-ml-backups-access-logs-staging"
   force_destroy           = true
-  kms_key_arn             = aws_kms_key.ml_backup_from_datamart_encryption.arn
   restrict_public_buckets = false
 }
 
