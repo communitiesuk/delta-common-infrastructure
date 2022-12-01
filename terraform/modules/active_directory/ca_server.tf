@@ -72,7 +72,7 @@ resource "aws_cloudformation_stack" "ca_server" {
   }
   capabilities = ["CAPABILITY_IAM"]
   lifecycle {
-    ignore_changes = [ template_body ]
+    ignore_changes = [template_body]
   }
 }
 
