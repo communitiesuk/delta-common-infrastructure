@@ -214,6 +214,8 @@ module "marklogic" {
   private_subnets = module.networking.ml_private_subnets
   instance_type   = "t3.large"
   private_dns     = module.networking.private_dns
+
+  ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
 }
 
 module "gh_runner" {

@@ -32,3 +32,7 @@ variable "data_volume_size_gb" {
   description = "Size in GB of the data EBS volume for each instace"
   default     = 20
 }
+
+variable "ebs_backup_error_notification_emails" {
+  type = list(string)
+}
