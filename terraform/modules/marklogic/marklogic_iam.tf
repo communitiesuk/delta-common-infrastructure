@@ -140,7 +140,7 @@ resource "aws_iam_policy" "ml_s3_backups" {
 data "aws_iam_policy_document" "ml_s3_backups" {
   statement {
     actions = [
-      "s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket", "s3:PutObject", "s3:DeleteObject",
+      "s3:GetEncryptionConfiguration", "s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket", "s3:PutObject", "s3:DeleteObject",
       "s3:AbortMultipartUpload", "s3:ListBucketMultipartUploads", "s3:ListMultipartUploadParts",
     ]
     effect = "Allow"
