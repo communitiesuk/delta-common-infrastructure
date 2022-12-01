@@ -50,8 +50,23 @@ data "aws_iam_policy_document" "s3_gateway" {
   }
 
   statement {
-    sid     = "WriteBucketsInCurrentAccount"
-    actions = ["s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket", "s3:PutObject", "s3:PutObjectAcl", "s3:DeleteObject"]
+    sid = "WriteBucketsInCurrentAccount"
+    actions = [
+      "s3:GetObject",
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:GetBucketAcl",
+      "s3:GetObjectAcl",
+      "s3:PutObject",
+      "s3:PutObjectAcl",
+      "s3:DeleteObject",
+      "s3:AbortMultipartUpload",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListMultipartUploadParts",
+      "s3:PutObjectTagging",
+      "s3:GetObjectTagging",
+      "s3:DeleteObjectTagging",
+    ]
     principals {
       type        = "*"
       identifiers = ["*"]
