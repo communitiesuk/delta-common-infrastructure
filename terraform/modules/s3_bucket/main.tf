@@ -69,6 +69,14 @@ resource "aws_s3_bucket_versioning" "main" {
   }
 }
 
+resource "aws_s3_bucket_ownership_controls" "main" {
+  bucket = aws_s3_bucket.main.bucket
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "main" {
   count = var.noncurrent_version_expiration_days == null ? 0 : 1
 
