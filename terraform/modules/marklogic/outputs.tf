@@ -10,3 +10,7 @@ output "ml_ssh_private_key" {
 output "deploy_user" {
   value = aws_iam_user.marklogic_deploy_secret_reader.name
 }
+
+output "instance_iam_role" {
+  value = aws_iam_role.ml_iam_role.name
+}
