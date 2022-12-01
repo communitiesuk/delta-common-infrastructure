@@ -200,6 +200,8 @@ module "marklogic" {
   private_subnets = module.networking.ml_private_subnets
   instance_type   = "r5.xlarge"
   private_dns     = module.networking.private_dns
+
+  data_volume_size_gb = 200
 }
 
 module "gh_runner" {
