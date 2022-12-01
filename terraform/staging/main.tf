@@ -233,7 +233,6 @@ module "jaspersoft" {
   alb                           = module.public_albs.jaspersoft
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
-  enable_backup                 = false
   private_dns                   = module.networking.private_dns
   environment                   = "staging"
 }
