@@ -59,32 +59,31 @@ locals {
     delta_website_subnets = {
       cidr                 = local.delta_website_cidr_10
       http_allowed_domains = []
-      # TODO DT-21: Restrict/use VPC endpoints
-      tls_allowed_domains = [".amazonaws.com",
-        # to download Tomcat
-        "archive.apache.org",
-        # to download virus definitions for ClamAV
-      ".clamav.net"]
-      sid_offset = 600
+      tls_allowed_domains = [
+        ".amazonaws.com",     # TODO DT-21: Restrict/use VPC endpoints for codedeploy
+        "archive.apache.org", # to download Tomcat
+        ".clamav.net"         # to download virus definitions for ClamAV
+      ]
+      sid_offset = 700
     }
     delta_api_subnets = {
       cidr                 = local.delta_api_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = []
-      sid_offset           = 700
+      sid_offset           = 800
     }
     cpm_subnets = {
       cidr                 = local.cpm_private_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = []
-      sid_offset           = 800
+      sid_offset           = 900
     }
     keycloak = {
       subnets              = aws_subnet.keycloak_private
       cidr                 = local.keycloak_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = []
-      sid_offset           = 900
+      sid_offset           = 1000
     }
     marklogic = {
       cidr                 = local.ml_subnet_cidr_10
