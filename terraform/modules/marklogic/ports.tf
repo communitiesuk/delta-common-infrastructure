@@ -1,5 +1,4 @@
 locals {
-  lb_ports = [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8140, 8141, 8142, 8050, 8055, 8058, 8150]
   ml_sg_ingress_port_ranges = [{
     "from_port"   = 22
     "to_port"     = 22
@@ -10,7 +9,7 @@ locals {
     "description" = "HTTP to healthchecks/tests"
     }, {
     "from_port"   = 8000
-    "to_port"     = 8010
+    "to_port"     = 8008
     "description" = "HTTP to admin/default ports"
     }, {
     "from_port"   = 8140
@@ -37,4 +36,10 @@ locals {
     "to_port"     = 8150
     "description" = "HTTP to Delta XCC port"
   }]
+  lb_ports = {
+    for port in flatten([
+      for port_range in local.ml_sg_ingress_port_ranges : range(port_range.from_port, port_range.to_port + 1) if port_range.from_port >= 8000]
+    ) :
+    tostring(port) => port
+  }
 }

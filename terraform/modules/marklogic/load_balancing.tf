@@ -6,32 +6,39 @@ resource "aws_lb" "ml_lb" {
 }
 
 resource "aws_lb_target_group" "ml" {
-  count = length(local.lb_ports)
+  for_each = local.lb_ports
 
-  name                 = "ml-target-${var.environment}-${count.index}"
-  port                 = local.lb_ports[count.index]
+  name_prefix          = "m${substr(var.environment, 0, 1)}${each.key}"
+  port                 = each.value
   protocol             = "TCP"
   vpc_id               = var.vpc.id
   deregistration_delay = 60
-  preserve_client_ip   = false
+
+  # MarkLogic will sometimes make connections to itself, e.g. Delta ML calling CPM ML
+  preserve_client_ip = false
+
   health_check {
     interval            = 10 #seconds
     port                = 7997
     unhealthy_threshold = 10
     healthy_threshold   = 10
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lb_listener" "ml" {
-  count = length(aws_lb_target_group.ml)
+  for_each = local.lb_ports
 
   load_balancer_arn = aws_lb.ml_lb.arn
-  port              = aws_lb_target_group.ml[count.index].port
+  port              = aws_lb_target_group.ml[each.key].port
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.ml[count.index].arn
+    target_group_arn = aws_lb_target_group.ml[each.key].arn
   }
 }
 

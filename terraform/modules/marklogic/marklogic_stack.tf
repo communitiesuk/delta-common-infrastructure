@@ -31,7 +31,7 @@ resource "aws_cloudformation_stack" "marklogic" {
     VolumeSize  = var.data_volume_size_gb
     VolumeType  = local.ebs_volume_type
 
-    TargetGroupARNs       = join(",", aws_lb_target_group.ml[*].arn)
+    TargetGroupARNs       = join(",", [for tg in aws_lb_target_group.ml : tg.arn])
     InstanceSecurityGroup = aws_security_group.ml_instance.id
 
     InstanceType = var.instance_type
