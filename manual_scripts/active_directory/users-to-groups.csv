@@ -2,6 +2,9 @@ Group,SamAccountName
 datamart-delta-app-role,deltaapp
 AWS Delegated Administrators,deltaapp
 datamart-delta-admin,deltaapp
+datamart-delta-admin-dclg,deltaapp
+datamart-delta-user,deltaapp
+datamart-delta-user-dclg,deltaapp
 AWS Delegated Administrators,deltainternal
 datamart-delta-admin,deltaadmin
 datamart-delta-user,deltaadmin

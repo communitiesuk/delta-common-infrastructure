@@ -13,3 +13,4 @@ jasperreports,Password123,jasperreports@dluhcdata.local,Jasper Reports app,,,,ja
 jasperuser,Password123,jasperuser@dluhcdata.local,Jasper User,Jasper,User,Group-DLUHCDeltaNotifications+jasperuser@softwire.com,jasperuser,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 jasperadminuser,Password123,jasperadminuser@dluhcdata.local,Jasper Admin User,Jasper,AdminUser,Group-DLUHCDeltaNotifications+jasperadmin@softwire.com,jasperadminuser,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 keycloak,Password123,keycloak@dluhcdata.local,Keycloak app,,,,keycloak,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
+deltaorbeon (see delta-service in datamart production for appropriate roles),Password123,deltaorbeon@dluhcdata.local,Delta Orbeon Service,,,,deltaorbeon,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"  
