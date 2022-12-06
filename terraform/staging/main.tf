@@ -158,6 +158,7 @@ locals {
   all_dns_records = setunion(
     local.dns_cert_validation_records,
     module.cloudfront_distributions.required_dns_records,
+    module.ses_identity.required_validation_records
   )
 }
 
@@ -237,4 +238,10 @@ module "jaspersoft" {
   enable_backup                 = false
   private_dns                   = module.networking.private_dns
   environment                   = "staging"
+}
+
+module "ses_identity" {
+  source = "../modules/ses_identity"
+
+  domain = "datacollection.test.levellingup.gov.uk"
 }
