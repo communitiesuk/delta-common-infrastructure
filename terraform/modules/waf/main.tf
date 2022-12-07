@@ -3,8 +3,8 @@ variable "prefix" {
 }
 variable "excluded_rules" {
   description = "Rules to be excluded from AWSManagedRulesCommonRuleSet"
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
 locals {
