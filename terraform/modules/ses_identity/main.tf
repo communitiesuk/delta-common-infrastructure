@@ -24,6 +24,10 @@ resource "aws_ses_domain_dkim" "main" {
   }
 }
 
+output "arn" {
+  value = aws_ses_domain_identity.main.arn
+}
+
 output "required_validation_records" {
   value = concat(
     [

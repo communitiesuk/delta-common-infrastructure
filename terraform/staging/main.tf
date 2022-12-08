@@ -245,3 +245,10 @@ module "ses_identity" {
 
   domain = "datacollection.test.levellingup.gov.uk"
 }
+
+module "ses_user" {
+  source               = "../modules/ses_user"
+  username             = "ses-user-delta-app-staging"
+  ses_identity_arn     = module.ses_identity.arn
+  from_address_pattern = "delta-staging@datacollection.test.levellingup.gov.uk"
+}
