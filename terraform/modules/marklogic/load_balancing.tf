@@ -13,7 +13,7 @@ resource "aws_lb_target_group" "ml" {
   protocol             = "TCP"
   vpc_id               = var.vpc.id
   deregistration_delay = 60
-  preserve_client_ip   = true
+  preserve_client_ip   = false
   health_check {
     interval            = 10 #seconds
     port                = 7997
