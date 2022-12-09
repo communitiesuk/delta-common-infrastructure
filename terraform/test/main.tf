@@ -214,6 +214,8 @@ module "marklogic" {
   private_subnets = module.networking.ml_private_subnets
   instance_type   = "t3.large"
   private_dns     = module.networking.private_dns
+
+  ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
 }
 
 module "gh_runner" {
@@ -246,7 +248,6 @@ module "jaspersoft" {
   alb                           = module.public_albs.jaspersoft
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
-  enable_backup                 = true
   private_dns                   = module.networking.private_dns
   ad_domain                     = "dluhctest"
   environment                   = "test"

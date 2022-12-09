@@ -48,10 +48,6 @@ variable "java_max_heap" {
   type        = string
 }
 
-variable "enable_backup" {
-  type = bool
-}
-
 variable "private_dns" {
   type = object({
     zone_id     = string
