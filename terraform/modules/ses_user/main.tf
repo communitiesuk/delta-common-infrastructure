@@ -11,6 +11,8 @@ variable "from_address_pattern" {
   description = "for example 'marketing+.*@example.com'"
 }
 
+# One of a kind
+# tfsec:ignore:aws-iam-no-user-attached-policies
 resource "aws_iam_user" "smtp_user" {
   name = var.username
 }
