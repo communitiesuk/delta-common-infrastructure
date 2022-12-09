@@ -68,7 +68,7 @@ module "networking" {
   vpc_cidr_block      = "10.20.0.0/16"
   environment         = "staging"
   ssh_cidr_allowlist  = var.allowed_ssh_cidrs
-  open_ingress_cidrs  = [local.peering_vpc_cidr, local.datamart_peering_vpc_cidr]
+  open_ingress_cidrs  = [local.datamart_peering_vpc_cidr]
   ecr_repo_account_id = var.ecr_repo_account_id
 }
 
