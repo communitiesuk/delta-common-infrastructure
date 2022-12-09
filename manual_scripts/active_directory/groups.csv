@@ -7,13 +7,16 @@ datamart-delta-department-admins
 datamart-delta-form-designers
 datamart-delta-lead-testers
 datamart-delta-testers
+datamart-delta-testers-dclg
 datamart-delta-user
+datamart-delta-user-dclg
+datamart-delta-admin
+datamart-delta-admin-dclg
 datamart-delta-report-users
 datamart-delta-payments-reviewers
 datamart-delta-payments-approvers
 datamart-delta-data-auditors
 datamart-delta-data-certifiers
-datamart-delta-admin
 datamart-user
 datamart-cpm-soap-api
 jasperreports-users

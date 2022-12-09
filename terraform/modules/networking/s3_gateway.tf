@@ -54,6 +54,7 @@ data "aws_iam_policy_document" "s3_gateway" {
     actions = [
       "s3:GetObject",
       "s3:GetBucketLocation",
+      "s3:GetEncryptionConfiguration",
       "s3:ListBucket",
       "s3:GetBucketAcl",
       "s3:GetObjectAcl",

@@ -1,6 +1,17 @@
 variable "prefix" {
   type = string
 }
+variable "excluded_rules" {
+  description = "Rules to be excluded from AWSManagedRulesCommonRuleSet"
+  type        = list(string)
+  default     = []
+}
+
+locals {
+  # Delta needs file uploads so we'll presumably want a much higher limit than 8KB
+  # This does limit the usefulness of the other rules though as they only scan the first 8KB of the body
+  excluded_rules = concat(var.excluded_rules, ["SizeRestrictions_BODY"])
+}
 
 output "acl_arn" {
   value = aws_wafv2_web_acl.waf_acl.arn
@@ -62,10 +73,11 @@ resource "aws_wafv2_web_acl" "waf_acl" {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
 
-        excluded_rule {
-          # Delta needs file uploads so we'll presumably want a much higher limit than 8KB
-          # This does limit the usefulness of the other rules though as they only scan the first 8KB of the body
-          name = "SizeRestrictions_BODY"
+        dynamic "excluded_rule" {
+          for_each = local.excluded_rules
+          content {
+            name = excluded_rule.value
+          }
         }
       }
     }

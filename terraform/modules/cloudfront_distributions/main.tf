@@ -9,12 +9,19 @@ module "default_waf" {
   prefix = "${var.environment}-default-"
 }
 
+module "delta_website_waf" {
+  source = "../waf"
+  prefix = "${var.environment}-delta-website-"
+  # Orbeon triggers this rule
+  excluded_rules = ["CrossSiteScripting_BODY"]
+}
+
 module "delta_cloudfront" {
   source                         = "../cloudfront_distribution"
   prefix                         = "delta-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta"
-  waf_acl_arn                    = module.default_waf.acl_arn
+  waf_acl_arn                    = module.delta_website_waf.acl_arn
   cloudfront_key                 = var.delta.alb.cloudfront_key
   origin_domain                  = var.delta.alb.dns_name
   cloudfront_domain              = var.delta.domain

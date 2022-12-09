@@ -195,12 +195,13 @@ module "active_directory_dns_resolver" {
 module "marklogic" {
   source = "../modules/marklogic"
 
-  default_tags    = var.default_tags
-  environment     = "staging"
-  vpc             = module.networking.vpc
-  private_subnets = module.networking.ml_private_subnets
-  instance_type   = "r5.xlarge"
-  private_dns     = module.networking.private_dns
+  default_tags        = var.default_tags
+  environment         = "staging"
+  vpc                 = module.networking.vpc
+  private_subnets     = module.networking.ml_private_subnets
+  instance_type       = "r5.xlarge"
+  private_dns         = module.networking.private_dns
+  data_volume_size_gb = 200
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
 }

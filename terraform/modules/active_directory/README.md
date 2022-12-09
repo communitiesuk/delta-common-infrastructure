@@ -137,3 +137,9 @@ For E-Claims access to the CPM API, these users need to have been imported and a
 * In production, `achadmin-dclg`
 
 Datamart service users that should be deleted if they were imported: superuser, delta-superuser, datamart-app-admin, cpm-biz-prod01, cpm-app-user, admin-dclg (has a different SAM id)
+
+To import the OUs inside OU=Delta-Organizations:
+* Run the export_delta_orgs.ps1 script on the source DC to generate an export file
+* Edit the file in notepad, deleting the top entry (which refers to OU=Delta-Organizations itself)
+* Copy the file to our AD management server
+* Run `ldifde -i -f ous.ldf` to import it
