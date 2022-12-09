@@ -32,6 +32,7 @@ declare variable $users := (
   "matt.steel",
   "victoria.holland",
   "vinod.sathyamoorthy"
+  (: This is just staging users currently :)
 );
 for $user in $users
   return sec:remove-user($user)
