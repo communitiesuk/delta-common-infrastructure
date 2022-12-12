@@ -246,9 +246,18 @@ module "ses_identity" {
   domain = "datacollection.test.levellingup.gov.uk"
 }
 
-module "ses_user" {
+module "delta_ses_user" {
   source               = "../modules/ses_user"
   username             = "ses-user-delta-app-staging"
   ses_identity_arn     = module.ses_identity.arn
   from_address_pattern = "delta-staging@datacollection.test.levellingup.gov.uk"
+  environment          = "staging"
+}
+
+module "cpm_ses_user" {
+  source               = "../modules/ses_user"
+  username             = "ses-user-cpm-app-staging"
+  ses_identity_arn     = module.ses_identity.arn
+  from_address_pattern = "cpm-staging@datacollection.test.levellingup.gov.uk"
+  environment          = "staging"
 }
