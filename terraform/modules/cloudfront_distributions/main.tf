@@ -16,6 +16,13 @@ module "delta_website_waf" {
   excluded_rules = ["CrossSiteScripting_BODY"]
 }
 
+module "cpm_waf" {
+  source = "../waf"
+  prefix = "${var.environment}-cpm-"
+  # At least some e-claims POST requests trigger this rule 
+  excluded_rules = ["CrossSiteScripting_BODY"]
+}
+
 module "delta_cloudfront" {
   source                         = "../cloudfront_distribution"
   prefix                         = "delta-${var.environment}-"
@@ -54,7 +61,7 @@ module "cpm_cloudfront" {
   prefix                         = "cpm-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "cpm"
-  waf_acl_arn                    = module.default_waf.acl_arn
+  waf_acl_arn                    = module.cpm_waf.acl_arn
   cloudfront_key                 = var.cpm.alb.cloudfront_key
   origin_domain                  = var.cpm.alb.dns_name
   cloudfront_domain              = var.cpm.domain
