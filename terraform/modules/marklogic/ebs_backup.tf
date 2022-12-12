@@ -103,8 +103,8 @@ resource "aws_sns_topic_subscription" "ebs_backup_errors" {
   topic_arn = aws_sns_topic.ebs_backup_completed.arn
   protocol  = "email"
   endpoint  = each.value
-  # TODO DT-129: Uncomment this once we've checked we're getting emails
-  # filter_policy = jsonencode({
-  #   State = [{ "anything-but" : "COMPLETED" }]
-  # })
+
+  filter_policy = jsonencode({
+    State = [{ "anything-but" : "COMPLETED" }]
+  })
 }
