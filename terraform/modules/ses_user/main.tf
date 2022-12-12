@@ -6,6 +6,10 @@ variable "ses_identity_arn" {
   type = string
 }
 
+variable "kms_key_arn" {
+  type = string
+}
+
 variable "from_address_pattern" {
   type        = string
   description = "for example 'marketing+.*@example.com'"
