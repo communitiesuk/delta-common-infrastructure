@@ -6,12 +6,14 @@ module "access_logs_bucket" {
 
 module "default_waf" {
   source = "../waf"
+  log_group_suffix = "default-${var.environment}"
   prefix = "${var.environment}-default-"
 }
 
 module "delta_website_waf" {
   source = "../waf"
   prefix = "${var.environment}-delta-website-"
+  log_group_suffix = "delta-website-${var.environment}"
   # Orbeon triggers this rule
   excluded_rules = ["CrossSiteScripting_BODY"]
 }
@@ -19,6 +21,7 @@ module "delta_website_waf" {
 module "cpm_waf" {
   source = "../waf"
   prefix = "${var.environment}-cpm-"
+  log_group_suffix = "default-${var.environment}"
   # At least some e-claims POST requests trigger this rule 
   excluded_rules = ["CrossSiteScripting_BODY"]
 }
