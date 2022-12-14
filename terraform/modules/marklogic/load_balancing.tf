@@ -15,7 +15,8 @@ resource "aws_lb_target_group" "ml" {
   deregistration_delay = 60
 
   # MarkLogic will sometimes make connections to itself, e.g. Delta ML calling CPM ML
-  preserve_client_ip = false
+  # 8000, 8001 and 8002 use digest auth which doesn't behave well with this set to false
+  preserve_client_ip = each.value == 8000 || each.value == 8001 || each.value == 8002
 
   health_check {
     interval            = 10 #seconds

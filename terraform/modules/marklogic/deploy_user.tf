@@ -5,6 +5,16 @@ resource "aws_iam_user" "marklogic_deploy_secret_reader" {
   name = "delta-marklogic-deploy-secret-reader-${var.environment}"
 }
 
+resource "aws_kms_key" "ml_deploy_secrets" {
+  description         = "delta-marklogic-deploy-secrets-${var.environment}"
+  enable_key_rotation = true
+}
+
+resource "aws_kms_alias" "ml_deploy_secrets" {
+  name          = "alias/delta-marklogic-deploy-secrets-${var.environment}"
+  target_key_id = aws_kms_key.ml_deploy_secrets.key_id
+}
+
 data "aws_secretsmanager_secret" "ml_admin_user" {
   name = "ml-admin-user-${var.environment}"
 
@@ -38,6 +48,11 @@ data "aws_iam_policy_document" "read_marklogic_deploy_secrets" {
       variable = "aws:SourceVpc"
       values   = [var.vpc.id]
     }
+  }
+  statement {
+    actions   = ["kms:DescribeKey", "kms:Decrypt"]
+    effect    = "Allow"
+    resources = [aws_kms_key.ml_deploy_secrets.arn]
   }
 }
 
