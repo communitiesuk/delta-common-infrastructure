@@ -20,7 +20,7 @@ Effectively admin access
 TODO: Set up further roles for
 
 * Monitoring/read only access
-* Application developer - access to logs, port forwarding to ML
+* Application developer - access to logs, SSM port forwarding to ML, SSM RDP to AD
 
 ## Alarms and monitoring
 

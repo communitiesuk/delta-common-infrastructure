@@ -13,5 +13,5 @@ Terraform state is stored in an S3 bucket in the same account as the infrastruct
 
 TODO: Use KMS to encrypt terraform state bucket
 
-TODO: Try and ensure state compromise would not directly compromise the environment
-  So remove bastion SSH key, AWS access keys.
+TODO: Try and ensure state compromise would not directly compromise production (don't need to be as strict for test/staging)
+  So remove AWS access keys/bastion SSH keys for production
