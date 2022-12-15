@@ -27,9 +27,7 @@ Application deployment bundles are deployed to an appropriate repository (ECR or
 The same repository is shared by all environments.
 
 A "CI" user is used to push artifacts to the repositories, and is available as a repository secret.
-Artifacts are immutable, so this account cannot be used to affect running services.
-
-TODO: Ensure that artifacts are indeed immutable, or at least the ones deployed to production are.
+Artifacts used by production are immutable, so this account cannot be used to affect production services.
 
 The per-environment terraform users are used for initiating the deployments themselves using an uploaded artefact, with the same restrictions as above.
 
