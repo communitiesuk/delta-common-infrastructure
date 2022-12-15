@@ -52,4 +52,6 @@ See the [networking module](../../terraform/modules/networking/main.tf) for the 
 
 TODO: Monitoring for Network Firewall
 
+TODO: Remove permissive rules for Delta Website
+
 ![Network ingress and egress diagram](../diagrams/Network_ingress_and_egress.drawio.svg)
