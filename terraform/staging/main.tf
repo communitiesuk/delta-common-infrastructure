@@ -83,8 +83,15 @@ resource "aws_key_pair" "bastion_ssh_key" {
   public_key = tls_private_key.bastion_ssh_key.public_key_openssh
 }
 
+module "bastion_log_group" {
+  source = "../modules/encrypted_log_groups"
+
+  kms_key_alias_name = "staging-bastion-ssh-logs"
+  log_group_names    = ["staging/ssh-bastion"]
+}
+
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=11b10ed6805a4bdd7a5e983f8c90cf40a4c43bad"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=f1b0967d9e6464f1d684b9147a0bf27cc80fde1e"
 
   region                  = "eu-west-1"
   name_prefix             = "stg"
@@ -94,6 +101,7 @@ module "bastion" {
   admin_ssh_key_pair_name = aws_key_pair.bastion_ssh_key.key_name
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1
+  log_group_name          = module.bastion_log_group.log_group_names[0]
   extra_userdata          = "yum install openldap-clients -y"
   tags_asg                = var.default_tags
   dns_config = {
