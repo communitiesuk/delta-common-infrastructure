@@ -27,6 +27,11 @@ variable "noncurrent_version_expiration_days" {
   default = null
 }
 
+variable "access_log_expiration_days" {
+  type    = number
+  default = 90
+}
+
 output "bucket" {
   value = aws_s3_bucket.main.bucket
 }
@@ -119,6 +124,22 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "log_bucket" {
       kms_master_key_id = var.kms_key_arn
       sse_algorithm     = var.kms_key_arn == null ? "AES256" : "aws:kms"
     }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "log_bucket" {
+  bucket = aws_s3_bucket.log_bucket.id
+
+  rule {
+    id = "expire-old-logs"
+
+    filter {}
+
+    expiration {
+      days = var.access_log_expiration_days
+    }
+
+    status = "Enabled"
   }
 }
 
