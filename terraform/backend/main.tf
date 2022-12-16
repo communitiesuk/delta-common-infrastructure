@@ -5,7 +5,7 @@ provider "aws" {
       project           = "Data Collection Service"
       business-unit     = "Digital Delivery"
       technical-contact = "Team-DLUHC@softwire.com"
-      environment       = "staging"
+      environment       = "production"
       repository        = "https://github.com/communitiesuk/delta-common-infrastructure"
       is-backend        = "true"
     }
@@ -18,50 +18,16 @@ resource "aws_kms_key" "state_bucket_encryption_key" {
 }
 
 resource "aws_kms_alias" "state_bucket_encryption_key" {
-  name          = "alias/terraform-state-encryption-staging"
+  name          = "alias/terraform-state-encryption-production"
   target_key_id = aws_kms_key.state_bucket_encryption_key.key_id
 }
 
-resource "aws_s3_bucket_logging" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state.id
-
-  target_bucket = aws_s3_bucket.state_access_log_bucket.id
-  target_prefix = "staging/"
-}
-
-resource "aws_s3_bucket" "terraform_state" {
-  bucket = "data-collection-service-tfstate-sandbox"
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state.bucket
-
-  rule {
-    apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.state_bucket_encryption_key.arn
-      sse_algorithm     = "aws:kms"
-    }
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
+module "state_bucket" {
+  source                  = "../modules/s3_bucket"
+  bucket_name             = "data-collection-service-tfstate-production"
+  access_log_bucket_name  = "data-collection-service-tfstate-access-logs-production"
+  kms_key_arn             = aws_kms_key.state_bucket_encryption_key.arn
   restrict_public_buckets = true
-}
-
-resource "aws_s3_bucket_versioning" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state.id
-  versioning_configuration {
-    status = "Enabled"
-  }
 }
 
 # Encryption/recovery not required - lock not sensitive
