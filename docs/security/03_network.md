@@ -27,11 +27,25 @@ We primarily use one, reasonably permissive, ACL which allows the following traf
 
 Security groups are defined for each service and we will not list them all here.
 
-The following security groups allow open ingress:
+The following security groups allow open ingress from the internet:
 
-* Security groups for the public Application Load Balancers that accept incoming HTTPS traffic
+* Public Application Load Balancers that accept incoming HTTPS traffic
 * Default security group for AWS DS
   * TODO DT-146 fix this
+
+## Ingress points for deployments and maintenance
+
+Several of the instances are SSM enabled and AWS Systems Manager Session Manager can be used to access them.
+
+TODO: Make sure logging and KMS is set up for session manager in eu-west-1
+
+Excluding application traffic the only other network ingress point is an IP-restricted SSH bastion.
+This is primarily used for development access in the test and staging accounts, but also acts as a backup method for accessing production.
+Developer's SSH public keys are uploaded to an S3 bucket, and the bastion host automatically fetches these and sets up a user per-key.
+
+TODO: Ship SSH logs to CloudWatch from the bastion host.
+
+There is also a GitHub runner instance in each environment attached to the delta-marklogic-deploy repository.
 
 ## Egress
 
