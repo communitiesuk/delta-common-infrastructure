@@ -5,7 +5,7 @@
 Delta has two main functions:
 
 * Collecting data from local authorities (LAs) and other organisations through forms
-* Managing grant payments to local authorities from DLUHC
+* Managing DLUHC's payments to and from local authorities
 
 Primary targets:
 

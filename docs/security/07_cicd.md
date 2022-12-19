@@ -13,13 +13,13 @@ The Terraform code is split across several repositories, but the setup for all o
 
 A staging/test account admin AWS access key is stored as a repository secret.
 
-TODO: We can probably do better than this, could PRs use a key with read-only access to the state and plan with -refresh=false?
+TODO DT-171: We can probably do better than this, could PRs use a key with read-only access to the state and plan with -refresh=false?
   Then the access key could at least be restricted to main and come under branch protection.
 
 A production account admin AWS access key is stored as an Environment secret, and requires manual approval before use.
 
-TODO: Alarm on use of terraform admin account (MHCLG org)
-TODO: Confirm GitHub org does not allow write access for all members
+TODO: Alarm on use of terraform admin account (MHCLG org) <https://digital.dclg.gov.uk/confluence/display/DT/Security+-+DLUHC+responsibilities>
+TODO: Confirm GitHub org does not allow write access for all members <https://digital.dclg.gov.uk/confluence/display/DT/Security+-+DLUHC+responsibilities>
 
 ## Application deployments
 
@@ -31,7 +31,7 @@ Artifacts used by production are immutable, so this account cannot be used to af
 
 The per-environment terraform users are used for initiating the deployments themselves using an uploaded artefact, with the same restrictions as above.
 
-TODO: Setup GitHub Actions Environments for Delta, CPM and Orbeon.
+TODO DT-171: Setup GitHub Actions Environments for Delta, CPM and Orbeon.
 
 ## MarkLogic deployments
 
@@ -60,9 +60,11 @@ This user is stored as environment secrets, with access control via branch prote
 | delta-orbeon                | Write      | None                | Push artefacts      |
 | delta-orbeon                | Admin      | None                | Push artefacts      |
 | delta-marklogic-deploy      | Read       | None                | None                |
-| delta-marklogic-deploy      | Write      | Runner              | Runner              |
-| delta-marklogic-deploy      | push main  | Runner + ML secrets | Runner              |
+| delta-marklogic-deploy      | Write      | Runner\*            | Runner\*           |
+| delta-marklogic-deploy      | push main  | Runner + ML secrets | Runner\*            |
 | delta-marklogic-deploy      | Admin      | Runner + ML secrets | Runner + ML secrets |
+
+\* In practice, a user with access to the GitHub runner in an environment may be able to extract the MarkLogic secrets from a previous run. Repository write access should therefore be carefully controlled.
 
 The "Maintainer" role is not currently used.
 

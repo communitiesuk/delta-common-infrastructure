@@ -9,7 +9,7 @@ Access for humans is managed by DLUHC, signing in via the AWS organisation and r
 
 Service users are created directly in the relevant account and are managed by Terraform, with the exception of the Terraform CI/CD user.
 
-TODO: DT-39 enable GuardDuty monitoring AWS access
+TODO DT-39: enable GuardDuty monitoring AWS access
 
 ## Permissions/Roles
 
@@ -17,7 +17,7 @@ TODO: DT-39 enable GuardDuty monitoring AWS access
 
 Effectively admin access
 
-TODO: Set up further roles for
+TODO DT-163: Set up further roles for
 
 * Monitoring/read only access
 * Application developer - access to logs, SSM port forwarding to ML, SSM RDP to AD
@@ -27,3 +27,5 @@ TODO: Set up further roles for
 TODO: Notes for any AWS access alarms we manage
 
 TODO: Notes on monitoring in the AWS organisation to go on Confluence
+
+See <https://digital.dclg.gov.uk/confluence/display/DT/Security+-+DLUHC+responsibilities>

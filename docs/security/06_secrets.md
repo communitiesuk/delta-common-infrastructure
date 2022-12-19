@@ -2,7 +2,7 @@
 
 ## Terraform state
 
-TODO: Try and ensure state compromise would not directly compromise the environment
+TODO DT-170: Try and ensure state compromise would not directly compromise the environment
   So remove bastion SSH key, AWS access keys.
 
 ## Secrets Manager

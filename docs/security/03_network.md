@@ -9,7 +9,7 @@ Infrastructure is created inside a VPC for each environment. Generally:
 
 See the networking Terraform module for details.
 
-TODO: DT-39 enable GuardDuty monitoring of VPC flow logs
+TODO DT-39: enable GuardDuty monitoring of VPC flow logs
 
 ## ACL
 
@@ -18,7 +18,7 @@ We primarily use one, reasonably permissive, ACL which allows the following traf
 * All intra-VPC/peered VPC traffic
 * Port 443 ingress for HTTPS
 * Port 80 ingress for HTTP
-  * TODO: Remove this
+  * TODO DT-164: Remove this
 * Port 22 from specific IP addresses
 * All egress
 * Ingress on ephemeral ports and ICMP
@@ -37,15 +37,16 @@ The following security groups allow open ingress from the internet:
 
 Several of the instances are SSM enabled and AWS Systems Manager Session Manager can be used to access them.
 
-TODO: Make sure logging and KMS is set up for session manager in eu-west-1
+TODO DT-165: Make sure logging and KMS is set up for session manager in eu-west-1
 
 Excluding application traffic the only other network ingress point is an IP-restricted SSH bastion.
 This is primarily used for development access in the test and staging accounts, but also acts as a backup method for accessing production.
 Developer's SSH public keys are uploaded to an S3 bucket, and the bastion host automatically fetches these and sets up a user per-key.
 
-TODO: Ship SSH logs to CloudWatch from the bastion host.
+TODO DT-166: Ship SSH logs to CloudWatch from the bastion host.
 
 There is also a GitHub runner instance in each environment attached to the delta-marklogic-deploy repository.
+This is not accessible from the internet, but it does fetch and execute jobs from GitHub Actions.
 
 ## Egress
 
@@ -64,8 +65,8 @@ Other outbound traffic is dropped with the exception of outbound SSH for the Git
 
 See the [networking module](../../terraform/modules/networking/main.tf) for the full allowlist.
 
-TODO: Monitoring for Network Firewall
+TODO DT-167: Monitoring for Network Firewall
 
-TODO: Remove permissive rules for Delta Website
+TODO DT-168: Remove permissive rules for Delta Website
 
 ![Network ingress and egress diagram](../diagrams/Network_ingress_and_egress.drawio.svg)
