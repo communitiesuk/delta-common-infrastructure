@@ -275,3 +275,10 @@ module "cpm_ses_user" {
   kms_key_arn          = module.marklogic.deploy_user_kms_key_arn
   vpc_id               = module.networking.vpc.id
 }
+
+module "iam_roles" {
+  source = "../modules/iam_roles"
+
+  organisation_account_id = "448312965134"
+  environment             = "staging"
+}
