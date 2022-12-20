@@ -21,7 +21,7 @@ module "delta_website_waf" {
 module "cpm_waf" {
   source           = "../waf"
   prefix           = "${var.environment}-cpm-"
-  log_group_suffix = "default-${var.environment}"
+  log_group_suffix = "cpm-${var.environment}"
   # At least some e-claims POST requests trigger this rule 
   excluded_rules = ["CrossSiteScripting_BODY"]
 }
