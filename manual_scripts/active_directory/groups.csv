@@ -17,6 +17,12 @@ datamart-delta-payments-reviewers
 datamart-delta-payments-approvers
 datamart-delta-data-auditors
 datamart-delta-data-certifiers
+datamart-delta-abatements-approvers
+datamart-delta-write-offs-approvers
+datamart-delta-billing-data-approvers
+datamart-delta-sap-team-members
+datamart-delta-suspensions-approvers
+datamart-delta-read-only-admin
 datamart-user
 datamart-cpm-soap-api
 jasperreports-users
