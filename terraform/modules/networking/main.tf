@@ -60,7 +60,7 @@ locals {
       cidr                 = local.delta_website_cidr_10
       http_allowed_domains = []
       tls_allowed_domains = [
-        ".amazonaws.com",     # TODO DT-21: Restrict/use VPC endpoints for codedeploy
+        ".amazonaws.com",     # TODO DT-168: Restrict/use VPC endpoints for codedeploy
         "archive.apache.org", # to download Tomcat
         ".clamav.net"         # to download virus definitions for ClamAV
       ]

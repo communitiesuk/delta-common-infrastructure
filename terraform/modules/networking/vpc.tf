@@ -47,7 +47,7 @@ resource "aws_default_network_acl" "main" {
   }
 
   # Allow HTTP
-  # TODO: This rule should be removed once all ALBs accept traffic over HTTPS only
+  # TODO DT-164: This rule should be removed once all ALBs accept traffic over HTTPS only
   ingress {
     protocol   = "tcp"
     rule_no    = 210
