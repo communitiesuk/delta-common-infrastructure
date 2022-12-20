@@ -54,24 +54,6 @@ output "codeartifact_domain_arn" {
   value = module.codeartifact.domain_arn
 }
 
-output "cpm_ci_access_key" {
-  value = aws_iam_access_key.cpm_ci.id
-}
-
-output "cpm_ci_secret_key" {
-  value     = aws_iam_access_key.cpm_ci.secret
-  sensitive = true
-}
-
-output "delta_ci_access_key" {
-  value = aws_iam_access_key.cpm_ci.id
-}
-
-output "delta_ci_secret_key" {
-  value     = aws_iam_access_key.cpm_ci.secret
-  sensitive = true
-}
-
 output "required_dns_records" {
   value = local.all_validation_dns_records
 }
