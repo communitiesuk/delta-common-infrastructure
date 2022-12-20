@@ -1,6 +1,7 @@
 variable "prefix" {
   type = string
 }
+
 variable "excluded_rules" {
   description = "Rules to be excluded from AWSManagedRulesCommonRuleSet"
   type        = list(string)
