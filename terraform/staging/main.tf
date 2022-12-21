@@ -10,6 +10,7 @@ terraform {
   backend "s3" {
     bucket         = "data-collection-service-tfstate-dev"
     encrypt        = true
+    kms_key_id     = "arn:aws:kms:eu-west-1:486283582667:key/547ae46f-f57e-45f6-bcfd-9403bed9ec75"
     dynamodb_table = "tfstate-locks"
     key            = "common-infra-staging"
     region         = "eu-west-1"
