@@ -157,3 +157,33 @@ data "aws_iam_policy_document" "ml_s3_backups" {
     resources = [aws_kms_key.ml_backup_bucket_key.arn]
   }
 }
+
+resource "aws_iam_role_policy_attachment" "ml_cloudwatch" {
+  role       = aws_iam_role.ml_iam_role.name
+  policy_arn = aws_iam_policy.ml_cloudwatch.arn
+}
+
+resource "aws_iam_policy" "ml_cloudwatch" {
+  name        = "ml-instance-logs-${var.environment}"
+  description = "Allows MarkLogic instances to write logs to CloudWatch"
+
+  policy = data.aws_iam_policy_document.ml_cloudwatch.json
+}
+
+# tfsec:ignore:aws-iam-no-policy-wildcards
+data "aws_iam_policy_document" "ml_cloudwatch" {
+
+  statement {
+    actions   = ["logs:DescribeLogGroups"]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents",
+    ]
+    resources = ["${aws_cloudwatch_log_group.ml_patch.arn}:*"]
+  }
+}

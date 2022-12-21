@@ -203,6 +203,7 @@ module "marklogic" {
   instance_type       = "r5.xlarge"
   private_dns         = module.networking.private_dns
   data_volume_size_gb = 200
+  patch_day           = "TUE"
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
 }
