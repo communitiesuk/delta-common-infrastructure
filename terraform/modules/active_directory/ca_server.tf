@@ -9,6 +9,7 @@ resource "aws_secretsmanager_secret_version" "ca_install_credentials" {
 resource "aws_kms_key" "ad_secrets_key" {
   enable_key_rotation = true
   description         = "ad-secrets-key-${var.environment}"
+  tags                = { "terraform-plan-read" = true }
 }
 
 resource "aws_kms_alias" "ad_secrets_key" {
@@ -21,6 +22,7 @@ resource "aws_secretsmanager_secret" "ca_install_credentials" {
   description             = "Managed by Terraform, do not update manually"
   kms_key_id              = aws_kms_key.ad_secrets_key.arn
   recovery_window_in_days = 0
+  tags                    = { "terraform-plan-read" = true }
 }
 
 # Currently used to store a CRL, so encryption + logging + strictly private access are not required

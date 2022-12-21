@@ -46,7 +46,7 @@ resource "aws_dynamodb_table" "terraform_state_lock" {
   }
 }
 
-# Access to Terraform state, should be enough to do a refresh=false plan along with ReadOnlyAccess
+# Access to Terraform state, should be enough to do a terraform plan along with ReadOnlyAccess
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "terraform_state_read_only" {
   statement {
@@ -92,6 +92,28 @@ data "aws_iam_policy_document" "terraform_state_read_only" {
       # MarkLogic user and license secrets, value is read to pass to CloudFormation
       "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:ml-*",
     ]
+  }
+
+  # Other secrets and keys Terraform needs to be able to read during plan
+  statement {
+    sid = "ReadPlanSecrets"
+    actions = [
+      "secretsmanager:GetSecretValue",
+      "kms:Decrypt",
+    ]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:resourceTag/terraform-plan-read"
+      values   = ["true"]
+    }
+  }
+
+  statement {
+    # Missing from ReadOnlyAccess
+    sid       = "ListLogDeliveries"
+    actions   = ["logs:ListLogDeliveries"]
+    resources = ["*"]
   }
 }
 

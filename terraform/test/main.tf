@@ -98,7 +98,7 @@ module "bastion_log_group" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=f1b0967d9e6464f1d684b9147a0bf27cc80fde1e"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=b567dbf2c9641df277f503240ee4367b126d475c"
 
   region                  = "eu-west-1"
   name_prefix             = "tst"
@@ -114,8 +114,8 @@ module "bastion" {
     domain  = "bastion.${var.secondary_domain}"
   }
   extra_userdata = "yum install openldap-clients -y"
-
-  tags_asg = var.default_tags
+  tags_asg       = var.default_tags
+  tags_host_key  = { "terraform-plan-read" = true }
 }
 
 module "public_albs" {
