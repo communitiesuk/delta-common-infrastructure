@@ -36,3 +36,12 @@ variable "data_volume_size_gb" {
 variable "ebs_backup_error_notification_emails" {
   type = list(string)
 }
+
+variable "patch_day" {
+  type = string
+
+  validation {
+    condition     = contains(["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"], var.patch_day)
+    error_message = "patch_day must be a day of the week"
+  }
+}

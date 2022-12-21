@@ -215,6 +215,7 @@ module "marklogic" {
   private_subnets = module.networking.ml_private_subnets
   instance_type   = "t3.large"
   private_dns     = module.networking.private_dns
+  patch_day       = "MON"
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
 }

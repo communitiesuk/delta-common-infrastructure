@@ -9,8 +9,12 @@ data "aws_secretsmanager_secret_version" "ml_admin_user" {
   secret_id = "ml-admin-user-${var.environment}"
 }
 
+locals {
+  stack_name = "marklogic-stack-${var.environment}"
+}
+
 resource "aws_cloudformation_stack" "marklogic" {
-  name = "marklogic-stack-${var.environment}"
+  name = local.stack_name
 
   parameters = {
     IAMRole       = aws_iam_instance_profile.ml_instance_profile.name
