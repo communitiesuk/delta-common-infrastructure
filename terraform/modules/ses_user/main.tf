@@ -1,3 +1,7 @@
+variable "vpc_id" {
+  type = string
+}
+
 variable "username" {
   type = string
 }
@@ -37,6 +41,11 @@ data "aws_iam_policy_document" "ses_sender" {
       test     = "StringLike"
       variable = "ses:FromAddress"
       values   = [var.from_address_pattern]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceVpc"
+      values   = [var.vpc_id]
     }
   }
 }
