@@ -257,6 +257,7 @@ module "jaspersoft" {
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   private_dns                   = module.networking.private_dns
   environment                   = "staging"
+  patch_maintenance_window      = module.patch_maintenance_window
 }
 
 module "ses_identity" {

@@ -57,3 +57,7 @@ output "codeartifact_domain_arn" {
 output "required_dns_records" {
   value = local.all_validation_dns_records
 }
+
+output "patch_maintenance_window" {
+  value = module.patch_maintenance_window
+}

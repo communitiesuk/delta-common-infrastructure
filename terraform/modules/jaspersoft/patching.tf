@@ -10,7 +10,7 @@ resource "aws_ssm_maintenance_window_target" "jasper_server" {
   }
 }
 
-# Yum update output, non-sensitive
+# Apt update output, non-sensitive
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "jasper_patch" {
   name              = "${var.environment}/jasper-ssm-patch"

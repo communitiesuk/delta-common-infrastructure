@@ -116,3 +116,7 @@ output "public_albs" {
   # Includes CloudFront keys
   sensitive = true
 }
+
+output "patch_maintenance_window" {
+  value = module.patch_maintenance_window
+}
