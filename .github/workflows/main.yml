@@ -23,10 +23,8 @@ jobs:
     with:
       workdir: terraform/test
       apply: true
-      environment: test
-    secrets:
-      access_key: ${{ secrets.access_key_dev }}
-      secret_key: ${{ secrets.secret_key_dev }}
+      apply_environment: test
+    secrets: inherit
   staging:
     name: Deploy to "Staging"
     needs: test
@@ -34,10 +32,8 @@ jobs:
     with:
       workdir: terraform/staging
       apply: true
-      environment: staging
-    secrets:
-      access_key: ${{ secrets.access_key_dev }}
-      secret_key: ${{ secrets.secret_key_dev }}
+      apply_environment: staging
+    secrets: inherit
   production:
     name: Deploy to "Production"
     needs: staging
@@ -45,7 +41,6 @@ jobs:
     with:
       workdir: terraform/production
       apply: true
-      environment: production
-    secrets:
-      access_key: ${{ secrets.access_key_prod }}
-      secret_key: ${{ secrets.secret_key_prod }}
+      plan_environment: production
+      apply_environment: production
+    secrets: inherit
