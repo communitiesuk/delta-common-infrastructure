@@ -7,7 +7,7 @@ variable "prefix" {
 }
 
 variable "schedule" {
-  type = string
+  type        = string
   description = "e.g. cron(00 06 ? * MON *)"
 }
 

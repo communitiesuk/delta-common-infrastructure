@@ -81,3 +81,11 @@ module "codeartifact" {
   source                   = "../modules/codeartifact"
   codeartifact_domain_name = "delta"
 }
+
+module "patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment = "production"
+  prefix      = "instance-patching"
+  schedule    = "cron(00 06 ? * WED *)"
+}
