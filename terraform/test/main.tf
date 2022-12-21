@@ -269,4 +269,5 @@ module "jaspersoft" {
   private_dns                   = module.networking.private_dns
   ad_domain                     = "dluhctest"
   environment                   = "test"
+  patch_maintenance_window      = module.patch_maintenance_window
 }
