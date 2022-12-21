@@ -12,6 +12,10 @@ data "aws_iam_policy" "cloudwatch_automatic_dashboards_access" {
   arn = "arn:aws:iam::aws:policy/CloudWatchAutomaticDashboardsAccess"
 }
 
+data "aws_iam_policy" "ssm_full_access" {
+  arn = "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
+}
+
 data "aws_iam_policy" "read_only_all" {
   arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }

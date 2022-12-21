@@ -58,9 +58,8 @@ resource "aws_iam_role_policy_attachment" "infrastructure_support" {
   for_each = {
     read_only       = data.aws_iam_policy.read_only_all.arn
     cloudwatch_full = data.aws_iam_policy.cloudwatch_full_access.arn
-    ssm             = aws_iam_policy.ssm_session_manager_basic.arn
-    ssm_ml          = aws_iam_policy.ssm_marklogic.arn
-    ssm_ad          = aws_iam_policy.ssm_adms_rdp.arn
+    ssm_full        = data.aws_iam_policy.ssm_full_access.arn
+    ssm_ad          = aws_iam_policy.ssm_adms_rdp.arn # Still need this for ssm-guiconnect actions
     # TODO DT-163: Add Terraform State access once the backend change is applied
   }
 
