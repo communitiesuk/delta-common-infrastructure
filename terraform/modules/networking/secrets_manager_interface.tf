@@ -27,4 +27,12 @@ data "aws_iam_policy_document" "secret_manager_endpoint" {
     }
     resources = ["arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:*"]
   }
+  statement {
+    actions = ["secretsmanager:ListSecrets"]
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_caller_identity.current.account_id]
+    }
+    resources = ["*"]
+  }
 }
