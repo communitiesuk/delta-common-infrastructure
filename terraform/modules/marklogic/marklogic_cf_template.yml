@@ -14,7 +14,6 @@ Metadata:
           - VolumeEncryption
           - VolumeEncryptionKey
           - InstanceType
-          - SpotPrice
           - KeyName
           - NumberOfZones
           - NodesPerZone
@@ -61,8 +60,6 @@ Metadata:
         default: Volume Encryption Key ARN
       InstanceType:
         default: Instance Type
-      SpotPrice:
-        default: Spot Price
       KeyName:
         default: SSH Key Name
       NumberOfZones:
@@ -242,12 +239,6 @@ Parameters:
       - t3.micro
       - t3.2xlarge
       - t3.medium
-  SpotPrice:
-    Description: Spot price for instances in USD/Hour - Optional/advanced
-    Type: Number
-    MinValue: '0'
-    MaxValue: '2'
-    Default: '0'
   KeyName:
     Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
     Type: String
@@ -315,10 +306,6 @@ Parameters:
     NoEcho: 'true'
 Conditions:
   UseLogSNS: !Not [!Equals [!Ref LogSNS, "none"]]
-  UseSpot: !Not
-    - !Equals
-      - !Ref SpotPrice
-      - 0
   EssentialEnterprise:
     !Or [ !And [!Equals [!Ref LicenseKey, ''], !Equals [!Ref Licensee, '']], !And [!Equals [!Ref LicenseKey, 'none'], !Equals [!Ref Licensee, 'none']] ]
   UseVolumeEncryption: !Equals [!Ref VolumeEncryption, 'enable']
@@ -634,10 +621,6 @@ Resources:
         - !Ref InstanceSecurityGroup
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref IAMRole
-      SpotPrice: !If
-        - UseSpot
-        - !Ref SpotPrice
-        - !Ref 'AWS::NoValue'
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 2efb8cfb-df53-401d-8ff2-34af0dd25993
@@ -711,10 +694,6 @@ Resources:
         - !Ref InstanceSecurityGroup
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref IAMRole
-      SpotPrice: !If
-        - UseSpot
-        - !Ref SpotPrice
-        - !Ref 'AWS::NoValue'
     Metadata:
       'AWS::CloudFormation::Designer':
         id: c8296a50-a29e-4646-aa74-8f1b735a9a3f
@@ -788,10 +767,6 @@ Resources:
         - !Ref InstanceSecurityGroup
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref IAMRole
-      SpotPrice: !If
-        - UseSpot
-        - !Ref SpotPrice
-        - !Ref 'AWS::NoValue'
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 7fa68c90-39bc-4874-ad20-8cd8c974ed52
