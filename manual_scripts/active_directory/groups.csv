@@ -23,6 +23,13 @@ datamart-delta-billing-data-approvers
 datamart-delta-sap-team-members
 datamart-delta-suspensions-approvers
 datamart-delta-read-only-admin
+datamart-delta-local-admins
+datamart-delta-stats-data-certifiers
+datamart-delta-data-entry-clerks
+datamart-delta-self-certify-service
+datamart-delta-setup-managers
+datamart-delta-report-users
+datamart-delta-personal-data-owners
 datamart-user
 datamart-cpm-soap-api
 jasperreports-users
