@@ -60,7 +60,6 @@ locals {
       cidr                 = local.delta_website_cidr_10
       http_allowed_domains = []
       tls_allowed_domains = [
-        ".amazonaws.com",     # TODO DT-168: Restrict/use VPC endpoints for codedeploy
         "archive.apache.org", # to download Tomcat
         ".clamav.net"         # to download virus definitions for ClamAV
       ]
@@ -90,12 +89,9 @@ locals {
       http_allowed_domains = concat(["repo.ius.io", "mirrors.fedoraproject.org"])
       tls_allowed_domains = concat(local.marklogic_repo_mirror_tls_domains, [
         ".marklogic.com",
-        "repo.ius.io", "mirrors.fedoraproject.org",                                                            # Yum repos
-        "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com",                                     # The instances make some requests to us-east-1 services on startup
-        "ec2-instance-connect.${data.aws_region.current.name}.amazonaws.com", "d2lzkl7pfhq30w.cloudfront.net", # Mystery, CF is for yum, but not sure where it comes from
-
-        # Added to silence the noisy firewall alerts. Should check why it's not going via VPC endpoints
-        "ec2messages.${data.aws_region.current.name}.amazonaws.com", "ssm.${data.aws_region.current.name}.amazonaws.com"
+        "repo.ius.io", "mirrors.fedoraproject.org",                        # Yum repos
+        "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com", # The instances make some requests to us-east-1 services on startup
+        "d2lzkl7pfhq30w.cloudfront.net",                                   # Mystery, CF is for yum, but not sure where it comes from
       ])
       sid_offset = 4000
     }
