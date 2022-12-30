@@ -46,17 +46,6 @@ resource "aws_default_network_acl" "main" {
     to_port    = 443
   }
 
-  # Allow HTTP
-  # TODO DT-164: This rule should be removed once all ALBs accept traffic over HTTPS only
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 210
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 80
-    to_port    = 80
-  }
-
   # Allow SSH from allowlisted CIDRs
   dynamic "ingress" {
     for_each = var.ssh_cidr_allowlist
