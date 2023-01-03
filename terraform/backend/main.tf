@@ -13,6 +13,7 @@ provider "aws" {
 }
 
 data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
 
 resource "aws_kms_key" "state_bucket_encryption_key" {
   description         = "Terraform state bucket encryption key"
@@ -56,8 +57,8 @@ data "aws_iam_policy_document" "terraform_state_read_only" {
       "s3:ListBucket",
     ]
     resources = [
-      aws_s3_bucket.terraform_state.arn,
-      "${aws_s3_bucket.terraform_state.arn}/*",
+      module.state_bucket.bucket_arn,
+      "${module.state_bucket.bucket_arn}/*",
     ]
   }
 
@@ -120,4 +121,24 @@ data "aws_iam_policy_document" "terraform_state_read_only" {
 resource "aws_iam_policy" "terraform_state_read_only" {
   name   = "tf-state-read-only"
   policy = data.aws_iam_policy_document.terraform_state_read_only.json
+}
+
+# One of a kind
+# tfsec:ignore:aws-iam-no-user-attached-policies
+resource "aws_iam_user" "terraform_plan" {
+  name = "terraform-ci-plan-read-only"
+}
+
+resource "aws_iam_user_policy_attachment" "terraform_plan_state_read" {
+  user       = aws_iam_user.terraform_plan.name
+  policy_arn = aws_iam_policy.terraform_state_read_only.arn
+}
+
+data "aws_iam_policy" "read_only_access" {
+  arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+}
+
+resource "aws_iam_user_policy_attachment" "terraform_plan_read_only_access" {
+  user       = aws_iam_user.terraform_plan.name
+  policy_arn = data.aws_iam_policy.read_only_access.arn
 }
