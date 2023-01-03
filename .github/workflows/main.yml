@@ -22,7 +22,6 @@ jobs:
     uses: ./.github/workflows/terraform.yml
     with:
       workdir: terraform/test
-      apply: true
       apply_environment: test
     secrets: inherit
   staging:
@@ -31,7 +30,6 @@ jobs:
     uses: ./.github/workflows/terraform.yml
     with:
       workdir: terraform/staging
-      apply: true
       apply_environment: staging
     secrets: inherit
   production:
@@ -40,7 +38,6 @@ jobs:
     uses: ./.github/workflows/terraform.yml
     with:
       workdir: terraform/production
-      apply: true
       plan_environment: production
       apply_environment: production
     secrets: inherit
