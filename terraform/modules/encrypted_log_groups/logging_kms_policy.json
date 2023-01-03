@@ -26,7 +26,7 @@
             "Resource": "*",
             "Condition": {
                 "ArnLike": {
-                    "kms:EncryptionContext:aws:logs:arn": "arn:aws:logs:${region}:${account_id}:log-group:${log_group_pattern}"
+                    "kms:EncryptionContext:aws:logs:arn": ${jsonencode([for log_group_name in log_group_names : "arn:aws:logs:${region}:${account_id}:log-group:${log_group_name}"])}
                 }
             }
         }
