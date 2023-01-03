@@ -33,6 +33,8 @@ The following security groups allow open ingress from the internet:
 * Default security group for AWS DS
   * TODO DT-146 fix this
 
+The Active Directory security groups are created by AWS because it's a managed service. They allow ingress from 0.0.0.0/0 but this is not a security risk because traffic is still limited to the VPC (and peered VPCs) - see [AWS documentation](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_getting_started_what_gets_created.html) for details.
+
 ## Ingress points for deployments and maintenance
 
 Several of the instances are SSM enabled and AWS Systems Manager Session Manager can be used to access them.
