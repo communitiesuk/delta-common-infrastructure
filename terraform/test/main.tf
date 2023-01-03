@@ -109,13 +109,13 @@ module "bastion" {
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1
   log_group_name          = module.bastion_log_group.log_group_names[0]
+  extra_userdata          = "yum install openldap-clients -y"
+  tags_asg                = var.default_tags
+  tags_host_key           = { "terraform-plan-read" = true }
   dns_config = {
     zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
-  extra_userdata = "yum install openldap-clients -y"
-  tags_asg       = var.default_tags
-  tags_host_key  = { "terraform-plan-read" = true }
 }
 
 module "public_albs" {
