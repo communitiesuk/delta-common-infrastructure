@@ -34,10 +34,10 @@ locals {
       sid_offset           = 400
     }
     ad_other_subnets = {
-      cidr                 = local.ad_other_cidr_10
+      cidr = local.ad_other_cidr_10
       http_allowed_domains = [
         ".microsoft.com", ".windows.com", ".windowsupdate.com",
-        ".digicert.com", ".o.lencr.org", ".c.lencr.org",        # CRL
+        ".digicert.com", ".o.lencr.org", ".c.lencr.org", # CRL
         ".firefox.com"
       ]
       tls_allowed_domains = [
