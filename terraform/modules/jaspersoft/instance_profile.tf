@@ -83,3 +83,12 @@ resource "aws_iam_role_policy" "jasper_cloudwatch" {
   role   = aws_iam_role.jasperserver.id
   policy = data.aws_iam_policy_document.jasper_cloudwatch.json
 }
+
+data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
+  arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "jasper_ssm" {
+  role       = aws_iam_role.jasperserver.name
+  policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
+}
