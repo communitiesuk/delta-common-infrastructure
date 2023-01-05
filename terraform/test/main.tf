@@ -271,3 +271,10 @@ module "jaspersoft" {
   environment                   = "test"
   patch_maintenance_window      = module.patch_maintenance_window
 }
+
+module "iam_roles" {
+  source = "../modules/iam_roles"
+
+  organisation_account_id = "448312965134"
+  environment             = "test"
+}
