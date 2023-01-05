@@ -45,20 +45,8 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
       }
 
       parameter {
-        name = "commands"
-        values = [
-          "#!/bin/bash",
-          "set -x",
-          "yum update --security -y",
-          "needs-restarting -r",
-          "if [ $? -eq 1 ]; then",
-          "echo \"Requesting reboot from SSM agent\"",
-          "exit 194", # https://docs.aws.amazon.com/systems-manager/latest/userguide/send-commands-reboot.html
-          "else",
-          "echo \"Reboot not required - finished\"",
-          "exit 0",
-          "fi",
-        ]
+        name   = "commands"
+        values = ["yum update --security -y"]
       }
 
       cloudwatch_config {
