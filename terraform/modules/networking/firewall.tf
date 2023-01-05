@@ -1,8 +1,8 @@
 resource "aws_networkfirewall_firewall_policy" "main" {
-  name = "network-firewall-policy-${var.environment}"
+  name = "network-firewall-policy-1-${var.environment}"
 
   firewall_policy {
-    stateless_default_actions          = ["aws:drop", "DropUnmatchedPacket"]
+    stateless_default_actions          = ["aws:forward_to_sfe", "ForwardUnmatchedPacket"]
     stateless_fragment_default_actions = ["aws:drop", "DropUnmatchedFragment"]
 
     stateless_rule_group_reference {
@@ -14,11 +14,11 @@ resource "aws_networkfirewall_firewall_policy" "main" {
       action_definition {
         publish_metric_action {
           dimension {
-            value = "DropUnmatchedPacket"
+            value = "ForwardUnmatchedPacket"
           }
         }
       }
-      action_name = "DropUnmatchedPacket"
+      action_name = "ForwardUnmatchedPacket"
     }
 
     stateless_custom_action {
@@ -35,6 +35,10 @@ resource "aws_networkfirewall_firewall_policy" "main" {
     stateful_rule_group_reference {
       resource_arn = aws_networkfirewall_rule_group.stateful_main.arn
     }
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -81,7 +85,8 @@ resource "aws_networkfirewall_firewall" "main" {
 
 locals {
   tcp_protocol_number                    = 6
-  stateless_firewall_rule_group_capacity = 10
+  udp_protocol_number                    = 17
+  stateless_firewall_rule_group_capacity = 12
 }
 
 resource "aws_networkfirewall_rule_group" "stateless_main" {
@@ -91,7 +96,7 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
 
   description = "Main stateless rule group for ${var.environment} environment firewall"
   capacity    = local.stateless_firewall_rule_group_capacity
-  name        = "stateless-rules-${local.stateless_firewall_rule_group_capacity}-${var.environment}"
+  name        = "stateless-rules-cap-${local.stateless_firewall_rule_group_capacity}-${var.environment}"
   type        = "STATELESS"
   rule_group {
     rules_source {
@@ -182,12 +187,23 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
           }
         }
 
+        custom_action {
+          action_definition {
+            publish_metric_action {
+              dimension {
+                value = "GitHubActionsSSH"
+              }
+            }
+          }
+          action_name = "GitHubActionsSSHMetricAction"
+        }
+
         # Allow SSH from the GitHub Runner so it can clone from GitHub
         # Outbound
         stateless_rule {
           priority = 4
           rule_definition {
-            actions = ["aws:pass"]
+            actions = ["aws:pass", "GitHubActionsSSHMetricAction"]
             match_attributes {
               source {
                 address_definition = local.github_runner_cidr_10
@@ -212,7 +228,7 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
         stateless_rule {
           priority = 5
           rule_definition {
-            actions = ["aws:pass"]
+            actions = ["aws:pass", "GitHubActionsSSHMetricAction"]
             match_attributes {
               source {
                 address_definition = "0.0.0.0/0"
@@ -228,11 +244,46 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
                 from_port = 1024
                 to_port   = 65535
               }
-              protocols = [local.tcp_protocol_number]
+              protocols = [local.tcp_protocol_number, local.udp_protocol_number]
             }
           }
         }
 
+        custom_action {
+          action_definition {
+            publish_metric_action {
+              dimension {
+                value = "DroppedNTP"
+              }
+            }
+          }
+          action_name = "DropNTPMetricAction"
+        }
+
+        # Drop NTP
+        stateless_rule {
+          priority = 6
+          rule_definition {
+            actions = ["aws:drop", "DropNTPMetricAction"]
+            match_attributes {
+              source {
+                address_definition = local.all_private_subnets_cidr
+              }
+              source_port {
+                from_port = 1024
+                to_port   = 65535
+              }
+              destination {
+                address_definition = "0.0.0.0/0"
+              }
+              destination_port {
+                from_port = 123
+                to_port   = 123
+              }
+              protocols = [local.tcp_protocol_number, local.udp_protocol_number]
+            }
+          }
+        }
       }
     }
   }
@@ -253,13 +304,15 @@ locals {
       ]
     ))])
   ]
+
   base_firewall_rules = <<EOT
 # The drop http and tls seem to kick in earlier than only dropping established TCP flows
 drop http any any -> any any (msg:"Drop HTTP traffic without allowlisted Host header"; sid:5001; rev:1;)
 drop tls  any any -> any any (msg:"Drop TLS traffic without allowlisted SNI"; sid:5002; rev:1;)
 drop tcp  any any -> any any (msg:"Drop remaining established TCP traffic"; flow:established; sid:5003; rev:1;)
-# Non-TCP traffic should already have been dropped by the stateless rules, but just to be sure
-drop ip   any any <> any any (msg:"Drop non-TCP traffic"; ip_proto:!TCP;sid:5004; rev:1;)
+# Drop other traffic
+drop tcp  ${aws_vpc.vpc.cidr_block} any <> any ![80,443] (msg:"Drop TCP on ports except 80 and 443"; sid:5004; rev:1;)
+drop ip   any any <> any any (msg:"Drop non-TCP traffic"; ip_proto:!TCP;sid:5005; rev:1;)
   EOT
   all_firewall_rules  = join("\n\n", [join("\n\n", local.subnet_firewall_rules), local.base_firewall_rules])
 }

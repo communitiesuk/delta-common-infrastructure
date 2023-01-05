@@ -12,6 +12,14 @@ locals {
   # Delta needs file uploads so we'll presumably want a much higher limit than 8KB
   # This does limit the usefulness of the other rules though as they only scan the first 8KB of the body
   excluded_rules = concat(var.excluded_rules, ["SizeRestrictions_BODY"])
+
+  metric_names = {
+    main          = replace("${var.prefix}cloudfront-waf-acl", "-", "")
+    rate_limit    = replace("${var.prefix}cloudfront-waf-rate-limit", "-", "")
+    common        = replace("${var.prefix}cloudfront-waf-common-rules", "-", "")
+    bad_inputs    = replace("${var.prefix}cloudfront-waf-bad-inputs", "-", "")
+    ip_reputation = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
+  }
 }
 
 output "acl_arn" {
@@ -35,7 +43,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
   visibility_config {
     cloudwatch_metrics_enabled = true
-    metric_name                = replace("${var.prefix}cloudfront-waf-acl", "-", "")
+    metric_name                = local.metric_names.main
     sampled_requests_enabled   = true
   }
 
@@ -56,7 +64,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
     visibility_config {
       cloudwatch_metrics_enabled = true
-      metric_name                = replace("${var.prefix}cloudfront-waf-rate-limit", "-", "")
+      metric_name                = local.metric_names.rate_limit
       sampled_requests_enabled   = true
     }
   }
@@ -85,7 +93,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
     visibility_config {
       cloudwatch_metrics_enabled = true
-      metric_name                = replace("${var.prefix}cloudfront-waf-common-rules", "-", "")
+      metric_name                = local.metric_names.common
       sampled_requests_enabled   = true
     }
   }
@@ -107,7 +115,29 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
     visibility_config {
       cloudwatch_metrics_enabled = true
-      metric_name                = replace("${var.prefix}cloudfront-waf-bad-inputs", "-", "")
+      metric_name                = local.metric_names.bad_inputs
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "aws-ip-reputation"
+    priority = 4
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesAmazonIpReputationList"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = local.metric_names.ip_reputation
       sampled_requests_enabled   = true
     }
   }
