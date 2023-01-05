@@ -60,7 +60,7 @@ module "bastion_log_group" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=f1b0967d9e6464f1d684b9147a0bf27cc80fde1e"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=b567dbf2c9641df277f503240ee4367b126d475c"
 
   region                  = "eu-west-1"
   name_prefix             = "prd"
@@ -72,8 +72,8 @@ module "bastion" {
   instance_count          = 1
   log_group_name          = module.bastion_log_group.log_group_names[0]
   extra_userdata          = "yum install openldap-clients -y"
-
-  tags_asg = var.default_tags
+  tags_asg                = var.default_tags
+  tags_host_key           = { "terraform-plan-read" = true }
 }
 
 # We create the codeartifact domain only in the production environment, and it is shared across all environments
