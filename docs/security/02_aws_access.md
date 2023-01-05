@@ -13,14 +13,19 @@ TODO DT-39: enable GuardDuty monitoring AWS access
 
 ## Permissions/Roles
 
-### Developer
+These are the roles used by humans to access the account.
 
-Effectively admin access
+Managed by DLUHC:
 
-TODO DT-163: Set up further roles for
+* `developer` - managed by DLUHC, effectively admin access
+  * We plan to add an alarm on use of this role and phase it out for day-to-day use, see <https://digital.dclg.gov.uk/confluence/display/DT/Security+-+DLUHC+responsibilities>
+* `auditor` and `security-auditor` - read only access
 
-* Monitoring/read only access
-* Application developer - access to logs, SSM port forwarding to ML, SSM RDP to AD
+Managed in this repository, environment specific, see [roles.tf](../../terraform/modules/iam_roles/roles.tf)
+
+* `cloudwatch-monitor` - CloudWatch access
+* `application-support` - View logs and use SSM to connect to MarkLogic and Active Directory
+* `infra-support` - Same as above, plus ReadOnlyAccess and Terraform state read
 
 ## Alarms and monitoring
 

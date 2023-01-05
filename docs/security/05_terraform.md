@@ -10,8 +10,8 @@ All terraform code is scanned with [tfsec](https://github.com/aquasecurity/tfsec
 ## State
 
 Terraform state is stored in an S3 bucket in the same account as the infrastructure.
-
-TODO DT-169: Use KMS to encrypt terraform state bucket
+The state files are encrypted server side using KMS.
 
 TODO DT-170: Try and ensure state compromise would not directly compromise production (don't need to be as strict for test/staging)
-  So remove AWS access keys/bastion SSH keys for production
+  So remove AWS access keys/bastion SSH keys for production.
+  Document here anything we're not able to remove so we know what to act on if the state is compromised.

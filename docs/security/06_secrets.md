@@ -1,9 +1,6 @@
 # Secrets
 
-## Terraform state
-
-TODO DT-170: Try and ensure state compromise would not directly compromise the environment
-  So remove bastion SSH key, AWS access keys.
+See [05_terraform](./05_terraform.md) for details on the Terraform state, which contains some application secrets.
 
 ## Secrets Manager
 
@@ -17,3 +14,7 @@ Policy: All shared production secrets, (e.g. admin passwords from MarkLogic and 
 Exceptions only as required for disaster recovery.
 
 Shared secrets for staging and test may be stored in a shared password vault.
+
+## Rotation
+
+Our rotation policy is documented on Confluence: <https://digital.dclg.gov.uk/confluence/display/DT/Secret+Rotation>
