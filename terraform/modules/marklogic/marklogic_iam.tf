@@ -172,7 +172,6 @@ resource "aws_iam_policy" "ml_cloudwatch" {
 
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "ml_cloudwatch" {
-
   statement {
     actions   = ["logs:DescribeLogGroups"]
     resources = ["*"]

@@ -202,17 +202,25 @@ module "active_directory_dns_resolver" {
   ad_dns_server_ips = module.active_directory.dns_servers
 }
 
+module "patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment = "staging"
+  prefix      = "instance-patching"
+  schedule    = "cron(00 06 ? * TUE *)"
+}
+
 module "marklogic" {
   source = "../modules/marklogic"
 
-  default_tags        = var.default_tags
-  environment         = "staging"
-  vpc                 = module.networking.vpc
-  private_subnets     = module.networking.ml_private_subnets
-  instance_type       = "r5.xlarge"
-  private_dns         = module.networking.private_dns
-  data_volume_size_gb = 200
-  patch_day           = "TUE"
+  default_tags             = var.default_tags
+  environment              = "staging"
+  vpc                      = module.networking.vpc
+  private_subnets          = module.networking.ml_private_subnets
+  instance_type            = "r5.xlarge"
+  private_dns              = module.networking.private_dns
+  data_volume_size_gb      = 200
+  patch_maintenance_window = module.patch_maintenance_window
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
 }
@@ -249,6 +257,7 @@ module "jaspersoft" {
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   private_dns                   = module.networking.private_dns
   environment                   = "staging"
+  patch_maintenance_window      = module.patch_maintenance_window
 }
 
 module "ses_identity" {

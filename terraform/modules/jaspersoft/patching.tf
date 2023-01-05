@@ -1,24 +1,24 @@
-resource "aws_ssm_maintenance_window_target" "ml_servers" {
+resource "aws_ssm_maintenance_window_target" "jasper_server" {
   window_id     = var.patch_maintenance_window.window_id
-  name          = "marklogic-${var.environment}"
-  description   = "MarkLogic servers from the ${var.environment} environment"
+  name          = "jasper-reports-server-${var.environment}"
+  description   = "JasperReports server from the ${var.environment} environment"
   resource_type = "INSTANCE"
 
   targets {
-    key    = "tag:marklogic:stack:name"
-    values = [local.stack_name]
+    key    = "InstanceIds"
+    values = [aws_instance.jaspersoft_server.id]
   }
 }
 
-# Yum update output, non-sensitive
+# Apt update output, non-sensitive
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
-resource "aws_cloudwatch_log_group" "ml_patch" {
-  name              = "${var.environment}/marklogic-ssm-patch"
+resource "aws_cloudwatch_log_group" "jasper_patch" {
+  name              = "${var.environment}/jasper-ssm-patch"
   retention_in_days = 60
 }
 
-resource "aws_ssm_maintenance_window_task" "ml_patch" {
-  name            = "marklogic-patch-${var.environment}"
+resource "aws_ssm_maintenance_window_task" "jasper_patch" {
+  name            = "jasper-reports-server-patch-${var.environment}"
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
   max_errors      = 0
@@ -29,12 +29,12 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
 
   targets {
     key    = "WindowTargetIds"
-    values = [aws_ssm_maintenance_window_target.ml_servers.id]
+    values = [aws_ssm_maintenance_window_target.jasper_server.id]
   }
 
   task_invocation_parameters {
     run_command_parameters {
-      comment         = "Yum update security"
+      comment         = "Apt update"
       timeout_seconds = 900
 
       service_role_arn = var.patch_maintenance_window.service_role_arn
@@ -46,11 +46,11 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
 
       parameter {
         name   = "commands"
-        values = ["yum update --security -y"]
+        values = ["apt-get update && apt-get upgrade -y"]
       }
 
       cloudwatch_config {
-        cloudwatch_log_group_name = aws_cloudwatch_log_group.ml_patch.name
+        cloudwatch_log_group_name = aws_cloudwatch_log_group.jasper_patch.name
         cloudwatch_output_enabled = true
       }
     }

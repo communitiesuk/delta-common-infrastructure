@@ -6,16 +6,16 @@ module "dap_export_bucket" {
   force_destroy          = true
 }
 
-resource "aws_ssm_maintenance_window" "dap_s3_upload" {
-  name              = "marklogic-dap-s3-upload-${var.environment}"
-  schedule          = "cron(00 04 ? * * *)" # 4 AM every day
-  schedule_timezone = "Etc/UTC"
-  duration          = 2
-  cutoff            = 1
+module "dap_export_job_window" {
+  source = "../maintenance_window"
+
+  environment = var.environment
+  prefix      = "marklogic-dap-job"
+  schedule    = "cron(00 04 ? * * *)"
 }
 
 resource "aws_ssm_maintenance_window_target" "ml_server" {
-  window_id     = aws_ssm_maintenance_window.dap_s3_upload.id
+  window_id     = module.dap_export_job_window.window_id
   name          = "marklogic-dap-s3-upload-${var.environment}"
   description   = "This should contain one MarkLogic server from the ${var.environment} environment"
   resource_type = "INSTANCE"
@@ -36,7 +36,7 @@ locals {
 }
 
 resource "aws_ssm_maintenance_window_task" "dap_s3_upload" {
-  window_id       = aws_ssm_maintenance_window.dap_s3_upload.id
+  window_id       = module.dap_export_job_window.window_id
   max_concurrency = 1
   max_errors      = 0
   priority        = 1
@@ -54,9 +54,9 @@ resource "aws_ssm_maintenance_window_task" "dap_s3_upload" {
       comment         = "MarkLogic DAP S3 data upload"
       timeout_seconds = 60
 
-      service_role_arn = aws_iam_role.dap_sns_publish.arn
+      service_role_arn = module.dap_export_job_window.service_role_arn
       notification_config {
-        notification_arn    = aws_sns_topic.dap_s3_upload_notifications.arn
+        notification_arn    = module.dap_export_job_window.errors_sns_topic_arn
         notification_events = ["TimedOut", "Cancelled", "Failed"]
         notification_type   = "Command"
       }
@@ -74,52 +74,5 @@ resource "aws_ssm_maintenance_window_task" "dap_s3_upload" {
         ]
       }
     }
-  }
-}
-
-# SNS topic for errors with the maintenance window job. Non-sensitive.
-# tfsec:ignore:aws-sns-enable-topic-encryption
-resource "aws_sns_topic" "dap_s3_upload_notifications" {
-  name = "marklogic-dap-s3-upload-errors-${var.environment}"
-}
-
-# TODO DT-49: Add subscription
-
-resource "aws_iam_role" "dap_sns_publish" {
-  name = "marklogic-dap-sns-publish-${var.environment}"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ssm.amazonaws.com"
-        }
-      },
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "dap_sns_publish" {
-  role       = aws_iam_role.dap_sns_publish.name
-  policy_arn = aws_iam_policy.dap_sns_publish.arn
-}
-
-resource "aws_iam_policy" "dap_sns_publish" {
-  name        = "marklogic-dap-sns-publish-${var.environment}"
-  description = "Used by SSM to push notifications when MarkLogic DAP upload fails"
-
-  policy = data.aws_iam_policy_document.dap_sns_publish.json
-}
-
-data "aws_iam_policy_document" "dap_sns_publish" {
-  statement {
-    actions = ["sns:Publish"]
-    effect  = "Allow"
-    resources = [
-      aws_sns_topic.dap_s3_upload_notifications.arn
-    ]
   }
 }
