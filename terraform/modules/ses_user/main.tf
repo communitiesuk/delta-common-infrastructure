@@ -1,4 +1,4 @@
-variable "vpc_id" {
+variable "vpce_id" {
   type = string
 }
 
@@ -44,8 +44,8 @@ data "aws_iam_policy_document" "ses_sender" {
     }
     condition {
       test     = "StringEquals"
-      variable = "aws:SourceVpc"
-      values   = [var.vpc_id]
+      variable = "aws:SourceVpce"
+      values   = [var.vpce_id]
     }
   }
 }

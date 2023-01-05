@@ -76,3 +76,7 @@ output "private_dns" {
     base_domain = aws_route53_zone.private.name
   }
 }
+
+output "ses_vpce_id" {
+  value = aws_vpc_endpoint.ses_smtp.id
+}

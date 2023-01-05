@@ -273,7 +273,7 @@ module "delta_ses_user" {
   from_address_pattern = "delta-staging@datacollection.test.levellingup.gov.uk"
   environment          = "staging"
   kms_key_arn          = module.marklogic.deploy_user_kms_key_arn
-  vpc_id               = module.networking.vpc.id
+  vpce_id              = module.networking.ses_vpce_id
 }
 
 module "cpm_ses_user" {
@@ -283,7 +283,7 @@ module "cpm_ses_user" {
   from_address_pattern = "cpm-staging@datacollection.test.levellingup.gov.uk"
   environment          = "staging"
   kms_key_arn          = module.marklogic.deploy_user_kms_key_arn
-  vpc_id               = module.networking.vpc.id
+  vpce_id              = module.networking.ses_vpce_id
 }
 
 module "iam_roles" {
