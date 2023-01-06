@@ -11,6 +11,10 @@ EOF
 crontab ~/crontab
 rm ~/crontab
 
+# We block external NTP requests, stop noise at the firewall
+# Will still use the AWS local one (169.254.169.123)
+rm -f /etc/chrony.d/ntp-pool.sources
+
 # Install docker
 amazon-linux-extras install docker
 service docker start

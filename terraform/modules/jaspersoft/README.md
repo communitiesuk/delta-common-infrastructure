@@ -9,6 +9,8 @@ aws s3api create-bucket --bucket dluhc-jaspersoft-bin --acl private --region eu-
 aws s3api put-bucket-versioning --bucket dluhc-jaspersoft-bin --versioning-configuration Status=Enabled
 ```
 
+## Creating the WAR file
+
 We've combined Jasper Reports Community edition 7.8.0, the 7.8.1 Service Pack, the 2022-04-15 cumulative hotfix and web services plugin into one zip:
 
 ```sh
@@ -70,3 +72,36 @@ cd ..
 # Upload
 aws s3 cp js-7.8.1_hotfixed_2022-04-15.zip s3://dluhc-jaspersoft-bin
 ```
+
+## Updating Tomcat
+
+As root:
+
+```sh
+# cd into the Tomcat folder
+cd /opt/tomcat
+# Note the current version, look for the target of the latest symlink
+ls -l
+# Stop tomcat
+systemctl stop tomcat
+# Delete symlink
+rm latest
+
+# Install new version
+TOMCAT_VERSION=9.0.70
+wget "https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz" -P /tmp
+sudo -u tomcat tar -xf /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz -C /opt/tomcat/
+rm -f /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz
+
+# Recreate symlink
+sudo -u tomcat ln -s /opt/tomcat/apache-tomcat-${TOMCAT_VERSION} /opt/tomcat/latest
+# Restart tomcat
+systemctl start tomcat
+# Tail the logs while it starts, takes about a minute
+# Fine to ignore OperationNotSupportedException: Context is read only
+tail -f base/logs/catalina.out
+```
+
+Check it's working again. If something goes wrong try deleting base/work and base/temp and restarting Tomcat again.
+
+To roll back: stop Tomcat again, repoint the `latest/` symlink at the previous version, then restart Tomcat.

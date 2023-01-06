@@ -58,3 +58,11 @@ variable "private_dns" {
 variable "ad_domain" {
   default = "dluhcdata"
 }
+
+variable "patch_maintenance_window" {
+  type = object({
+    window_id            = string
+    service_role_arn     = string
+    errors_sns_topic_arn = string
+  })
+}

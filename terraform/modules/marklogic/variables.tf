@@ -37,11 +37,10 @@ variable "ebs_backup_error_notification_emails" {
   type = list(string)
 }
 
-variable "patch_day" {
-  type = string
-
-  validation {
-    condition     = contains(["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"], var.patch_day)
-    error_message = "patch_day must be a day of the week"
-  }
+variable "patch_maintenance_window" {
+  type = object({
+    window_id            = string
+    service_role_arn     = string
+    errors_sns_topic_arn = string
+  })
 }

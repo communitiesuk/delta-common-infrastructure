@@ -60,3 +60,35 @@ resource "aws_iam_role_policy" "read_jaspersoft_binaries" {
 }
 EOF
 }
+
+# tfsec:ignore:aws-iam-no-policy-wildcards
+data "aws_iam_policy_document" "jasper_cloudwatch" {
+  statement {
+    actions   = ["logs:DescribeLogGroups"]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents",
+    ]
+    resources = ["${aws_cloudwatch_log_group.jasper_patch.arn}:*"]
+  }
+}
+
+resource "aws_iam_role_policy" "jasper_cloudwatch" {
+  name   = "${var.prefix}jaspersoft-cloudwatch"
+  role   = aws_iam_role.jasperserver.id
+  policy = data.aws_iam_policy_document.jasper_cloudwatch.json
+}
+
+data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
+  arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "jasper_ssm" {
+  role       = aws_iam_role.jasperserver.name
+  policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
+}

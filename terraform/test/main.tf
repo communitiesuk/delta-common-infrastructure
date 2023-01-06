@@ -214,16 +214,24 @@ module "active_directory_dns_resolver" {
   ad_dns_server_ips = module.active_directory.dns_servers
 }
 
+module "patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment = "test"
+  prefix      = "instance-patching"
+  schedule    = "cron(00 06 ? * MON *)"
+}
+
 module "marklogic" {
   source = "../modules/marklogic"
 
-  default_tags    = var.default_tags
-  environment     = "test"
-  vpc             = module.networking.vpc
-  private_subnets = module.networking.ml_private_subnets
-  instance_type   = "t3.large"
-  private_dns     = module.networking.private_dns
-  patch_day       = "MON"
+  default_tags             = var.default_tags
+  environment              = "test"
+  vpc                      = module.networking.vpc
+  private_subnets          = module.networking.ml_private_subnets
+  instance_type            = "t3.large"
+  private_dns              = module.networking.private_dns
+  patch_maintenance_window = module.patch_maintenance_window
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
 }
@@ -261,4 +269,12 @@ module "jaspersoft" {
   private_dns                   = module.networking.private_dns
   ad_domain                     = "dluhctest"
   environment                   = "test"
+  patch_maintenance_window      = module.patch_maintenance_window
+}
+
+module "iam_roles" {
+  source = "../modules/iam_roles"
+
+  organisation_account_id = "448312965134"
+  environment             = "test"
 }

@@ -95,3 +95,11 @@ resource "aws_accessanalyzer_analyzer" "us-east-1" {
   analyzer_name = "us-east-1-analyzer"
   provider      = aws.us-east-1
 }
+
+module "patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment = "production"
+  prefix      = "instance-patching"
+  schedule    = "cron(00 06 ? * WED *)"
+}
