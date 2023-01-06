@@ -63,6 +63,35 @@ output "directory_admin_password" {
   sensitive = true
 }
 
+output "ad_dns_servers" {
+  value = module.active_directory.dns_servers
+}
+
+output "gh_runner_private_key" {
+  value     = module.gh_runner.private_key
+  sensitive = true
+}
+
+output "jaspersoft_ssh_private_key" {
+  value     = tls_private_key.jaspersoft_ssh_key.private_key_openssh
+  sensitive = true
+}
+
+output "ml_hostname" {
+  value = module.marklogic.ml_hostname
+}
+
+output "ml_ssh_private_key" {
+  value     = module.marklogic.ml_ssh_private_key
+  sensitive = true
+}
+
+output "ad_management_server_password" {
+  value     = module.active_directory.ad_management_server_password
+  sensitive = true
+}
+
+
 output "public_albs" {
   value = {
     delta      = module.public_albs.delta
