@@ -29,7 +29,7 @@ The following are not in scope of our threat model:
 * Targeted use of zero-day exploits in supported software we use
 * Direct action against individuals
 
-As this repository is public, the security posture of the following will not be discussed in detail:
+As this repository is assumed to be public, the security posture of the following will not be discussed in detail:
 
 * Detailed discussion of the applications themselves
 * DLUHC or supplier's organisation or corporate network

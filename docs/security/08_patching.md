@@ -1,9 +1,5 @@
 # Patching
 
-TODO DT-162:
+Patching of OS-managed packages is automated using AWS Systems Manager Maintenance Windows.
 
-* Make a list of things we need to patch, and how often
-* Automate what we can, write instructions for the rest
-* Work out what mailing lists etc. we need to be on for security alerts, document and join them
-
-TODO DT-172: Come up with a schedule for secret rotation and document it
+Other components (vendor application versions, Tomcat etc.) are patched manually on a schedule documented on Confluence as part of the Run Book: <https://digital.dclg.gov.uk/confluence/display/DT/Infrastructure+patching>

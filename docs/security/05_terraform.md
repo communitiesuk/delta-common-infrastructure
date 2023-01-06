@@ -10,8 +10,9 @@ All terraform code is scanned with [tfsec](https://github.com/aquasecurity/tfsec
 ## State
 
 Terraform state is stored in an S3 bucket in the same account as the infrastructure.
+The state files are encrypted server side using KMS.
 
-TODO DT-169: Use KMS to encrypt terraform state bucket
+The state contains sensitive values, but in order to ensure state compromise would not directly compromise production, we avoid storing production secrets that can be used outside the VPC. We are not as strict for test/staging.
 
-TODO DT-170: Try and ensure state compromise would not directly compromise production (don't need to be as strict for test/staging)
-  So remove AWS access keys/bastion SSH keys for production
+Sensitive values stored in production tfstate:
+* SMTP credentials for each of Delta/CPM. The IAM policy for sending emails cannot be restricted to use within the VPC. We could manage these manually instead, but the impact is relatively low.

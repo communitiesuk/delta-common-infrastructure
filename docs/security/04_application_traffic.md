@@ -8,4 +8,4 @@ Each CloudFront distribution includes a header with a secret key, the ALB listen
 
 ## IP restrictions
 
-TODO DT-150 IP restrictions for API, Keycloak, CPM
+The Delta API, Keycloak and CPM CloudFront distributions are IP restricted to lists that include developers and consumers of the APIs. See terraform/modules/cloudfront_distributions/ip_lists.tf for the allowlists.
