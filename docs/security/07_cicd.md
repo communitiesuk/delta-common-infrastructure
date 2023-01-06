@@ -13,7 +13,7 @@ The Terraform code is split across several repositories, but the setup for all o
 
 A dev account (staging and test environments) key with read only access is available for running Terraform plans for all pull requests.
 A dev account admin key is stored as an environment secret and is only accessible from the main branch.
-Branch protections are in place for the this repository, but not delta or common-payments-module, as they would be incompatible with the current suppliers development process.
+Branch protections are in place for the this repository, but not delta or common-payments-module, as they would be incompatible with the current supplier's development process.
 
 A production account admin AWS access key is stored as an Environment secret, and requires manual approval before use.
 
