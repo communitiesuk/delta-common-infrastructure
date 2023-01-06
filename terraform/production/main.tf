@@ -166,13 +166,13 @@ module "active_directory_dns_resolver" {
 module "marklogic" {
   source = "../modules/marklogic"
 
-  default_tags        = var.default_tags
-  environment         = local.environment
-  vpc                 = module.networking.vpc
-  private_subnets     = module.networking.ml_private_subnets
-  instance_type       = "r5a.4xlarge"
-  private_dns         = module.networking.private_dns
-  data_volume_size_gb = 1500
+  default_tags             = var.default_tags
+  environment              = local.environment
+  vpc                      = module.networking.vpc
+  private_subnets          = module.networking.ml_private_subnets
+  instance_type            = "r5a.4xlarge"
+  private_dns              = module.networking.private_dns
+  data_volume_size_gb      = 1500
   patch_maintenance_window = module.patch_maintenance_window
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications@softwire.com"]
@@ -205,6 +205,10 @@ module "cloudfront_distributions" {
 
   environment  = local.environment
   base_domains = [var.secondary_domain]
+  all_distribution_ip_allowlist = concat(
+    var.allowed_ssh_cidrs,
+    ["${module.networking.nat_gateway_ip}/32"]
+  )
   delta = {
     alb = module.public_albs.delta
     domain = {
@@ -242,6 +246,13 @@ module "cloudfront_distributions" {
   }
 }
 
+# This dynamically creates resources, so the modules it depends on must be created first
+# terraform apply -target module.cloudfront_distributions
+module "dluhc_preprod_cloudfront_records" {
+  source         = "../modules/dns_records"
+  hosted_zone_id = var.hosted_zone_id
+  records        = [for record in module.cloudfront_distributions.required_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+}
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
   algorithm = "RSA"

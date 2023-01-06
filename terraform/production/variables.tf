@@ -20,10 +20,10 @@ variable "secondary_domain" {
 }
 
 variable "allowed_ssh_cidrs" {
-  type    = list(string)
+  type = list(string)
   default = [
     "31.221.86.178/32", "167.98.33.82/32", "82.163.115.98/32", "87.224.105.250/32", "87.224.116.242/32", # Softwire VPN
-    "37.200.119.11/32", "185.10.12.32/28", "176.65.68.112/28"	 # Arcturus addresses
+    "37.200.119.11/32", "185.10.12.32/28", "176.65.68.112/28"                                            # Arcturus addresses
   ]
 }
 
