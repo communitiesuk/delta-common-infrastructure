@@ -6,6 +6,15 @@ variable "environment" {
   type = string
 }
 
+variable "enable_ip_allowlists" {
+  type    = bool
+  default = true
+}
+
+variable "all_distribution_ip_allowlist" {
+  type = list(string)
+}
+
 variable "delta" {
   type = object({
     alb = object({

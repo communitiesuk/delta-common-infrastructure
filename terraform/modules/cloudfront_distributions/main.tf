@@ -22,8 +22,18 @@ module "cpm_waf" {
   source           = "../waf"
   prefix           = "${var.environment}-cpm-"
   log_group_suffix = "cpm-${var.environment}"
-  # At least some e-claims POST requests trigger this rule 
+  # At least some e-claims POST requests trigger this rule
   excluded_rules = ["CrossSiteScripting_BODY"]
+  ip_allowlist   = var.enable_ip_allowlists ? local.cpm_ip_allowlist : null
+}
+
+module "api_auth_waf" {
+  source           = "../waf"
+  prefix           = "${var.environment}-delta-api-"
+  log_group_suffix = "delta-api-${var.environment}"
+  # XSS not issue for API
+  excluded_rules = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
+  ip_allowlist   = var.enable_ip_allowlists ? local.delta_api_allowlist : null
 }
 
 module "delta_cloudfront" {
@@ -42,7 +52,7 @@ module "api_cloudfront" {
   prefix                         = "delta-api-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta-api"
-  waf_acl_arn                    = module.default_waf.acl_arn
+  waf_acl_arn                    = module.api_auth_waf.acl_arn
   cloudfront_key                 = var.api.alb.cloudfront_key
   origin_domain                  = var.api.alb.dns_name
   cloudfront_domain              = var.api.domain
@@ -53,7 +63,7 @@ module "keycloak_cloudfront" {
   prefix                         = "keycloak-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "keycloak"
-  waf_acl_arn                    = module.default_waf.acl_arn
+  waf_acl_arn                    = module.api_auth_waf.acl_arn
   cloudfront_key                 = var.keycloak.alb.cloudfront_key
   origin_domain                  = var.keycloak.alb.dns_name
   cloudfront_domain              = var.keycloak.domain
