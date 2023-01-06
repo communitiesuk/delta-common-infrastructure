@@ -127,6 +127,10 @@ module "cloudfront_distributions" {
 
   environment  = "staging"
   base_domains = [var.primary_domain, var.secondary_domain]
+  all_distribution_ip_allowlist = concat(
+    var.allowed_ssh_cidrs,
+    ["${module.networking.nat_gateway_ip}/32"]
+  )
   delta = {
     alb = module.public_albs.delta
     domain = {

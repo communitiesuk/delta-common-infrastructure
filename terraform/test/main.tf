@@ -137,6 +137,13 @@ module "cloudfront_distributions" {
 
   environment  = "test"
   base_domains = [var.primary_domain, var.secondary_domain]
+
+  # Adding 0.0.0.0/0 to an ipset is not allowed and we don't want to restrict test
+  enable_ip_allowlists = false
+  all_distribution_ip_allowlist = concat(
+    var.allowed_ssh_cidrs,
+    ["${module.networking.nat_gateway_ip}/32"]
+  )
   delta = {
     alb = module.public_albs.delta
     domain = {
