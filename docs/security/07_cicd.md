@@ -18,7 +18,6 @@ Branch protections are in place for the this repository, but not delta or common
 A production account admin AWS access key is stored as an Environment secret, and requires manual approval before use.
 
 TODO: Alarm on use of terraform admin account (MHCLG org) <https://digital.dclg.gov.uk/confluence/display/DT/Security+-+DLUHC+responsibilities>
-TODO: Confirm GitHub org does not allow write access for all members <https://digital.dclg.gov.uk/confluence/display/DT/Security+-+DLUHC+responsibilities>
 
 ## Application deployments
 
