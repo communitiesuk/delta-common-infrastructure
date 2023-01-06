@@ -7,10 +7,6 @@ resource "aws_iam_user" "cpm_ci" {
   name = "cpm-ci"
 }
 
-resource "aws_iam_access_key" "cpm_ci" {
-  user = aws_iam_user.cpm_ci.name
-}
-
 # This user is used by the delta repo's CI workflows
 # One of a kind
 # tfsec:ignore:aws-iam-no-user-attached-policies
