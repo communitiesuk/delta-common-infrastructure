@@ -8,6 +8,22 @@ variable "excluded_rules" {
   default     = []
 }
 
+variable "ip_allowlist" {
+  type    = list(string)
+  default = null
+}
+
+resource "aws_wafv2_ip_set" "main" {
+  provider = aws.us-east-1
+  count    = var.ip_allowlist == null ? 0 : 1
+
+  name               = "${var.prefix}cloudfront-waf-ipset"
+  description        = "${var.prefix}cloudfront-waf-ipset"
+  scope              = "CLOUDFRONT"
+  ip_address_version = "IPV4"
+  addresses          = var.ip_allowlist
+}
+
 locals {
   # Delta needs file uploads so we'll presumably want a much higher limit than 8KB
   # This does limit the usefulness of the other rules though as they only scan the first 8KB of the body
@@ -19,7 +35,9 @@ locals {
     common        = replace("${var.prefix}cloudfront-waf-common-rules", "-", "")
     bad_inputs    = replace("${var.prefix}cloudfront-waf-bad-inputs", "-", "")
     ip_reputation = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
+    ip_allowlist  = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
   }
+  ip_reputation_enabled = var.ip_allowlist == null ? [{}] : []
 }
 
 output "acl_arn" {
@@ -120,25 +138,56 @@ resource "aws_wafv2_web_acl" "waf_acl" {
     }
   }
 
-  rule {
-    name     = "aws-ip-reputation"
-    priority = 4
+  # Either use the AWS managed IP reputation list, or an explicit allowlist
+  dynamic "rule" {
+    for_each = local.ip_reputation_enabled
+    content {
+      name     = "aws-ip-reputation"
+      priority = 4
 
-    override_action {
-      none {}
-    }
+      override_action {
+        none {}
+      }
 
-    statement {
-      managed_rule_group_statement {
-        name        = "AWSManagedRulesAmazonIpReputationList"
-        vendor_name = "AWS"
+      statement {
+        managed_rule_group_statement {
+          name        = "AWSManagedRulesAmazonIpReputationList"
+          vendor_name = "AWS"
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = local.metric_names.ip_reputation
+        sampled_requests_enabled   = true
       }
     }
+  }
 
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = local.metric_names.ip_reputation
-      sampled_requests_enabled   = true
+  dynamic "rule" {
+    for_each = aws_wafv2_ip_set.main
+    content {
+      name     = "ip-allowlist"
+      priority = 4
+      action {
+        block {}
+      }
+
+      statement {
+        not_statement {
+          statement {
+            ip_set_reference_statement {
+              arn = rule.value.arn
+            }
+          }
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = local.metric_names.ip_allowlist
+        sampled_requests_enabled   = true
+      }
     }
   }
 }

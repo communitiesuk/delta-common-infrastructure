@@ -10,4 +10,3 @@ resource "aws_nat_gateway" "nat_gateway" {
     Name = "nat-gateway-${var.environment}"
   }
 }
-
