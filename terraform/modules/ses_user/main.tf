@@ -42,11 +42,6 @@ data "aws_iam_policy_document" "ses_sender" {
       variable = "ses:FromAddress"
       values   = [var.from_address_pattern]
     }
-    condition {
-      test     = "StringEquals"
-      variable = "aws:SourceVpc"
-      values   = [var.vpc_id]
-    }
   }
 }
 

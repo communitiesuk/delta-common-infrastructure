@@ -82,6 +82,20 @@ module "codeartifact" {
   codeartifact_domain_name = "delta"
 }
 
+resource "aws_accessanalyzer_analyzer" "eu-west-1" {
+  analyzer_name = "eu-west-1-analyzer"
+}
+
+provider "aws" {
+  alias  = "us-east-1"
+  region = "us-east-1"
+}
+
+resource "aws_accessanalyzer_analyzer" "us-east-1" {
+  analyzer_name = "us-east-1-analyzer"
+  provider      = aws.us-east-1
+}
+
 module "patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
