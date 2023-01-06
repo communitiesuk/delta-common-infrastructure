@@ -295,5 +295,5 @@ provider "aws" {
 
 resource "aws_accessanalyzer_analyzer" "us-east-1" {
   analyzer_name = "us-east-1-analyzer"
-  provider = aws.us-east-1
+  provider      = aws.us-east-1
 }
