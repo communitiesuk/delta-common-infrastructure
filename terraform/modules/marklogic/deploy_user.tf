@@ -54,6 +54,11 @@ data "aws_iam_policy_document" "read_marklogic_deploy_secrets" {
     effect    = "Allow"
     resources = [aws_kms_key.ml_deploy_secrets.arn]
   }
+  statement {
+    actions   = ["secretsmanager:ListSecrets"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_user_policy_attachment" "read_marklogic_deploy_secrets" {
