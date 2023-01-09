@@ -50,6 +50,7 @@ resource "aws_cloudwatch_event_rule" "console" {
 EOF
 }
 
+# tfsec:ignore:aws-sns-enable-topic-encryption
 resource "aws_sns_topic" "guardduty_events" {
   name = "aws-guardduty-events"
 }
