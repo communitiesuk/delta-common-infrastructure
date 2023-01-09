@@ -35,7 +35,7 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
   task_invocation_parameters {
     run_command_parameters {
       comment         = "Yum update security"
-      timeout_seconds = 900
+      timeout_seconds = 1800
 
       service_role_arn = var.patch_maintenance_window.service_role_arn
       notification_config {
@@ -46,7 +46,7 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
 
       parameter {
         name   = "commands"
-        values = ["yum update --security -y"]
+        values = [file("${path.module}/patch.sh")]
       }
 
       cloudwatch_config {

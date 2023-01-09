@@ -186,3 +186,24 @@ data "aws_iam_policy_document" "ml_cloudwatch" {
     resources = ["${aws_cloudwatch_log_group.ml_patch.arn}:*"]
   }
 }
+
+resource "aws_iam_role_policy_attachment" "ml_asg" {
+  role       = aws_iam_role.ml_iam_role.name
+  policy_arn = aws_iam_policy.ml_asg.arn
+}
+
+resource "aws_iam_policy" "ml_asg" {
+  name        = "ml-instance-asg-${var.environment}"
+  description = "Allow MarkLogic instances to manage ASG standby for patching"
+
+  policy = data.aws_iam_policy_document.ml_asg.json
+}
+
+# No convenient way to limit, and these policies aren't too dangerous
+# tfsec:ignore:aws-iam-no-policy-wildcards
+data "aws_iam_policy_document" "ml_asg" {
+  statement {
+    actions   = ["autoscaling:DescribeAutoScalingInstances", "autoscaling:EnterStandby", "autoscaling:ExitStandby"]
+    resources = ["*"]
+  }
+}
