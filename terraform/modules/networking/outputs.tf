@@ -70,6 +70,11 @@ output "keycloak_private_subnets" {
   description = "Three private /24 subnets for Keycloak"
 }
 
+output "mailhog_private_subnet" {
+  value       = var.mailhog_subnet ? aws_subnet.mailhog[0] : null
+  description = "Private /24 subnet for MailHog, if enabled"
+}
+
 output "private_dns" {
   value = {
     zone_id     = aws_route53_zone.private.zone_id

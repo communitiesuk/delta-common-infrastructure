@@ -44,6 +44,11 @@ output "jaspersoft_ssh_private_key" {
   sensitive = true
 }
 
+output "mailhog_ssh_private_key" {
+  value     = module.mailhog.ssh_private_key
+  sensitive = true
+}
+
 output "bastion_host_key_fingerprint" {
   value = module.bastion.bastion_host_key_fingerprint_sha256
 }
