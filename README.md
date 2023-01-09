@@ -177,7 +177,7 @@ Follow the instructions in the GitHub Runner module README to get the runner cre
 terraform apply -target module.gh_runner -var="github_actions_runner_token=<token>"
 ```
 
-Now run the MarkLogic setup jobs from GitHub.
+Now run the MarkLogic setup jobs from GitHub. See the [delta-marklogic-deploy](https://github.com/communitiesuk/delta-marklogic-deploy) repository for details. 
 
 ### 6 Public ALBs and CloudFront
 

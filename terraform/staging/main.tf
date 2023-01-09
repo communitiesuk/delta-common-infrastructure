@@ -127,6 +127,9 @@ module "cloudfront_distributions" {
 
   environment  = "staging"
   base_domains = [var.primary_domain, var.secondary_domain]
+
+  # We don't want to restrict staging until we are able to confirm who needs access
+  enable_ip_allowlists = false
   all_distribution_ip_allowlist = concat(
     var.allowed_ssh_cidrs,
     ["${module.networking.nat_gateway_ip}/32"]
