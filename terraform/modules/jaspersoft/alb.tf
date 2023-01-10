@@ -1,13 +1,50 @@
 resource "aws_lb_listener" "main" {
-  load_balancer_arn = var.alb.arn
+  load_balancer_arn = var.public_alb.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-FS-1-2-Res-2019-08"
-  certificate_arn   = var.alb.certificate_arn
+  certificate_arn   = var.public_alb.certificate_arn
 
   default_action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Invalid CloudFront key"
+      status_code  = "403"
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "vpc_traffic" {
+  listener_arn = aws_lb_listener.main.arn
+  priority     = 100
+
+  action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.main.arn
+  }
+
+  condition {
+    source_ip {
+      values = [var.vpc.cidr_block]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "check_cloudfront_key" {
+  listener_arn = aws_lb_listener.main.arn
+  priority     = 200
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main.arn
+  }
+
+  condition {
+    http_header {
+      http_header_name = "X-Cloudfront-Key"
+      values           = [var.public_alb.cloudfront_key]
+    }
   }
 }
 
@@ -16,7 +53,7 @@ resource "aws_lb_target_group" "main" {
   port        = 8080
   protocol    = "HTTP"
   target_type = "instance"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.vpc.id
 
   health_check {
     path                = "/jasperserver/rest_v2/serverInfo"

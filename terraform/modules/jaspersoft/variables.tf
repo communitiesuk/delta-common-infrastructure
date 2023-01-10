@@ -7,15 +7,19 @@ variable "environment" {
   type = string
 }
 
-variable "vpc_id" {
-  type = string
+variable "vpc" {
+  type = object({
+    id         = string
+    cidr_block = string
+  })
 }
 
-variable "alb" {
+variable "public_alb" {
   type = object({
     arn               = string
     security_group_id = string
     certificate_arn   = string
+    cloudfront_key    = string
   })
 }
 

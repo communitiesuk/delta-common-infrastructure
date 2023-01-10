@@ -267,10 +267,10 @@ resource "aws_key_pair" "jaspersoft_ssh_key" {
 module "jaspersoft" {
   source                        = "../modules/jaspersoft"
   private_instance_subnet       = module.networking.jaspersoft_private_subnet
-  vpc_id                        = module.networking.vpc.id
+  vpc                           = module.networking.vpc
   prefix                        = "dluhc-prd-"
   ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
-  alb                           = module.public_albs.jaspersoft
+  public_alb                    = module.public_albs.jaspersoft
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   private_dns                   = module.networking.private_dns
