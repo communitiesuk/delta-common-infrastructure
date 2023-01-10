@@ -1,5 +1,5 @@
 resource "aws_security_group" "jaspersoft_server" {
-  vpc_id      = var.vpc_id
+  vpc_id      = var.vpc.id
   description = "Jaspersoft server instance"
 }
 
@@ -29,7 +29,7 @@ resource "aws_security_group_rule" "jaspersoft_server_http_ingress" {
   from_port                = 8080
   to_port                  = 8080
   protocol                 = "tcp"
-  source_security_group_id = var.alb.security_group_id
+  source_security_group_id = var.public_alb.security_group_id
   description              = "HTTP on 8080 from ALB"
   security_group_id        = aws_security_group.jaspersoft_server.id
 }
