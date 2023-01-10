@@ -276,4 +276,5 @@ module "jaspersoft" {
   private_dns                   = module.networking.private_dns
   environment                   = local.environment
   patch_maintenance_window      = module.patch_maintenance_window
+  instance_type                 = "m6a.xlarge"
 }
