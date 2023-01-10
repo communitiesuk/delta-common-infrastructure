@@ -41,7 +41,7 @@ jobs:
         run: terraform validate
         working-directory: terraform/test
       - name: Terraform plan
-        run: terraform plan -no-color -input=false -refresh=false -lock=false
+        run: terraform plan -input=false -refresh=false -lock=false
         working-directory: terraform/test
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.access_key }}
@@ -68,7 +68,7 @@ jobs:
         run: terraform validate
         working-directory: terraform/staging
       - name: Terraform plan
-        run: terraform plan -no-color -input=false -refresh=false -lock=false
+        run: terraform plan -input=false -refresh=false -lock=false
         working-directory: terraform/staging
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.access_key }}
