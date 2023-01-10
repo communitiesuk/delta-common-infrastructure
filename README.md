@@ -192,6 +192,8 @@ terraform apply -target module.public_albs -target module.cloudfront_distributio
 Create the CNAME records with another dns_records module, or by requesting them from DLUHC.
 Restore the "domain" inputs once the records are in place and apply again.
 
+If you are managing DNS for one of the domains, then create the necessary DNS records after the CloudFront distributions are created. Do this with the dns_records module. 
+
 ### 7 JasperReports server
 
 Follow the setup instructions in the module readme.

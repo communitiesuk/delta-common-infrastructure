@@ -94,7 +94,6 @@ Parameters:
     Description: The EBS Data volume size (GB) for all nodes
     Type: Number
     MinValue: '10'
-    MaxValue: '1000'
     Default: '10'
   VolumeType:
     Description: The EBS Data volume Type

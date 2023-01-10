@@ -26,11 +26,25 @@ provider "aws" {
     tags = var.default_tags
   }
 }
+# In practice the ACM validation records will all overlap
+# But create three sets anyway to be on the safe side, ACM is free
+# module "ssl_certs" {
+#   source = "../modules/ssl_certificates"
 
-module "communities_only_ssl_certs" {
+#   primary_domain    = var.primary_domain
+#   secondary_domains = [var.secondary_domain]
+# }
+
+# module "communities_only_ssl_certs" {
+#   source = "../modules/ssl_certificates"
+
+#   primary_domain = var.primary_domain
+# }
+
+module "dluhc_preprod_only_ssl_certs" {
   source = "../modules/ssl_certificates"
 
-  primary_domain = var.primary_domain
+  primary_domain = var.secondary_domain
 }
 
 module "ses_identity" {
@@ -39,9 +53,27 @@ module "ses_identity" {
   domain = "datacollection.levellingup.gov.uk"
 }
 
+
 locals {
-  all_validation_dns_records = concat(module.communities_only_ssl_certs.required_validation_records, module.ses_identity.required_validation_records)
+  environment = "production"
+  dns_cert_validation_records = setunion(
+    # module.communities_only_ssl_certs.required_validation_records,
+    module.dluhc_preprod_only_ssl_certs.required_validation_records,
+    # module.ssl_certs.required_validation_records,
+  )
 }
+
+# This dynamically creates resources, so the modules it depends on must be created first
+# terraform apply -target module.dluhc_preprod_only_ssl_certs
+module "dluhc_preprod_validation_records" {
+  source         = "../modules/dns_records"
+  hosted_zone_id = var.hosted_zone_id
+  records        = [for record in local.dns_cert_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+}
+
+# locals {
+#   all_validation_dns_records = concat(module.communities_only_ssl_certs.required_validation_records, module.ses_identity.required_validation_records)
+# }
 
 module "networking" {
   source              = "../modules/networking"
@@ -74,6 +106,11 @@ module "bastion" {
   extra_userdata          = "yum install openldap-clients -y"
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
+
+  dns_config = {
+    zone_id = var.hosted_zone_id
+    domain  = "bastion.${var.secondary_domain}"
+  }
 }
 
 # We create the codeartifact domain only in the production environment, and it is shared across all environments
@@ -102,4 +139,141 @@ module "patch_maintenance_window" {
   environment = "production"
   prefix      = "instance-patching"
   schedule    = "cron(00 06 ? * WED *)"
+}
+
+module "active_directory" {
+  source  = "../modules/active_directory"
+  edition = "Standard"
+
+  vpc                          = module.networking.vpc
+  domain_controller_subnets    = module.networking.ad_private_subnets
+  management_server_subnet     = module.networking.ad_management_server_subnet
+  number_of_domain_controllers = 2
+  ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
+  environment                  = local.environment
+  rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
+  private_dns                  = module.networking.private_dns
+  management_instance_type     = "t3.xlarge"
+}
+
+module "active_directory_dns_resolver" {
+  source = "../modules/active_directory_dns_resolver"
+
+  vpc               = module.networking.vpc
+  ad_dns_server_ips = module.active_directory.dns_servers
+}
+
+module "marklogic" {
+  source = "../modules/marklogic"
+
+  default_tags             = var.default_tags
+  environment              = local.environment
+  vpc                      = module.networking.vpc
+  private_subnets          = module.networking.ml_private_subnets
+  instance_type            = "r5a.4xlarge"
+  private_dns              = module.networking.private_dns
+  data_volume_size_gb      = 1500
+  patch_maintenance_window = module.patch_maintenance_window
+
+  ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications@softwire.com"]
+}
+
+module "gh_runner" {
+  source = "../modules/github_runner"
+
+  subnet_id         = module.networking.github_runner_private_subnet.id
+  environment       = local.environment
+  vpc               = module.networking.vpc
+  github_token      = var.github_actions_runner_token
+  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
+  private_dns       = module.networking.private_dns
+}
+
+module "public_albs" {
+  source = "../modules/public_albs"
+
+  vpc          = module.networking.vpc
+  subnet_ids   = module.networking.public_subnets[*].id
+  certificates = module.dluhc_preprod_only_ssl_certs.alb_certs
+  environment  = local.environment
+}
+
+# Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
+# See comment in test/main.tf
+module "cloudfront_distributions" {
+  source = "../modules/cloudfront_distributions"
+
+  environment  = local.environment
+  base_domains = [var.secondary_domain]
+  all_distribution_ip_allowlist = concat(
+    var.allowed_ssh_cidrs,
+    ["${module.networking.nat_gateway_ip}/32"]
+  )
+  delta = {
+    alb = module.public_albs.delta
+    domain = {
+      aliases             = ["delta.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["delta"].arn
+    }
+  }
+  api = {
+    alb = module.public_albs.delta_api
+    domain = {
+      aliases             = ["api.delta.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["api"].arn
+    }
+  }
+  keycloak = {
+    alb = module.public_albs.keycloak
+    domain = {
+      aliases             = ["auth.delta.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["keycloak"].arn
+    }
+  }
+  cpm = {
+    alb = module.public_albs.cpm
+    domain = {
+      aliases             = ["cpm.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["cpm"].arn
+    }
+  }
+  jaspersoft = {
+    alb = module.public_albs.jaspersoft
+    domain = {
+      aliases             = ["reporting.${var.secondary_domain}"]
+      acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
+    }
+  }
+}
+
+# This dynamically creates resources, so the modules it depends on must be created first
+# terraform apply -target module.cloudfront_distributions
+module "dluhc_preprod_cloudfront_records" {
+  source         = "../modules/dns_records"
+  hosted_zone_id = var.hosted_zone_id
+  records        = [for record in module.cloudfront_distributions.required_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+}
+
+resource "tls_private_key" "jaspersoft_ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "aws_key_pair" "jaspersoft_ssh_key" {
+  key_name   = "prd-jaspersoft-ssh-key"
+  public_key = tls_private_key.jaspersoft_ssh_key.public_key_openssh
+}
+
+module "jaspersoft" {
+  source                        = "../modules/jaspersoft"
+  private_instance_subnet       = module.networking.jaspersoft_private_subnet
+  vpc_id                        = module.networking.vpc.id
+  prefix                        = "dluhc-prd-"
+  ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
+  alb                           = module.public_albs.jaspersoft
+  allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
+  jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
+  private_dns                   = module.networking.private_dns
+  environment                   = local.environment
+  patch_maintenance_window      = module.patch_maintenance_window
 }

@@ -54,8 +54,25 @@ output "codeartifact_domain_arn" {
   value = module.codeartifact.domain_arn
 }
 
-output "required_dns_records" {
-  value = local.all_validation_dns_records
+# output "required_dns_records" {
+#   value = local.all_validation_dns_records
+# }
+
+output "directory_admin_password" {
+  value     = module.active_directory.directory_admin_password
+  sensitive = true
+}
+
+output "public_albs" {
+  value = {
+    delta      = module.public_albs.delta
+    api        = module.public_albs.delta_api
+    keycloak   = module.public_albs.keycloak
+    cpm        = module.public_albs.cpm
+    jaspersoft = module.public_albs.jaspersoft
+  }
+  # Includes CloudFront keys
+  sensitive = true
 }
 
 output "patch_maintenance_window" {

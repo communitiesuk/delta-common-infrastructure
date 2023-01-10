@@ -21,7 +21,7 @@ data "aws_secretsmanager_secret" "ml_admin_user" {
   lifecycle {
     postcondition {
       condition     = lookup(self.tags, "delta-marklogic-deploy-read", null) == var.environment
-      error_message = "The 'delta-marklogic-deploy-read' tag must be set so that this secret can be read by the MarkLogic deploy jobs"
+      error_message = "The 'delta-marklogic-deploy-read' tag must be set equal to the environment name, so that this secret can be read by the MarkLogic deploy jobs"
     }
   }
 }

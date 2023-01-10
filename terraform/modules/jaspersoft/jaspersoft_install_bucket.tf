@@ -1,5 +1,5 @@
 data "aws_s3_bucket" "jaspersoft_binaries" {
-  bucket = "dluhc-jaspersoft-bin"
+  bucket = var.jaspersoft_binaries_s3_bucket
 }
 
 data "aws_s3_object" "jaspersoft_install_zip" {
