@@ -38,3 +38,10 @@ variable "public_dns" {
 variable "public_subnet_ids" {
   type = list(string)
 }
+
+variable "ses_user" {
+  type = object({
+    smtp_username = string
+    smtp_password = string
+  })
+}

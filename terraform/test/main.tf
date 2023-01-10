@@ -297,6 +297,16 @@ module "iam_roles" {
   environment             = "test"
 }
 
+module "ses_user" {
+  source               = "../modules/ses_user"
+  username             = "ses-user-test"
+  ses_identity_arn     = module.ses_identity.arn
+  from_address_pattern = "*@datacollection.dluhc-dev.uk"
+  environment          = "test"
+  kms_key_arn          = module.marklogic.deploy_user_kms_key_arn
+  vpc_id               = module.networking.vpc.id
+}
+
 module "mailhog" {
   source = "../modules/mailhog"
 
@@ -310,4 +320,5 @@ module "mailhog" {
     zone_id     = var.secondary_domain_zone_id
     base_domain = var.secondary_domain
   }
+  ses_user = module.ses_user
 }

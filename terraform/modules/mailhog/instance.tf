@@ -58,6 +58,8 @@ resource "aws_instance" "main" {
   user_data = templatefile("${path.module}/user_data.sh", {
     region              = data.aws_region.current.name
     auth_file_secret_id = data.aws_secretsmanager_secret.mailhog_auth_file.id
+    smtp_username       = var.ses_user.smtp_username
+    smtp_password       = var.ses_user.smtp_password
   })
 
   metadata_options {
