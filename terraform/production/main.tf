@@ -285,3 +285,10 @@ module "guardduty" {
 
   notification_email = local.notification_email_address
 }
+
+module "iam_roles" {
+  source = "../modules/iam_roles"
+
+  organisation_account_id = "448312965134"
+  environment             = "production"
+}
