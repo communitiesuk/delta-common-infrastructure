@@ -20,6 +20,15 @@ data "aws_iam_policy" "read_only_all" {
   arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }
 
+data "aws_iam_policy" "aws_support_access" {
+  arn = "arn:aws:iam::aws:policy/AWSSupportAccess"
+}
+
+# Defined in backend/main.tf
+data "aws_iam_policy" "tf_state_read_only" {
+  arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/tf-state-read-only"
+}
+
 # To be used with CloudWatchReadOnlyAccess
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "cloudwatch_monitor" {

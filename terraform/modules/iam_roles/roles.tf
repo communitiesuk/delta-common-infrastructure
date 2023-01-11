@@ -60,7 +60,8 @@ resource "aws_iam_role_policy_attachment" "infrastructure_support" {
     cloudwatch_full = data.aws_iam_policy.cloudwatch_full_access.arn
     ssm_full        = data.aws_iam_policy.ssm_full_access.arn
     ssm_ad          = aws_iam_policy.ssm_adms_rdp.arn # Still need this for ssm-guiconnect actions
-    # TODO DT-163: Add Terraform State access once the backend change is applied
+    aws_support     = data.aws_iam_policy.aws_support_access.arn
+    tf_state        = data.aws_iam_policy.tf_state_read_only.arn
   }
 
   role       = aws_iam_role.infrastructure_support.name
