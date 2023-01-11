@@ -303,7 +303,7 @@ module "ses_user" {
   ses_identity_arn     = module.ses_identity.arn
   from_address_pattern = "*@datacollection.dluhc-dev.uk"
   environment          = "test"
-  kms_key_arn          = module.marklogic.deploy_user_kms_key_arn
+  kms_key_arn          = null
   vpc_id               = module.networking.vpc.id
 }
 
