@@ -26,7 +26,7 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_monitor" {
     cloudwatch_monitor         = aws_iam_policy.cloudwatch_monitor.arn
   }
 
-  role       = aws_iam_role.application_support.name
+  role       = aws_iam_role.cloudwatch_monitor.name
   policy_arn = each.value
 }
 
