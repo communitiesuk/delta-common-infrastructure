@@ -31,7 +31,8 @@ After=syslog.target network.target
 User=mailhog
 Group=mailhog
 
-Environment=MH_HOSTNAME=mailhog.vpc.local
+# Mailhog sends email from its hostname, see https://github.com/mailhog/MailHog-Server/blob/master/api/v1.go#L335
+Environment=MH_HOSTNAME=datacollection.dluhc-dev.uk
 Environment=MH_MAILDIR_PATH=/mailhog/mail
 Environment=MH_STORAGE=maildir
 Environment=MH_AUTH_FILE=/mailhog/auth
