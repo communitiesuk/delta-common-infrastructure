@@ -37,3 +37,8 @@ variable "cloudfront_domain" {
   })
   default = null
 }
+
+variable "geo_restriction_enabled" {
+  type    = bool
+  default = true
+}

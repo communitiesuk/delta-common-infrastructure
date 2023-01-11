@@ -151,6 +151,7 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.secondary_domain}", "delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
     }
+    disable_geo_restriction = true
   }
   api = {
     alb = module.public_albs.delta_api

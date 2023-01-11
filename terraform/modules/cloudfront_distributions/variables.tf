@@ -31,6 +31,7 @@ variable "delta" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
+    disable_geo_restriction = optional(bool)
   })
 }
 
@@ -44,6 +45,7 @@ variable "api" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
+    disable_geo_restriction = optional(bool)
   })
 }
 
@@ -57,6 +59,7 @@ variable "keycloak" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
+    disable_geo_restriction = optional(bool)
   })
 }
 
@@ -70,6 +73,7 @@ variable "cpm" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
+    disable_geo_restriction = optional(bool)
   })
 }
 
@@ -83,5 +87,6 @@ variable "jaspersoft" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
+    disable_geo_restriction = optional(bool)
   })
 }

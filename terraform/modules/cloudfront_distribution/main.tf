@@ -93,8 +93,8 @@ resource "aws_cloudfront_distribution" "main" {
 
   restrictions {
     geo_restriction {
-      restriction_type = "whitelist"
-      locations        = ["GB", "IE"]
+      restriction_type = var.geo_restriction_enabled ? "whitelist" : "none"
+      locations        = var.geo_restriction_enabled ? ["GB", "IE"] : []
     }
   }
 
