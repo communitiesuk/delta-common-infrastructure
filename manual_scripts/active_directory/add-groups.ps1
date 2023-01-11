@@ -8,8 +8,14 @@ New-ADOrganizationalUnit -Name "DELTA-Organizations" -Path "OU=dluhcdata,DC=dluh
 
 $groups = import-csv "groups.csv"
 
-Foreach($group in $groups){       
+Foreach($group in $groups){
     New-ADGroup -Name $group.Group -Path "OU=Groups,OU=dluhcdata,DC=dluhcdata,DC=local" -GroupScope Global
     Write-Host "Added Group: $group.Group"
 }
- 
+
+$datamart_delta_groups = import-csv "datamart-delta-groups.csv"
+
+Foreach($group in $datamart_delta_groups){
+    New-ADGroup -Name $group.Group -Path "CN=datamart-delta,OU=Groups,OU=dluhcdata,DC=dluhcdata,DC=local" -GroupScope Global
+    Write-Host "Added Group: $group.Group"
+}
