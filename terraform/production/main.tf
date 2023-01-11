@@ -292,3 +292,18 @@ module "iam_roles" {
   organisation_account_id = "448312965134"
   environment             = "production"
 }
+
+# tfsec:ignore:aws-ec2-no-default-vpc
+# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
+resource "aws_default_vpc" "default" {
+  tags = {
+    Name = "default-vpc"
+  }
+}
+
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_default_vpc.default.id
+  tags = {
+    Name = "default-vpc-default-security-group"
+  }
+}

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ddc8b3ae-e2de-4967-959d-7209d6d41dd6" name="Changes" comment="DT-177 - Added restrictive default network ACL" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="DT-174" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2JuSxoy1Eov04dcIVi8L14tH9Vt" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Git.Branch.Popup.ShowAllRemotes&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable&quot;
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ddc8b3ae-e2de-4967-959d-7209d6d41dd6" name="Changes" comment="" />
+      <created>1672926724120</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1672926724120</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Added code to the terraform files to create access-analyzers in both us-east-1 and eu-west-1 regions for staging and production environments">
+      <created>1672929695481</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1672929695481</updated>
+    </task>
+    <task id="LOCAL-00002" summary="DT-174 - Added access analyzers">
+      <created>1672999278607</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1672999278607</updated>
+    </task>
+    <task id="LOCAL-00003" summary="DT-177 - Added restrictive default security group">
+      <created>1673439115402</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1673439115403</updated>
+    </task>
+    <task id="LOCAL-00004" summary="DT-177 - Added restrictive default security group">
+      <created>1673439564812</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1673439564812</updated>
+    </task>
+    <task id="LOCAL-00005" summary="DT-177 - Added restrictive default security group">
+      <created>1673440404124</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1673440404124</updated>
+    </task>
+    <task id="LOCAL-00006" summary="DT-177 - Added restrictive default security group">
+      <created>1673446006289</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1673446006289</updated>
+    </task>
+    <task id="LOCAL-00007" summary="DT-177 - Added restrictive default security group">
+      <created>1673446574865</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1673446574865</updated>
+    </task>
+    <task id="LOCAL-00008" summary="DT-177 - Added restrictive default security group">
+      <created>1673448447661</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1673448447661</updated>
+    </task>
+    <task id="LOCAL-00009" summary="DT-177 - Added restrictive default network ACL">
+      <created>1673521501695</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1673521501695</updated>
+    </task>
+    <task id="LOCAL-00010" summary="DT-177 - Added restrictive default network ACL">
+      <created>1673522511381</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1673522511381</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="DT-174 - Create access-analyzers" />
+    <MESSAGE value="DT-174 - Added access analyzers" />
+    <MESSAGE value="DT-177 - Added restrictive default security group" />
+    <MESSAGE value="DT-177 - Added restrictive default network ACL" />
+    <option name="LAST_COMMIT_MESSAGE" value="DT-177 - Added restrictive default network ACL" />
+  </component>
+</project>
