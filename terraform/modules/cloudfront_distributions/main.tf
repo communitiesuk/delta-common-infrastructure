@@ -5,32 +5,36 @@ module "access_logs_bucket" {
 }
 
 module "default_waf" {
-  source           = "../waf"
-  log_group_suffix = "default-${var.environment}"
-  prefix           = "${var.environment}-default-"
+  source            = "../waf"
+  log_group_suffix  = "default-${var.environment}"
+  prefix            = "${var.environment}-default-"
+  per_ip_rate_limit = var.waf_per_ip_rate_limit
 }
 
 module "delta_website_waf" {
-  source           = "../waf"
-  prefix           = "${var.environment}-delta-website-"
-  log_group_suffix = "delta-website-${var.environment}"
+  source            = "../waf"
+  prefix            = "${var.environment}-delta-website-"
+  log_group_suffix  = "delta-website-${var.environment}"
+  per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Orbeon triggers this rule
   excluded_rules = ["CrossSiteScripting_BODY"]
 }
 
 module "cpm_waf" {
-  source           = "../waf"
-  prefix           = "${var.environment}-cpm-"
-  log_group_suffix = "cpm-${var.environment}"
+  source            = "../waf"
+  prefix            = "${var.environment}-cpm-"
+  log_group_suffix  = "cpm-${var.environment}"
+  per_ip_rate_limit = var.waf_per_ip_rate_limit
   # At least some e-claims POST requests trigger this rule
   excluded_rules = ["CrossSiteScripting_BODY"]
   ip_allowlist   = var.enable_ip_allowlists ? local.cpm_ip_allowlist : null
 }
 
 module "api_auth_waf" {
-  source           = "../waf"
-  prefix           = "${var.environment}-delta-api-"
-  log_group_suffix = "delta-api-${var.environment}"
+  source            = "../waf"
+  prefix            = "${var.environment}-delta-api-"
+  log_group_suffix  = "delta-api-${var.environment}"
+  per_ip_rate_limit = var.waf_per_ip_rate_limit
   # XSS not issue for API
   excluded_rules = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
   ip_allowlist   = var.enable_ip_allowlists ? local.delta_api_allowlist : null

@@ -135,8 +135,9 @@ module "public_albs" {
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
-  environment  = "test"
-  base_domains = [var.primary_domain, var.secondary_domain]
+  environment           = "test"
+  base_domains          = [var.primary_domain, var.secondary_domain]
+  waf_per_ip_rate_limit = 100000
 
   # Adding 0.0.0.0/0 to an ipset is not allowed and we don't want to restrict test
   enable_ip_allowlists = false

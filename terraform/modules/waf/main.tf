@@ -13,6 +13,11 @@ variable "ip_allowlist" {
   default = null
 }
 
+variable "per_ip_rate_limit" {
+  type        = number
+  description = "Requests per five minutes"
+}
+
 resource "aws_wafv2_ip_set" "main" {
   provider = aws.us-east-1
   count    = var.ip_allowlist == null ? 0 : 1
@@ -75,7 +80,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
     statement {
       rate_based_statement {
-        limit              = 500
+        limit              = var.per_ip_rate_limit
         aggregate_key_type = "IP"
       }
     }

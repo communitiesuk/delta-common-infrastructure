@@ -15,6 +15,12 @@ variable "all_distribution_ip_allowlist" {
   type = list(string)
 }
 
+variable "waf_per_ip_rate_limit" {
+  type        = number
+  default     = 500
+  description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes"
+}
+
 variable "delta" {
   type = object({
     alb = object({
