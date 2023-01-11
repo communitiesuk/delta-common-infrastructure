@@ -230,6 +230,7 @@ module "marklogic" {
   patch_maintenance_window = module.patch_maintenance_window
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  kms_key_arn              = module.session_manager_config.kms_key_arn
 }
 
 module "gh_runner" {
@@ -297,6 +298,11 @@ module "iam_roles" {
   source = "../modules/iam_roles"
 
   organisation_account_id = "448312965134"
+  environment             = "staging"
+}
+
+module "session_manager_config" {
+  source = "../modules/session_manager_config"
   environment             = "staging"
 }
 

@@ -44,3 +44,7 @@ variable "patch_maintenance_window" {
     errors_sns_topic_arn = string
   })
 }
+
+variable "kms_key_arn" {
+  type = string
+}

@@ -59,7 +59,7 @@ resource "aws_iam_policy" "ml_instance_policy" {
           "kms:Decrypt"
         ]
         Effect   = "Allow"
-        Resource = [aws_kms_key.ml_logs_encryption_key.arn]
+        Resource = [aws_kms_key.ml_logs_encryption_key.arn, var.kms_key_arn]
       },
       {
         Action = [
