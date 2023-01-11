@@ -120,3 +120,7 @@ output "public_albs" {
 output "patch_maintenance_window" {
   value = module.patch_maintenance_window
 }
+
+output "session_manager_policy_arn" {
+  value = module.session_manager_config.policy_arn
+}

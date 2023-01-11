@@ -47,3 +47,9 @@ variable "ecr_repo_account_id" {
   description = "AWS account id containing the ECR repo that ECS services will pull from"
   default     = "468442790030"
 }
+
+variable "session_manager_policy_arn" {
+  type        = string
+  description = "ARN of the IAM policy that enables Session Manager sessions, created by the staging environment"
+  default     = ""
+}

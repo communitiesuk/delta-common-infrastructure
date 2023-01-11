@@ -177,17 +177,19 @@ module "marklogic" {
   patch_maintenance_window = module.patch_maintenance_window
 
   ebs_backup_error_notification_emails = [local.notification_email_address]
+  extra_instance_policy_arn            = module.session_manager_config.policy_arn
 }
 
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id         = module.networking.github_runner_private_subnet.id
-  environment       = local.environment
-  vpc               = module.networking.vpc
-  github_token      = var.github_actions_runner_token
-  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
-  private_dns       = module.networking.private_dns
+  subnet_id                 = module.networking.github_runner_private_subnet.id
+  environment               = local.environment
+  vpc                       = module.networking.vpc
+  github_token              = var.github_actions_runner_token
+  ssh_ingress_sg_id         = module.bastion.bastion_security_group_id
+  private_dns               = module.networking.private_dns
+  extra_instance_policy_arn = module.session_manager_config.policy_arn
 }
 
 module "public_albs" {
@@ -278,6 +280,7 @@ module "jaspersoft" {
   environment                   = local.environment
   patch_maintenance_window      = module.patch_maintenance_window
   instance_type                 = "m6a.xlarge"
+  extra_instance_policy_arn     = module.session_manager_config.policy_arn
 }
 
 module "guardduty" {
@@ -290,7 +293,12 @@ module "iam_roles" {
   source = "../modules/iam_roles"
 
   organisation_account_id = "448312965134"
-  environment             = "production"
+  environment             = local.environment
+}
+
+module "session_manager_config" {
+  source      = "../modules/session_manager_config"
+  environment = local.environment
 }
 
 # tfsec:ignore:aws-ec2-no-default-vpc

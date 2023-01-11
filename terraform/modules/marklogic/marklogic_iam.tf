@@ -21,6 +21,11 @@ resource "aws_iam_role_policy_attachment" "ml_attach" {
   policy_arn = aws_iam_policy.ml_instance_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "extra_attach" {
+  role       = aws_iam_role.ml_iam_role.name
+  policy_arn = var.extra_instance_policy_arn
+}
+
 resource "aws_iam_instance_profile" "ml_instance_profile" {
   name = "ml-profile-${var.environment}"
   role = aws_iam_role.ml_iam_role.name
@@ -59,7 +64,7 @@ resource "aws_iam_policy" "ml_instance_policy" {
           "kms:Decrypt"
         ]
         Effect   = "Allow"
-        Resource = [aws_kms_key.ml_logs_encryption_key.arn, var.kms_key_arn]
+        Resource = [aws_kms_key.ml_logs_encryption_key.arn]
       },
       {
         Action = [

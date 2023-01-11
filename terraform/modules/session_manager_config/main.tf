@@ -2,6 +2,7 @@ variable "environment" {
   type = string
 }
 
+# Note that port forwarding sessions do not get logged
 module "session_manager_log_group" {
   source = "../encrypted_log_groups"
 
@@ -23,7 +24,9 @@ resource "aws_ssm_document" "session_manager_prefs" {
       cloudWatchLogGroupName      = module.session_manager_log_group.log_group_names[0]
       cloudWatchEncryptionEnabled = true
       cloudWatchStreamingEnabled  = true
-      runAsEnabled                = true
+      runAsEnabled                = false
+      idleSessionTimeout          = "20"
+      maxSessionDuration          = ""
     }
   })
 }
@@ -32,10 +35,6 @@ data "aws_region" "current" {}
 resource "aws_kms_key" "main" {
   enable_key_rotation = true
   description         = "Encryption of SSM Session Manager sessions"
-  # policy = templatefile("${path.module}/kms_policy.json", {
-  #   account_id      = data.aws_caller_identity.current.account_id
-  #   region          = data.aws_region.current.name
-  # })
 }
 
 resource "aws_kms_alias" "main" {
@@ -43,6 +42,37 @@ resource "aws_kms_alias" "main" {
   target_key_id = aws_kms_key.main.key_id
 }
 
-output "kms_key_arn" {
-  value = aws_kms_key.main.arn
+
+#tfsec:ignore:aws-iam-no-policy-wildcards
+resource "aws_iam_policy" "main" {
+  name        = "session-manager-policy"
+  description = "Allows instances to start Session Manager sessions and send logs to CloudWath"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey"
+        ]
+        Effect   = "Allow"
+        Resource = [aws_kms_key.main.arn]
+      },
+      {
+        Action = [
+          "logs:CreateLogStream",
+          "logs:DescribeLogStreams",
+          "logs:DescribeLogGroups",
+          "logs:PutLogEvents",
+        ]
+        Effect   = "Allow"
+        Resource = ["${module.session_manager_log_group.log_group_arns[0]}:*"]
+      }
+    ]
+  })
+}
+
+output "policy_arn" {
+  value = aws_iam_policy.main.arn
 }

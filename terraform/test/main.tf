@@ -243,17 +243,19 @@ module "marklogic" {
   patch_maintenance_window = module.patch_maintenance_window
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
+  extra_instance_policy_arn            = var.session_manager_policy_arn
 }
 
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id         = module.networking.github_runner_private_subnet.id
-  environment       = "test"
-  vpc               = module.networking.vpc
-  github_token      = var.github_actions_runner_token
-  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
-  private_dns       = module.networking.private_dns
+  subnet_id                 = module.networking.github_runner_private_subnet.id
+  environment               = "test"
+  vpc                       = module.networking.vpc
+  github_token              = var.github_actions_runner_token
+  ssh_ingress_sg_id         = module.bastion.bastion_security_group_id
+  private_dns               = module.networking.private_dns
+  extra_instance_policy_arn = var.session_manager_policy_arn
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
@@ -279,6 +281,7 @@ module "jaspersoft" {
   ad_domain                     = "dluhctest"
   environment                   = "test"
   patch_maintenance_window      = module.patch_maintenance_window
+  extra_instance_policy_arn     = var.session_manager_policy_arn
 }
 
 module "iam_roles" {
