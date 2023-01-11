@@ -21,6 +21,21 @@ on:
         required: true
       secret_Key:
         required: true
+  workflow_dispatch:
+    inputs:
+      workdir:
+        required: true
+        type: string
+        description: Directory to run Terraform commands from - can be blank for test/staging
+      plan_environment:
+        required: false
+        default: ''
+        type: string
+        description: Environment to run the plan in
+      apply_environment:
+        required: true
+        type: string
+        description: Environment to run the apply in
 
 jobs:
   plan:
