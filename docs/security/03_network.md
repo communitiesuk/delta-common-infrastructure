@@ -9,7 +9,7 @@ Infrastructure is created inside a VPC for each environment. Generally:
 
 See the networking Terraform module for details.
 
-TODO DT-39: enable GuardDuty monitoring of VPC flow logs
+We have enabled AWS GuardDuty, which monitors VPC flow logs for suspicious activity.
 
 ## ACL
 

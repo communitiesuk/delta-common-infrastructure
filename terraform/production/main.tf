@@ -55,7 +55,8 @@ module "ses_identity" {
 
 
 locals {
-  environment = "production"
+  environment                = "production"
+  notification_email_address = "Group-DLUHCDeltaNotifications@softwire.com"
   dns_cert_validation_records = setunion(
     # module.communities_only_ssl_certs.required_validation_records,
     module.dluhc_preprod_only_ssl_certs.required_validation_records,
@@ -175,7 +176,7 @@ module "marklogic" {
   data_volume_size_gb      = 1500
   patch_maintenance_window = module.patch_maintenance_window
 
-  ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications@softwire.com"]
+  ebs_backup_error_notification_emails = [local.notification_email_address]
 }
 
 module "gh_runner" {
@@ -277,4 +278,10 @@ module "jaspersoft" {
   environment                   = local.environment
   patch_maintenance_window      = module.patch_maintenance_window
   instance_type                 = "m6a.xlarge"
+}
+
+module "guardduty" {
+  source = "../modules/guardduty"
+
+  notification_email = local.notification_email_address
 }

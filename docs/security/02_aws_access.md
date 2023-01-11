@@ -9,7 +9,7 @@ Access for humans is managed by DLUHC, signing in via the AWS organisation and r
 
 Service users are created directly in the relevant account and are managed by Terraform, with the exception of the Terraform CI/CD user.
 
-TODO DT-39: enable GuardDuty monitoring AWS access
+We have enabled AWS GuardDuty, which can detect suspicious account activity, including unauthorised creation of new IAM users or access keys.
 
 ## Permissions/Roles
 
