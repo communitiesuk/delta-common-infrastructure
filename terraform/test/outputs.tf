@@ -125,3 +125,7 @@ output "marklogic_deploy_user" {
 output "patch_maintenance_window" {
   value = module.patch_maintenance_window
 }
+
+output "ml_8050_target_group" {
+  value = module.marklogic.ml_8050_target_group
+}
