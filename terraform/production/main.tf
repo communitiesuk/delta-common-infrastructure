@@ -53,6 +53,9 @@ module "ses_identity" {
   domain = "datacollection.levellingup.gov.uk"
 }
 
+module "ses_monitoring" {
+  source = "../modules/ses_monitoring"
+}
 
 locals {
   environment                = "production"

@@ -309,6 +309,10 @@ module "cpm_ses_user" {
   vpc_id               = module.networking.vpc.id
 }
 
+module "ses_monitoring" {
+  source = "../modules/ses_monitoring"
+}
+
 module "iam_roles" {
   source = "../modules/iam_roles"
 
