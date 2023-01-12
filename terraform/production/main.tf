@@ -315,3 +315,8 @@ resource "aws_default_network_acl" "default" {
   }
   # no rules defined, deny all traffic in this ACL
 }
+
+resource "aws_ebs_encryption_by_default" "default" {
+  # enables EBS volume encryption by default
+  enabled = true
+}
