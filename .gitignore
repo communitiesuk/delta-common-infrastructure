@@ -1,3 +1,6 @@
+#IDE files
+.idea
+
 # Local .terraform directories
 **/.terraform/*
 
