@@ -307,3 +307,11 @@ resource "aws_default_security_group" "default" {
     Name = "default-vpc-default-security-group"
   }
 }
+
+resource "aws_default_network_acl" "default" {
+  default_network_acl_id = aws_default_vpc.default.default_network_acl_id
+  tags = {
+    Name = "vpc-default-acl"
+  }
+  # no rules defined, deny all traffic in this ACL
+}
