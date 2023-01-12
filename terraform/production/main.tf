@@ -104,7 +104,7 @@ module "bastion" {
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1
   log_group_name          = module.bastion_log_group.log_group_names[0]
-  extra_userdata          = "yum install openldap-clients -y"
+  extra_userdata          = "yum install openldap-clients -y; sed -i 's/SELINUX=disabled/SELINUX=enforcing/g' /etc/selinux/config"
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
 
