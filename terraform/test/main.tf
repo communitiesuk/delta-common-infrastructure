@@ -243,7 +243,7 @@ module "marklogic" {
   patch_maintenance_window = module.patch_maintenance_window
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
-  extra_instance_policy_arn            = var.session_manager_policy_arn
+  extra_instance_policy_arn            = data.aws_iam_policy.enable_session_manager.arn
 }
 
 module "gh_runner" {
@@ -255,7 +255,7 @@ module "gh_runner" {
   github_token              = var.github_actions_runner_token
   ssh_ingress_sg_id         = module.bastion.bastion_security_group_id
   private_dns               = module.networking.private_dns
-  extra_instance_policy_arn = var.session_manager_policy_arn
+  extra_instance_policy_arn = data.aws_iam_policy.enable_session_manager.arn
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
@@ -281,7 +281,7 @@ module "jaspersoft" {
   ad_domain                     = "dluhctest"
   environment                   = "test"
   patch_maintenance_window      = module.patch_maintenance_window
-  extra_instance_policy_arn     = var.session_manager_policy_arn
+  extra_instance_policy_arn     = data.aws_iam_policy.enable_session_manager.arn
 }
 
 module "iam_roles" {
@@ -289,4 +289,15 @@ module "iam_roles" {
 
   organisation_account_id = "448312965134"
   environment             = "test"
+  session_manager_key_arn = data.aws_kms_key.session_manager.arn
+}
+
+data "aws_kms_key" "session_manager" {
+  # Created by the staging environment
+  key_id = "alias/session-manager-key"
+}
+
+data "aws_iam_policy" "enable_session_manager" {
+  # Created by the staging environment
+  name = "session-manager-policy"
 }

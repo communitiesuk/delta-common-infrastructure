@@ -76,3 +76,7 @@ resource "aws_iam_policy" "main" {
 output "policy_arn" {
   value = aws_iam_policy.main.arn
 }
+
+output "session_manager_key_arn" {
+  value = aws_kms_key.main.arn
+}

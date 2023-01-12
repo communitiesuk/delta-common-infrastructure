@@ -301,6 +301,7 @@ module "iam_roles" {
 
   organisation_account_id = "448312965134"
   environment             = "staging"
+  session_manager_key_arn = module.session_manager_config.session_manager_key_arn
 }
 
 module "session_manager_config" {

@@ -294,6 +294,7 @@ module "iam_roles" {
 
   organisation_account_id = "448312965134"
   environment             = local.environment
+  session_manager_key_arn = module.session_manager_config.session_manager_key_arn
 }
 
 module "session_manager_config" {
