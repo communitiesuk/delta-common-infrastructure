@@ -46,7 +46,7 @@ resource "aws_ssm_maintenance_window_task" "jasper_patch" {
 
       parameter {
         name   = "commands"
-        values = ["apt-get update && apt-get upgrade -y"]
+        values = [file("${path.module}/patch.sh")]
       }
 
       cloudwatch_config {

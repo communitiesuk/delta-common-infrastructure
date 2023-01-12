@@ -121,7 +121,3 @@ output "public_albs" {
 output "marklogic_deploy_user" {
   value = module.marklogic.deploy_user
 }
-
-output "patch_maintenance_window" {
-  value = module.patch_maintenance_window
-}
