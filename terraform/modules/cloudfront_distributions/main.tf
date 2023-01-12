@@ -59,10 +59,20 @@ module "api_cloudfront" {
   access_logs_prefix             = "delta-api"
   waf_acl_arn                    = module.api_auth_waf.acl_arn
   cloudfront_key                 = var.api.alb.cloudfront_key
-  origin_domain                  = var.api.alb.dns_name
   cloudfront_domain              = var.api.domain
   is_ipv6_enabled                = !var.enable_ip_allowlists
   geo_restriction_enabled        = var.api.disable_geo_restriction != true
+  origins = [
+    {
+      origin_domain = var.api.alb.dns_name
+      path          = "rest-api/*"
+    },
+    {
+      origin_domain = module.swagger_bucket.bucket_domain_name
+      path          = "" # TODO DT-131 what paths did we want here
+    }
+  ]
+  cloudfront_domain = var.api.domain
 }
 
 module "keycloak_cloudfront" {
@@ -101,4 +111,16 @@ module "jaspersoft_cloudfront" {
   origin_domain                  = var.jaspersoft.alb.dns_name
   cloudfront_domain              = var.jaspersoft.domain
   geo_restriction_enabled        = var.jaspersoft.disable_geo_restriction != true
+}
+
+module "swagger_bucket" {
+  source = "../s3_bucket"
+
+  bucket_name                        = "dluhc-delta-api-swagger-${var.environment}"
+  access_log_bucket_name             = "dluhc-delta-api-swagger-access-logs-${var.environment}"
+  force_destroy                      = true # TODO DT-131 what do we think of this, it's from backup_buckets.tf
+
+  # TODO DT-131 these two are not found in the dap_export_s3.tf bucket, do we need them here? guessing no
+  kms_key_arn                        = aws_kms_key.ml_backup_bucket_key.arn
+  noncurrent_version_expiration_days = 60
 }

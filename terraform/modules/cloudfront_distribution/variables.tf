@@ -21,7 +21,16 @@ variable "cloudfront_key" {
 }
 
 variable "origin_domain" {
-  type = string
+  type    = string
+  default = null
+}
+
+variable "origins" {
+  type = list(object({
+    origin_domain = string
+    path_pattern  = string
+  }))
+  default = []
 }
 
 variable "is_ipv6_enabled" {

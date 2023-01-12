@@ -39,21 +39,56 @@ resource "aws_cloudfront_distribution" "main" {
 
   wait_for_deployment = false
 
-  origin {
-    domain_name = var.origin_domain
-    origin_id   = "primary"
+  dynamic "origin" {
+    for_each = var.origin_domain == null ? [] : [var.origin_domain]
 
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = var.cloudfront_domain == null ? "http-only" : "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
-      origin_read_timeout    = 60
+    content {
+      domain_name = origin.value
+      origin_id   = "primary"
+
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = var.cloudfront_domain == null ? "http-only" : "https-only"
+        origin_ssl_protocols   = ["TLSv1.2"]
+        origin_read_timeout    = 60
+      }
+
+      custom_header {
+        name  = local.cloudfront_key_header
+        value = var.cloudfront_key
+      }
     }
+  }
 
-    custom_header {
-      name  = local.cloudfront_key_header
-      value = var.cloudfront_key
+  dynamic "origin" {
+    for_each = var.origins
+
+    content {
+      domain_name = origin.value["origin_domain"]
+      origin_id   = origin.value["origin_domain"]
+
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = var.cloudfront_domain == null ? "http-only" : "https-only"
+        origin_ssl_protocols   = ["TLSv1.2"]
+        origin_read_timeout    = 60
+      }
+
+      custom_header {
+        name  = local.cloudfront_key_header
+        value = var.cloudfront_key
+      }
+    }
+  }
+
+  dynamic "ordered_cache_behaviour" {
+    for_each = var.origins
+
+    content {
+      target_origin_id = ordered_cache_behaviour.value["origin_domain"]
+      path_pattern     = ordered_cache_behaviour.value["path_pattern"]
     }
   }
 

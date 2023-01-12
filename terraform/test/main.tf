@@ -159,6 +159,7 @@ module "cloudfront_distributions" {
       aliases             = ["api.delta.${var.secondary_domain}", "api.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
     }
+    swagger_bucket = module.swagger_bucket.bucket # TODO DT-131 check
   }
   keycloak = {
     alb = module.public_albs.keycloak
