@@ -223,11 +223,11 @@ module "active_directory_dns_resolver" {
   ad_dns_server_ips = module.active_directory.dns_servers
 }
 
-module "patch_maintenance_window" {
+module "marklogic_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
   environment = "test"
-  prefix      = "instance-patching"
+  prefix      = "ml-instance-patching"
   schedule    = "cron(00 06 ? * MON *)"
 }
 
@@ -240,7 +240,7 @@ module "marklogic" {
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3.large"
   private_dns              = module.networking.private_dns
-  patch_maintenance_window = module.patch_maintenance_window
+  patch_maintenance_window = module.marklogic_patch_maintenance_window
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
 }
@@ -266,6 +266,14 @@ resource "aws_key_pair" "jaspersoft_ssh_key" {
   public_key = tls_private_key.jaspersoft_ssh_key.public_key_openssh
 }
 
+module "jaspersoft_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment = "test"
+  prefix      = "jasper-instance-patching"
+  schedule    = "cron(00 06 ? * MON *)"
+}
+
 module "jaspersoft" {
   source                        = "../modules/jaspersoft"
   private_instance_subnet       = module.networking.jaspersoft_private_subnet
@@ -278,7 +286,7 @@ module "jaspersoft" {
   private_dns                   = module.networking.private_dns
   ad_domain                     = "dluhctest"
   environment                   = "test"
-  patch_maintenance_window      = module.patch_maintenance_window
+  patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
 }
 
 module "iam_roles" {
