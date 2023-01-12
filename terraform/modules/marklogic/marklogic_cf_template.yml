@@ -423,7 +423,7 @@ Resources:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet1
       LaunchConfigurationName: !Ref LaunchConfig1
-      MinSize: '1'
+      MinSize: '0'
       MaxSize: !Ref NodesPerZone
       DesiredCapacity: !Ref NodesPerZone
       Cooldown: '300'

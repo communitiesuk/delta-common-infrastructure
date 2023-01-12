@@ -16,5 +16,6 @@ resource "aws_ebs_volume" "marklogic_data_volumes" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes  = [tags, tags_all] # Updated by MarkLogic managed cluster
   }
 }
