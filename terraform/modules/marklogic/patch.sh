@@ -31,7 +31,7 @@ if [[ "InService" == $LIFECYCLE_STATE ]]; then
   echo "Running yum update"
   yum update --security -y
   echo "Updates complete, requesting reboot from SSM agent at $(date --iso-8601=seconds)"
-  exit 194
+  exit 194 # Reboot and re-run the script https://docs.aws.amazon.com/systems-manager/latest/userguide/send-commands-reboot.html
 fi
 
 if [[ "Standby" == $LIFECYCLE_STATE ]]; then
