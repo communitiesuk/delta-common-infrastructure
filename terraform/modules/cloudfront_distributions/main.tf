@@ -60,6 +60,7 @@ module "api_cloudfront" {
   cloudfront_key                 = var.api.alb.cloudfront_key
   origin_domain                  = var.api.alb.dns_name
   cloudfront_domain              = var.api.domain
+  is_ipv6_enabled                = !var.enable_ip_allowlists
 }
 
 module "keycloak_cloudfront" {
@@ -71,6 +72,7 @@ module "keycloak_cloudfront" {
   cloudfront_key                 = var.keycloak.alb.cloudfront_key
   origin_domain                  = var.keycloak.alb.dns_name
   cloudfront_domain              = var.keycloak.domain
+  is_ipv6_enabled                = !var.enable_ip_allowlists
 }
 
 module "cpm_cloudfront" {
@@ -82,6 +84,7 @@ module "cpm_cloudfront" {
   cloudfront_key                 = var.cpm.alb.cloudfront_key
   origin_domain                  = var.cpm.alb.dns_name
   cloudfront_domain              = var.cpm.domain
+  is_ipv6_enabled                = !var.enable_ip_allowlists
 }
 
 module "jaspersoft_cloudfront" {
