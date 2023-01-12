@@ -5,7 +5,8 @@ Two AWS accounts are used, both under the MHCLG AWS Organisation.
 * Production 468442790030 – Production environment only
 * Development 486283582667 – Test and Staging environments
 
-Access for humans is managed by DLUHC, signing in via the AWS organisation and role switching.
+Access for humans is managed by DLUHC, signing in via an AWS organisation account and role switching.
+Since we have no console users we do not set an IAM password policy in our accounts.
 
 Service users are created directly in the relevant account and are managed by Terraform, with the exception of the Terraform CI/CD user.
 
