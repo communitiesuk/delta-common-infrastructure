@@ -17,6 +17,10 @@ output "log_group_names" {
   value = [for lg in aws_cloudwatch_log_group.logs : lg.name]
 }
 
+output "log_group_arns" {
+  value = [for lg in aws_cloudwatch_log_group.logs : lg.arn]
+}
+
 resource "aws_kms_key" "logs" {
   enable_key_rotation = true
   description         = var.kms_key_alias_name

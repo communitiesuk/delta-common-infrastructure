@@ -92,3 +92,8 @@ resource "aws_iam_role_policy_attachment" "jasper_ssm" {
   role       = aws_iam_role.jasperserver.name
   policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
 }
+
+resource "aws_iam_role_policy_attachment" "extra_attach" {
+  role       = aws_iam_role.jasperserver.name
+  policy_arn = var.extra_instance_policy_arn
+}

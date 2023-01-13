@@ -116,3 +116,7 @@ output "public_albs" {
   # Includes CloudFront keys
   sensitive = true
 }
+
+output "session_manager_policy_arn" {
+  value = module.session_manager_config.policy_arn
+}

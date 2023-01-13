@@ -33,3 +33,7 @@ variable "private_dns" {
     base_domain = string
   })
 }
+
+variable "extra_instance_policy_arn" {
+  type = string
+}

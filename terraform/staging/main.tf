@@ -230,17 +230,19 @@ module "marklogic" {
   patch_maintenance_window = module.marklogic_patch_maintenance_window
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  extra_instance_policy_arn            = module.session_manager_config.policy_arn
 }
 
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id         = module.networking.github_runner_private_subnet.id
-  environment       = "staging"
-  vpc               = module.networking.vpc
-  github_token      = var.github_actions_runner_token
-  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
-  private_dns       = module.networking.private_dns
+  subnet_id                 = module.networking.github_runner_private_subnet.id
+  environment               = "staging"
+  vpc                       = module.networking.vpc
+  github_token              = var.github_actions_runner_token
+  ssh_ingress_sg_id         = module.bastion.bastion_security_group_id
+  private_dns               = module.networking.private_dns
+  extra_instance_policy_arn = module.session_manager_config.policy_arn
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
@@ -272,6 +274,7 @@ module "jaspersoft" {
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   private_dns                   = module.networking.private_dns
   environment                   = "staging"
+  extra_instance_policy_arn     = module.session_manager_config.policy_arn
   patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
 }
 
@@ -306,6 +309,12 @@ module "iam_roles" {
 
   organisation_account_id = "448312965134"
   environment             = "staging"
+  session_manager_key_arn = module.session_manager_config.session_manager_key_arn
+}
+
+module "session_manager_config" {
+  source      = "../modules/session_manager_config"
+  environment = "staging"
 }
 
 resource "aws_accessanalyzer_analyzer" "eu-west-1" {

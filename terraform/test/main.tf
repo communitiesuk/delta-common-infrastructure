@@ -244,17 +244,19 @@ module "marklogic" {
   patch_maintenance_window = module.marklogic_patch_maintenance_window
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
+  extra_instance_policy_arn            = data.aws_iam_policy.enable_session_manager.arn
 }
 
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id         = module.networking.github_runner_private_subnet.id
-  environment       = "test"
-  vpc               = module.networking.vpc
-  github_token      = var.github_actions_runner_token
-  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
-  private_dns       = module.networking.private_dns
+  subnet_id                 = module.networking.github_runner_private_subnet.id
+  environment               = "test"
+  vpc                       = module.networking.vpc
+  github_token              = var.github_actions_runner_token
+  ssh_ingress_sg_id         = module.bastion.bastion_security_group_id
+  private_dns               = module.networking.private_dns
+  extra_instance_policy_arn = data.aws_iam_policy.enable_session_manager.arn
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
@@ -287,6 +289,7 @@ module "jaspersoft" {
   private_dns                   = module.networking.private_dns
   ad_domain                     = "dluhctest"
   environment                   = "test"
+  extra_instance_policy_arn     = data.aws_iam_policy.enable_session_manager.arn
   patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
 }
 
@@ -295,6 +298,17 @@ module "iam_roles" {
 
   organisation_account_id = "448312965134"
   environment             = "test"
+  session_manager_key_arn = data.aws_kms_key.session_manager.arn
+}
+
+data "aws_kms_key" "session_manager" {
+  # Created by the staging environment
+  key_id = "alias/session-manager-key"
+}
+
+data "aws_iam_policy" "enable_session_manager" {
+  # Created by the staging environment
+  name = "session-manager-policy"
 }
 
 module "ses_user" {

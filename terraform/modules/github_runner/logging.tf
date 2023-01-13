@@ -4,8 +4,8 @@ data "aws_region" "current" {}
 locals {
   runner_log_files = [
     {
-      "file_path" : "/var/log/messages",
       "log_group_name" : "messages",
+      "file_path" : "/var/log/messages",
       "log_stream_name" : "{instance_id}"
     },
     {
@@ -22,6 +22,16 @@ locals {
       "log_group_name" : "runner-startup",
       "file_path" : "/var/log/runner-startup.log",
       "log_stream_name" : "{instance_id}"
+    },
+    {
+      "log_group_name" : "ssm",
+      "file_path" : "/var/log/amazon/ssm/errors.log",
+      "log_stream_name" : "errors-{instance_id}"
+    },
+    {
+      "log_group_name" : "ssm",
+      "file_path" : "/var/log/amazon/ssm/amazon-ssm-agent.log",
+      "log_stream_name" : "info-{instance_id}"
     }
   ]
   logfiles = [for l in local.runner_log_files : {
