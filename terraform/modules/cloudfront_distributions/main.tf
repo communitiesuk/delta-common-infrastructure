@@ -65,14 +65,13 @@ module "api_cloudfront" {
   origins = [
     {
       origin_domain = var.api.alb.dns_name
-      path          = "rest-api/*"
+      path_pattern  = "rest-api/*"
     },
     {
       origin_domain = module.swagger_bucket.bucket_domain_name
-      path          = "" # TODO DT-131 what paths did we want here
+      path_pattern  = "/" # TODO DT-131 what paths did we want here
     }
   ]
-  cloudfront_domain = var.api.domain
 }
 
 module "keycloak_cloudfront" {
@@ -121,6 +120,6 @@ module "swagger_bucket" {
   force_destroy                      = true # TODO DT-131 what do we think of this, it's from backup_buckets.tf
 
   # TODO DT-131 these two are not found in the dap_export_s3.tf bucket, do we need them here? guessing no
-  kms_key_arn                        = aws_kms_key.ml_backup_bucket_key.arn
-  noncurrent_version_expiration_days = 60
+  # kms_key_arn                        = aws_kms_key.ml_backup_bucket_key.arn
+  # noncurrent_version_expiration_days = 60
 }

@@ -83,12 +83,15 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
-  dynamic "ordered_cache_behaviour" {
+  dynamic "ordered_cache_behavior" {
     for_each = var.origins
 
     content {
-      target_origin_id = ordered_cache_behaviour.value["origin_domain"]
-      path_pattern     = ordered_cache_behaviour.value["path_pattern"]
+      allowed_methods  = ["GET"] # TODO DT-131 is this correct?
+      cached_methods   = ["GET"] # TODO DT-131 is this correct?
+      target_origin_id = ordered_cache_behavior.value["origin_domain"]
+      path_pattern     = ordered_cache_behavior.value["path_pattern"]
+      viewer_protocol_policy = "https-only" # TODO DT-131 is this correct?
     }
   }
 
