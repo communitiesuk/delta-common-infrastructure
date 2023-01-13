@@ -29,3 +29,8 @@ resource "aws_iam_role_policy_attachment" "managed_policies" {
   role       = aws_iam_role.runner.name
   policy_arn = element(local.runner_iam_role_managed_policy_arns, count.index)
 }
+
+resource "aws_iam_role_policy_attachment" "extra_attach" {
+  role       = aws_iam_role.runner.name
+  policy_arn = var.extra_instance_policy_arn
+}

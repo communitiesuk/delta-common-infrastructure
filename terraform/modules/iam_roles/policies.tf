@@ -89,6 +89,16 @@ data "aws_iam_policy_document" "ssm_session_manager_basic" {
       "arn:aws:ssm:${data.aws_region.current.name}::document/AWS-StartPortForwardingSession",
     ]
   }
+
+  statement {
+    sid = "UseSessionManagerKey"
+    actions = [
+      "kms:GenerateDataKey"
+    ]
+    resources = [
+      var.session_manager_key_arn
+    ]
+  }
 }
 
 resource "aws_iam_policy" "ssm_session_manager_basic" {

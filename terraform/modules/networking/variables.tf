@@ -41,3 +41,8 @@ variable "number_of_vpc_endpoint_subnets" {
   default = 3
   type    = number
 }
+
+variable "mailhog_subnet" {
+  type    = bool
+  default = false
+}

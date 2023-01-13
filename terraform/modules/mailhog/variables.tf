@@ -1,18 +1,12 @@
-variable "instance_type" {
-  default = "t3.micro"
-}
-
 variable "environment" {
-  description = "test, staging or prod"
-}
-
-variable "subnet_id" {
   type = string
 }
 
-variable "github_token" {
-  description = "short-lived token to register the runner with the repo"
-  type        = string
+variable "private_subnet" {
+  type = object({
+    id         = string
+    cidr_block = string
+  })
 }
 
 variable "vpc" {
@@ -34,6 +28,20 @@ variable "private_dns" {
   })
 }
 
-variable "extra_instance_policy_arn" {
-  type = string
+variable "public_dns" {
+  type = object({
+    zone_id     = string
+    base_domain = string
+  })
+}
+
+variable "public_subnet_ids" {
+  type = list(string)
+}
+
+variable "ses_user" {
+  type = object({
+    smtp_username = string
+    smtp_password = string
+  })
 }

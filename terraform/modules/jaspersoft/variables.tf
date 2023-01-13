@@ -70,3 +70,9 @@ variable "patch_maintenance_window" {
     errors_sns_topic_arn = string
   })
 }
+
+variable "extra_instance_policy_arn" {
+  type        = string
+  description = "ARN of IAM policy to give instance necessary permissions for access via Session Manager"
+}
+

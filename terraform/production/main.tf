@@ -104,7 +104,7 @@ module "bastion" {
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1
   log_group_name          = module.bastion_log_group.log_group_names[0]
-  extra_userdata          = "yum install openldap-clients -y"
+  extra_userdata          = "yum install openldap-clients -y; sed -i 's/SELINUX=disabled/SELINUX=enforcing/g' /etc/selinux/config ; chmod 754 /usr/bin/as"
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
 
@@ -134,14 +134,6 @@ resource "aws_accessanalyzer_analyzer" "us-east-1" {
   provider      = aws.us-east-1
 }
 
-module "patch_maintenance_window" {
-  source = "../modules/maintenance_window"
-
-  environment = "production"
-  prefix      = "instance-patching"
-  schedule    = "cron(00 06 ? * WED *)"
-}
-
 module "active_directory" {
   source  = "../modules/active_directory"
   edition = "Standard"
@@ -164,6 +156,14 @@ module "active_directory_dns_resolver" {
   ad_dns_server_ips = module.active_directory.dns_servers
 }
 
+module "marklogic_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment = local.environment
+  prefix      = "ml-instance-patching"
+  schedule    = "cron(00 06 ? * WED *)"
+}
+
 module "marklogic" {
   source = "../modules/marklogic"
 
@@ -174,20 +174,22 @@ module "marklogic" {
   instance_type            = "r5a.4xlarge"
   private_dns              = module.networking.private_dns
   data_volume_size_gb      = 1500
-  patch_maintenance_window = module.patch_maintenance_window
+  patch_maintenance_window = module.marklogic_patch_maintenance_window
 
   ebs_backup_error_notification_emails = [local.notification_email_address]
+  extra_instance_policy_arn            = module.session_manager_config.policy_arn
 }
 
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id         = module.networking.github_runner_private_subnet.id
-  environment       = local.environment
-  vpc               = module.networking.vpc
-  github_token      = var.github_actions_runner_token
-  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
-  private_dns       = module.networking.private_dns
+  subnet_id                 = module.networking.github_runner_private_subnet.id
+  environment               = local.environment
+  vpc                       = module.networking.vpc
+  github_token              = var.github_actions_runner_token
+  ssh_ingress_sg_id         = module.bastion.bastion_security_group_id
+  private_dns               = module.networking.private_dns
+  extra_instance_policy_arn = module.session_manager_config.policy_arn
 }
 
 module "public_albs" {
@@ -265,6 +267,14 @@ resource "aws_key_pair" "jaspersoft_ssh_key" {
   public_key = tls_private_key.jaspersoft_ssh_key.public_key_openssh
 }
 
+module "jaspersoft_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment = local.environment
+  prefix      = "jasper-instance-patching"
+  schedule    = "cron(00 06 ? * WED *)"
+}
+
 module "jaspersoft" {
   source                        = "../modules/jaspersoft"
   private_instance_subnet       = module.networking.jaspersoft_private_subnet
@@ -276,8 +286,9 @@ module "jaspersoft" {
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   private_dns                   = module.networking.private_dns
   environment                   = local.environment
-  patch_maintenance_window      = module.patch_maintenance_window
+  patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
   instance_type                 = "m6a.xlarge"
+  extra_instance_policy_arn     = module.session_manager_config.policy_arn
 }
 
 module "guardduty" {
@@ -290,11 +301,17 @@ module "iam_roles" {
   source = "../modules/iam_roles"
 
   organisation_account_id = "448312965134"
-  environment             = "production"
+  environment             = local.environment
+  session_manager_key_arn = module.session_manager_config.session_manager_key_arn
 }
 
-# tfsec:ignore:aws-ec2-no-default-vpc
-# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
+module "session_manager_config" {
+  source      = "../modules/session_manager_config"
+  environment = local.environment
+}
+
+# Only used to alter default security group and ACL to block all traffic
+# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs tfsec:ignore:aws-ec2-no-default-vpc tfsec:ignore:aws-vpc-no-default-vpc
 resource "aws_default_vpc" "default" {
   tags = {
     Name = "default-vpc"
@@ -314,4 +331,9 @@ resource "aws_default_network_acl" "default" {
     Name = "vpc-default-acl"
   }
   # no rules defined, deny all traffic in this ACL
+}
+
+resource "aws_ebs_encryption_by_default" "default" {
+  # enables EBS volume encryption by default
+  enabled = true
 }

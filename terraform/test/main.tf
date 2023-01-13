@@ -78,6 +78,7 @@ module "networking" {
   ssh_cidr_allowlist             = var.allowed_ssh_cidrs
   ecr_repo_account_id            = var.ecr_repo_account_id
   number_of_vpc_endpoint_subnets = 1
+  mailhog_subnet                 = true
 }
 
 resource "tls_private_key" "bastion_ssh_key" {
@@ -109,7 +110,7 @@ module "bastion" {
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1
   log_group_name          = module.bastion_log_group.log_group_names[0]
-  extra_userdata          = "yum install openldap-clients -y"
+  extra_userdata          = "yum install openldap-clients -y; sed -i 's/SELINUX=disabled/SELINUX=enforcing/g' /etc/selinux/config ; chmod 754 /usr/bin/as"
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
   dns_config = {
@@ -224,11 +225,11 @@ module "active_directory_dns_resolver" {
   ad_dns_server_ips = module.active_directory.dns_servers
 }
 
-module "patch_maintenance_window" {
+module "marklogic_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
   environment = "test"
-  prefix      = "instance-patching"
+  prefix      = "ml-instance-patching"
   schedule    = "cron(00 06 ? * MON *)"
 }
 
@@ -241,20 +242,22 @@ module "marklogic" {
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3.large"
   private_dns              = module.networking.private_dns
-  patch_maintenance_window = module.patch_maintenance_window
+  patch_maintenance_window = module.marklogic_patch_maintenance_window
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
+  extra_instance_policy_arn            = data.aws_iam_policy.enable_session_manager.arn
 }
 
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id         = module.networking.github_runner_private_subnet.id
-  environment       = "test"
-  vpc               = module.networking.vpc
-  github_token      = var.github_actions_runner_token
-  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
-  private_dns       = module.networking.private_dns
+  subnet_id                 = module.networking.github_runner_private_subnet.id
+  environment               = "test"
+  vpc                       = module.networking.vpc
+  github_token              = var.github_actions_runner_token
+  ssh_ingress_sg_id         = module.bastion.bastion_security_group_id
+  private_dns               = module.networking.private_dns
+  extra_instance_policy_arn = data.aws_iam_policy.enable_session_manager.arn
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
@@ -265,6 +268,14 @@ resource "tls_private_key" "jaspersoft_ssh_key" {
 resource "aws_key_pair" "jaspersoft_ssh_key" {
   key_name   = "tst-jaspersoft-ssh-key"
   public_key = tls_private_key.jaspersoft_ssh_key.public_key_openssh
+}
+
+module "jaspersoft_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment = "test"
+  prefix      = "jasper-instance-patching"
+  schedule    = "cron(00 06 ? * MON *)"
 }
 
 module "jaspersoft" {
@@ -279,7 +290,8 @@ module "jaspersoft" {
   private_dns                   = module.networking.private_dns
   ad_domain                     = "dluhctest"
   environment                   = "test"
-  patch_maintenance_window      = module.patch_maintenance_window
+  extra_instance_policy_arn     = data.aws_iam_policy.enable_session_manager.arn
+  patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
 }
 
 module "iam_roles" {
@@ -287,4 +299,41 @@ module "iam_roles" {
 
   organisation_account_id = "448312965134"
   environment             = "test"
+  session_manager_key_arn = data.aws_kms_key.session_manager.arn
+}
+
+data "aws_kms_key" "session_manager" {
+  # Created by the staging environment
+  key_id = "alias/session-manager-key"
+}
+
+data "aws_iam_policy" "enable_session_manager" {
+  # Created by the staging environment
+  name = "session-manager-policy"
+}
+
+module "ses_user" {
+  source               = "../modules/ses_user"
+  username             = "ses-user-test"
+  ses_identity_arn     = module.ses_identity.arn
+  from_address_pattern = "*@datacollection.dluhc-dev.uk"
+  environment          = "test"
+  kms_key_arn          = null
+  vpc_id               = module.networking.vpc.id
+}
+
+module "mailhog" {
+  source = "../modules/mailhog"
+
+  environment       = "test"
+  vpc               = module.networking.vpc
+  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
+  private_dns       = module.networking.private_dns
+  private_subnet    = module.networking.mailhog_private_subnet
+  public_subnet_ids = [for subnet in module.networking.public_subnets : subnet.id]
+  public_dns = {
+    zone_id     = var.secondary_domain_zone_id
+    base_domain = var.secondary_domain
+  }
+  ses_user = module.ses_user
 }
