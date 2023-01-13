@@ -291,17 +291,20 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
 
 locals {
   subnet_firewall_rules = [
-    for name, config in local.firewall_config : join("\n", ["# ${name}", join("\n", concat(
-      [
-        for idx, http_domain in config.http_allowed_domains : startswith(http_domain, ".")
-        ? "pass http ${config.cidr} [1024:] -> any 80 (http.host; content:\"${http_domain}\"; endswith; msg:\"Allow HTTP traffic from ${name} to *${http_domain}\"; flow:to_server; sid:${config.sid_offset + idx};)"
-        : "pass http ${config.cidr} [1024:] -> any 80 (http.host; content:\"${http_domain}\"; startswith; endswith; msg:\"Allow HTTP traffic from ${name} to ${http_domain}\"; flow:to_server; sid:${config.sid_offset + idx};)"
-      ],
-      [
-        for idx, tls_domain in config.tls_allowed_domains : startswith(tls_domain, ".")
-        ? "pass tls ${config.cidr} [1024:] -> any 443 (tls.sni; content:\"${tls_domain}\"; nocase; endswith; msg:\"Allow TLS (HTTPS) traffic from ${name} to *${tls_domain}\"; flow:to_server; sid:${config.sid_offset + length(config.http_allowed_domains) + idx};)"
-        : "pass tls ${config.cidr} [1024:] -> any 443 (tls.sni; content:\"${tls_domain}\"; startswith; nocase; endswith; msg:\"Allow TLS (HTTPS) traffic from ${name} to ${tls_domain}\"; flow:to_server; sid:${config.sid_offset + length(config.http_allowed_domains) + idx};)"
-      ]
+    for name, config in local.firewall_config : join("\n", ["# ${name}",
+      config.http_allowed_domains == [] && config.tls_allowed_domains == [] ?
+      "drop ip ${config.cidr} any <> any any (msg:\"Drop all traffic from ${name}\" ;sid:${config.sid_offset}; rev:1;)"
+      : join("\n", concat(
+        [
+          for idx, http_domain in config.http_allowed_domains : startswith(http_domain, ".")
+          ? "pass http ${config.cidr} [1024:] -> any 80 (http.host; content:\"${http_domain}\"; endswith; msg:\"Allow HTTP traffic from ${name} to *${http_domain}\"; flow:to_server; sid:${config.sid_offset + idx};)"
+          : "pass http ${config.cidr} [1024:] -> any 80 (http.host; content:\"${http_domain}\"; startswith; endswith; msg:\"Allow HTTP traffic from ${name} to ${http_domain}\"; flow:to_server; sid:${config.sid_offset + idx};)"
+        ],
+        [
+          for idx, tls_domain in config.tls_allowed_domains : startswith(tls_domain, ".")
+          ? "pass tls ${config.cidr} [1024:] -> any 443 (tls.sni; content:\"${tls_domain}\"; nocase; endswith; msg:\"Allow TLS (HTTPS) traffic from ${name} to *${tls_domain}\"; flow:to_server; sid:${config.sid_offset + length(config.http_allowed_domains) + idx};)"
+          : "pass tls ${config.cidr} [1024:] -> any 443 (tls.sni; content:\"${tls_domain}\"; startswith; nocase; endswith; msg:\"Allow TLS (HTTPS) traffic from ${name} to ${tls_domain}\"; flow:to_server; sid:${config.sid_offset + length(config.http_allowed_domains) + idx};)"
+        ]
     ))]) if config != null
   ]
 
