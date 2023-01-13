@@ -5,8 +5,8 @@ locals {
   firewall_config = {
     bastion = {
       cidr                 = local.bastion_subnet_cidr_10
-      http_allowed_domains = ["example.com"]
-      tls_allowed_domains  = ["http.cat"]
+      http_allowed_domains = []
+      tls_allowed_domains  = []
       sid_offset           = 100
     }
     jaspersoft = {
