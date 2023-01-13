@@ -8,6 +8,7 @@ Requires S3 bucket (var.jaspersoft_binaries_s3_bucket) in the current AWS accoun
 bucket_name=dluhc-jaspersoft-bin-prod
 aws s3api create-bucket --bucket $bucket_name --acl private --region eu-west-1 --create-bucket-configuration LocationConstraint=eu-west-1
 aws s3api put-bucket-versioning --bucket $bucket_name --versioning-configuration Status=Enabled
+aws s3api put-bucket-encryption --bucket $bucket_name --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
 ```
 
 ## Creating the WAR file
