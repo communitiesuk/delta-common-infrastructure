@@ -134,14 +134,6 @@ resource "aws_accessanalyzer_analyzer" "us-east-1" {
   provider      = aws.us-east-1
 }
 
-module "patch_maintenance_window" {
-  source = "../modules/maintenance_window"
-
-  environment = "production"
-  prefix      = "instance-patching"
-  schedule    = "cron(00 06 ? * WED *)"
-}
-
 module "active_directory" {
   source  = "../modules/active_directory"
   edition = "Standard"
@@ -164,6 +156,14 @@ module "active_directory_dns_resolver" {
   ad_dns_server_ips = module.active_directory.dns_servers
 }
 
+module "marklogic_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment = local.environment
+  prefix      = "ml-instance-patching"
+  schedule    = "cron(00 06 ? * WED *)"
+}
+
 module "marklogic" {
   source = "../modules/marklogic"
 
@@ -174,7 +174,7 @@ module "marklogic" {
   instance_type            = "r5a.4xlarge"
   private_dns              = module.networking.private_dns
   data_volume_size_gb      = 1500
-  patch_maintenance_window = module.patch_maintenance_window
+  patch_maintenance_window = module.marklogic_patch_maintenance_window
 
   ebs_backup_error_notification_emails = [local.notification_email_address]
   extra_instance_policy_arn            = module.session_manager_config.policy_arn
@@ -267,6 +267,14 @@ resource "aws_key_pair" "jaspersoft_ssh_key" {
   public_key = tls_private_key.jaspersoft_ssh_key.public_key_openssh
 }
 
+module "jaspersoft_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment = local.environment
+  prefix      = "jasper-instance-patching"
+  schedule    = "cron(00 06 ? * WED *)"
+}
+
 module "jaspersoft" {
   source                        = "../modules/jaspersoft"
   private_instance_subnet       = module.networking.jaspersoft_private_subnet
@@ -278,7 +286,7 @@ module "jaspersoft" {
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   private_dns                   = module.networking.private_dns
   environment                   = local.environment
-  patch_maintenance_window      = module.patch_maintenance_window
+  patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
   instance_type                 = "m6a.xlarge"
   extra_instance_policy_arn     = module.session_manager_config.policy_arn
 }
