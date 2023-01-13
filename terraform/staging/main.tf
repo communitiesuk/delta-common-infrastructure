@@ -322,8 +322,8 @@ resource "aws_accessanalyzer_analyzer" "us-east-1" {
   provider      = aws.us-east-1
 }
 
-# tfsec:ignore:aws-ec2-no-default-vpc
-# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
+# Only used to alter default security group and ACL to block all traffic
+# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs tfsec:ignore:aws-ec2-no-default-vpc tfsec:ignore:aws-vpc-no-default-vpc
 resource "aws_default_vpc" "default" {
   tags = {
     Name = "default-vpc"
