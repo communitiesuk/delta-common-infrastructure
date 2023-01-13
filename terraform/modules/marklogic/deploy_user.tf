@@ -8,6 +8,10 @@ resource "aws_iam_user" "marklogic_deploy_secret_reader" {
 resource "aws_kms_key" "ml_deploy_secrets" {
   description         = "delta-marklogic-deploy-secrets-${var.environment}"
   enable_key_rotation = true
+
+  tags = {
+    "terraform-plan-read" = true
+  }
 }
 
 resource "aws_kms_alias" "ml_deploy_secrets" {

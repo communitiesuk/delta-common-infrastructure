@@ -78,6 +78,7 @@ module "networking" {
   ssh_cidr_allowlist             = var.allowed_ssh_cidrs
   ecr_repo_account_id            = var.ecr_repo_account_id
   number_of_vpc_endpoint_subnets = 1
+  mailhog_subnet                 = true
 }
 
 resource "tls_private_key" "bastion_ssh_key" {
@@ -294,4 +295,30 @@ module "iam_roles" {
 
   organisation_account_id = "448312965134"
   environment             = "test"
+}
+
+module "ses_user" {
+  source               = "../modules/ses_user"
+  username             = "ses-user-test"
+  ses_identity_arn     = module.ses_identity.arn
+  from_address_pattern = "*@datacollection.dluhc-dev.uk"
+  environment          = "test"
+  kms_key_arn          = null
+  vpc_id               = module.networking.vpc.id
+}
+
+module "mailhog" {
+  source = "../modules/mailhog"
+
+  environment       = "test"
+  vpc               = module.networking.vpc
+  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
+  private_dns       = module.networking.private_dns
+  private_subnet    = module.networking.mailhog_private_subnet
+  public_subnet_ids = [for subnet in module.networking.public_subnets : subnet.id]
+  public_dns = {
+    zone_id     = var.secondary_domain_zone_id
+    base_domain = var.secondary_domain
+  }
+  ses_user = module.ses_user
 }

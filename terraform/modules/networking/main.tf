@@ -88,6 +88,13 @@ locals {
       tls_allowed_domains  = []
       sid_offset           = 1000
     }
+    mailhog = {
+      subnets              = aws_subnet.mailhog
+      cidr                 = local.mailhog_cidr_10
+      http_allowed_domains = []
+      tls_allowed_domains  = [".github.com", "github.com", "golang.org", "go.googlesource.com", "gopkg.in"]
+      sid_offset           = 1100
+    }
     marklogic = {
       cidr                 = local.ml_subnet_cidr_10
       http_allowed_domains = concat(["repo.ius.io", "mirrors.fedoraproject.org"])
@@ -109,6 +116,7 @@ locals {
     aws_subnet.cpm_private,
     aws_subnet.ml_private_subnets,
     aws_subnet.keycloak_private,
+    aws_subnet.mailhog,
     [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server, aws_subnet.jaspersoft, aws_subnet.github_runner]
   )
 
