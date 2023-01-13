@@ -302,7 +302,7 @@ locals {
         ? "pass tls ${config.cidr} [1024:] -> any 443 (tls.sni; content:\"${tls_domain}\"; nocase; endswith; msg:\"Allow TLS (HTTPS) traffic from ${name} to *${tls_domain}\"; flow:to_server; sid:${config.sid_offset + length(config.http_allowed_domains) + idx};)"
         : "pass tls ${config.cidr} [1024:] -> any 443 (tls.sni; content:\"${tls_domain}\"; startswith; nocase; endswith; msg:\"Allow TLS (HTTPS) traffic from ${name} to ${tls_domain}\"; flow:to_server; sid:${config.sid_offset + length(config.http_allowed_domains) + idx};)"
       ]
-    ))])
+    ))]) if config != null
   ]
 
   base_firewall_rules = <<EOT
