@@ -13,9 +13,9 @@ module "cpm_backup_bucket" {
 
   bucket_name                        = "dluhc-cpm-ml-backup-${var.environment}"
   access_log_bucket_name             = "dluhc-cpm-ml-backup-access-logs-${var.environment}"
-  force_destroy                      = true # TODO DT-129 change
   kms_key_arn                        = aws_kms_key.ml_backup_bucket_key.arn
   noncurrent_version_expiration_days = 60
+  access_log_expiration_days         = 365
 }
 
 module "delta_backup_bucket" {
@@ -23,9 +23,9 @@ module "delta_backup_bucket" {
 
   bucket_name                        = "dluhc-delta-ml-backup-${var.environment}"
   access_log_bucket_name             = "dluhc-delta-ml-backup-access-logs-${var.environment}"
-  force_destroy                      = true # TODO DT-129 change
   kms_key_arn                        = aws_kms_key.ml_backup_bucket_key.arn
   noncurrent_version_expiration_days = 60
+  access_log_expiration_days         = 365
 }
 
 # MarkLogic seems to need the "folders" to exist in S3
