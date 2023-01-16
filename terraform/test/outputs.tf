@@ -126,3 +126,7 @@ output "public_albs" {
 output "marklogic_deploy_user" {
   value = module.marklogic.deploy_user
 }
+
+output "session_manager_policy_arn" {
+  value = data.aws_iam_policy.enable_session_manager.arn
+}
