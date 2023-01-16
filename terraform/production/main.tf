@@ -87,8 +87,8 @@ module "networking" {
 module "bastion_log_group" {
   source = "../modules/encrypted_log_groups"
 
-  kms_key_alias_name = "production-bastion-ssh-logs"
-  log_group_names    = ["production/ssh-bastion"]
+  kms_key_alias_name = "${local.environment}-bastion-ssh-logs"
+  log_group_names    = ["${local.environment}/ssh-bastion"]
   retention_days     = 180
 }
 
