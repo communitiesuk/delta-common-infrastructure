@@ -34,6 +34,13 @@ resource "aws_default_network_acl" "default" {
     Name = "vpc-default-acl"
   }
   # no rules defined, deny all traffic in this ACL
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to subnet_ids, because they are managed by AWS
+      subnet_ids,
+    ]
+  }
 }
 
 resource "aws_ebs_encryption_by_default" "default" {
