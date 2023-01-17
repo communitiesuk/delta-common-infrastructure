@@ -24,6 +24,7 @@ resource "aws_default_network_acl" "main" {
     to_port    = 0
   }
 
+  # Open ingress for trusted peered VPCs
   dynamic "ingress" {
     for_each = var.open_ingress_cidrs
     content {
@@ -59,7 +60,7 @@ resource "aws_default_network_acl" "main" {
     }
   }
 
-  # Allow Ephemeral ports
+  # Allow Ephemeral ports (TCP)
   ingress {
     protocol   = "tcp"
     rule_no    = 1000
@@ -69,6 +70,7 @@ resource "aws_default_network_acl" "main" {
     to_port    = 65535
   }
 
+  # Allow Ephemeral ports (UDP)
   ingress {
     protocol   = "udp"
     rule_no    = 1001
@@ -78,6 +80,8 @@ resource "aws_default_network_acl" "main" {
     to_port    = 65535
   }
 
+  # Allow ICMP ingress
+  # Not required by applications, but useful for debugging
   ingress {
     protocol   = "icmp"
     rule_no    = 1002
@@ -89,6 +93,7 @@ resource "aws_default_network_acl" "main" {
     icmp_type  = -1
   }
 
+  # Allow all egress, outbound connections are instead filtered and logged at the Network Firewall
   egress {
     protocol   = -1
     rule_no    = 100
