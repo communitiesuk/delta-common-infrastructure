@@ -33,17 +33,40 @@ resource "aws_cloudfront_response_headers_policy" "main" {
   }
 }
 
+resource "cloudfront_origin_access_identity" "s3" {
+  count   = var.s3_origin == null ? 0 : 1
+  comment = "Access identity for the s3 bucket"
+}
+
 resource "aws_cloudfront_distribution" "main" {
 
   aliases = var.cloudfront_domain == null ? [] : var.cloudfront_domain.aliases
 
   wait_for_deployment = false
 
+  origin {
+    domain_name = var.origin_domain
+    origin_id   = var.s3_origin == null ? "primary" : "secondary"
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = var.cloudfront_domain == null ? "http-only" : "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+      origin_read_timeout    = 60
+    }
+
+    custom_header {
+      name  = local.cloudfront_key_header
+      value = var.cloudfront_key
+    }
+  }
+
   dynamic "origin" {
-    for_each = var.origin_domain == null ? [] : [var.origin_domain]
+    for_each = var.s3_origin == null ? [] : [var.s3_origin]
 
     content {
-      domain_name = origin.value
+      domain_name = origin.value["origin_domain"]
       origin_id   = "primary"
 
       custom_origin_config {
@@ -54,44 +77,30 @@ resource "aws_cloudfront_distribution" "main" {
         origin_read_timeout    = 60
       }
 
-      custom_header {
-        name  = local.cloudfront_key_header
-        value = var.cloudfront_key
-      }
-    }
-  }
-
-  dynamic "origin" {
-    for_each = var.origins
-
-    content {
-      domain_name = origin.value["origin_domain"]
-      origin_id   = origin.value["origin_domain"]
-
-      custom_origin_config {
-        http_port              = 80
-        https_port             = 443
-        origin_protocol_policy = var.cloudfront_domain == null ? "http-only" : "https-only"
-        origin_ssl_protocols   = ["TLSv1.2"]
-        origin_read_timeout    = 60
-      }
-
-      custom_header {
-        name  = local.cloudfront_key_header
-        value = var.cloudfront_key
+      s3_origin_config {
+        origin_access_identity = cloudfront_origin_access_identity.s3
       }
     }
   }
 
   dynamic "ordered_cache_behavior" {
-    for_each = var.origins
+    for_each = var.s3_origin == null ? [] : [var.s3_origin]
+    iterator = origin
 
     content {
-      allowed_methods  = ["GET"] # TODO DT-131 is this correct?
-      cached_methods   = ["GET"] # TODO DT-131 is this correct?
-      target_origin_id = ordered_cache_behavior.value["origin_domain"]
-      path_pattern     = ordered_cache_behavior.value["path_pattern"]
-      viewer_protocol_policy = "https-only" # TODO DT-131 is this correct?
+      allowed_methods  = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cached_methods   = ["GET", "HEAD", "OPTIONS"]
+      target_origin_id = "secondary"
+      path_pattern     = origin.value["path_pattern"]
+      viewer_protocol_policy = "redirect-to-https"
+
+      forwarded_values {
+        query_string = false
+
+        cookies {
+          forward = "none"
+        }
+      }
     }
   }
 

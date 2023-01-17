@@ -22,15 +22,14 @@ variable "cloudfront_key" {
 
 variable "origin_domain" {
   type    = string
-  default = null
 }
 
-variable "origins" {
-  type = list(object({
+variable "s3_origin" {
+  type = object({
     origin_domain = string
     path_pattern  = string
-  }))
-  default = []
+  })
+  default = null
 }
 
 variable "is_ipv6_enabled" {
