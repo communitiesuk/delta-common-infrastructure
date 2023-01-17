@@ -50,9 +50,13 @@ module "dluhc_preprod_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain = "datacollection.levellingup.gov.uk"
+  domain                              = "datacollection.levellingup.gov.uk"
+  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications@softwire.com"
 }
 
+module "ses_monitoring" {
+  source = "../modules/ses_monitoring"
+}
 
 locals {
   environment                = "production"
