@@ -33,14 +33,7 @@ resource "aws_cloudfront_response_headers_policy" "main" {
   }
 }
 
-# resource "aws_cloudfront_origin_access_identity" "s3" {
-  # count   = var.s3_origin == null ? 0 : 1
-#   comment = "Access identity for the s3 bucket"
-# }
-
 resource "aws_cloudfront_origin_access_control" "s3" {
-  count   = var.s3_origin == null ? 0 : 1
-
   name                              = "s3"
   description                       = "Access control for the s3 bucket"
   origin_access_control_origin_type = "s3"
@@ -55,7 +48,7 @@ resource "aws_cloudfront_distribution" "main" {
 
   origin {
     domain_name = var.origin_domain
-    origin_id   = "primary"
+    origin_id   = "api_lb_origin"
 
     custom_origin_config {
       http_port              = 80
@@ -71,49 +64,19 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
-  dynamic "origin" {
-    for_each = var.s3_origin == null ? [] : [var.s3_origin]
+  origin {
+    domain_name = module.swagger_bucket.bucket_regional_domain_name
+    origin_id   = "s3_origin"
 
-    content {
-      domain_name = origin.value["origin_domain"]
-      origin_id   = "s3_origin"
-
-      origin_access_control_id = aws_cloudfront_origin_access_control.s3[0].id
-
-      # s3_origin_config {
-      #   origin_access_identity = aws_cloudfront_origin_access_identity.s3[0].id
-      # }
-    }
+    origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
   }
 
-  dynamic "ordered_cache_behavior" {
-    for_each = var.s3_origin == null ? [] : [var.s3_origin]
-    iterator = origin
-
-    content {
-      allowed_methods  = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cached_methods   = ["GET", "HEAD", "OPTIONS"]
-      target_origin_id = "primary"
-      path_pattern     = origin.value["path_pattern"]
-      viewer_protocol_policy = "redirect-to-https"
-
-      forwarded_values {
-        query_string = false
-
-        cookies {
-          forward = "none"
-        }
-      }
-    }
-  }
-
-  enabled         = true
-  is_ipv6_enabled = var.is_ipv6_enabled
-
-  default_cache_behavior {
+  ordered_cache_behavior {
     allowed_methods  = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "primary"
+    target_origin_id = "api_lb_origin"
+    path_pattern     = "/rest-api/*"
+    viewer_protocol_policy = "redirect-to-https"
 
     forwarded_values {
       query_string = true
@@ -123,6 +86,25 @@ resource "aws_cloudfront_distribution" "main" {
       }
 
       headers = ["*"]
+    }
+  }
+
+  enabled         = true
+  is_ipv6_enabled = var.is_ipv6_enabled
+
+  default_cache_behavior {
+    allowed_methods  = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "s3_origin"
+
+    forwarded_values {
+      query_string = false
+
+      cookies {
+        forward = "none"
+      }
+
+      headers = []
     }
 
     viewer_protocol_policy     = "redirect-to-https"
@@ -164,4 +146,30 @@ resource "aws_cloudfront_distribution" "main" {
   lifecycle {
     prevent_destroy = true
   }
+}
+
+data "aws_iam_policy_document" "default" {
+	statement {
+		actions = ["s3:GetObject"]
+
+		resources = ["${module.swagger_bucket.bucket_arn}/*"]
+
+		principals {
+			type        = "Service"
+			identifiers = ["cloudfront.amazonaws.com"]
+		}
+		condition {
+			test     = "StringEquals"
+			variable = "AWS:SourceArn"
+			values   = [aws_cloudfront_distribution.main.arn]
+		}
+	}
+}
+
+module "swagger_bucket" {
+  source = "../s3_bucket"
+
+  bucket_name                        = "dluhc-delta-api-swagger-${var.environment}"
+  access_log_bucket_name             = "dluhc-delta-api-swagger-access-logs-${var.environment}"
+  force_destroy                      = true
 }

@@ -53,20 +53,17 @@ module "delta_cloudfront" {
 }
 
 module "api_cloudfront" {
-  source                         = "../cloudfront_distribution"
-  prefix                         = "delta-api-${var.environment}-"
+  source                         = "../api_cloudfront"
+  prefix                         = "delta-api-${var.environment}-" # TODO DT-131 this is maybe redundant if we're passing environment in
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta-api"
   waf_acl_arn                    = module.api_auth_waf.acl_arn
   cloudfront_key                 = var.api.alb.cloudfront_key
   origin_domain                  = var.api.alb.dns_name
-  s3_origin                      = {
-      origin_domain = module.swagger_bucket.bucket_domain_name
-      path_pattern  = "rest-api/*"
-    }
   cloudfront_domain              = var.api.domain
   is_ipv6_enabled                = !var.enable_ip_allowlists
   geo_restriction_enabled        = var.api.disable_geo_restriction != true
+  environment                    = var.environment
 }
 
 module "keycloak_cloudfront" {
@@ -105,12 +102,4 @@ module "jaspersoft_cloudfront" {
   origin_domain                  = var.jaspersoft.alb.dns_name
   cloudfront_domain              = var.jaspersoft.domain
   geo_restriction_enabled        = var.jaspersoft.disable_geo_restriction != true
-}
-
-module "swagger_bucket" {
-  source = "../s3_bucket"
-
-  bucket_name                        = "dluhc-delta-api-swagger-${var.environment}"
-  access_log_bucket_name             = "dluhc-delta-api-swagger-access-logs-${var.environment}"
-  force_destroy                      = true # TODO DT-131 what do we think of this, it's from backup_buckets.tf
 }
