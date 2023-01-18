@@ -105,10 +105,13 @@ resource "aws_wafv2_web_acl" "waf_acl" {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
 
-        dynamic "excluded_rule" {
+        dynamic "rule_action_override" {
           for_each = local.excluded_rules
           content {
-            name = excluded_rule.value
+            action_to_use {
+              count {}
+            }
+            name = rule_action_override.value
           }
         }
       }

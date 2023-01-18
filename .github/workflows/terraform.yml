@@ -26,12 +26,12 @@ on:
       workdir:
         required: true
         type: string
-        description: Directory to run Terraform commands from - can be blank for test/staging
+        description: Directory to run Terraform commands from
       plan_environment:
         required: false
         default: ''
         type: string
-        description: Environment to run the plan in
+        description: Environment to run the plan in  - can be blank for test/staging
       apply_environment:
         required: true
         type: string

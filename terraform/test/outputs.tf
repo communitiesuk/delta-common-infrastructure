@@ -134,3 +134,7 @@ output "patch_maintenance_window" {
 output "ml_8050_target_group" {
   value = module.marklogic.ml_8050_target_group
 }
+
+output "session_manager_policy_arn" {
+  value = data.aws_iam_policy.enable_session_manager.arn
+}
