@@ -30,6 +30,25 @@ resource "aws_lb_target_group" "ml" {
   }
 }
 
+resource "aws_lb_target_group" "ml_http" {
+  name_prefix          = "m${substr(var.environment, 0, 1)}http"
+  port                 = 8050
+  protocol             = "HTTP"
+  vpc_id               = var.vpc.id
+  deregistration_delay = 60
+
+  # health_check {
+  #   interval            = 10 #seconds
+  #   port                = 7997
+  #   unhealthy_threshold = 10
+  #   healthy_threshold   = 10
+  # }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 resource "aws_lb_listener" "ml" {
   for_each = local.lb_ports
 

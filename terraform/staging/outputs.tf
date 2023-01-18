@@ -121,6 +121,6 @@ output "session_manager_policy_arn" {
   value = module.session_manager_config.policy_arn
 }
 
-output "ml_8050_target_group" {
-  value = module.marklogic.ml_8050_target_group
+output "ml_http_target_group" {
+  value = module.marklogic.ml_http_target_group
 }

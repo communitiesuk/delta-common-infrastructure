@@ -19,6 +19,6 @@ output "instance_iam_role" {
   value = aws_iam_role.ml_iam_role.name
 }
 
-output "ml_8050_target_group" {
-  value = aws_lb_target_group.ml["8050"]
+output "ml_http_target_group" {
+  value = aws_lb_target_group.ml_http
 }
