@@ -39,6 +39,7 @@ module "delta_alb" {
   subnet_ids          = var.subnet_ids
   prefix              = "${var.environment}-delta-site-"
   log_expiration_days = 30
+  apply_aws_shield    = true
 }
 
 output "delta" {
@@ -59,6 +60,7 @@ module "delta_api_alb" {
   subnet_ids          = var.subnet_ids
   prefix              = "${var.environment}-delta-api-"
   log_expiration_days = 30
+  apply_aws_shield    = false
 }
 
 output "delta_api" {
@@ -79,6 +81,7 @@ module "keycloak_alb" {
   subnet_ids          = var.subnet_ids
   prefix              = "${var.environment}-keycloak-"
   log_expiration_days = 30
+  apply_aws_shield    = false
 }
 
 output "keycloak" {
@@ -99,6 +102,7 @@ module "cpm_alb" {
   subnet_ids          = var.subnet_ids
   prefix              = "${var.environment}-cpm-"
   log_expiration_days = 30
+  apply_aws_shield    = false
 }
 
 output "cpm" {
@@ -119,6 +123,7 @@ module "jaspersoft_alb" {
   subnet_ids          = var.subnet_ids
   prefix              = "${var.environment}-jaspersoft-"
   log_expiration_days = 30
+  apply_aws_shield    = false
 }
 
 output "jaspersoft" {
