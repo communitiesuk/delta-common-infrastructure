@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.36"
+      version = "~> 4.50"
     }
   }
 
@@ -50,9 +50,13 @@ module "dluhc_preprod_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain = "datacollection.levellingup.gov.uk"
+  domain                              = "datacollection.levellingup.gov.uk"
+  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications@softwire.com"
 }
 
+module "ses_monitoring" {
+  source = "../modules/ses_monitoring"
+}
 
 locals {
   environment                = "production"
@@ -87,13 +91,13 @@ module "networking" {
 module "bastion_log_group" {
   source = "../modules/encrypted_log_groups"
 
-  kms_key_alias_name = "production-bastion-ssh-logs"
-  log_group_names    = ["production/ssh-bastion"]
+  kms_key_alias_name = "${local.environment}-bastion-ssh-logs"
+  log_group_names    = ["${local.environment}/ssh-bastion"]
   retention_days     = 180
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=b567dbf2c9641df277f503240ee4367b126d475c"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=f45b89c31b1e02e625d0c6d92a92463ebb8383b9"
 
   region                  = "eu-west-1"
   name_prefix             = "prd"
@@ -118,20 +122,6 @@ module "bastion" {
 module "codeartifact" {
   source                   = "../modules/codeartifact"
   codeartifact_domain_name = "delta"
-}
-
-resource "aws_accessanalyzer_analyzer" "eu-west-1" {
-  analyzer_name = "eu-west-1-analyzer"
-}
-
-provider "aws" {
-  alias  = "us-east-1"
-  region = "us-east-1"
-}
-
-resource "aws_accessanalyzer_analyzer" "us-east-1" {
-  analyzer_name = "us-east-1-analyzer"
-  provider      = aws.us-east-1
 }
 
 module "active_directory" {
@@ -310,30 +300,6 @@ module "session_manager_config" {
   environment = local.environment
 }
 
-# Only used to alter default security group and ACL to block all traffic
-# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs tfsec:ignore:aws-ec2-no-default-vpc tfsec:ignore:aws-vpc-no-default-vpc
-resource "aws_default_vpc" "default" {
-  tags = {
-    Name = "default-vpc"
-  }
-}
-
-resource "aws_default_security_group" "default" {
-  vpc_id = aws_default_vpc.default.id
-  tags = {
-    Name = "default-vpc-default-security-group"
-  }
-}
-
-resource "aws_default_network_acl" "default" {
-  default_network_acl_id = aws_default_vpc.default.default_network_acl_id
-  tags = {
-    Name = "vpc-default-acl"
-  }
-  # no rules defined, deny all traffic in this ACL
-}
-
-resource "aws_ebs_encryption_by_default" "default" {
-  # enables EBS volume encryption by default
-  enabled = true
+module "account_security" {
+  source = "../modules/account_security"
 }

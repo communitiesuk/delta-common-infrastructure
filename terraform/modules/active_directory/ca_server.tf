@@ -25,10 +25,21 @@ resource "aws_secretsmanager_secret" "ca_install_credentials" {
   tags                    = { "terraform-plan-read" = true }
 }
 
-# Currently used to store a CRL, so encryption + logging + strictly private access are not required
-# tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-block-public-acls tfsec:ignore:aws-s3-block-public-policy tfsec:ignore:aws-s3-ignore-public-acls tfsec:ignore:aws-s3-no-public-buckets tfsec:ignore:aws-s3-specify-public-access-block
+# Currently used to store a CRL, so KMS + logging + strictly private access are not required
+# tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-block-public-acls tfsec:ignore:aws-s3-block-public-policy tfsec:ignore:aws-s3-ignore-public-acls tfsec:ignore:aws-s3-no-public-buckets tfsec:ignore:aws-s3-specify-public-access-block
 resource "aws_s3_bucket" "ldaps_crl" {
   bucket = "data-collection-service-ldaps-crl-${var.environment}"
+}
+
+# tfsec:ignore:aws-s3-encryption-customer-key
+resource "aws_s3_bucket_server_side_encryption_configuration" "ldaps_crl" {
+  bucket = aws_s3_bucket.ldaps_crl.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
 }
 
 resource "aws_s3_bucket_versioning" "ldaps_crl" {

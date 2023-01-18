@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.36"
+      version = "~> 4.50"
     }
   }
 
@@ -25,6 +25,10 @@ provider "aws" {
   default_tags {
     tags = var.default_tags
   }
+}
+
+locals {
+  environment = "staging"
 }
 
 # In practice the ACM validation records will all overlap
@@ -67,7 +71,7 @@ module "dluhc_dev_validation_records" {
 module "networking" {
   source              = "../modules/networking"
   vpc_cidr_block      = "10.20.0.0/16"
-  environment         = "staging"
+  environment         = local.environment
   ssh_cidr_allowlist  = var.allowed_ssh_cidrs
   open_ingress_cidrs  = [local.datamart_peering_vpc_cidr]
   ecr_repo_account_id = var.ecr_repo_account_id
@@ -86,12 +90,12 @@ resource "aws_key_pair" "bastion_ssh_key" {
 module "bastion_log_group" {
   source = "../modules/encrypted_log_groups"
 
-  kms_key_alias_name = "staging-bastion-ssh-logs"
-  log_group_names    = ["staging/ssh-bastion"]
+  kms_key_alias_name = "${local.environment}-bastion-ssh-logs"
+  log_group_names    = ["${local.environment}/ssh-bastion"]
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=b567dbf2c9641df277f503240ee4367b126d475c"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=f45b89c31b1e02e625d0c6d92a92463ebb8383b9"
 
   region                  = "eu-west-1"
   name_prefix             = "stg"
@@ -109,6 +113,7 @@ module "bastion" {
     zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
+  s3_access_log_expiration_days = 180
 }
 
 module "public_albs" {
@@ -117,7 +122,7 @@ module "public_albs" {
   vpc          = module.networking.vpc
   subnet_ids   = module.networking.public_subnets[*].id
   certificates = module.ssl_certs.alb_certs
-  environment  = "staging"
+  environment  = local.environment
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
@@ -125,7 +130,7 @@ module "public_albs" {
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
-  environment  = "staging"
+  environment  = local.environment
   base_domains = [var.primary_domain, var.secondary_domain]
 
   # We don't want to restrict staging until we are able to confirm who needs access
@@ -196,7 +201,7 @@ module "active_directory" {
   management_server_subnet     = module.networking.ad_management_server_subnet
   number_of_domain_controllers = 2
   ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
-  environment                  = "staging"
+  environment                  = local.environment
   rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
   private_dns                  = module.networking.private_dns
   management_instance_type     = "t3.xlarge"
@@ -212,7 +217,7 @@ module "active_directory_dns_resolver" {
 module "marklogic_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
-  environment = "staging"
+  environment = local.environment
   prefix      = "ml-instance-patching"
   schedule    = "cron(00 06 ? * TUE *)"
 }
@@ -221,7 +226,7 @@ module "marklogic" {
   source = "../modules/marklogic"
 
   default_tags             = var.default_tags
-  environment              = "staging"
+  environment              = local.environment
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "r5.xlarge"
@@ -237,7 +242,7 @@ module "gh_runner" {
   source = "../modules/github_runner"
 
   subnet_id                 = module.networking.github_runner_private_subnet.id
-  environment               = "staging"
+  environment               = local.environment
   vpc                       = module.networking.vpc
   github_token              = var.github_actions_runner_token
   ssh_ingress_sg_id         = module.bastion.bastion_security_group_id
@@ -258,7 +263,7 @@ resource "aws_key_pair" "jaspersoft_ssh_key" {
 module "jaspersoft_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
-  environment = "staging"
+  environment = local.environment
   prefix      = "jasper-instance-patching"
   schedule    = "cron(00 06 ? * TUE *)"
 }
@@ -273,7 +278,7 @@ module "jaspersoft" {
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   private_dns                   = module.networking.private_dns
-  environment                   = "staging"
+  environment                   = local.environment
   extra_instance_policy_arn     = module.session_manager_config.policy_arn
   patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
 }
@@ -281,81 +286,47 @@ module "jaspersoft" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain = "datacollection.test.levellingup.gov.uk"
+  domain                              = "datacollection.test.levellingup.gov.uk"
+  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications+staging@softwire.com"
 }
 
 module "delta_ses_user" {
   source               = "../modules/ses_user"
-  username             = "ses-user-delta-app-staging"
+  username             = "ses-user-delta-app-${local.environment}"
   ses_identity_arn     = module.ses_identity.arn
   from_address_pattern = "delta-staging@datacollection.test.levellingup.gov.uk"
-  environment          = "staging"
+  environment          = local.environment
   kms_key_arn          = module.marklogic.deploy_user_kms_key_arn
   vpc_id               = module.networking.vpc.id
 }
 
 module "cpm_ses_user" {
   source               = "../modules/ses_user"
-  username             = "ses-user-cpm-app-staging"
+  username             = "ses-user-cpm-app-${local.environment}"
   ses_identity_arn     = module.ses_identity.arn
   from_address_pattern = "cpm-staging@datacollection.test.levellingup.gov.uk"
-  environment          = "staging"
+  environment          = local.environment
   kms_key_arn          = module.marklogic.deploy_user_kms_key_arn
   vpc_id               = module.networking.vpc.id
+}
+
+module "ses_monitoring" {
+  source = "../modules/ses_monitoring"
 }
 
 module "iam_roles" {
   source = "../modules/iam_roles"
 
   organisation_account_id = "448312965134"
-  environment             = "staging"
+  environment             = local.environment
   session_manager_key_arn = module.session_manager_config.session_manager_key_arn
 }
 
 module "session_manager_config" {
   source      = "../modules/session_manager_config"
-  environment = "staging"
+  environment = local.environment
 }
 
-resource "aws_accessanalyzer_analyzer" "eu-west-1" {
-  analyzer_name = "eu-west-1-analyzer"
-}
-
-provider "aws" {
-  alias  = "us-east-1"
-  region = "us-east-1"
-}
-
-resource "aws_accessanalyzer_analyzer" "us-east-1" {
-  analyzer_name = "us-east-1-analyzer"
-  provider      = aws.us-east-1
-}
-
-# Only used to alter default security group and ACL to block all traffic
-# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs tfsec:ignore:aws-ec2-no-default-vpc tfsec:ignore:aws-vpc-no-default-vpc
-resource "aws_default_vpc" "default" {
-  tags = {
-    Name = "default-vpc"
-  }
-}
-
-resource "aws_default_security_group" "default" {
-  # Remove all rules from the default security group for the default vpc to make sure traffic is restricted by default
-  vpc_id = aws_default_vpc.default.id
-  tags = {
-    Name = "default-vpc-default-security-group"
-  }
-}
-
-resource "aws_default_network_acl" "default" {
-  default_network_acl_id = aws_default_vpc.default.default_network_acl_id
-  tags = {
-    Name = "vpc-default-acl"
-  }
-  # no rules defined, deny all traffic in this ACL
-}
-
-resource "aws_ebs_encryption_by_default" "default" {
-  # enables EBS volume encryption by default
-  enabled = true
+module "account_security" {
+  source = "../modules/account_security"
 }

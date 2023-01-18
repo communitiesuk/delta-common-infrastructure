@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.36"
+      version = "~> 4.50"
     }
   }
 
@@ -25,6 +25,10 @@ provider "aws" {
   default_tags {
     tags = var.default_tags
   }
+}
+
+locals {
+  environment = "test"
 }
 
 # In practice the ACM validation records will all overlap
@@ -51,7 +55,8 @@ module "dluhc_dev_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain = "datacollection.${var.secondary_domain}"
+  domain                              = "datacollection.${var.secondary_domain}"
+  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications+test@softwire.com"
 }
 
 locals {
@@ -74,7 +79,7 @@ module "dluhc_dev_validation_records" {
 module "networking" {
   source                         = "../modules/networking"
   vpc_cidr_block                 = "10.0.0.0/16"
-  environment                    = "test"
+  environment                    = local.environment
   ssh_cidr_allowlist             = var.allowed_ssh_cidrs
   ecr_repo_account_id            = var.ecr_repo_account_id
   number_of_vpc_endpoint_subnets = 1
@@ -94,12 +99,12 @@ resource "aws_key_pair" "bastion_ssh_key" {
 module "bastion_log_group" {
   source = "../modules/encrypted_log_groups"
 
-  kms_key_alias_name = "test-bastion-ssh-logs"
-  log_group_names    = ["test/ssh-bastion"]
+  kms_key_alias_name = "${local.environment}-bastion-ssh-logs"
+  log_group_names    = ["${local.environment}/ssh-bastion"]
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=b567dbf2c9641df277f503240ee4367b126d475c"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=f45b89c31b1e02e625d0c6d92a92463ebb8383b9"
 
   region                  = "eu-west-1"
   name_prefix             = "tst"
@@ -117,6 +122,7 @@ module "bastion" {
     zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
+  s3_access_log_expiration_days = 180
 }
 
 module "public_albs" {
@@ -125,7 +131,7 @@ module "public_albs" {
   vpc          = module.networking.vpc
   subnet_ids   = module.networking.public_subnets[*].id
   certificates = module.ssl_certs.alb_certs
-  environment  = "test"
+  environment  = local.environment
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.
@@ -136,7 +142,7 @@ module "public_albs" {
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
-  environment           = "test"
+  environment           = local.environment
   base_domains          = [var.primary_domain, var.secondary_domain]
   waf_per_ip_rate_limit = 100000
 
@@ -208,7 +214,7 @@ module "active_directory" {
   management_server_subnet     = module.networking.ad_management_server_subnet
   number_of_domain_controllers = 2
   ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
-  environment                  = "test"
+  environment                  = local.environment
   rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
   private_dns                  = module.networking.private_dns
   ad_domain                    = "dluhctest.local"
@@ -227,7 +233,7 @@ module "active_directory_dns_resolver" {
 module "marklogic_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
-  environment = "test"
+  environment = local.environment
   prefix      = "ml-instance-patching"
   schedule    = "cron(00 06 ? * MON *)"
 }
@@ -236,7 +242,7 @@ module "marklogic" {
   source = "../modules/marklogic"
 
   default_tags             = var.default_tags
-  environment              = "test"
+  environment              = local.environment
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3.large"
@@ -251,7 +257,7 @@ module "gh_runner" {
   source = "../modules/github_runner"
 
   subnet_id                 = module.networking.github_runner_private_subnet.id
-  environment               = "test"
+  environment               = local.environment
   vpc                       = module.networking.vpc
   github_token              = var.github_actions_runner_token
   ssh_ingress_sg_id         = module.bastion.bastion_security_group_id
@@ -272,7 +278,7 @@ resource "aws_key_pair" "jaspersoft_ssh_key" {
 module "jaspersoft_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
-  environment = "test"
+  environment = local.environment
   prefix      = "jasper-instance-patching"
   schedule    = "cron(00 06 ? * MON *)"
 }
@@ -281,14 +287,14 @@ module "jaspersoft" {
   source                        = "../modules/jaspersoft"
   private_instance_subnet       = module.networking.jaspersoft_private_subnet
   vpc                           = module.networking.vpc
-  prefix                        = "dluhc-test-"
+  prefix                        = "dluhc-${local.environment}-"
   ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
   public_alb                    = module.public_albs.jaspersoft
   allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
   private_dns                   = module.networking.private_dns
   ad_domain                     = "dluhctest"
-  environment                   = "test"
+  environment                   = local.environment
   extra_instance_policy_arn     = data.aws_iam_policy.enable_session_manager.arn
   patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
 }
@@ -297,7 +303,7 @@ module "iam_roles" {
   source = "../modules/iam_roles"
 
   organisation_account_id = "448312965134"
-  environment             = "test"
+  environment             = local.environment
   session_manager_key_arn = data.aws_kms_key.session_manager.arn
 }
 
@@ -313,10 +319,10 @@ data "aws_iam_policy" "enable_session_manager" {
 
 module "ses_user" {
   source               = "../modules/ses_user"
-  username             = "ses-user-test"
+  username             = "ses-user-${local.environment}"
   ses_identity_arn     = module.ses_identity.arn
   from_address_pattern = "*@datacollection.dluhc-dev.uk"
-  environment          = "test"
+  environment          = local.environment
   kms_key_arn          = null
   vpc_id               = module.networking.vpc.id
 }
@@ -324,7 +330,7 @@ module "ses_user" {
 module "mailhog" {
   source = "../modules/mailhog"
 
-  environment       = "test"
+  environment       = local.environment
   vpc               = module.networking.vpc
   ssh_ingress_sg_id = module.bastion.bastion_security_group_id
   private_dns       = module.networking.private_dns
