@@ -41,6 +41,7 @@ jobs:
   plan:
     name: Terraform plan
     runs-on: ubuntu-latest
+    concurrency: tfstate-${{ inputs.workdir }}
     environment: ${{ inputs.plan_environment }}
     outputs:
       plan: ${{ steps.plan.outputs.stdout }}
@@ -86,6 +87,7 @@ jobs:
     name: Terraform apply
     needs: plan
     runs-on: ubuntu-latest
+    concurrency: tfstate-${{ inputs.workdir }}
     environment: ${{ inputs.apply_environment }}
     if: needs.plan.outputs.plan_exitcode == 2
     defaults:

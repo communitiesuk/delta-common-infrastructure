@@ -10,10 +10,17 @@ locals {
       sid_offset           = 100
     }
     jaspersoft = {
-      cidr                 = local.jaspersoft_cidr_10
-      http_allowed_domains = [".ubuntu.com", ".launchpad.net", ".postgresql.org"]
-      tls_allowed_domains  = [".ubuntu.com", ".launchpad.net", "archive.apache.org", ".postgresql.org", "api.snapcraft.io", ".snapcraftcontent.com"]
-      sid_offset           = 200
+      cidr = local.jaspersoft_cidr_10
+      http_allowed_domains = [
+        ".ubuntu.com", ".launchpad.net", # Apt updates
+        ".postgresql.org",               # Postgres
+      ]
+      tls_allowed_domains = [
+        ".ubuntu.com", ".launchpad.net",             # Apt updates
+        "archive.apache.org", ".postgresql.org",     # Tomcat + Postgres
+        "api.snapcraft.io", ".snapcraftcontent.com", # Snap updates
+      ]
+      sid_offset = 200
     }
     github_runner = {
       cidr                 = local.github_runner_cidr_10
@@ -23,7 +30,6 @@ locals {
         "github.com", "api.github.com", "codeload.github.com",
         "objects.githubusercontent.com", "objects-origin.githubusercontent.com", "github-releases.githubusercontent.com", "github-registry-files.githubusercontent.com",
         ".actions.githubusercontent.com",
-        "logs.${data.aws_region.current.name}.amazonaws.com", "ec2messages.${data.aws_region.current.name}.amazonaws.com"
       ]
       sid_offset = 300
     }
@@ -36,9 +42,9 @@ locals {
     ad_other_subnets = {
       cidr = local.ad_other_cidr_10
       http_allowed_domains = [
-        ".microsoft.com", ".windows.com", ".windowsupdate.com",
-        ".digicert.com", ".o.lencr.org", ".c.lencr.org", # CRL
-        ".firefox.com"
+        ".microsoft.com", ".windows.com", ".windowsupdate.com", # Windows update
+        ".digicert.com", ".o.lencr.org", ".c.lencr.org",        # CRL
+        ".firefox.com"                                          # Firefox
       ]
       tls_allowed_domains = [
         ".microsoft.com", ".windows.com", ".windowsupdate.com",                                  # Windows update
@@ -88,11 +94,12 @@ locals {
       tls_allowed_domains  = []
       sid_offset           = 1000
     }
+    # Test environment only
     mailhog = var.mailhog_subnet ? {
       subnets              = aws_subnet.mailhog
       cidr                 = local.mailhog_cidr_10
       http_allowed_domains = []
-      tls_allowed_domains  = [".github.com", "github.com", "golang.org", "go.googlesource.com", "gopkg.in"]
+      tls_allowed_domains  = [".github.com", "github.com", "golang.org", "go.googlesource.com", "gopkg.in"] # Downloading and installing golang and MailHog
       sid_offset           = 1100
     } : null
     marklogic = {
@@ -102,7 +109,7 @@ locals {
         ".marklogic.com",
         "repo.ius.io", "mirrors.fedoraproject.org",                        # Yum repos
         "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com", # The instances make some requests to us-east-1 services on startup
-        "d2lzkl7pfhq30w.cloudfront.net",                                   # Mystery, CF is for yum, but not sure where it comes from
+        "d2lzkl7pfhq30w.cloudfront.net",                                   # Used by MarkLogic's AMI yum updates, unclear why
       ])
       sid_offset = 4000
     }
