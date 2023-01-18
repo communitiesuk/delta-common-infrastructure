@@ -33,7 +33,7 @@ resource "aws_cloudfront_response_headers_policy" "main" {
   }
 }
 
-resource "cloudfront_origin_access_identity" "s3" {
+resource "aws_cloudfront_origin_access_identity" "s3" {
   count   = var.s3_origin == null ? 0 : 1
   comment = "Access identity for the s3 bucket"
 }
@@ -78,7 +78,7 @@ resource "aws_cloudfront_distribution" "main" {
       }
 
       s3_origin_config {
-        origin_access_identity = cloudfront_origin_access_identity.s3
+        origin_access_identity = aws_cloudfront_origin_access_identity.s3[0].id
       }
     }
   }

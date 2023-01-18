@@ -37,12 +37,13 @@ resource "aws_lb_target_group" "ml_http" {
   vpc_id               = var.vpc.id
   deregistration_delay = 60
 
-  # health_check {
-  #   interval            = 10 #seconds
-  #   port                = 7997
-  #   unhealthy_threshold = 10
-  #   healthy_threshold   = 10
-  # }
+  health_check {
+    protocol            = "HTTP"
+    path                = "/rest-api/swagger.json"
+    interval            = 10 #seconds
+    unhealthy_threshold = 10
+    healthy_threshold   = 2
+  }
 
   lifecycle {
     create_before_destroy = true

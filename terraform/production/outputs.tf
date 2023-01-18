@@ -108,6 +108,6 @@ output "patch_maintenance_window" {
   value = module.patch_maintenance_window
 }
 
-output "ml_8050_target_group" {
-  value = module.marklogic.ml_8050_target_group
+output "ml_http_target_group_arn" {
+  value = module.marklogic.ml_http_target_group_arn
 }
