@@ -117,6 +117,7 @@ resource "aws_cloudfront_distribution" "main" {
 }
 
 resource "aws_shield_protection" "main" {
+  count        = var.apply_aws_shield ? 1 : 0
   name         = "Cloudfront Protection"
   resource_arn = aws_cloudfront_distribution.main.arn
 }

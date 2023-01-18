@@ -42,3 +42,7 @@ variable "geo_restriction_enabled" {
   type    = bool
   default = true
 }
+
+variable "apply_aws_shield" {
+  type = bool
+}
