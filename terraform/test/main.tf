@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.36"
+      version = "~> 4.50"
     }
   }
 
@@ -55,7 +55,8 @@ module "dluhc_dev_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain = "datacollection.${var.secondary_domain}"
+  domain                              = "datacollection.${var.secondary_domain}"
+  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications+test@softwire.com"
 }
 
 locals {

@@ -11,6 +11,8 @@ aws s3api put-bucket-versioning --bucket $bucket_name --versioning-configuration
 aws s3api put-bucket-encryption --bucket $bucket_name --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
 ```
 
+Once you've created the instance login to Jaspersoft and change the password for the default users (e.g. jasperadmin/jasperadmin).
+
 ## Creating the WAR file
 
 We've combined Jasper Reports Community edition 7.8.0, the 7.8.1 Service Pack, the 2022-04-15 cumulative hotfix and web services plugin into one zip:

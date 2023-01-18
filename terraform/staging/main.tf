@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.36"
+      version = "~> 4.50"
     }
   }
 
@@ -286,7 +286,8 @@ module "jaspersoft" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain = "datacollection.test.levellingup.gov.uk"
+  domain                              = "datacollection.test.levellingup.gov.uk"
+  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications+staging@softwire.com"
 }
 
 module "delta_ses_user" {
@@ -307,6 +308,10 @@ module "cpm_ses_user" {
   environment          = local.environment
   kms_key_arn          = module.marklogic.deploy_user_kms_key_arn
   vpc_id               = module.networking.vpc.id
+}
+
+module "ses_monitoring" {
+  source = "../modules/ses_monitoring"
 }
 
 module "iam_roles" {
