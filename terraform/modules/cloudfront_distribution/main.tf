@@ -115,3 +115,8 @@ resource "aws_cloudfront_distribution" "main" {
     prevent_destroy = true
   }
 }
+
+resource "aws_shield_protection" "main" {
+  name         = "Cloudfront Protection"
+  resource_arn = aws_cloudfront_distribution.main.arn
+}

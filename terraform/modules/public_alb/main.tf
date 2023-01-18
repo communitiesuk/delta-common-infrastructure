@@ -20,6 +20,11 @@ resource "aws_lb" "main" {
   ]
 }
 
+resource "aws_shield_protection" "main_lb" {
+  name         = "Protection of main ALB"
+  resource_arn = aws_lb.main.arn
+}
+
 resource "aws_security_group" "alb" {
   vpc_id      = var.vpc.id
   description = "${var.prefix} ALB"
