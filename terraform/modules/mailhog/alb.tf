@@ -26,6 +26,7 @@ resource "aws_security_group_rule" "alb_egress" {
   cidr_blocks       = [var.private_subnet.cidr_block]
 }
 
+# Public ALB
 # tfsec:ignore:aws-vpc-no-public-ingress-sgr
 resource "aws_security_group_rule" "alb_https_ingress" {
   security_group_id = aws_security_group.alb.id

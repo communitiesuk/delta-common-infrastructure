@@ -32,6 +32,12 @@ variable "access_log_expiration_days" {
   default = 90
 }
 
+variable "policy" {
+  description = "optional policy json to append to default bucket enforce ssl policy"
+  type        = string
+  default     = null
+}
+
 output "bucket" {
   value = aws_s3_bucket.main.bucket
 }
@@ -47,6 +53,41 @@ output "bucket_regional_domain_name" {
 resource "aws_s3_bucket" "main" {
   bucket        = var.bucket_name
   force_destroy = var.force_destroy
+}
+
+resource "aws_s3_bucket_policy" "main" {
+  bucket = aws_s3_bucket.main.id
+  policy = data.aws_iam_policy_document.main.json
+}
+
+data "aws_iam_policy_document" "main" {
+
+  source_policy_documents = var.policy == null ? [] : [var.policy]
+
+  # Apply policy to enforce SSL connections.
+  statement {
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    actions = [
+      "s3:*"
+    ]
+
+    effect = "Deny"
+
+    resources = [
+      aws_s3_bucket.main.arn,
+      "${aws_s3_bucket.main.arn}/*",
+    ]
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "main" {
@@ -164,6 +205,7 @@ resource "aws_s3_bucket_policy" "allow_log_writes" {
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "allow_log_writes" {
+  source_policy_documents = [data.aws_iam_policy_document.allow_ssl_requests_only.json]
   statement {
     principals {
       type        = "Service"
@@ -188,6 +230,33 @@ data "aws_iam_policy_document" "allow_log_writes" {
       test     = "StringEquals"
       variable = "aws:SourceAccount"
       values   = [data.aws_caller_identity.current.account_id]
+    }
+  }
+}
+
+# Apply policy to enforce SSL connections.
+data "aws_iam_policy_document" "allow_ssl_requests_only" {
+  statement {
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    actions = [
+      "s3:*"
+    ]
+
+    effect = "Deny"
+
+    resources = [
+      aws_s3_bucket.log_bucket.arn,
+      "${aws_s3_bucket.log_bucket.arn}/*",
+    ]
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
     }
   }
 }

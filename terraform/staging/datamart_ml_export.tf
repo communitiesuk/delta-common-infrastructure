@@ -22,11 +22,8 @@ module "datamart_ml_backups" {
   access_log_bucket_name  = "datamart-ml-backups-access-logs-staging"
   force_destroy           = true
   restrict_public_buckets = false
-}
+  policy                  = data.aws_iam_policy_document.allow_access_from_datamart.json
 
-resource "aws_s3_bucket_policy" "datamart_ml_backups" {
-  bucket = module.datamart_ml_backups.bucket
-  policy = data.aws_iam_policy_document.allow_access_from_datamart.json
 }
 
 data "aws_iam_policy_document" "allow_access_from_datamart" {
