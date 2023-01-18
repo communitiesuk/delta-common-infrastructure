@@ -61,6 +61,7 @@ rsync -a war-hotfix/WEB-INF/ jasperreports-server-cp-7.8.0-bin/jasperserver/WEB-
 
 ## Web services plugin
 sed -i 's/queryLanguagesPro/queryLanguagesCe/' webservices/JRS/WEB-INF/applicationContext-WebServiceDataSource.xml
+sed -i 's/jasperQL/WebServiceQuery/' webservices/JRS/WEB-INF/applicationContext-remote-services.xml
 cp -r webservices/JRS/WEB-INF/* jasperreports-server-cp-7.8.0-bin/jasperserver/WEB-INF/
 
 ## Recreate WAR
