@@ -127,10 +127,6 @@ output "marklogic_deploy_user" {
   value = module.marklogic.deploy_user
 }
 
-output "patch_maintenance_window" {
-  value = module.patch_maintenance_window
-}
-
 output "ml_http_target_group_arn" {
   value = module.marklogic.ml_http_target_group_arn
 }
