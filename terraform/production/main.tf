@@ -81,11 +81,12 @@ module "dluhc_preprod_validation_records" {
 # }
 
 module "networking" {
-  source              = "../modules/networking"
-  vpc_cidr_block      = "10.30.0.0/16"
-  environment         = "prod"
-  ssh_cidr_allowlist  = var.allowed_ssh_cidrs
-  ecr_repo_account_id = var.ecr_repo_account_id
+  source                          = "../modules/networking"
+  vpc_cidr_block                  = "10.30.0.0/16"
+  environment                     = "prod"
+  ssh_cidr_allowlist              = var.allowed_ssh_cidrs
+  ecr_repo_account_id             = var.ecr_repo_account_id
+  apply_aws_shield_to_nat_gateway = true
 }
 
 module "bastion_log_group" {

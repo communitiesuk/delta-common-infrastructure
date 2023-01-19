@@ -3,7 +3,8 @@ resource "aws_eip" "nat_gateway" {
 }
 
 resource "aws_shield_protection" "nat_gateway" {
-  name         = "NAT gateway Elastic IP Protection"
+  count        = var.apply_aws_shield_to_nat_gateway ? 1 : 0
+  name         = "NAT Gateway Elastic IP Protection"
   resource_arn = "arn:aws:ec2:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:eip-allocation/${aws_eip.nat_gateway.id}"
 }
 

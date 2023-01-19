@@ -77,13 +77,14 @@ module "dluhc_dev_validation_records" {
 }
 
 module "networking" {
-  source                         = "../modules/networking"
-  vpc_cidr_block                 = "10.0.0.0/16"
-  environment                    = local.environment
-  ssh_cidr_allowlist             = var.allowed_ssh_cidrs
-  ecr_repo_account_id            = var.ecr_repo_account_id
-  number_of_vpc_endpoint_subnets = 1
-  mailhog_subnet                 = true
+  source                          = "../modules/networking"
+  vpc_cidr_block                  = "10.0.0.0/16"
+  environment                     = local.environment
+  ssh_cidr_allowlist              = var.allowed_ssh_cidrs
+  ecr_repo_account_id             = var.ecr_repo_account_id
+  number_of_vpc_endpoint_subnets  = 1
+  mailhog_subnet                  = true
+  apply_aws_shield_to_nat_gateway = false
 }
 
 resource "tls_private_key" "bastion_ssh_key" {

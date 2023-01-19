@@ -46,3 +46,7 @@ variable "mailhog_subnet" {
   type    = bool
   default = false
 }
+
+variable "apply_aws_shield_to_nat_gateway" {
+  type = bool
+}
