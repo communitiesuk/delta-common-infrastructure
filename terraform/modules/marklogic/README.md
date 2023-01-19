@@ -6,8 +6,8 @@ To use this module you need to manually create two AWS secrets:
 
 You can manually ssh onto a MarkLogic instance:
 
-1. Port forwarding: `ssh <username>@$(terraform output -raw bastion_dns_name) -L localhost:9001:instance.ip.here:22`
-2. SSH (with private key taken from module.marklogic.ml_ssh_private_key): `ssh -i ~/.ssh/privatekey ec2-user@localhost -p 9001`
+1. `terraform output -raw ml_ssh_private_key > ~/.ssh/ml_privatekey`
+2. `ssh -J <username>@$(terraform output -raw bastion_dns_name) ec2-user@instance.ip.here -i ~/.ssh/your_normal_key -i ~/.ssh/ml_privatekey`
 
 View the logs:
 
