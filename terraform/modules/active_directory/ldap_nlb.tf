@@ -9,8 +9,25 @@ resource "aws_lb" "ldap" {
 }
 
 resource "aws_lb_target_group" "ldap" {
-  name_prefix        = "ldap-${substr(var.environment, 0, 1)}"
+  name_prefix        = "${substr(var.environment, 0, 1)}ldap"
   port               = 389
+  protocol           = "TCP"
+  target_type        = "ip"
+  vpc_id             = var.vpc.id
+  preserve_client_ip = true
+
+  stickiness {
+    enabled = true
+    type    = "source_ip"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+resource "aws_lb_target_group" "ldaps" {
+  name_prefix        = "${substr(var.environment, 0, 1)}ldaps"
+  port               = 636
   protocol           = "TCP"
   target_type        = "ip"
   vpc_id             = var.vpc.id
@@ -34,6 +51,14 @@ resource "aws_lb_target_group_attachment" "ldap" {
   target_id        = each.value
 }
 
+resource "aws_lb_target_group_attachment" "ldaps" {
+  for_each = aws_directory_service_directory.directory_service.dns_ip_addresses
+
+  target_group_arn = aws_lb_target_group.ldaps.arn
+  port             = 636
+  target_id        = each.value
+}
+
 resource "aws_lb_listener" "ldap" {
   load_balancer_arn = aws_lb.ldap.arn
   port              = 389
@@ -42,6 +67,17 @@ resource "aws_lb_listener" "ldap" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.ldap.arn
+  }
+}
+
+resource "aws_lb_listener" "ldaps" {
+  load_balancer_arn = aws_lb.ldap.arn
+  port              = 636
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ldaps.arn
   }
 }
 
