@@ -34,7 +34,7 @@ resource "aws_cloudfront_response_headers_policy" "main" {
 }
 
 resource "aws_cloudfront_origin_access_control" "s3" {
-  name                              = "s3"
+  name                              = "${var.prefix}s3-control"
   description                       = "Access control for the s3 bucket"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
@@ -72,11 +72,11 @@ resource "aws_cloudfront_distribution" "main" {
   }
 
   ordered_cache_behavior {
-    allowed_methods  = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "api_lb_origin"
-    path_pattern     = "/rest-api/*"
-    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+    cached_methods             = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id           = "api_lb_origin"
+    path_pattern               = "/rest-api/*"
+    viewer_protocol_policy     = "redirect-to-https"
     min_ttl                    = 0
     default_ttl                = 0
     max_ttl                    = 86400
@@ -153,29 +153,29 @@ resource "aws_cloudfront_distribution" "main" {
 }
 
 data "aws_iam_policy_document" "swagger_policy" {
-	statement {
-		actions = ["s3:GetObject"]
+  statement {
+    actions = ["s3:GetObject"]
 
-		resources = ["${module.swagger_bucket.bucket_arn}/*"]
+    resources = ["${module.swagger_bucket.bucket_arn}/*"]
 
-		principals {
-			type        = "Service"
-			identifiers = ["cloudfront.amazonaws.com"]
-		}
-		condition {
-			test     = "StringEquals"
-			variable = "AWS:SourceArn"
-			values   = [aws_cloudfront_distribution.main.arn]
-		}
-	}
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.main.arn]
+    }
+  }
 }
 
 module "swagger_bucket" {
   source = "../s3_bucket"
 
-  bucket_name                        = "dluhc-delta-api-swagger-${var.environment}"
-  access_log_bucket_name             = "dluhc-delta-api-swagger-access-logs-${var.environment}"
-  force_destroy                      = true
+  bucket_name            = "dluhc-delta-api-swagger-${var.environment}"
+  access_log_bucket_name = "dluhc-delta-api-swagger-access-logs-${var.environment}"
+  force_destroy          = true
 
   policy = data.aws_iam_policy_document.swagger_policy.json
 }

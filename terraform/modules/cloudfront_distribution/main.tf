@@ -33,21 +33,6 @@ resource "aws_cloudfront_response_headers_policy" "main" {
   }
 }
 
-# resource "aws_cloudfront_origin_access_identity" "s3" {
-  # count   = var.s3_origin == null ? 0 : 1
-#   comment = "Access identity for the s3 bucket"
-# }
-
-resource "aws_cloudfront_origin_access_control" "s3" {
-  count   = var.s3_origin == null ? 0 : 1
-
-  name                              = "s3"
-  description                       = "Access control for the s3 bucket"
-  origin_access_control_origin_type = "s3"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
-}
-
 resource "aws_cloudfront_distribution" "main" {
   aliases = var.cloudfront_domain == null ? [] : var.cloudfront_domain.aliases
 
@@ -68,42 +53,6 @@ resource "aws_cloudfront_distribution" "main" {
     custom_header {
       name  = local.cloudfront_key_header
       value = var.cloudfront_key
-    }
-  }
-
-  dynamic "origin" {
-    for_each = var.s3_origin == null ? [] : [var.s3_origin]
-
-    content {
-      domain_name = origin.value["origin_domain"]
-      origin_id   = "s3_origin"
-
-      origin_access_control_id = aws_cloudfront_origin_access_control.s3[0].id
-
-      # s3_origin_config {
-      #   origin_access_identity = aws_cloudfront_origin_access_identity.s3[0].id
-      # }
-    }
-  }
-
-  dynamic "ordered_cache_behavior" {
-    for_each = var.s3_origin == null ? [] : [var.s3_origin]
-    iterator = origin
-
-    content {
-      allowed_methods  = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cached_methods   = ["GET", "HEAD", "OPTIONS"]
-      target_origin_id = "primary"
-      path_pattern     = origin.value["path_pattern"]
-      viewer_protocol_policy = "redirect-to-https"
-
-      forwarded_values {
-        query_string = false
-
-        cookies {
-          forward = "none"
-        }
-      }
     }
   }
 

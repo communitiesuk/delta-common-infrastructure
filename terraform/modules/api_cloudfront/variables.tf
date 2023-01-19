@@ -25,7 +25,7 @@ variable "cloudfront_key" {
 }
 
 variable "origin_domain" {
-  type    = string
+  type = string
 }
 
 variable "is_ipv6_enabled" {

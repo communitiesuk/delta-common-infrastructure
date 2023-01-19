@@ -54,7 +54,7 @@ module "delta_cloudfront" {
 
 module "api_cloudfront" {
   source                         = "../api_cloudfront"
-  prefix                         = "delta-api-${var.environment}-" # TODO DT-131 this is maybe redundant if we're passing environment in
+  prefix                         = "delta-api-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta-api"
   waf_acl_arn                    = module.api_auth_waf.acl_arn
