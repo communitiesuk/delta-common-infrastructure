@@ -1,50 +1,9 @@
-resource "aws_kms_key" "dap_export" {
-  enable_key_rotation = true
-  description         = "dap-export-${var.environment}"
-}
-
-resource "aws_kms_alias" "dap_export" {
-  name          = "alias/dap-export-${var.environment}"
-  target_key_id = aws_kms_key.dap_export.id
-}
-
 module "dap_export_bucket" {
   source = "../s3_bucket"
-
   bucket_name                = "dluhc-delta-dap-export-${var.environment}"
   access_log_bucket_name     = "dluhc-delta-dap-export-access-logs-${var.environment}"
-  force_destroy              = true
+  force_destroy              = false
   access_log_expiration_days = 365
-  kms_key_arn                = aws_kms_key.dap_export.arn
-}
-
-resource "aws_s3_bucket_policy" "dap_bucket_policy" {
-  bucket = module.dap_export_bucket.bucket
-  policy = data.aws_iam_policy_document.dap_bucket_restriction.json
-}
-
-data "aws_region" "current" {}
-data "aws_vpc_endpoint" "s3_gateway" {
-  vpc_id       = var.vpc.id
-  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
-}
-
-data "aws_iam_policy_document" "dap_bucket_restriction" {
-  statement {
-    actions   = ["*"]
-    effect    = "Deny"
-    resources = ["*"]
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:SourceVpce"
-      values   = [data.aws_vpc_endpoint.s3_gateway.id]
-    }
-    condition {
-      test     = "NotIpAddress"
-      variable = "aws:SourceIp"
-      values   = ["52.17.138.171/32"]
-    }
-  }
 }
 
 module "dap_export_job_window" {
@@ -107,7 +66,7 @@ resource "aws_ssm_maintenance_window_task" "dap_s3_upload" {
         values = [
           "set -ex",
           "if [ -z \"$(ls ${local.delta_export_path})\" ]; then echo 'Error ${local.delta_export_path} is empty nothing to export'; exit 1; fi",
-          "rm -rf /delta/export-workdir && cp -r ${local.delta_export_path} /delta/export-workdir",
+          "rm -rf /delta/export-workdir && cp -r ${local.delta_export_path}/. /delta/export-workdir",
           "cd /delta/export-workdir && find . -type f",
           "aws s3 sync /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/latest\" --delete",
           "aws s3 cp /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/archive/$(date +%F)\" --recursive",
