@@ -121,3 +121,8 @@ resource "aws_shield_protection" "main" {
   name         = "Cloudfront Protection"
   resource_arn = aws_cloudfront_distribution.main.arn
 }
+
+# It would be convenient to add a aws_route53_health_check and aws_shield_protection_health_check_association
+# with the cloudfront distribution here.
+# See: https://aws.amazon.com/about-aws/whats-new/2020/02/aws-shield-advanced-now-supports-health-based-detection/
+# However, the benefit is minor (possibly faster response to DDoS) and the geo-restriction may interfere.
