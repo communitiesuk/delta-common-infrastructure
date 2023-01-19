@@ -21,6 +21,10 @@ variable "waf_per_ip_rate_limit" {
   description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes"
 }
 
+variable "apply_aws_shield_to_delta_website" {
+  type = bool
+}
+
 variable "delta" {
   type = object({
     alb = object({

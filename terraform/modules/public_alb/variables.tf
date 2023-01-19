@@ -18,5 +18,6 @@ variable "log_expiration_days" {
 }
 
 variable "apply_aws_shield" {
-  type = bool
+  type    = bool
+  default = false
 }

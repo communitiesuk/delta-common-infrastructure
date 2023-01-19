@@ -119,10 +119,11 @@ module "bastion" {
 module "public_albs" {
   source = "../modules/public_albs"
 
-  vpc          = module.networking.vpc
-  subnet_ids   = module.networking.public_subnets[*].id
-  certificates = module.ssl_certs.alb_certs
-  environment  = local.environment
+  vpc                           = module.networking.vpc
+  subnet_ids                    = module.networking.public_subnets[*].id
+  certificates                  = module.ssl_certs.alb_certs
+  environment                   = local.environment
+  apply_aws_shield_to_delta_alb = false
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
@@ -139,6 +140,7 @@ module "cloudfront_distributions" {
     var.allowed_ssh_cidrs,
     ["${module.networking.nat_gateway_ip}/32"]
   )
+  apply_aws_shield_to_delta_website = false
   delta = {
     alb = module.public_albs.delta
     domain = {
