@@ -1,3 +1,7 @@
+variable "organisation_account_id" {
+  type = string
+}
+
 resource "aws_accessanalyzer_analyzer" "eu-west-1" {
   analyzer_name = "eu-west-1-analyzer"
 }
@@ -10,6 +14,37 @@ provider "aws" {
 resource "aws_accessanalyzer_analyzer" "us-east-1" {
   analyzer_name = "us-east-1-analyzer"
   provider      = aws.us-east-1
+}
+
+resource "aws_accessanalyzer_archive_rule" "eu-west-1" {
+  analyzer_name = "eu-west-1-analyzer"
+  rule_name     = "archive-rule"
+
+  filter {
+    criteria = "principal.AWS"
+    eq       = [var.organisation_account_id]
+  }
+
+  filter {
+    criteria = "isPublic"
+    eq       = ["false"]
+  }
+}
+
+resource "aws_accessanalyzer_archive_rule" "us-east-1" {
+  analyzer_name = "us-east-1-analyzer"
+  provider      = aws.us-east-1
+  rule_name     = "archive-rule"
+
+  filter {
+    criteria = "principal.AWS"
+    eq       = [var.organisation_account_id]
+  }
+
+  filter {
+    criteria = "isPublic"
+    eq       = ["false"]
+  }
 }
 
 # Only used to alter default security group and ACL to block all traffic
