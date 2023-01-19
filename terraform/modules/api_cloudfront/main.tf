@@ -77,6 +77,10 @@ resource "aws_cloudfront_distribution" "main" {
     target_origin_id = "api_lb_origin"
     path_pattern     = "/rest-api/*"
     viewer_protocol_policy = "redirect-to-https"
+    min_ttl                    = 0
+    default_ttl                = 0
+    max_ttl                    = 86400
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
 
     forwarded_values {
       query_string = true
@@ -148,7 +152,7 @@ resource "aws_cloudfront_distribution" "main" {
   }
 }
 
-data "aws_iam_policy_document" "default" {
+data "aws_iam_policy_document" "swagger_policy" {
 	statement {
 		actions = ["s3:GetObject"]
 
@@ -172,4 +176,6 @@ module "swagger_bucket" {
   bucket_name                        = "dluhc-delta-api-swagger-${var.environment}"
   access_log_bucket_name             = "dluhc-delta-api-swagger-access-logs-${var.environment}"
   force_destroy                      = true
+
+  policy = data.aws_iam_policy_document.swagger_policy.json
 }
