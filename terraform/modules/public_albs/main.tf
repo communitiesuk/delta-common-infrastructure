@@ -39,7 +39,7 @@ module "delta_alb" {
   subnet_ids          = var.subnet_ids
   prefix              = "${var.environment}-delta-site-"
   log_expiration_days = 30
-  apply_aws_shield    = true
+  apply_aws_shield    = var.environment == "production"
 }
 
 output "delta" {

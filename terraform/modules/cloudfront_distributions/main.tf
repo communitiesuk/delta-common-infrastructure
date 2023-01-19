@@ -50,7 +50,7 @@ module "delta_cloudfront" {
   origin_domain                  = var.delta.alb.dns_name
   cloudfront_domain              = var.delta.domain
   geo_restriction_enabled        = var.delta.disable_geo_restriction != true
-  apply_aws_shield               = true
+  apply_aws_shield               = var.environment == "production"
 }
 
 module "api_cloudfront" {
