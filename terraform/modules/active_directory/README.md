@@ -48,6 +48,9 @@ Set-DnsServerForwarder -ComputerName <dns-server> -IpAddress x.x.0.2
 
 Do the same for the other server and check that `nslookup secretsmanager.eu-west-1.amazonaws.com` returns an IP address inside the VPC.
 
+Only the management server and CA server use the Domain Controllers as DNS servers.
+Other instances within the VPC use Amazon provided DNS and this module configures a private Route53 zone that points the domain (dluhcdata.local) at an NLB that forwards LDAP(S) requests to the DCs. This NLB is sticky which helps mitigate problems due to replication lag.
+
 ## Troubleshooting
 
 ### You can also connect as the ec2 server admin
