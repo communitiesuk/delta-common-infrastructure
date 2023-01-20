@@ -18,7 +18,7 @@ resource "aws_accessanalyzer_analyzer" "us-east-1" {
 
 resource "aws_accessanalyzer_archive_rule" "eu-west-1" {
   analyzer_name = "eu-west-1-analyzer"
-  rule_name     = "archive-rule"
+  rule_name     = "organization-account"
 
   filter {
     criteria = "principal.AWS"
@@ -34,7 +34,7 @@ resource "aws_accessanalyzer_archive_rule" "eu-west-1" {
 resource "aws_accessanalyzer_archive_rule" "us-east-1" {
   analyzer_name = "us-east-1-analyzer"
   provider      = aws.us-east-1
-  rule_name     = "archive-rule"
+  rule_name     = "organization-account"
 
   filter {
     criteria = "principal.AWS"
