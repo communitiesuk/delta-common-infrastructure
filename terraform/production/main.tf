@@ -140,13 +140,6 @@ module "active_directory" {
   management_instance_type     = "t3.xlarge"
 }
 
-module "active_directory_dns_resolver" {
-  source = "../modules/active_directory_dns_resolver"
-
-  vpc               = module.networking.vpc
-  ad_dns_server_ips = module.active_directory.dns_servers
-}
-
 module "marklogic_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
