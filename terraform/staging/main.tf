@@ -28,7 +28,8 @@ provider "aws" {
 }
 
 locals {
-  environment = "staging"
+  environment             = "staging"
+  organisation_account_id = "448312965134"
 }
 
 # In practice the ACM validation records will all overlap
@@ -317,7 +318,7 @@ module "ses_monitoring" {
 module "iam_roles" {
   source = "../modules/iam_roles"
 
-  organisation_account_id = "448312965134"
+  organisation_account_id = local.organisation_account_id
   environment             = local.environment
   session_manager_key_arn = module.session_manager_config.session_manager_key_arn
 }
@@ -328,5 +329,6 @@ module "session_manager_config" {
 }
 
 module "account_security" {
-  source = "../modules/account_security"
+  source                  = "../modules/account_security"
+  organisation_account_id = local.organisation_account_id
 }

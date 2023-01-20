@@ -59,6 +59,7 @@ module "ses_monitoring" {
 }
 
 locals {
+  organisation_account_id    = "448312965134"
   environment                = "production"
   notification_email_address = "Group-DLUHCDeltaNotifications@softwire.com"
   dns_cert_validation_records = setunion(
@@ -290,7 +291,7 @@ module "guardduty" {
 module "iam_roles" {
   source = "../modules/iam_roles"
 
-  organisation_account_id = "448312965134"
+  organisation_account_id = local.organisation_account_id
   environment             = local.environment
   session_manager_key_arn = module.session_manager_config.session_manager_key_arn
 }
@@ -301,5 +302,6 @@ module "session_manager_config" {
 }
 
 module "account_security" {
-  source = "../modules/account_security"
+  source                  = "../modules/account_security"
+  organisation_account_id = local.organisation_account_id
 }
