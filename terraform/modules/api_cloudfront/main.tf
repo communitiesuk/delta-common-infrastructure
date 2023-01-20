@@ -45,6 +45,7 @@ resource "aws_cloudfront_distribution" "main" {
   aliases = var.cloudfront_domain == null ? [] : var.cloudfront_domain.aliases
 
   wait_for_deployment = false
+  default_root_object = "index.html"
 
   origin {
     domain_name = var.origin_domain
