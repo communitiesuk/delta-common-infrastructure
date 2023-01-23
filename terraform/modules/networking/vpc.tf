@@ -1,5 +1,3 @@
-# TODO DT-49
-# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
 resource "aws_vpc" "vpc" {
   cidr_block                           = var.vpc_cidr_block
   enable_dns_hostnames                 = true
@@ -9,6 +7,18 @@ resource "aws_vpc" "vpc" {
   tags = {
     "Name" = "delta-vpc-${var.environment}"
   }
+}
+
+resource "aws_vpc_dhcp_options" "vpc" {
+  domain_name_servers = ["AmazonProvidedDNS"]
+  # Marklogic needs to be able to resolve other hosts in the cluster by their hostnames,
+  # which default to e.g. ip-1-2-3-4 which need this search base to resolve correctly.
+  domain_name = "${data.aws_region.current.name}.compute.internal"
+}
+
+resource "aws_vpc_dhcp_options_association" "vpc" {
+  vpc_id          = aws_vpc.vpc.id
+  dhcp_options_id = aws_vpc_dhcp_options.vpc.id
 }
 
 resource "aws_default_network_acl" "main" {
