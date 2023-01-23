@@ -171,9 +171,9 @@ resource "aws_iam_policy" "ml_cloudwatch_ssm" {
         Action = [
           "ssm:GetParameter"
         ],
-        Effect = "Allow"
+        Effect   = "Allow"
         Resource = [aws_ssm_parameter.cloudwatch_config.arn]
-      }]
+    }]
   })
 }
 
@@ -207,7 +207,7 @@ data "aws_iam_policy_document" "ml_cloudwatch" {
       "logs:DescribeLogStreams",
       "logs:PutLogEvents",
     ]
-    resources = concat(["${aws_cloudwatch_log_group.ml_patch.arn}:*"], [for arn in module.marklogic_log_group.log_group_arns : "arn:*"])
+    resources = concat(["${aws_cloudwatch_log_group.ml_patch.arn}:*"], [for arn in module.marklogic_log_group.log_group_arns : "${arn}:*"])
   }
 }
 
