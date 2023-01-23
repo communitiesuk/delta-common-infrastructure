@@ -69,6 +69,19 @@ Terraform is unaware of an aws_ssm_association failing to run.
 
 * The logs from the CA server "QuickStart" SSM document run go to CloudWatch
 
+### Update DNS servers
+
+You may have to update the DNS servers manually to point to the Domain Controllers as we no longer advertise them over DHCP.
+
+Log into the server and in an admin PowerShell update:
+
+```powershell
+Get-DnsClientServerAddress
+Set-DNSClientServerAddress "Ethernet 2" -ServerAddresses ("10.0.5.12", "10.0.4.251")
+```
+
+Where "Ethernet 2" matches the interface name returned by the first command and the IP addresses are the domain controller for that environment's DCs, you can get these from the `ad_dns_servers` Terraform output or the AWS console under Directory Services.
+
 ## Active Directory Migration Tool setup
 
 Optional, but recommended:

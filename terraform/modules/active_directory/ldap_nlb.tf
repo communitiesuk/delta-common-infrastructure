@@ -5,6 +5,10 @@ resource "aws_lb" "ldap" {
   load_balancer_type = "network"
   subnets            = [for subnet in var.domain_controller_subnets : subnet.id]
 
+  # Network Load balancers are only really sticky if you let them balance cross-zone
+  # AWS don't seem to document this, see https://cloudar.be/awsblog/why-aws-nlb-stickiness-is-not-always-sticky/
+  enable_cross_zone_load_balancing = true
+
   enable_deletion_protection = false
 }
 
