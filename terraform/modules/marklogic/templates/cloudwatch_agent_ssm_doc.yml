@@ -1,0 +1,19 @@
+---
+schemaVersion: "2.2"
+description: Install and configure the Cloudwatch agent
+parameters:
+  SsmParameterName:
+    type: String
+mainSteps:
+  - action: aws:configurePackage
+    name: installCloudwatchPackage
+    inputs:
+      action: Install
+      installationType: Uninstall and reinstall
+      name: AmazonCloudWatchAgent
+  - action: aws:runShellScript
+    name: startCloudwatchAgent
+    inputs:
+      timeoutSeconds: '30'
+      runCommand:
+        - "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c \"ssm:{{SsmParameterName}}\""
