@@ -141,7 +141,7 @@ module "cloudfront_distributions" {
     var.allowed_ssh_cidrs,
     ["${module.networking.nat_gateway_ip}/32"]
   )
-  apply_aws_shield_to_delta_website = false
+  apply_aws_shield = false
   delta = {
     alb = module.public_albs.delta
     domain = {
