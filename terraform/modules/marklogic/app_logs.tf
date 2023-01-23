@@ -23,14 +23,9 @@ resource "aws_ssm_parameter" "cloudwatch_config" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "cloudwatch_agent_server_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
-  role       = aws_iam_role.ml_iam_role.name
-}
-
 resource "aws_ssm_association" "install_cloudwatch_agent" {
   name             = aws_ssm_document.couldwatch_agent.name
-  association_name = "Install-CloudwatchAgent-${var.environment}"
+  association_name = "Install-CloudwatchAgent-MarkLogic-${var.environment}"
   parameters = {
     SsmParameterName = aws_ssm_parameter.cloudwatch_config.name
   }

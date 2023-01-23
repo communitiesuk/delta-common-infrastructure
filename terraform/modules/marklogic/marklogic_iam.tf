@@ -163,6 +163,25 @@ data "aws_iam_policy_document" "ml_s3_backups" {
   }
 }
 
+resource "aws_iam_policy" "ml_cloudwatch_ssm" {
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "ssm:GetParameter"
+        ],
+        Effect = "Allow"
+        Resource = [aws_ssm_parameter.cloudwatch_config.arn]
+      }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ml_cloudwatch_ssm" {
+  role       = aws_iam_role.ml_iam_role.name
+  policy_arn = aws_iam_policy.ml_cloudwatch_ssm.arn
+}
+
 resource "aws_iam_role_policy_attachment" "ml_cloudwatch" {
   role       = aws_iam_role.ml_iam_role.name
   policy_arn = aws_iam_policy.ml_cloudwatch.arn
@@ -188,7 +207,7 @@ data "aws_iam_policy_document" "ml_cloudwatch" {
       "logs:DescribeLogStreams",
       "logs:PutLogEvents",
     ]
-    resources = ["${aws_cloudwatch_log_group.ml_patch.arn}:*"]
+    resources = concat(["${aws_cloudwatch_log_group.ml_patch.arn}:*"], [for arn in module.marklogic_log_group.log_group_arns : "arn:*"])
   }
 }
 

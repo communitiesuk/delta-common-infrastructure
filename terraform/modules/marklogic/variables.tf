@@ -49,8 +49,3 @@ variable "extra_instance_policy_arn" {
   type        = string
   description = "arn of IAM policy to give instance necessary permissions for access via Session Manager"
 }
-
-variable "log_retention_in_days" {
-  type    = number
-  default = 14
-}
