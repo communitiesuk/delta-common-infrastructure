@@ -5,31 +5,11 @@ locals {
   ssm_log_group_name = "marklogic-ssm-${var.environment}"
 }
 
-resource "aws_cloudwatch_log_group" "main" {
-  name              = local.app_log_group_name
-  retention_in_days = var.log_retention_in_days
-  kms_key_id        = aws_kms_key.app_logs_encryption_key.arn
-}
+module "marklogic_log_group" {
+  source = "../encrypted_log_groups"
 
-resource "aws_cloudwatch_log_group" "ssm" {
-  name              = local.ssm_log_group_name
-  retention_in_days = var.log_retention_in_days
-  kms_key_id        = aws_kms_key.app_logs_encryption_key.arn
-}
-
-resource "aws_kms_key" "app_logs_encryption_key" {
-  description         = "Marklogic app cloudwatch logs - ${var.environment}"
-  enable_key_rotation = true
-  policy = templatefile("${path.module}/templates/logging_kms_policy.json", {
-    account_id        = data.aws_caller_identity.current.account_id
-    region            = data.aws_region.current.name
-    log_group_pattern = "marklogic-*${var.environment}"
-  })
-}
-
-resource "aws_kms_alias" "app_logs_encryption_key" {
-  name          = "alias/marklogic-logs-encryption-${var.environment}"
-  target_key_id = aws_kms_key.app_logs_encryption_key.id
+  kms_key_alias_name = "marklogic-logs"
+  log_group_names    = [local.app_log_group_name, local.ssm_log_group_name]
 }
 
 resource "aws_ssm_parameter" "cloudwatch_config" {
