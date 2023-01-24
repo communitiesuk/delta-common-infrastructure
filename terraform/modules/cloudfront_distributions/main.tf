@@ -4,11 +4,12 @@ module "access_logs_bucket" {
   expiration_days = 180
 }
 
-module "default_waf" {
+module "jaspersoft_waf" {
   source            = "../waf"
-  log_group_suffix  = "default-${var.environment}"
-  prefix            = "${var.environment}-default-"
+  log_group_suffix  = "jaspersoft-${var.environment}"
+  prefix            = "${var.environment}-jaspersoft-"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
+  ip_allowlist      = var.jaspersoft.ip_allowlist
 }
 
 module "delta_website_waf" {
@@ -18,6 +19,7 @@ module "delta_website_waf" {
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Orbeon triggers this rule
   excluded_rules = ["CrossSiteScripting_BODY"]
+  ip_allowlist   = var.delta.ip_allowlist
 }
 
 module "cpm_waf" {
@@ -27,7 +29,7 @@ module "cpm_waf" {
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # At least some e-claims POST requests trigger this rule
   excluded_rules = ["CrossSiteScripting_BODY"]
-  ip_allowlist   = var.enable_ip_allowlists ? local.cpm_ip_allowlist : null
+  ip_allowlist   = var.cpm.ip_allowlist
 }
 
 module "api_auth_waf" {
@@ -37,7 +39,7 @@ module "api_auth_waf" {
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # XSS not issue for API
   excluded_rules = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
-  ip_allowlist   = var.enable_ip_allowlists ? local.delta_api_allowlist : null
+  ip_allowlist   = var.api.ip_allowlist
 }
 
 module "delta_cloudfront" {
@@ -49,6 +51,7 @@ module "delta_cloudfront" {
   cloudfront_key                 = var.delta.alb.cloudfront_key
   origin_domain                  = var.delta.alb.dns_name
   cloudfront_domain              = var.delta.domain
+  is_ipv6_enabled                = var.delta.ip_allowlist == null
   geo_restriction_enabled        = var.delta.disable_geo_restriction != true
 }
 
@@ -61,7 +64,7 @@ module "api_cloudfront" {
   cloudfront_key                 = var.api.alb.cloudfront_key
   origin_domain                  = var.api.alb.dns_name
   cloudfront_domain              = var.api.domain
-  is_ipv6_enabled                = !var.enable_ip_allowlists
+  is_ipv6_enabled                = var.api.ip_allowlist == null
   geo_restriction_enabled        = var.api.disable_geo_restriction != true
 }
 
@@ -74,7 +77,7 @@ module "keycloak_cloudfront" {
   cloudfront_key                 = var.keycloak.alb.cloudfront_key
   origin_domain                  = var.keycloak.alb.dns_name
   cloudfront_domain              = var.keycloak.domain
-  is_ipv6_enabled                = !var.enable_ip_allowlists
+  is_ipv6_enabled                = var.keycloak.ip_allowlist == null
   geo_restriction_enabled        = var.keycloak.disable_geo_restriction != true
 }
 
@@ -87,7 +90,7 @@ module "cpm_cloudfront" {
   cloudfront_key                 = var.cpm.alb.cloudfront_key
   origin_domain                  = var.cpm.alb.dns_name
   cloudfront_domain              = var.cpm.domain
-  is_ipv6_enabled                = !var.enable_ip_allowlists
+  is_ipv6_enabled                = var.cpm.ip_allowlist == null
   geo_restriction_enabled        = var.cpm.disable_geo_restriction != true
 }
 
@@ -96,9 +99,10 @@ module "jaspersoft_cloudfront" {
   prefix                         = "jaspersoft-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "jaspersoft"
-  waf_acl_arn                    = module.default_waf.acl_arn
+  waf_acl_arn                    = module.jaspersoft_waf.acl_arn
   cloudfront_key                 = var.jaspersoft.alb.cloudfront_key
   origin_domain                  = var.jaspersoft.alb.dns_name
   cloudfront_domain              = var.jaspersoft.domain
+  is_ipv6_enabled                = var.jaspersoft.ip_allowlist == null
   geo_restriction_enabled        = var.jaspersoft.disable_geo_restriction != true
 }

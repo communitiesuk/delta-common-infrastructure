@@ -6,15 +6,6 @@ variable "environment" {
   type = string
 }
 
-variable "enable_ip_allowlists" {
-  type    = bool
-  default = true
-}
-
-variable "all_distribution_ip_allowlist" {
-  type = list(string)
-}
-
 variable "waf_per_ip_rate_limit" {
   type        = number
   default     = 500
@@ -32,6 +23,7 @@ variable "delta" {
       acm_certificate_arn = string
     }))
     disable_geo_restriction = optional(bool)
+    ip_allowlist            = optional(list(string)) # Leave null to disable IP restrictions
   })
 }
 
@@ -46,6 +38,7 @@ variable "api" {
       acm_certificate_arn = string
     }))
     disable_geo_restriction = optional(bool)
+    ip_allowlist            = optional(list(string))
   })
 }
 
@@ -60,6 +53,7 @@ variable "keycloak" {
       acm_certificate_arn = string
     }))
     disable_geo_restriction = optional(bool)
+    ip_allowlist            = optional(list(string))
   })
 }
 
@@ -74,6 +68,7 @@ variable "cpm" {
       acm_certificate_arn = string
     }))
     disable_geo_restriction = optional(bool)
+    ip_allowlist            = optional(list(string))
   })
 }
 
@@ -88,5 +83,6 @@ variable "jaspersoft" {
       acm_certificate_arn = string
     }))
     disable_geo_restriction = optional(bool)
+    ip_allowlist            = optional(list(string))
   })
 }
