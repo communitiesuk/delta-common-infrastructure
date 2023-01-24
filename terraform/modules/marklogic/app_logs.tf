@@ -9,14 +9,14 @@ module "marklogic_log_group" {
   source = "../encrypted_log_groups"
 
   kms_key_alias_name = "marklogic-logs"
-  log_group_names    = concat(
+  log_group_names = concat(
     [local.ssm_log_group_name],
     flatten([for port_detail in local.log_port_details :
-    [
-      "${local.app_log_group_base_name}-${port_detail.log_name_fragment}-${port_detail.port}-access",
-      "${local.app_log_group_base_name}-${port_detail.log_name_fragment}-${port_detail.port}-error",
-      "${local.app_log_group_base_name}-${port_detail.log_name_fragment}-${port_detail.port}-request",
-    ]
+      [
+        "${local.app_log_group_base_name}-${port_detail.log_name_fragment}-${port_detail.port}-access",
+        "${local.app_log_group_base_name}-${port_detail.log_name_fragment}-${port_detail.port}-error",
+        "${local.app_log_group_base_name}-${port_detail.log_name_fragment}-${port_detail.port}-request",
+      ]
     ]),
     [
       "${local.app_log_group_base_name}-audit",
@@ -28,9 +28,22 @@ module "marklogic_log_group" {
   )
 }
 
+# tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
 resource "aws_s3_bucket" "config_files" {
   bucket = "${var.environment}-marklogic-config"
 }
+
+# tfsec:ignore:aws-s3-encryption-customer-key
+resource "aws_s3_bucket_server_side_encryption_configuration" "cloudfront_logs" {
+  bucket = aws_s3_bucket.config_files.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 resource "aws_s3_bucket_public_access_block" "config_files" {
   bucket = aws_s3_bucket.config_files.id
 
@@ -52,7 +65,7 @@ resource "aws_s3_object" "cloudwatch_config" {
 }
 
 resource "aws_ssm_association" "install_cloudwatch_agent" {
-  depends_on = [module.marklogic_log_group]
+  depends_on       = [module.marklogic_log_group]
   name             = aws_ssm_document.couldwatch_agent.name
   association_name = "Install-CloudwatchAgent-MarkLogic-${var.environment}"
   parameters = {
