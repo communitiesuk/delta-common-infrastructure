@@ -110,3 +110,15 @@ tail -f base/logs/catalina.out
 Check it's working again. If something goes wrong try deleting base/work and base/temp and restarting Tomcat again.
 
 To roll back: stop Tomcat again, repoint the `latest/` symlink at the previous version, then restart Tomcat.
+
+
+## Migration
+
+To migrate between servers:
+
+* From the old server, export a zip file via: Manage -> Server Settings -> Export. Choose to export everything except users/roles
+* Import that file on the new server via Manage -> Server Settings -> Import.
+* Add a file at root/DELTA/Sub Reports/treasury-report-common.jrxml (file is in the Delta repo). Set the resource ID to "TR_Common.jrxml"
+* Edit the data source "ML POST" so that it has the correct URL, port and credentials for connection to MarkLogic:
+  * `http://marklogic.vpc.local:8143/?user=jasperreports`
+  * Username = `jasperreports`, password in Secrets Manager
