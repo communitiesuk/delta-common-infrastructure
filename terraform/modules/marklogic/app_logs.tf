@@ -12,23 +12,26 @@ module "marklogic_log_group" {
   log_group_names    = [local.app_log_group_base_name, local.ssm_log_group_name]
 }
 
-resource "aws_ssm_parameter" "cloudwatch_config" {
-  name        = "/marklogic/${var.environment}/cloudwatch/config"
-  description = "cloudwatch_config.json for the MarkLogic servers"
-  type        = "String"
-  value = templatefile("${path.module}/templates/cloudwatch_config.json.tftpl", {
+resource "aws_s3_bucket" "config_files" {
+  bucket = "${var.environment}/marklogic-config"
+}
+
+resource "aws_s3_object" "cloudwatch_config" {
+  content = templatefile("${path.module}/templates/cloudwatch_config.json.tftpl", {
     environment             = var.environment
     app_log_group_base_name = local.app_log_group_base_name
     ssm_log_group_name      = local.ssm_log_group_name
     log_port_details        = local.log_port_details
   })
+  bucket = aws_s3_bucket.config_files.id
+  key    = "cloudwatch_config.json"
 }
 
 resource "aws_ssm_association" "install_cloudwatch_agent" {
   name             = aws_ssm_document.couldwatch_agent.name
   association_name = "Install-CloudwatchAgent-MarkLogic-${var.environment}"
   parameters = {
-    SsmParameterName = aws_ssm_parameter.cloudwatch_config.name
+    ConfigLocation = "s3://${aws_s3_object.cloudwatch_config.bucket}/${aws_s3_object.cloudwatch_config.key}"
   }
   targets {
     key    = "tag:marklogic:stack:name"

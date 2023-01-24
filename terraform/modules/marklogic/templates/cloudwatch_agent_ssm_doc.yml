@@ -2,7 +2,7 @@
 schemaVersion: "2.2"
 description: Install and configure the Cloudwatch agent
 parameters:
-  SsmParameterName:
+  ConfigLocation:
     type: String
 mainSteps:
   - action: aws:configurePackage
@@ -16,4 +16,5 @@ mainSteps:
     inputs:
       timeoutSeconds: '30'
       runCommand:
-        - "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c \"ssm:{{SsmParameterName}}\""
+        - "aws s3 cp {{ConfigLocation}} ./cloudwatch_config.json"
+        - "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:cloudwatch_config.json"

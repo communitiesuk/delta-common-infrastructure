@@ -169,10 +169,10 @@ resource "aws_iam_policy" "ml_cloudwatch_ssm" {
     Statement = [
       {
         Action = [
-          "ssm:GetParameter"
+          "s3:GetObject"
         ],
         Effect   = "Allow"
-        Resource = [aws_ssm_parameter.cloudwatch_config.arn]
+        Resource = "${aws_s3_bucket.config_files.arn}/*"
     }]
   })
 }
