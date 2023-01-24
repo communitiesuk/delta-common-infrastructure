@@ -209,3 +209,7 @@ Once the server has initialised JasperReports should be available at `https://re
 Run a full `terraform apply` to create any remaining resources.
 
 Continue with the setup instructions in the common-payments-module and then delta repositories.
+
+### 9 API Swagger static files
+
+The static files in the \api\docs\src\main\resources\static folder in the delta repository should be uploaded to the relevant S3 bucket (name `dluhc-delta-api-swagger-{environment}`) in each environment to serve the swagger interface for the API. This can be done via the AWS console or CLI.

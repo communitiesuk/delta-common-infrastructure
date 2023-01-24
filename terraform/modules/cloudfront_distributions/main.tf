@@ -10,8 +10,8 @@ module "jaspersoft_waf" {
   prefix            = "${var.environment}-jaspersoft-"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Editing queries triggers this rule
-  excluded_rules    = ["CrossSiteScripting_BODY"]
-  ip_allowlist      = var.jaspersoft.ip_allowlist
+  excluded_rules = ["CrossSiteScripting_BODY"]
+  ip_allowlist   = var.jaspersoft.ip_allowlist
 }
 
 module "delta_website_waf" {
@@ -20,8 +20,8 @@ module "delta_website_waf" {
   log_group_suffix  = "delta-website-${var.environment}"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Orbeon triggers this rule
-  excluded_rules    = ["CrossSiteScripting_BODY"]
-  ip_allowlist      = var.delta.ip_allowlist
+  excluded_rules = ["CrossSiteScripting_BODY"]
+  ip_allowlist   = var.delta.ip_allowlist
 }
 
 module "cpm_waf" {
@@ -58,7 +58,7 @@ module "delta_cloudfront" {
 }
 
 module "api_cloudfront" {
-  source                         = "../cloudfront_distribution"
+  source                         = "../api_cloudfront"
   prefix                         = "delta-api-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta-api"
@@ -68,6 +68,7 @@ module "api_cloudfront" {
   cloudfront_domain              = var.api.domain
   is_ipv6_enabled                = var.api.ip_allowlist == null
   geo_restriction_enabled        = var.api.disable_geo_restriction != true
+  environment                    = var.environment
 }
 
 module "keycloak_cloudfront" {
