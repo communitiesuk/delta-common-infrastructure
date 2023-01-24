@@ -19,7 +19,7 @@ resource "aws_lb_target_group" "ml" {
   preserve_client_ip = each.value == 8000 || each.value == 8001 || each.value == 8002
 
   health_check {
-    interval            = 10 #seconds
+    interval            = 30 # seconds
     port                = 7997
     unhealthy_threshold = 10
     healthy_threshold   = 10

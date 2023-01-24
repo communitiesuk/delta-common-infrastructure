@@ -24,7 +24,7 @@ variable "restrict_public_buckets" {
 
 variable "noncurrent_version_expiration_days" {
   type    = number
-  default = null
+  default = 180
 }
 
 variable "access_log_expiration_days" {

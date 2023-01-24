@@ -192,16 +192,13 @@ module "cloudfront_distributions" {
 
   environment  = local.environment
   base_domains = [var.secondary_domain]
-  all_distribution_ip_allowlist = concat(
-    var.allowed_ssh_cidrs,
-    ["${module.networking.nat_gateway_ip}/32"]
-  )
   delta = {
     alb = module.public_albs.delta
     domain = {
       aliases             = ["delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["delta"].arn
     }
+    ip_allowlist = local.cloudfront_ip_allowlists.delta_website
   }
   api = {
     alb = module.public_albs.delta_api
@@ -209,6 +206,7 @@ module "cloudfront_distributions" {
       aliases             = ["api.delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["api"].arn
     }
+    ip_allowlist = local.cloudfront_ip_allowlists.delta_api
   }
   keycloak = {
     alb = module.public_albs.keycloak
@@ -216,6 +214,7 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
+    ip_allowlist = local.cloudfront_ip_allowlists.delta_api
   }
   cpm = {
     alb = module.public_albs.cpm
@@ -223,6 +222,7 @@ module "cloudfront_distributions" {
       aliases             = ["cpm.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
+    ip_allowlist = local.cloudfront_ip_allowlists.cpm
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
@@ -230,6 +230,7 @@ module "cloudfront_distributions" {
       aliases             = ["reporting.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
     }
+    ip_allowlist = local.cloudfront_ip_allowlists.jaspersoft
   }
 }
 
