@@ -30,6 +30,8 @@ resource "aws_lb_target_group" "ml" {
   }
 }
 
+# We need this so that we can attach a target group to the API's listener, which is HTTP-based
+# and cannot target a TCP target group.
 resource "aws_lb_target_group" "ml_http" {
   name_prefix          = "m${substr(var.environment, 0, 1)}http"
   port                 = 8050
