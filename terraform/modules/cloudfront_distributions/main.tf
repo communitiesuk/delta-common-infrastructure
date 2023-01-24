@@ -9,6 +9,8 @@ module "jaspersoft_waf" {
   log_group_suffix  = "jaspersoft-${var.environment}"
   prefix            = "${var.environment}-jaspersoft-"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
+  # Editing queries triggers this rule
+  excluded_rules    = ["CrossSiteScripting_BODY"]
   ip_allowlist      = var.jaspersoft.ip_allowlist
 }
 
@@ -18,8 +20,8 @@ module "delta_website_waf" {
   log_group_suffix  = "delta-website-${var.environment}"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Orbeon triggers this rule
-  excluded_rules = ["CrossSiteScripting_BODY"]
-  ip_allowlist   = var.delta.ip_allowlist
+  excluded_rules    = ["CrossSiteScripting_BODY"]
+  ip_allowlist      = var.delta.ip_allowlist
 }
 
 module "cpm_waf" {
