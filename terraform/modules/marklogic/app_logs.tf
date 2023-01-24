@@ -13,7 +13,7 @@ module "marklogic_log_group" {
 }
 
 resource "aws_s3_bucket" "config_files" {
-  bucket = "${var.environment}/marklogic-config"
+  bucket = "${var.environment}-marklogic-config"
 }
 
 resource "aws_s3_object" "cloudwatch_config" {
