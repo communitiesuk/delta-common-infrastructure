@@ -15,6 +15,14 @@ module "marklogic_log_group" {
 resource "aws_s3_bucket" "config_files" {
   bucket = "${var.environment}-marklogic-config"
 }
+resource "aws_s3_bucket_public_access_block" "config_files" {
+  bucket = aws_s3_bucket.config_files.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
 
 resource "aws_s3_object" "cloudwatch_config" {
   content = templatefile("${path.module}/templates/cloudwatch_config.json.tftpl", {
