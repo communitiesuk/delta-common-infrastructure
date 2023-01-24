@@ -209,6 +209,13 @@ data "aws_iam_policy_document" "ml_cloudwatch" {
     ]
     resources = concat(["${aws_cloudwatch_log_group.ml_patch.arn}:*"], [for arn in module.marklogic_log_group.log_group_arns : "${arn}:*"])
   }
+
+  statement {
+    actions = [
+      "cloudwatch:PutMetricData"
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ml_asg" {

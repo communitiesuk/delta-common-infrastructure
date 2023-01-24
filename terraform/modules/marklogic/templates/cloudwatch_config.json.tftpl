@@ -76,6 +76,7 @@ ${jsonencode({
     }
   },
   "metrics": {
+    "namespace": "${environment}/MarkLogic"
     "aggregation_dimensions": [
       [
         "InstanceId"
@@ -99,7 +100,7 @@ ${jsonencode({
       },
       "mem": {
         "measurement": [
-          "mem_used_percent"
+          "used_percent"
         ],
         "metrics_collection_interval": 60
       }
