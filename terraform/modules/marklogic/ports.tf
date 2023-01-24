@@ -13,7 +13,7 @@ locals {
     "description" = "HTTP to admin/default ports"
     }, {
     "from_port"   = 8140
-    "to_port"     = 8142
+    "to_port"     = 8143
     "description" = "HTTP to CPM ports"
     }, {
     "from_port"   = 8050
@@ -35,6 +35,10 @@ locals {
     "from_port"   = 8150
     "to_port"     = 8150
     "description" = "HTTP to Delta XCC port"
+    }, {
+    "from_port"   = 8060
+    "to_port"     = 8062
+    "description" = "HTTP to CPM DCLG BI ports"
   }]
   lb_ports = {
     for port in flatten([

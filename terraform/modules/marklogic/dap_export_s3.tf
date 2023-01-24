@@ -1,9 +1,10 @@
 module "dap_export_bucket" {
   source = "../s3_bucket"
 
-  bucket_name            = "dluhc-delta-dap-export-${var.environment}"
-  access_log_bucket_name = "dluhc-delta-dap-export-access-logs-${var.environment}"
-  force_destroy          = true
+  bucket_name                = "dluhc-delta-dap-export-${var.environment}"
+  access_log_bucket_name     = "dluhc-delta-dap-export-access-logs-${var.environment}"
+  force_destroy              = true
+  access_log_expiration_days = 365
 }
 
 module "dap_export_job_window" {

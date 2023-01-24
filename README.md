@@ -1,10 +1,10 @@
-This repository contains Terraform configuration for the infrastructure for data collection as a service, which consists of  Delta, the Common Payments Module, and potentially e-claims in the future. 
+This repository contains Terraform configuration for the infrastructure for data collection as a service, which consists of  Delta, the Common Payments Module, and potentially e-claims in the future.
 
 Infrastructure specific to an individual application should live in its own codebase, but shared resources like AWS SES or the shared VPC will be defined here.
 
 ## Repository contents
 
-* docs - any documentation relevant to the shared infrastructure or this repository 
+* docs - any documentation relevant to the shared infrastructure or this repository
   * adr - Architecture Decision Records
   * diagrams - architecture diagrams
 * terraform - all of the Terraform code
@@ -22,7 +22,7 @@ GitHub Actions is the CI/CD platform of choice for minimal maintenance, plus it 
   * After a reviewer approves the plan, run `terraform apply` for the test environment
   * After that completes successfully, repeat for the next environment (test -> staging -> production)
 
-The `terraform.yml` workflow could be reused by other Git repositories, but may need to be enhanced with e.g. a continuous deployment option. 
+The `terraform.yml` workflow could be reused by other Git repositories, but may need to be enhanced with e.g. a continuous deployment option.
 
 ## tfsec
 
@@ -85,16 +85,16 @@ Setting up AWS Vault:
    [profile mhclg]
    region = eu-west-1
    mfa_serial = arn:aws:iam::448312965134:mfa/<your AWS username>
-    
+
    [profile delta-dev]
    source_profile = mhclg
    include_profile = mhclg
    role_arn=arn:aws:iam::486283582667:role/developer
-    
+
    [profile delta-prod]
    source_profile = mhclg
    include_profile = mhclg
-   role_arn=arn:aws:iam::468442790030:role/developer       
+   role_arn=arn:aws:iam::468442790030:role/developer
    ```
 
 3. From your terminal run `aws-vault add mhclg` and enter your Access Key ID and Secret Access Key when prompted
@@ -102,7 +102,7 @@ Setting up AWS Vault:
 4. If you run `aws-vault list` you should see something like
 
    ```text
-   Profile                  Credentials              Sessions                 
+   Profile                  Credentials              Sessions
    =======                  ===========              ========
    mhclg                    mhclg                    -
    delta-dev                -                        -
@@ -155,11 +155,8 @@ MarkLogic can't be configured without AD, so bring this up next.
 terraform apply -target module.active_directory
 ```
 
-Complete the manual setup steps in the module README, then configure the VPC DHCP to use the AD DNS servers by running:
-
-```sh
-terraform apply -target module.active_directory_dns_resolver
-```
+Complete the manual "First time setup" steps in the module README.
+Create the required containers, service users, and optionally test users, using the scripts in `manual_scripts/active_directory`, changing and noting the passwords.
 
 ### 4 MarkLogic
 
@@ -177,7 +174,9 @@ Follow the instructions in the GitHub Runner module README to get the runner cre
 terraform apply -target module.gh_runner -var="github_actions_runner_token=<token>"
 ```
 
-Now run the MarkLogic setup jobs from GitHub. See the [delta-marklogic-deploy](https://github.com/communitiesuk/delta-marklogic-deploy) repository for details. 
+Create SES credentials to pass to MarkLogic with the `ses_user` module if the environment will have one.
+
+Now run the MarkLogic setup jobs from GitHub. See the [delta-marklogic-deploy](https://github.com/communitiesuk/delta-marklogic-deploy) repository for details.
 
 ### 6 Public ALBs and CloudFront
 
@@ -190,9 +189,9 @@ terraform apply -target module.public_albs -target module.cloudfront_distributio
 ```
 
 Create the CNAME records with another dns_records module, or by requesting them from DLUHC.
-Restore the "domain" inputs once the records are in place and apply again.
+Restore the "domain" inputs once the certificate validation records are in place and apply again.
 
-If you are managing DNS for one of the domains, then create the necessary DNS records after the CloudFront distributions are created. Do this with the dns_records module. 
+If you are managing DNS for one of the domains, then create the necessary DNS records after the CloudFront distributions are created. Do this with the dns_records module.
 
 ### 7 JasperReports server
 
@@ -206,6 +205,8 @@ terraform apply -target module.jaspersoft
 Once the server has initialised JasperReports should be available at `https://reporting.<domain>`.
 
 ### 8 Applications
+
+Run a full `terraform apply` to create any remaining resources.
 
 Continue with the setup instructions in the common-payments-module and then delta repositories.
 

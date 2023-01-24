@@ -146,12 +146,6 @@ module "cloudfront_distributions" {
   base_domains          = [var.primary_domain, var.secondary_domain]
   waf_per_ip_rate_limit = 100000
 
-  # Adding 0.0.0.0/0 to an ipset is not allowed and we don't want to restrict test
-  enable_ip_allowlists = false
-  all_distribution_ip_allowlist = concat(
-    var.allowed_ssh_cidrs,
-    ["${module.networking.nat_gateway_ip}/32"]
-  )
   delta = {
     alb = module.public_albs.delta
     domain = {
@@ -159,6 +153,7 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
     }
     disable_geo_restriction = true
+    # We don't want to IP restrict test (yet)
   }
   api = {
     alb = module.public_albs.delta_api
@@ -221,13 +216,6 @@ module "active_directory" {
   ad_netbios_name              = "DLUHCTEST"
   management_instance_type     = "t3.xlarge"
   include_ca                   = false
-}
-
-module "active_directory_dns_resolver" {
-  source = "../modules/active_directory_dns_resolver"
-
-  vpc               = module.networking.vpc
-  ad_dns_server_ips = module.active_directory.dns_servers
 }
 
 module "marklogic_patch_maintenance_window" {
