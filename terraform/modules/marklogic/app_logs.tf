@@ -1,25 +1,26 @@
 # Inspired by the app_logs in the `delta` project.
 
 locals {
-  app_log_group_name = "marklogic-${var.environment}"
-  ssm_log_group_name = "marklogic-ssm-${var.environment}"
+  app_log_group_base_name = "${var.environment}/marklogic"
+  ssm_log_group_name      = "${var.environment}/marklogic-ssm"
 }
 
 module "marklogic_log_group" {
   source = "../encrypted_log_groups"
 
   kms_key_alias_name = "marklogic-logs"
-  log_group_names    = [local.app_log_group_name, local.ssm_log_group_name]
+  log_group_names    = [local.app_log_group_base_name, local.ssm_log_group_name]
 }
 
 resource "aws_ssm_parameter" "cloudwatch_config" {
   name        = "/marklogic/${var.environment}/cloudwatch/config"
   description = "cloudwatch_config.json for the MarkLogic servers"
   type        = "String"
-  value = templatefile("${path.module}/templates/cloudwatch_config.json", {
-    environment        = var.environment
-    app_log_group_name = local.app_log_group_name
-    ssm_log_group_name = local.ssm_log_group_name
+  value = templatefile("${path.module}/templates/cloudwatch_config.json.tftpl", {
+    environment             = var.environment
+    app_log_group_base_name = local.app_log_group_base_name
+    ssm_log_group_name      = local.ssm_log_group_name
+    log_port_details        = local.log_port_details
   })
 }
 
