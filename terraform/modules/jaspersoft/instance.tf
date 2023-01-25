@@ -61,7 +61,8 @@ resource "aws_instance" "jaspersoft_server" {
   user_data_replace_on_change = true
 
   root_block_device {
-    encrypted = true
+    encrypted   = true
+    volume_size = 40
   }
 
   metadata_options {

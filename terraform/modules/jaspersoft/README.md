@@ -121,4 +121,4 @@ To migrate between servers:
 * Add a file at root/DELTA/Sub Reports/treasury-report-common.jrxml (file is in the Delta repo). Set the resource ID to "TR_Common.jrxml"
 * Edit the data source "ML POST" so that it has the correct URL, port and credentials for connection to MarkLogic:
   * `http://marklogic.vpc.local:8143/?user=jasperreports`
-  * Username = `jasperreports`, password in Secrets Manager
+  * Username = `jasperreports`, password in Secrets Manager. Needs to be created on the MarkLogic server

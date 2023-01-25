@@ -270,6 +270,7 @@ module "jaspersoft" {
   environment                   = local.environment
   extra_instance_policy_arn     = module.session_manager_config.policy_arn
   patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
+  instance_type                 = "m5a.large"
 }
 
 module "ses_identity" {
