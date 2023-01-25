@@ -127,6 +127,10 @@ output "marklogic_deploy_user" {
   value = module.marklogic.deploy_user
 }
 
+output "ml_http_target_group_arn" {
+  value = module.marklogic.ml_http_target_group_arn
+}
+
 output "session_manager_policy_arn" {
   value = data.aws_iam_policy.enable_session_manager.arn
 }
