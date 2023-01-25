@@ -30,6 +30,28 @@ resource "aws_lb_target_group" "ml" {
   }
 }
 
+# We need this so that we can attach a target group to the API's listener, which is HTTP-based
+# and cannot target a TCP target group.
+resource "aws_lb_target_group" "ml_http" {
+  name_prefix          = "m${substr(var.environment, 0, 1)}http"
+  port                 = 8050
+  protocol             = "HTTP"
+  vpc_id               = var.vpc.id
+  deregistration_delay = 60
+
+  health_check {
+    protocol            = "HTTP"
+    path                = "/rest-api/swagger.json"
+    interval            = 10 #seconds
+    unhealthy_threshold = 10
+    healthy_threshold   = 2
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 resource "aws_lb_listener" "ml" {
   for_each = local.lb_ports
 

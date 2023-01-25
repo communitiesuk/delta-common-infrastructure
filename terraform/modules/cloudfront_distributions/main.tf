@@ -58,7 +58,7 @@ module "delta_cloudfront" {
 }
 
 module "api_cloudfront" {
-  source                         = "../cloudfront_distribution"
+  source                         = "../api_cloudfront"
   prefix                         = "delta-api-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta-api"
@@ -68,6 +68,7 @@ module "api_cloudfront" {
   cloudfront_domain              = var.api.domain
   is_ipv6_enabled                = var.api.ip_allowlist == null
   geo_restriction_enabled        = var.api.disable_geo_restriction != true
+  environment                    = var.environment
 }
 
 module "keycloak_cloudfront" {

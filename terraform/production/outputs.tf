@@ -103,3 +103,7 @@ output "public_albs" {
   # Includes CloudFront keys
   sensitive = true
 }
+
+output "ml_http_target_group_arn" {
+  value = module.marklogic.ml_http_target_group_arn
+}
