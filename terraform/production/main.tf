@@ -192,8 +192,8 @@ module "public_albs" {
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
-  environment  = local.environment
-  base_domains = [var.secondary_domain]
+  environment      = local.environment
+  base_domains     = [var.secondary_domain]
   apply_aws_shield = true
   delta = {
     alb = module.public_albs.delta

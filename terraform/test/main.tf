@@ -147,7 +147,7 @@ module "cloudfront_distributions" {
   environment           = local.environment
   base_domains          = [var.primary_domain, var.secondary_domain]
   waf_per_ip_rate_limit = 100000
-  apply_aws_shield = false
+  apply_aws_shield      = false
 
   delta = {
     alb = module.public_albs.delta
