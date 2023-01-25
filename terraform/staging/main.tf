@@ -28,7 +28,8 @@ provider "aws" {
 }
 
 locals {
-  environment = "staging"
+  environment             = "staging"
+  organisation_account_id = "448312965134"
 }
 
 # In practice the ACM validation records will all overlap
@@ -134,13 +135,6 @@ module "cloudfront_distributions" {
 
   environment  = local.environment
   base_domains = [var.primary_domain, var.secondary_domain]
-
-  # We don't want to restrict staging until we are able to confirm who needs access
-  enable_ip_allowlists = false
-  all_distribution_ip_allowlist = concat(
-    var.allowed_ssh_cidrs,
-    ["${module.networking.nat_gateway_ip}/32"]
-  )
   apply_aws_shield = false
   delta = {
     alb = module.public_albs.delta
@@ -148,6 +142,7 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.secondary_domain}", "delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
     }
+    # We don't want to restrict staging until we are able to confirm who needs access
   }
   api = {
     alb = module.public_albs.delta_api
@@ -210,13 +205,6 @@ module "active_directory" {
   management_instance_type     = "t3.xlarge"
 }
 
-module "active_directory_dns_resolver" {
-  source = "../modules/active_directory_dns_resolver"
-
-  vpc               = module.networking.vpc
-  ad_dns_server_ips = module.active_directory.dns_servers
-}
-
 module "marklogic_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
@@ -232,7 +220,7 @@ module "marklogic" {
   environment              = local.environment
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
-  instance_type            = "r5.xlarge"
+  instance_type            = "r5a.xlarge"
   private_dns              = module.networking.private_dns
   data_volume_size_gb      = 200
   patch_maintenance_window = module.marklogic_patch_maintenance_window
@@ -320,7 +308,7 @@ module "ses_monitoring" {
 module "iam_roles" {
   source = "../modules/iam_roles"
 
-  organisation_account_id = "448312965134"
+  organisation_account_id = local.organisation_account_id
   environment             = local.environment
   session_manager_key_arn = module.session_manager_config.session_manager_key_arn
 }
@@ -331,5 +319,6 @@ module "session_manager_config" {
 }
 
 module "account_security" {
-  source = "../modules/account_security"
+  source                  = "../modules/account_security"
+  organisation_account_id = local.organisation_account_id
 }

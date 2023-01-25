@@ -37,10 +37,11 @@ resource "aws_cloudfront_distribution" "main" {
   aliases = var.cloudfront_domain == null ? [] : var.cloudfront_domain.aliases
 
   wait_for_deployment = false
+  default_root_object = "index.html"
 
   origin {
     domain_name = var.origin_domain
-    origin_id   = "primary"
+    origin_id   = "api_lb_origin"
 
     custom_origin_config {
       http_port              = 80
@@ -56,13 +57,23 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
-  enabled         = true
-  is_ipv6_enabled = var.is_ipv6_enabled
+  origin {
+    domain_name = module.swagger_bucket.bucket_regional_domain_name
+    origin_id   = "s3_origin"
 
-  default_cache_behavior {
-    allowed_methods  = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "primary"
+    origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
+  }
+
+  ordered_cache_behavior {
+    allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+    cached_methods             = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id           = "api_lb_origin"
+    path_pattern               = "/rest-api/*"
+    viewer_protocol_policy     = "redirect-to-https"
+    min_ttl                    = 0
+    default_ttl                = 0
+    max_ttl                    = 86400
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
 
     forwarded_values {
       query_string = true
@@ -72,6 +83,25 @@ resource "aws_cloudfront_distribution" "main" {
       }
 
       headers = ["*"]
+    }
+  }
+
+  enabled         = true
+  is_ipv6_enabled = var.is_ipv6_enabled
+
+  default_cache_behavior {
+    allowed_methods  = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "s3_origin"
+
+    forwarded_values {
+      query_string = false
+
+      cookies {
+        forward = "none"
+      }
+
+      headers = []
     }
 
     viewer_protocol_policy     = "redirect-to-https"
@@ -114,14 +144,3 @@ resource "aws_cloudfront_distribution" "main" {
     prevent_destroy = true
   }
 }
-
-resource "aws_shield_protection" "main" {
-  count        = var.apply_aws_shield ? 1 : 0
-  name         = "Cloudfront Protection"
-  resource_arn = aws_cloudfront_distribution.main.arn
-}
-
-# It would be convenient to add a aws_route53_health_check and aws_shield_protection_health_check_association
-# with the cloudfront distribution here.
-# See: https://aws.amazon.com/about-aws/whats-new/2020/02/aws-shield-advanced-now-supports-health-based-detection/
-# However, the benefit is minor (possibly faster response to DDoS) and the geo-restriction may interfere.

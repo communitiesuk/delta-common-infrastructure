@@ -59,6 +59,7 @@ module "ses_monitoring" {
 }
 
 locals {
+  organisation_account_id    = "448312965134"
   environment                = "production"
   notification_email_address = "Group-DLUHCDeltaNotifications@softwire.com"
   dns_cert_validation_records = setunion(
@@ -140,13 +141,6 @@ module "active_directory" {
   management_instance_type     = "t3.xlarge"
 }
 
-module "active_directory_dns_resolver" {
-  source = "../modules/active_directory_dns_resolver"
-
-  vpc               = module.networking.vpc
-  ad_dns_server_ips = module.active_directory.dns_servers
-}
-
 module "marklogic_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
@@ -200,10 +194,6 @@ module "cloudfront_distributions" {
 
   environment  = local.environment
   base_domains = [var.secondary_domain]
-  all_distribution_ip_allowlist = concat(
-    var.allowed_ssh_cidrs,
-    ["${module.networking.nat_gateway_ip}/32"]
-  )
   apply_aws_shield = true
   delta = {
     alb = module.public_albs.delta
@@ -211,6 +201,7 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["delta"].arn
     }
+    ip_allowlist = local.cloudfront_ip_allowlists.delta_website
   }
   api = {
     alb = module.public_albs.delta_api
@@ -218,6 +209,7 @@ module "cloudfront_distributions" {
       aliases             = ["api.delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["api"].arn
     }
+    ip_allowlist = local.cloudfront_ip_allowlists.delta_api
   }
   keycloak = {
     alb = module.public_albs.keycloak
@@ -225,6 +217,7 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
+    ip_allowlist = local.cloudfront_ip_allowlists.delta_api
   }
   cpm = {
     alb = module.public_albs.cpm
@@ -232,6 +225,7 @@ module "cloudfront_distributions" {
       aliases             = ["cpm.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
+    ip_allowlist = local.cloudfront_ip_allowlists.cpm
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
@@ -239,6 +233,7 @@ module "cloudfront_distributions" {
       aliases             = ["reporting.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
     }
+    ip_allowlist = local.cloudfront_ip_allowlists.jaspersoft
   }
 }
 
@@ -293,7 +288,7 @@ module "guardduty" {
 module "iam_roles" {
   source = "../modules/iam_roles"
 
-  organisation_account_id = "448312965134"
+  organisation_account_id = local.organisation_account_id
   environment             = local.environment
   session_manager_key_arn = module.session_manager_config.session_manager_key_arn
 }
@@ -304,5 +299,6 @@ module "session_manager_config" {
 }
 
 module "account_security" {
-  source = "../modules/account_security"
+  source                  = "../modules/account_security"
+  organisation_account_id = local.organisation_account_id
 }

@@ -3,6 +3,10 @@ variable "prefix" {
   type        = string
 }
 
+variable "environment" {
+  type = string
+}
+
 variable "access_logs_bucket_domain_name" {
   type = string
 }
@@ -27,6 +31,7 @@ variable "origin_domain" {
 variable "is_ipv6_enabled" {
   description = "Set to false to disable ipv6, e.g. if you want to use an allowlist of ipv4 addresses"
   type        = bool
+  default     = true
 }
 
 variable "cloudfront_domain" {
@@ -40,8 +45,4 @@ variable "cloudfront_domain" {
 variable "geo_restriction_enabled" {
   type    = bool
   default = true
-}
-
-variable "apply_aws_shield" {
-  type = bool
 }

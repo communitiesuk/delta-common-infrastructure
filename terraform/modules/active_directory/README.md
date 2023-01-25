@@ -48,6 +48,9 @@ Set-DnsServerForwarder -ComputerName <dns-server> -IpAddress x.x.0.2
 
 Do the same for the other server and check that `nslookup secretsmanager.eu-west-1.amazonaws.com` returns an IP address inside the VPC.
 
+Only the management server and CA server use the Domain Controllers as DNS servers.
+Other instances within the VPC use Amazon provided DNS and this module configures a private Route53 zone that points the domain (dluhcdata.local) at an NLB that forwards LDAP(S) requests to the DCs. This NLB is sticky which helps mitigate problems due to replication lag.
+
 ## Troubleshooting
 
 ### You can also connect as the ec2 server admin
@@ -65,6 +68,19 @@ Terraform is unaware of an aws_ssm_association failing to run.
 ### CA Server setup
 
 * The logs from the CA server "QuickStart" SSM document run go to CloudWatch
+
+### Update DNS servers
+
+You may have to update the DNS servers manually to point to the Domain Controllers as we no longer advertise them over DHCP.
+
+Log into the server and in an admin PowerShell update:
+
+```powershell
+Get-DnsClientServerAddress
+Set-DNSClientServerAddress "Ethernet 2" -ServerAddresses ("10.0.5.12", "10.0.4.251")
+```
+
+Where "Ethernet 2" matches the interface name returned by the first command and the IP addresses are the domain controller for that environment's DCs, you can get these from the `ad_dns_servers` Terraform output or the AWS console under Directory Services.
 
 ## Active Directory Migration Tool setup
 
