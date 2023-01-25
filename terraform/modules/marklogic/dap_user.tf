@@ -32,10 +32,10 @@ data "aws_iam_policy_document" "dap" {
       module.dap_export_bucket.bucket_arn,
       "${module.dap_export_bucket.bucket_arn}/latest/*",
     ]
-    condition {
-      test     = "IpAddress"
-      variable = "aws:SourceIp"
-      values   = ["52.17.138.171/32"]
-    }
+    # condition {
+    #   test     = "IpAddress"
+    #   variable = "aws:SourceIp"
+    #   values   = ["52.17.138.171/32"]
+    # }
   }
 }
