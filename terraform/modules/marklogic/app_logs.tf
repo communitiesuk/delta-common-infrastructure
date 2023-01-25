@@ -28,29 +28,10 @@ module "marklogic_log_group" {
   )
 }
 
-# tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
-resource "aws_s3_bucket" "config_files" {
-  bucket = "${var.environment}-marklogic-config"
-}
-
-# tfsec:ignore:aws-s3-encryption-customer-key
-resource "aws_s3_bucket_server_side_encryption_configuration" "cloudfront_logs" {
-  bucket = aws_s3_bucket.config_files.bucket
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "config_files" {
-  bucket = aws_s3_bucket.config_files.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+module "config_files_bucket" {
+  source                 = "../s3_bucket"
+  bucket_name            = "${var.environment}-marklogic-config"
+  access_log_bucket_name = "${var.environment}-marklogic-config-access-logs"
 }
 
 resource "aws_s3_object" "cloudwatch_config" {
@@ -60,7 +41,7 @@ resource "aws_s3_object" "cloudwatch_config" {
     ssm_log_group_name      = local.ssm_log_group_name
     log_port_details        = local.log_port_details
   })
-  bucket = aws_s3_bucket.config_files.id
+  bucket = module.config_files_bucket.bucket
   key    = "cloudwatch_config.json"
 }
 

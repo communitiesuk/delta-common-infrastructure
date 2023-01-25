@@ -174,7 +174,7 @@ resource "aws_iam_policy" "ml_cloudwatch_ssm" {
           "s3:GetObject"
         ],
         Effect   = "Allow"
-        Resource = "${aws_s3_bucket.config_files.arn}/*"
+        Resource = "${module.config_files_bucket.bucket_arn}/*"
     }]
   })
 }
