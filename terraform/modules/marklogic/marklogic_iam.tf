@@ -214,7 +214,9 @@ data "aws_iam_policy_document" "ml_cloudwatch" {
 
   statement {
     actions = [
-      "cloudwatch:PutMetricData"
+      "cloudwatch:PutMetricData",
+      "ec2:DescribeVolumes",
+      "ec2:DescribeTags"
     ]
     resources = ["*"]
   }
