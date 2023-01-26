@@ -63,9 +63,26 @@ Confirm the host key fingerprint matches the Terraform output `bastion_host_key_
 In order to run terraform commands locally you will need to be authenticated to the AWS CLI.
 For security, we use [aws-vault](https://github.com/99designs/aws-vault) for securely storing credentials locally.
 
-Prerequisites:
+### Prerequisites:
 
 1. Install aws-vault as per the [instructions](https://github.com/99designs/aws-vault#installing)
+   1. If using WSL, this is probably something along the lines of:
+```shell
+sudo apt install pass
+gpg --generate-key
+# Remember the secret passphrase!!!
+# take note of the long string outputted under pub.
+pass init <public key string from above>
+# take a look at the most recent version and use that instead of the below
+wget https://github.com/99designs/aws-vault/releases/download/v6.6.2/aws-vault-linux-amd64
+sudo mv aws-vault-linux-amd64 /usr/local/sbin/aws-vault
+chmod +x /usr/local/sbin/aws-vault
+# Add the following to ~/.bashrc:
+# export AWS_VAULT_BACKEND=pass
+# then either source the .bashrc file or just run the line above in the console.
+# NOTE: You will need to unlock pass with your passphrase to use aws-vault,
+# otherwise you will get "gpg: decryption failed: No secret key"
+```
 2. Have an account in the mhclg AWS account which has permissions to assume the developer role in the Delta-Dev and
    Delta-Prod accounts
 3. Set up MFA on your account in the mhclg account (required for assuming the role in the other accounts)
@@ -76,9 +93,9 @@ Prerequisites:
     1. To do this log in to your account in the web console and navigate to IAM
     2. On the right hand side use the 'Quick links' section to quickly get to the tab 'My security credentials'
     3. Scroll down to the 'Access keys' section and select 'Create access key'
-    4. Ensure you save your access key somewhere safe - such as in a private folder in Keeper
+    4. Ensure you save your access key somewhere secure - such as in a private folder in Keeper
 
-Setting up AWS Vault:
+### Setting up AWS Vault:
 
 1. Open your AWS config file in whatever text editor you like
     * This lives at ~/.aws/config, you can do this from bash by running `nano ~/.aws/config`, this will also create the
@@ -116,13 +133,23 @@ Setting up AWS Vault:
 5. To use these credentials you use the command `aws-vault exec <profile>` - you will be prompted to enter an MFA code
    for the mhclg account, this is used to create a session which will last a short period of time, during which you
    won't need to enter them again
+ - If using WSL and you get an error saying `gpg: decryption failed: No secret key`, you need to unlock the `pass` vault with `pass show mhclg` 
     1. To run a single command run `aws-vault exec <profile> -- aws <aws command>` (where profile is one of 'mhclg',
-       'delta-dev' and 'delta-prod')
+       `delta-dev` and `delta-prod`)
     2. To authenticate your terminal (required for e.g. running terraform commands) run `aws-vault exec <profile>`
+
+### Troubleshooting
+
+* `An error occurred (AccessDenied) when calling the ListBuckets operation: Access Denied`
+  * Are you using the right profile? The `mhclg` one is very limited.
+* `aws-vault: error: exec: aws-vault sessions should be nested with care, unset AWS_VAULT to force`
+  * You're trying to nest sessions (e.g. because you used `mhclg` and then `delta-dev`). Type `exit` to exit the mhclg session.
+* `gpg: decryption failed: No secret key` in WSL.
+  * `pass` is locked. unlock it by running `pass show mhclg` and entering your passphrase.
 
 ## Creating an environment
 
-### 0 AWS Shield Advanced
+### 1 AWS Shield Advanced
 
 Note that the Terraform code adds AWS Shield protection to some resources if configured to. (e.g. `production`).
 Before protection is applied, AWS Shield Advanced needs to be manually turned on in the account. NOTE: it is
@@ -130,7 +157,7 @@ extremely expensive (as in $3000 a month, minimum 12 months), but connected acco
 Child accounts still need the setting enabled individually, which is currently a manual process.
 Do not enable unless you have a clear green light!
 
-### 1 DNS setup
+### 2 DNS setup
 
 The Terraform code supports multiple domains, though one of these will have to be chosen as the primary domain
 which will get passed to the applications to use for links, emails etc.
@@ -150,7 +177,7 @@ terraform apply -target module.ssl_certs -target module.ses_identity
 For domains, we control create the DNS records to validate the certificates with a dns_records module and apply it now.
 For other domains, request that the records from the `required_dns_records` output are created and continue.
 
-### 2 Network + Bastion
+### 3 Network + Bastion
 
 Bring up the VPC and the SSH bastion. Other components implicitly depend on the VPC endpoints, firewall, NAT Gateway etc.
 
