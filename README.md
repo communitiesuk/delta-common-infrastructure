@@ -122,6 +122,14 @@ Setting up AWS Vault:
 
 ## Creating an environment
 
+### 0 AWS Shield Advanced
+
+Note that the Terraform code adds AWS Shield protection to some resources if configured to. (e.g. `production`).
+Before protection is applied, AWS Shield Advanced needs to be manually turned on in the account. NOTE: it is
+extremely expensive (as in $3000 a month, minimum 12 months), but connected accounts are covered by the same charge.
+Child accounts still need the setting enabled individually, which is currently a manual process.
+Do not enable unless you have a clear green light!
+
 ### 1 DNS setup
 
 The Terraform code supports multiple domains, though one of these will have to be chosen as the primary domain
@@ -221,3 +229,27 @@ Continue with the setup instructions in the common-payments-module and then delt
 The static files in the \api\docs\src\main\resources\static folder in the delta repository should be uploaded to the
 relevant S3 bucket (name `dluhc-delta-api-swagger-{environment}`) in each environment to serve the swagger interface
 for the API. This can be done via the AWS console or CLI.
+
+### 10 AWS Shield Advanced manual config
+
+NOTE: This is only relevant if you have enabled AWS Shield Advanced protection.
+Navigate to the [AWS Shield page](https://us-east-1.console.aws.amazon.com/wafv2/shieldv2?region=us-east-1#/overview)
+and confirm that resources are being protected.
+You should then configure AWS SRT support if not already enabled for this account:
+* Create an S3 bucket that the team can use if they need to: something along the lines of `dluhc-delta-aws-srt-support-bucket`, though it will need to be unique
+* From the AWS Shield Overview page, set up SRT Access:
+  * You will probably need to create a role (e.g. `AWSSRTSupport`) if one doesn't already exist.
+  * Grant access to the S3 bucket you created earlier.
+
+Then you need to manually configure Layer 7 (Application layer) protection:
+* Navigate to the Protected resources tab
+* Select the Cloudfront distribution associated with the website. (See the ACL)
+* Choose Configure Protections -> Selected Resources
+* Step 1 is layer 7 DDoS protection 
+  * the Cloudfront Distribution should already be associated with a Web ACL
+  * Choose `Enable`.
+* Skip past steps 2 & 3. We don't currently use these, and if we do, they should be configurable using Terraform.
+* Confirm.
+
+We don't currently use proactive engagement (from the Overview page). If we configure Route53 Healthchecks, there may
+be manual steps here.
