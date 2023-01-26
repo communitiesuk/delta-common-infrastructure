@@ -107,3 +107,7 @@ output "public_albs" {
 output "ml_http_target_group_arn" {
   value = module.marklogic.ml_http_target_group_arn
 }
+
+output "session_manager_policy_arn" {
+  value = module.session_manager_config.policy_arn
+}

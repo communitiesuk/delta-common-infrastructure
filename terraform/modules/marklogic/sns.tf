@@ -9,6 +9,6 @@ resource "aws_kms_key" "ml_logs_encryption_key" {
 }
 
 resource "aws_kms_alias" "ml_logs_encryption_key" {
-  name          = "alias/marklogic-logs-${var.environment}"
+  name          = "alias/marklogic-sns-logs-${var.environment}"
   target_key_id = aws_kms_key.ml_logs_encryption_key.key_id
 }
