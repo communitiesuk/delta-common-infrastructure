@@ -8,7 +8,7 @@ locals {
 module "marklogic_log_group" {
   source = "../encrypted_log_groups"
 
-  kms_key_alias_name = "marklogic-logs"
+  kms_key_alias_name = "marklogic-logs-${var.environment}"
   log_group_names = concat(
     [local.ssm_log_group_name],
     flatten([for port_detail in local.log_port_details :
