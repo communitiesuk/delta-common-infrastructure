@@ -1,6 +1,8 @@
-This repository contains Terraform configuration for the infrastructure for data collection as a service, which consists of  Delta, the Common Payments Module, and potentially e-claims in the future.
+This repository contains Terraform configuration for the infrastructure for data collection as a service, which consists
+of Delta, the Common Payments Module, and potentially e-claims in the future.
 
-Infrastructure specific to an individual application should live in its own codebase, but shared resources like AWS SES or the shared VPC will be defined here.
+Infrastructure specific to an individual application should live in its own codebase, but shared resources like AWS SES
+or the shared VPC will be defined here.
 
 ## Repository contents
 
@@ -22,11 +24,12 @@ GitHub Actions is the CI/CD platform of choice for minimal maintenance, plus it 
   * After a reviewer approves the plan, run `terraform apply` for the test environment
   * After that completes successfully, repeat for the next environment (test -> staging -> production)
 
-The `terraform.yml` workflow could be reused by other Git repositories, but may need to be enhanced with e.g. a continuous deployment option.
+The `terraform.yml` workflow could be reused by other Git repositories, but may need to be enhanced with e.g. a continuous
+deployment option.
 
 ## tfsec
 
-This repository uses [tfsec](https://aquasecurity.github.io/tfsec/) to scan the terraform code for potential security issues.
+This repository uses [tfsec](https://aquasecurity.github.io/tfsec/) to scan the Terraform code for potential security issues.
 It can be run using Docker
 
 ```sh
@@ -35,29 +38,30 @@ docker run --pull=always --rm -it -v "$(pwd):/src" aquasec/tfsec /src
 
 It's also available via Chocolately + other package managers, but the Docker image seems to be more up to date.
 
-Individual rules can be ignored with a comment on the line above with the form `tfsec:ignore:<rule-name>` e.g. `tfsec:ignore:aws-dynamodb-enable-at-rest-encryption`.
+Individual rules can be ignored with a comment on the line above with the form `tfsec:ignore:<rule-name>` 
+e.g. `tfsec:ignore:aws-dynamodb-enable-at-rest-encryption`.
 
 ## Bastion
 
 There's an SSH bastion server for each environment.
-You can create an account by uploading your SSH public key to the relevant bucket (your username will be all lowercase), i.e.
+You can create an account by uploading your SSH public key to the relevant bucket (your username will be all lowercase):
 
 ```sh
 aws s3 cp ~/.ssh/id_rsa.pub s3://$(terraform output -raw bastion_ssh_keys_bucket)/<username>.pub
 ```
 
-After five minutes you should be able to SSH in to the bastion server. Currently the Softwire London and Cambridge office IPs are allowlisted.
+After five minutes you should be able to SSH in to the bastion server. Currently, the Softwire London and Cambridge office IPs are allowlisted.
 
 ```sh
 ssh <username>@$(terraform output -raw bastion_dns_name)
 ```
 
-Confirm the host key fingerprint matches the terraform output `bastion_host_key_fingerprint`.
+Confirm the host key fingerprint matches the Terraform output `bastion_host_key_fingerprint`.
 
 ## Authenticating with the AWS CLI
 
 In order to run terraform commands locally you will need to be authenticated to the AWS CLI.
-For security we use [aws-vault](https://github.com/99designs/aws-vault) for securely storing credentials locally.
+For security, we use [aws-vault](https://github.com/99designs/aws-vault) for securely storing credentials locally.
 
 Prerequisites:
 
@@ -120,13 +124,13 @@ Setting up AWS Vault:
 
 ### 1 DNS setup
 
-The terraform supports multiple domains, though one of these will have to be chosen as the primary domain
+The Terraform code supports multiple domains, though one of these will have to be chosen as the primary domain
 which will get passed to the applications to use for links, emails etc.
 
 The CloudFront distributions require valid certificates before we can configure them properly.
-If we control the DNS zone that's not an issue, we can just create those modules first, but if we are using records managed by DLUHC
-then we will either need to stop after creating the CloudFront distributions and wait for the records to be created,
-or use a secondary domain we do control in the meantime.
+If we control the DNS zone that's not an issue, we can just create those modules first, but if we are using records
+managed by DLUHC then we will either need to stop after creating the CloudFront distributions and wait for the records
+to be created, or use a secondary domain we do control in the meantime.
 
 Add an ssl_certificates module for each set of certs you want to have available and create them,
 along with an SES identity if the environment will have one.
@@ -135,7 +139,7 @@ along with an SES identity if the environment will have one.
 terraform apply -target module.ssl_certs -target module.ses_identity
 ```
 
-For domains we control create the DNS records to validate the certificates with a dns_records module and apply it now.
+For domains, we control create the DNS records to validate the certificates with a dns_records module and apply it now.
 For other domains, request that the records from the `required_dns_records` output are created and continue.
 
 ### 2 Network + Bastion
@@ -156,7 +160,8 @@ terraform apply -target module.active_directory
 ```
 
 Complete the manual "First time setup" steps in the module README.
-Create the required containers, service users, and optionally test users, using the scripts in `manual_scripts/active_directory`, changing and noting the passwords.
+Create the required containers, service users, and optionally test users, using the scripts in
+`manual_scripts/active_directory`, changing and noting the passwords.
 
 ### 4 MarkLogic
 
@@ -191,7 +196,8 @@ terraform apply -target module.public_albs -target module.cloudfront_distributio
 Create the CNAME records with another dns_records module, or by requesting them from DLUHC.
 Restore the "domain" inputs once the certificate validation records are in place and apply again.
 
-If you are managing DNS for one of the domains, then create the necessary DNS records after the CloudFront distributions are created. Do this with the dns_records module.
+If you are managing DNS for one of the domains, then create the necessary DNS records after the CloudFront distributions
+are created. Do this with the dns_records module.
 
 ### 7 JasperReports server
 
@@ -212,4 +218,6 @@ Continue with the setup instructions in the common-payments-module and then delt
 
 ### 9 API Swagger static files
 
-The static files in the \api\docs\src\main\resources\static folder in the delta repository should be uploaded to the relevant S3 bucket (name `dluhc-delta-api-swagger-{environment}`) in each environment to serve the swagger interface for the API. This can be done via the AWS console or CLI.
+The static files in the \api\docs\src\main\resources\static folder in the delta repository should be uploaded to the
+relevant S3 bucket (name `dluhc-delta-api-swagger-{environment}`) in each environment to serve the swagger interface
+for the API. This can be done via the AWS console or CLI.
