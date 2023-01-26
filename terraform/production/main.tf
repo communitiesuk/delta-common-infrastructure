@@ -26,6 +26,11 @@ provider "aws" {
     tags = var.default_tags
   }
 }
+
+locals {
+  apply_aws_shield = true
+}
+
 # In practice the ACM validation records will all overlap
 # But create three sets anyway to be on the safe side, ACM is free
 # module "ssl_certs" {
@@ -82,11 +87,12 @@ module "dluhc_preprod_validation_records" {
 # }
 
 module "networking" {
-  source              = "../modules/networking"
-  vpc_cidr_block      = "10.30.0.0/16"
-  environment         = "prod"
-  ssh_cidr_allowlist  = var.allowed_ssh_cidrs
-  ecr_repo_account_id = var.ecr_repo_account_id
+  source                          = "../modules/networking"
+  vpc_cidr_block                  = "10.30.0.0/16"
+  environment                     = "prod"
+  ssh_cidr_allowlist              = var.allowed_ssh_cidrs
+  ecr_repo_account_id             = var.ecr_repo_account_id
+  apply_aws_shield_to_nat_gateway = local.apply_aws_shield
 }
 
 module "bastion_log_group" {
@@ -179,10 +185,11 @@ module "gh_runner" {
 module "public_albs" {
   source = "../modules/public_albs"
 
-  vpc          = module.networking.vpc
-  subnet_ids   = module.networking.public_subnets[*].id
-  certificates = module.dluhc_preprod_only_ssl_certs.alb_certs
-  environment  = local.environment
+  vpc                           = module.networking.vpc
+  subnet_ids                    = module.networking.public_subnets[*].id
+  certificates                  = module.dluhc_preprod_only_ssl_certs.alb_certs
+  environment                   = local.environment
+  apply_aws_shield_to_delta_alb = local.apply_aws_shield
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
@@ -190,8 +197,9 @@ module "public_albs" {
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
-  environment  = local.environment
-  base_domains = [var.secondary_domain]
+  environment      = local.environment
+  base_domains     = [var.secondary_domain]
+  apply_aws_shield = local.apply_aws_shield
   delta = {
     alb = module.public_albs.delta
     domain = {

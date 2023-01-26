@@ -16,3 +16,8 @@ variable "subnet_ids" {
 variable "log_expiration_days" {
   type = number
 }
+
+variable "apply_aws_shield" {
+  type    = bool
+  default = false
+}
