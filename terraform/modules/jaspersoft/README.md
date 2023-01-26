@@ -122,3 +122,4 @@ To migrate between servers:
 * Edit the data source "ML POST" so that it has the correct URL, port and credentials for connection to MarkLogic:
   * `http://marklogic.vpc.local:8143/?user=jasperreports`
   * Username = `jasperreports`, password in Secrets Manager. Needs to be created on the MarkLogic server
+* On staging, edit the queries in treasury-report.jrxml and treasury-report-common.jrxml to use the line labelled "for staging". Otherwise the report gets stuck in an infinite loop, fills up the disk and crashes the server. On test, maybe best to avoid the treasury report.
