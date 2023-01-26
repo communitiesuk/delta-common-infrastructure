@@ -82,6 +82,7 @@ chmod +x /usr/local/sbin/aws-vault
 # then either source the .bashrc file or just run the line above in the console.
 # NOTE: You will need to unlock pass with your passphrase to use aws-vault,
 # otherwise you will get "gpg: decryption failed: No secret key"
+# Do this with `pass show mhclg`
 ```
 2. Have an account in the mhclg AWS account which has permissions to assume the developer role in the Delta-Dev and
    Delta-Prod accounts
