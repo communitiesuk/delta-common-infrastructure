@@ -26,6 +26,11 @@ provider "aws" {
     tags = var.default_tags
   }
 }
+
+locals {
+  apply_aws_shield = true
+}
+
 # In practice the ACM validation records will all overlap
 # But create three sets anyway to be on the safe side, ACM is free
 # module "ssl_certs" {
@@ -87,7 +92,7 @@ module "networking" {
   environment                     = "prod"
   ssh_cidr_allowlist              = var.allowed_ssh_cidrs
   ecr_repo_account_id             = var.ecr_repo_account_id
-  apply_aws_shield_to_nat_gateway = true
+  apply_aws_shield_to_nat_gateway = local.apply_aws_shield
 }
 
 module "bastion_log_group" {
@@ -184,7 +189,7 @@ module "public_albs" {
   subnet_ids                    = module.networking.public_subnets[*].id
   certificates                  = module.dluhc_preprod_only_ssl_certs.alb_certs
   environment                   = local.environment
-  apply_aws_shield_to_delta_alb = true
+  apply_aws_shield_to_delta_alb = local.apply_aws_shield
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
@@ -194,7 +199,7 @@ module "cloudfront_distributions" {
 
   environment      = local.environment
   base_domains     = [var.secondary_domain]
-  apply_aws_shield = true
+  apply_aws_shield = local.apply_aws_shield
   delta = {
     alb = module.public_albs.delta
     domain = {

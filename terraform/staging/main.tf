@@ -30,6 +30,7 @@ provider "aws" {
 locals {
   environment             = "staging"
   organisation_account_id = "448312965134"
+  apply_aws_shield        = false
 }
 
 # In practice the ACM validation records will all overlap
@@ -76,7 +77,7 @@ module "networking" {
   ssh_cidr_allowlist              = var.allowed_ssh_cidrs
   open_ingress_cidrs              = [local.datamart_peering_vpc_cidr]
   ecr_repo_account_id             = var.ecr_repo_account_id
-  apply_aws_shield_to_nat_gateway = false
+  apply_aws_shield_to_nat_gateway = local.apply_aws_shield
 }
 
 resource "tls_private_key" "bastion_ssh_key" {
@@ -125,7 +126,7 @@ module "public_albs" {
   subnet_ids                    = module.networking.public_subnets[*].id
   certificates                  = module.ssl_certs.alb_certs
   environment                   = local.environment
-  apply_aws_shield_to_delta_alb = false
+  apply_aws_shield_to_delta_alb = local.apply_aws_shield
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
@@ -135,7 +136,7 @@ module "cloudfront_distributions" {
 
   environment      = local.environment
   base_domains     = [var.primary_domain, var.secondary_domain]
-  apply_aws_shield = false
+  apply_aws_shield = local.apply_aws_shield
   delta = {
     alb = module.public_albs.delta
     domain = {
