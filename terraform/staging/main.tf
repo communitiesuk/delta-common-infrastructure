@@ -76,6 +76,7 @@ module "networking" {
   ssh_cidr_allowlist  = var.allowed_ssh_cidrs
   open_ingress_cidrs  = [local.datamart_peering_vpc_cidr]
   ecr_repo_account_id = var.ecr_repo_account_id
+  auth_server_domain  = "auth.delta.stage.communities.gov.uk"
 }
 
 resource "tls_private_key" "bastion_ssh_key" {

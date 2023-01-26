@@ -46,3 +46,7 @@ variable "mailhog_subnet" {
   type    = bool
   default = false
 }
+
+variable "auth_server_domain" {
+  type = string
+}

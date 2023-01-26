@@ -78,7 +78,9 @@ locals {
     delta_api_subnets = {
       cidr                 = local.delta_api_cidr_10
       http_allowed_domains = []
-      tls_allowed_domains  = []
+      tls_allowed_domains  = [
+        var.auth_server_domain
+      ]
       sid_offset           = 800
     }
     cpm_subnets = {
