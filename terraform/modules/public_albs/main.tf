@@ -25,6 +25,10 @@ variable "certificates" {
   }))
 }
 
+variable "apply_aws_shield_to_delta_alb" {
+  type = bool
+}
+
 # These are sent by CloudFront in the X-Cloudfront-Key header and verified by the ALB listeners
 resource "random_password" "cloudfront_keys" {
   for_each = toset(["delta", "api", "keycloak", "cpm", "jaspersoft"])
@@ -39,6 +43,7 @@ module "delta_alb" {
   subnet_ids          = var.subnet_ids
   prefix              = "${var.environment}-delta-site-"
   log_expiration_days = 30
+  apply_aws_shield    = var.apply_aws_shield_to_delta_alb
 }
 
 output "delta" {

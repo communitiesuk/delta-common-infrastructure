@@ -30,6 +30,7 @@ provider "aws" {
 locals {
   environment             = "staging"
   organisation_account_id = "448312965134"
+  apply_aws_shield        = false
 }
 
 # In practice the ACM validation records will all overlap
@@ -70,13 +71,14 @@ module "dluhc_dev_validation_records" {
 }
 
 module "networking" {
-  source              = "../modules/networking"
-  vpc_cidr_block      = "10.20.0.0/16"
-  environment         = local.environment
-  ssh_cidr_allowlist  = var.allowed_ssh_cidrs
-  open_ingress_cidrs  = [local.datamart_peering_vpc_cidr]
-  ecr_repo_account_id = var.ecr_repo_account_id
-  auth_server_domain  = "auth.delta.stage.communities.gov.uk"
+  source                          = "../modules/networking"
+  vpc_cidr_block                  = "10.20.0.0/16"
+  environment                     = local.environment
+  ssh_cidr_allowlist              = var.allowed_ssh_cidrs
+  open_ingress_cidrs              = [local.datamart_peering_vpc_cidr]
+  ecr_repo_account_id             = var.ecr_repo_account_id
+  apply_aws_shield_to_nat_gateway = local.apply_aws_shield
+  auth_server_domain              = "auth.delta.stage.communities.gov.uk"
 }
 
 resource "tls_private_key" "bastion_ssh_key" {
@@ -121,10 +123,11 @@ module "bastion" {
 module "public_albs" {
   source = "../modules/public_albs"
 
-  vpc          = module.networking.vpc
-  subnet_ids   = module.networking.public_subnets[*].id
-  certificates = module.ssl_certs.alb_certs
-  environment  = local.environment
+  vpc                           = module.networking.vpc
+  subnet_ids                    = module.networking.public_subnets[*].id
+  certificates                  = module.ssl_certs.alb_certs
+  environment                   = local.environment
+  apply_aws_shield_to_delta_alb = local.apply_aws_shield
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
@@ -132,9 +135,9 @@ module "public_albs" {
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
-  environment  = local.environment
-  base_domains = [var.primary_domain, var.secondary_domain]
-
+  environment      = local.environment
+  base_domains     = [var.primary_domain, var.secondary_domain]
+  apply_aws_shield = local.apply_aws_shield
   delta = {
     alb = module.public_albs.delta
     domain = {

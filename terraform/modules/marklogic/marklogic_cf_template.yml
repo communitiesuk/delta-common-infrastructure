@@ -238,6 +238,7 @@ Parameters:
       - t3.micro
       - t3.2xlarge
       - t3.medium
+      - t3a.large
   KeyName:
     Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
     Type: String

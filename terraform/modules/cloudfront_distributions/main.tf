@@ -55,6 +55,7 @@ module "delta_cloudfront" {
   cloudfront_domain              = var.delta.domain
   is_ipv6_enabled                = var.delta.ip_allowlist == null
   geo_restriction_enabled        = var.delta.disable_geo_restriction != true
+  apply_aws_shield               = var.apply_aws_shield
 }
 
 module "api_cloudfront" {
@@ -69,6 +70,7 @@ module "api_cloudfront" {
   is_ipv6_enabled                = var.api.ip_allowlist == null
   geo_restriction_enabled        = var.api.disable_geo_restriction != true
   environment                    = var.environment
+  apply_aws_shield               = var.apply_aws_shield
 }
 
 module "keycloak_cloudfront" {
@@ -82,6 +84,7 @@ module "keycloak_cloudfront" {
   cloudfront_domain              = var.keycloak.domain
   is_ipv6_enabled                = var.keycloak.ip_allowlist == null
   geo_restriction_enabled        = var.keycloak.disable_geo_restriction != true
+  apply_aws_shield               = var.apply_aws_shield
 }
 
 module "cpm_cloudfront" {
@@ -95,6 +98,7 @@ module "cpm_cloudfront" {
   cloudfront_domain              = var.cpm.domain
   is_ipv6_enabled                = var.cpm.ip_allowlist == null
   geo_restriction_enabled        = var.cpm.disable_geo_restriction != true
+  apply_aws_shield               = var.apply_aws_shield
 }
 
 module "jaspersoft_cloudfront" {
@@ -108,4 +112,5 @@ module "jaspersoft_cloudfront" {
   cloudfront_domain              = var.jaspersoft.domain
   is_ipv6_enabled                = var.jaspersoft.ip_allowlist == null
   geo_restriction_enabled        = var.jaspersoft.disable_geo_restriction != true
+  apply_aws_shield               = var.apply_aws_shield
 }
