@@ -79,7 +79,7 @@ locals {
       cidr                 = local.delta_api_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = [
-        var.auth_server_domain
+        var.auth_server_domain # So that requests from the API to Keycloak can be allowed through the Network Firewall
       ]
       sid_offset           = 800
     }

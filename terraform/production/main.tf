@@ -87,6 +87,7 @@ module "networking" {
   environment         = "prod"
   ssh_cidr_allowlist  = var.allowed_ssh_cidrs
   ecr_repo_account_id = var.ecr_repo_account_id
+  auth_server_domain  = module.public_albs.keycloak.primary_hostname
 }
 
 module "bastion_log_group" {

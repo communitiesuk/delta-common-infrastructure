@@ -84,6 +84,7 @@ module "networking" {
   ecr_repo_account_id            = var.ecr_repo_account_id
   number_of_vpc_endpoint_subnets = 1
   mailhog_subnet                 = true
+  auth_server_domain             = "auth.delta.test.communities.gov.uk"
 }
 
 resource "tls_private_key" "bastion_ssh_key" {
