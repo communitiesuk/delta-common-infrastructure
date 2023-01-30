@@ -4,6 +4,7 @@ AWS Delegated Administrators,deltaapp
 datamart-delta-admin,deltaapp
 datamart-delta-user,deltaapp
 AWS Delegated Administrators,deltainternal
+AWS Delegated Administrators,jasperreports
 datamart-delta-admin,deltaadmin
 datamart-delta-admin-dclg,deltaadmin
 datamart-delta-user,deltaadmin
@@ -18,3 +19,4 @@ AWS Delegated Administrators,cpmapp
 jasperreports-admins,jasperadminuser
 jasperreports-users,jasperuser
 jasperreports-users,jasperreports-admins
+jasperreports-admins,datamart-delta-admin
