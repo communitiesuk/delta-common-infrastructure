@@ -10,8 +10,8 @@ module "jaspersoft_waf" {
   prefix            = "${var.environment}-jaspersoft-"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Editing queries triggers these rules
-  excluded_rules    = ["CrossSiteScripting_BODY", "GenericLFI_BODY"]
-  ip_allowlist      = var.jaspersoft.ip_allowlist
+  excluded_rules = ["CrossSiteScripting_BODY", "GenericLFI_BODY"]
+  ip_allowlist   = var.jaspersoft.ip_allowlist
 }
 
 module "delta_website_waf" {
