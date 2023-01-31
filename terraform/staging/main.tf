@@ -78,6 +78,7 @@ module "networking" {
   open_ingress_cidrs              = [local.datamart_peering_vpc_cidr]
   ecr_repo_account_id             = var.ecr_repo_account_id
   apply_aws_shield_to_nat_gateway = local.apply_aws_shield
+  auth_server_domain              = "auth.delta.stage.communities.gov.uk"
 }
 
 resource "tls_private_key" "bastion_ssh_key" {

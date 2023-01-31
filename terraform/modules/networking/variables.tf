@@ -47,6 +47,10 @@ variable "mailhog_subnet" {
   default = false
 }
 
+variable "auth_server_domain" {
+  type = string
+}
+
 variable "apply_aws_shield_to_nat_gateway" {
   type = bool
 }

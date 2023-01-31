@@ -86,6 +86,7 @@ module "networking" {
   number_of_vpc_endpoint_subnets  = 1
   mailhog_subnet                  = true
   apply_aws_shield_to_nat_gateway = local.apply_aws_shield
+  auth_server_domain              = "auth.delta.test.communities.gov.uk"
 }
 
 resource "tls_private_key" "bastion_ssh_key" {

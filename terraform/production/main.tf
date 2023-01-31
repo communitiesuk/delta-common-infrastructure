@@ -93,6 +93,7 @@ module "networking" {
   ssh_cidr_allowlist              = var.allowed_ssh_cidrs
   ecr_repo_account_id             = var.ecr_repo_account_id
   apply_aws_shield_to_nat_gateway = local.apply_aws_shield
+  auth_server_domain              = module.public_albs.keycloak.primary_hostname
 }
 
 module "bastion_log_group" {
