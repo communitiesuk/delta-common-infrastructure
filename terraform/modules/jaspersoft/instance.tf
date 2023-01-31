@@ -25,13 +25,13 @@ resource "aws_security_group_rule" "jaspersoft_server_ssh_ingress" {
 }
 
 resource "aws_security_group_rule" "jaspersoft_server_http_ingress" {
-  type                     = "ingress"
-  from_port                = 8080
-  to_port                  = 8080
-  protocol                 = "tcp"
-  source_security_group_id = var.public_alb.security_group_id
-  description              = "HTTP on 8080 from ALB"
-  security_group_id        = aws_security_group.jaspersoft_server.id
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  description       = "HTTP on 8080 from within VPC"
+  security_group_id = aws_security_group.jaspersoft_server.id
+  cidr_blocks       = [var.vpc.cidr_block]
 }
 
 data "aws_region" "current" {}
@@ -61,7 +61,8 @@ resource "aws_instance" "jaspersoft_server" {
   user_data_replace_on_change = true
 
   root_block_device {
-    encrypted = true
+    encrypted   = true
+    volume_size = 40
   }
 
   metadata_options {

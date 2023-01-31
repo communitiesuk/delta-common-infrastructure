@@ -9,8 +9,8 @@ module "jaspersoft_waf" {
   log_group_suffix  = "jaspersoft-${var.environment}"
   prefix            = "${var.environment}-jaspersoft-"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
-  # Editing queries triggers this rule
-  excluded_rules = ["CrossSiteScripting_BODY"]
+  # Editing queries triggers these rules
+  excluded_rules = ["CrossSiteScripting_BODY", "GenericLFI_BODY"]
   ip_allowlist   = var.jaspersoft.ip_allowlist
 }
 
