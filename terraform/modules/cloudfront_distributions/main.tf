@@ -1,7 +1,7 @@
 module "access_logs_bucket" {
   source          = "../cloudfront_access_logs_bucket"
   environment     = var.environment
-  expiration_days = var.s3_log_expiration_days
+  expiration_days = var.cloudfront_access_s3_log_expiration_days
 }
 
 module "jaspersoft_waf" {
@@ -12,7 +12,7 @@ module "jaspersoft_waf" {
   # Editing queries triggers these rules
   excluded_rules                 = ["CrossSiteScripting_BODY", "GenericLFI_BODY"]
   ip_allowlist                   = var.jaspersoft.ip_allowlist
-  cloudwatch_log_expiration_days = var.cloudwatch_log_expiration_days
+  cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
 }
 
 module "delta_website_waf" {
@@ -23,7 +23,7 @@ module "delta_website_waf" {
   # Orbeon triggers this rule
   excluded_rules                 = ["CrossSiteScripting_BODY"]
   ip_allowlist                   = var.delta.ip_allowlist
-  cloudwatch_log_expiration_days = var.cloudwatch_log_expiration_days
+  cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
 }
 
 module "cpm_waf" {
@@ -34,7 +34,7 @@ module "cpm_waf" {
   # At least some e-claims POST requests trigger this rule
   excluded_rules                 = ["CrossSiteScripting_BODY"]
   ip_allowlist                   = var.cpm.ip_allowlist
-  cloudwatch_log_expiration_days = var.cloudwatch_log_expiration_days
+  cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
 }
 
 module "api_auth_waf" {
@@ -45,7 +45,7 @@ module "api_auth_waf" {
   # XSS not issue for API
   excluded_rules                 = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
   ip_allowlist                   = var.api.ip_allowlist
-  cloudwatch_log_expiration_days = var.cloudwatch_log_expiration_days
+  cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
 }
 
 module "delta_cloudfront" {

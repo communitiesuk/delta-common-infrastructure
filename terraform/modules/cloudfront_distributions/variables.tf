@@ -16,11 +16,11 @@ variable "apply_aws_shield" {
   type = bool
 }
 
-variable "cloudwatch_log_expiration_days" {
+variable "waf_cloudwatch_log_expiration_days" {
   type = number
 }
 
-variable "s3_log_expiration_days" {
+variable "cloudfront_access_s3_log_expiration_days" {
   type = number
 }
 

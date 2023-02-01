@@ -142,14 +142,14 @@ resource "aws_flow_log" "vpc_rejected" {
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "vpc_flow_logs_accepted" {
   name              = "vpc-flow-logs-accepted-${var.environment}"
-  retention_in_days = var.cloudwatch_log_expiration_days
+  retention_in_days = var.vpc_flow_cloudwatch_log_expiration_days
 }
 
 # Flow logs are non-sensitive
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "vpc_flow_logs_rejected" {
   name              = "vpc-flow-logs-rejected-${var.environment}"
-  retention_in_days = var.cloudwatch_log_expiration_days
+  retention_in_days = var.vpc_flow_cloudwatch_log_expiration_days
 }
 
 # https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-cwl.html#flow-logs-iam-role

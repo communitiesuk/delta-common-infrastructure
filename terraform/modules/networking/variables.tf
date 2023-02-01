@@ -55,6 +55,10 @@ variable "apply_aws_shield_to_nat_gateway" {
   type = bool
 }
 
-variable "cloudwatch_log_expiration_days" {
+variable "firewall_cloudwatch_log_expiration_days" {
+  type = number
+}
+
+variable "vpc_flow_cloudwatch_log_expiration_days" {
   type = number
 }

@@ -29,7 +29,7 @@ variable "apply_aws_shield_to_delta_alb" {
   type = bool
 }
 
-variable "s3_log_expiration_days" {
+variable "alb_s3_log_expiration_days" {
   type = number
 }
 
@@ -46,7 +46,7 @@ module "delta_alb" {
   vpc                    = var.vpc
   subnet_ids             = var.subnet_ids
   prefix                 = "${var.environment}-delta-site-"
-  s3_log_expiration_days = var.s3_log_expiration_days
+  s3_log_expiration_days = var.alb_s3_log_expiration_days
   apply_aws_shield       = var.apply_aws_shield_to_delta_alb
 }
 
@@ -67,7 +67,7 @@ module "delta_api_alb" {
   vpc                    = var.vpc
   subnet_ids             = var.subnet_ids
   prefix                 = "${var.environment}-delta-api-"
-  s3_log_expiration_days = var.s3_log_expiration_days
+  s3_log_expiration_days = var.alb_s3_log_expiration_days
 }
 
 output "delta_api" {
@@ -87,7 +87,7 @@ module "keycloak_alb" {
   vpc                    = var.vpc
   subnet_ids             = var.subnet_ids
   prefix                 = "${var.environment}-keycloak-"
-  s3_log_expiration_days = var.s3_log_expiration_days
+  s3_log_expiration_days = var.alb_s3_log_expiration_days
 }
 
 output "keycloak" {
@@ -107,7 +107,7 @@ module "cpm_alb" {
   vpc                    = var.vpc
   subnet_ids             = var.subnet_ids
   prefix                 = "${var.environment}-cpm-"
-  s3_log_expiration_days = var.s3_log_expiration_days
+  s3_log_expiration_days = var.alb_s3_log_expiration_days
 }
 
 output "cpm" {
@@ -127,7 +127,7 @@ module "jaspersoft_alb" {
   vpc                    = var.vpc
   subnet_ids             = var.subnet_ids
   prefix                 = "${var.environment}-jaspersoft-"
-  s3_log_expiration_days = var.s3_log_expiration_days
+  s3_log_expiration_days = var.alb_s3_log_expiration_days
 }
 
 output "jaspersoft" {
