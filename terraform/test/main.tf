@@ -279,7 +279,8 @@ module "jaspersoft_patch_maintenance_window" {
 
 module "jaspersoft" {
   source                        = "../modules/jaspersoft"
-  private_instance_subnet       = module.networking.jaspersoft_private_subnet
+  private_instance_subnet       = module.networking.jaspersoft_private_subnets[0]
+  database_subnets              = module.networking.jaspersoft_private_subnets
   vpc                           = module.networking.vpc
   prefix                        = "dluhc-${local.environment}-"
   ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
