@@ -31,8 +31,12 @@ variable "private_instance_subnet" {
   type = object({ id = string, cidr_block = string })
 }
 
+variable "database_subnets" {
+  type = list(object({ id = string, cidr_block = string }))
+}
+
 variable "allow_ssh_from_sg_id" {
-  description = "This sg will be allowed to connect to the Jasper Server instance on port 22"
+  description = "This security group will be allowed to connect to the Jasper Server instance on port 22"
   type        = string
 }
 

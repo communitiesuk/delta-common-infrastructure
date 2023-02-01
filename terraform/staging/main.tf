@@ -263,7 +263,8 @@ module "jaspersoft_patch_maintenance_window" {
 
 module "jaspersoft" {
   source                        = "../modules/jaspersoft"
-  private_instance_subnet       = module.networking.jaspersoft_private_subnet
+  private_instance_subnet       = module.networking.jaspersoft_private_subnets[0]
+  database_subnets              = module.networking.jaspersoft_private_subnets
   vpc                           = module.networking.vpc
   prefix                        = "dluhc-stg-"
   ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
@@ -274,7 +275,6 @@ module "jaspersoft" {
   environment                   = local.environment
   extra_instance_policy_arn     = module.session_manager_config.policy_arn
   patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
-  instance_type                 = "t3.medium"
 }
 
 module "ses_identity" {

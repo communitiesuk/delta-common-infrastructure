@@ -24,41 +24,43 @@ resource "aws_iam_role" "jasperserver" {
 EOF
 }
 
-resource "aws_iam_role_policy" "read_jaspersoft_ldap_password" {
-  name = "${var.prefix}read-jaspersoft-ldap-password"
+resource "aws_iam_role_policy" "read_secrets" {
+  name = "${var.prefix}read-jaspersoft-secrets"
   role = aws_iam_role.jasperserver.id
 
-  policy = data.aws_iam_policy_document.read_jaspersoft_ldap_password.json
+  policy = data.aws_iam_policy_document.read_secrets.json
 }
 
-data "aws_iam_policy_document" "read_jaspersoft_ldap_password" {
+data "aws_iam_policy_document" "read_secrets" {
   statement {
-    actions   = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
-    effect    = "Allow"
-    resources = [data.aws_secretsmanager_secret.ldap_bind_password.arn]
+    actions = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
+    effect  = "Allow"
+    resources = [
+      data.aws_secretsmanager_secret.ldap_bind_password.arn,
+      aws_secretsmanager_secret.jaspersoft_db_password.arn,
+    ]
   }
 }
 
 # Allowing access to a single bucket seems reasonable
 # tfsec:ignore:aws-iam-no-policy-wildcards
-resource "aws_iam_role_policy" "read_jaspersoft_binaries" {
-  name = "${var.prefix}read-jaspersoft-binaries"
-  role = aws_iam_role.jasperserver.id
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "s3:GetObject"
-      ],
-      "Effect": "Allow",
-      "Resource": "${data.aws_s3_bucket.jaspersoft_binaries.arn}/*"
-    }
-  ]
+data "aws_iam_policy_document" "access_buckets" {
+  statement {
+    sid       = "InstallBucket"
+    actions   = ["s3:GetObject"]
+    resources = ["${data.aws_s3_bucket.jaspersoft_binaries.arn}/*"]
+  }
+  statement {
+    sid       = "ConfigBucket"
+    actions   = ["s3:GetObject", "s3:PutObject"]
+    resources = ["${module.config_bucket.bucket_arn}/*"]
+  }
 }
-EOF
+
+resource "aws_iam_role_policy" "access_buckets" {
+  name   = "${var.prefix}read-jaspersoft-binaries"
+  role   = aws_iam_role.jasperserver.id
+  policy = data.aws_iam_policy_document.access_buckets.json
 }
 
 # tfsec:ignore:aws-iam-no-policy-wildcards

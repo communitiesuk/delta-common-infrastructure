@@ -103,11 +103,13 @@ resource "aws_subnet" "delta_website" {
 }
 
 resource "aws_subnet" "jaspersoft" {
-  cidr_block              = cidrsubnet(local.jaspersoft_cidr_10, 2, 0)
+  count = 2
+
+  cidr_block              = cidrsubnet(local.jaspersoft_cidr_10, 2, count.index)
   vpc_id                  = aws_vpc.vpc.id
-  availability_zone       = data.aws_availability_zones.available.names[0]
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
-  tags                    = { Name = "jasper-server-private-subnet-${var.environment}" }
+  tags                    = { Name = "jasper-server-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
 resource "aws_subnet" "github_runner" {

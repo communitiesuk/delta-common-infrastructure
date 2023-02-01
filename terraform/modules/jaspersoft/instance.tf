@@ -40,8 +40,29 @@ data "aws_secretsmanager_secret" "ldap_bind_password" {
   name = "jasperserver-ldap-bind-password-${var.environment}"
 }
 
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
+
 resource "aws_instance" "jaspersoft_server" {
-  ami           = "ami-034943c569985ba6e" #	eu-west-1 bionic 18.04 LTS amd64 ebs-ssd
+  ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
   tags          = { Name = "${var.prefix}jaspersoft-server" }
 
@@ -53,12 +74,12 @@ resource "aws_instance" "jaspersoft_server" {
     "${path.module}/setup_script.sh",
     {
       JASPERSOFT_INSTALL_S3_BUCKET = data.aws_s3_bucket.jaspersoft_binaries.bucket
-      ENVIRONMENT                  = var.environment
+      JASPERSOFT_CONFIG_S3_BUCKET  = module.config_bucket.bucket
       AWS_REGION                   = data.aws_region.current.name
       LDAP_BIND_PASSWORD_SECRET_ID = data.aws_secretsmanager_secret.ldap_bind_password.id
+      DATABASE_PASSWORD_SECRET_ID  = aws_secretsmanager_secret.jaspersoft_db_password.id
     }
   )
-  user_data_replace_on_change = true
 
   root_block_device {
     encrypted   = true
@@ -71,6 +92,7 @@ resource "aws_instance" "jaspersoft_server" {
   }
 
   depends_on = [
+    aws_db_instance.jaspersoft,
     aws_s3_object.jaspersoft_config_file,
     aws_s3_object.tomcat_systemd_service_file,
     aws_s3_object.jaspersoft_root_index_jsp,
@@ -78,6 +100,11 @@ resource "aws_instance" "jaspersoft_server" {
     aws_s3_object.jaspersoft_ldap_config,
     data.aws_s3_object.jaspersoft_install_zip,
   ]
+
+  lifecycle {
+    ignore_changes  = [user_data, ami]
+    prevent_destroy = true # It should be safe to recreate this server, but take an EBS snapshot first
+  }
 }
 
 resource "aws_route53_record" "jaspersoft_server" {

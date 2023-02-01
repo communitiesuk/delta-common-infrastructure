@@ -55,27 +55,26 @@ mkdir $${CATALINA_BASE}/lib
 # Setup a simple ROOT app that redirects to /jasperserver
 mkdir $${CATALINA_BASE}/webapps/ROOT
 mkdir $${CATALINA_BASE}/webapps/ROOT/WEB-INF
-aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/${ENVIRONMENT}/root_index.jsp $${CATALINA_BASE}/webapps/ROOT/index.jsp
-aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/${ENVIRONMENT}/root_web.xml $${CATALINA_BASE}/webapps/ROOT/WEB-INF/web.xml
+aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_CONFIG_S3_BUCKET}/root_index.jsp $${CATALINA_BASE}/webapps/ROOT/index.jsp
+aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_CONFIG_S3_BUCKET}/root_web.xml $${CATALINA_BASE}/webapps/ROOT/WEB-INF/web.xml
 chown -R tomcat:tomcat $${CATALINA_BASE}
 
-aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/${ENVIRONMENT}/tomcat.service /etc/systemd/system/tomcat.service
+aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_CONFIG_S3_BUCKET}/tomcat.service /etc/systemd/system/tomcat.service
 systemctl daemon-reload
 systemctl enable tomcat
 
-# Install Postgresql 11
-
-echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-apt-get update
-apt-get -y install postgresql-11
-pg_ctlcluster 11 main start
-su postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\""
-
 # Download JasperSoft files
 
-aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/js-7.8.1_hotfixed_2022-04-15.zip /tmp
-aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/${ENVIRONMENT}/default_master.properties /tmp
+aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_INSTALL_S3_BUCKET}/js-7.8.1_hotfixed_2022-04-15.zip /tmp
+aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_CONFIG_S3_BUCKET}/default_master.properties /tmp
+
+echo "Attempting to download keystore, will not exist on initial setup"
+set +e
+aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_CONFIG_S3_BUCKET}/.jrsks /opt/tomcat/.jrsks
+aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_CONFIG_S3_BUCKET}/.jrsksp /opt/tomcat/.jrsksp
+chown tomcat:tomcat /opt/tomcat/.jrsks /opt/tomcat/.jrsksp
+chmod 600 /opt/tomcat/.jrsks /opt/tomcat/.jrsksp
+set -e
 
 # We may also need to install Chrome, I haven't done this
 # > You need to install and configure Chrome/Chromium to export the reports to PDF and other output formats.
@@ -85,14 +84,28 @@ rm -rf /opt/tomcat/jaspersoft_install
 sudo -u tomcat unzip -q /tmp/js-7.8.1_hotfixed_2022-04-15.zip -d /tmp/jaspersoft_install
 sudo -u tomcat cp -r /tmp/jaspersoft_install /opt/tomcat/jaspersoft_install
 cd /opt/tomcat/jaspersoft_install/buildomatic
+set +x
+DATABASE_PASSWORD=`aws secretsmanager get-secret-value --region ${AWS_REGION} --secret-id ${DATABASE_PASSWORD_SECRET_ID} --query SecretString --output text`
+sed -i "s/RDS_DATABASE_PASSWORD/$${DATABASE_PASSWORD}/" /tmp/default_master.properties
+set -x
 cp /tmp/default_master.properties ./default_master.properties
 chown tomcat:tomcat ./default_master.properties
+rm /tmp/default_master.properties
 
 # Run install
-su tomcat -c "./js-install-ce.sh minimal"
+if [ -f /opt/tomcat/.jrsks ]; then
+    # Keystore already exists, assume we're recreating the instance with an existing database
+    su tomcat -c "./js-ant validate-database"
+    su tomcat -c "./js-ant deploy-webapp-ce"
+else
+    # Installing from scratch, creating an empty database
+    su tomcat -c "./js-install-ce.sh minimal"
+    aws s3 cp --region ${AWS_REGION} /opt/tomcat/.jrsks s3://${JASPERSOFT_CONFIG_S3_BUCKET}/.jrsks
+    aws s3 cp --region ${AWS_REGION} /opt/tomcat/.jrsksp s3://${JASPERSOFT_CONFIG_S3_BUCKET}/.jrsksp
+fi
 
 # LDAP setup
-aws s3 cp s3://${JASPERSOFT_INSTALL_S3_BUCKET}/${ENVIRONMENT}/applicationContext-externalAuth-LDAP.xml $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
+aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_CONFIG_S3_BUCKET}/applicationContext-externalAuth-LDAP.xml $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
 set +x
 LDAP_BIND_PASSWORD=`aws secretsmanager get-secret-value --region ${AWS_REGION} --secret-id ${LDAP_BIND_PASSWORD_SECRET_ID} --query SecretString --output text`
 sed -i "s/JASPERSOFT_BIND_USER_PASSWORD/$${LDAP_BIND_PASSWORD}/" $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml

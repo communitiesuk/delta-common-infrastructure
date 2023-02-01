@@ -111,7 +111,6 @@ Check it's working again. If something goes wrong try deleting base/work and bas
 
 To roll back: stop Tomcat again, repoint the `latest/` symlink at the previous version, then restart Tomcat.
 
-
 ## Migration
 
 To migrate between servers:
@@ -123,3 +122,16 @@ To migrate between servers:
   * `http://marklogic.vpc.local:8143/?user=jasperreports`
   * Username = `jasperreports`, password in Secrets Manager. Needs to be created on the MarkLogic server
 * On staging, edit the queries in treasury-report.jrxml and treasury-report-common.jrxml to use the line labelled "for staging". Otherwise the report gets stuck in an infinite loop, fills up the disk and crashes the server. On test, maybe best to avoid the treasury report.
+
+## From on server postgres to RDS
+
+We have moved the database from on the instance to RDS by dumping and restoring the database.
+This has been done on all environments, but is documented here in case we need to move the database around in the future.
+
+```sh
+su postgres -c "pg_dump -d jasperserver --format custom --create --no-owner" > db_dump
+
+psql --host "jaspersoft-db.vpc.local" --username jaspersoft --password -d postgres -c 'CREATE USER postgres IN GROUP rds_superuser;'
+pg_restore "./db_dump" --create --clean --dbname postgres --host "jaspersoft-db.vpc.local" --username jaspersoft --password --exit-on-error
+psql --host "jaspersoft-db.vpc.local" --username jaspersoft --password -d postgres -c 'ALTER DATABASE jasperserver OWNER TO jaspersoft;'
+```

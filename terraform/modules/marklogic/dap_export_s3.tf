@@ -69,8 +69,8 @@ resource "aws_ssm_maintenance_window_task" "dap_s3_upload" {
           "if [ -z \"$(ls ${local.delta_export_path})\" ]; then echo 'Error ${local.delta_export_path} is empty nothing to export'; exit 1; fi",
           "rm -rf /delta/export-workdir && cp -r ${local.delta_export_path} /delta/export-workdir",
           "cd /delta/export-workdir && find . -type f",
-          "aws s3 sync /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/latest\" --delete",
-          "aws s3 cp /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/archive/$(date +%F)\" --recursive",
+          "aws s3 sync --region ${data.aws_region.current.name} /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/latest\" --delete",
+          "aws s3 cp --region ${data.aws_region.current.name} /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/archive/$(date +%F)\" --recursive",
           "rm -rf ${local.delta_export_path}/*",
         ]
       }
