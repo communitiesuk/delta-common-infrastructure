@@ -327,8 +327,9 @@ module "iam_roles" {
 }
 
 module "session_manager_config" {
-  source      = "../modules/session_manager_config"
-  environment = local.environment
+  source                         = "../modules/session_manager_config"
+  environment                    = local.environment
+  cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
 }
 
 module "account_security" {
