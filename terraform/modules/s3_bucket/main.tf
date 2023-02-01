@@ -23,8 +23,9 @@ variable "restrict_public_buckets" {
 }
 
 variable "noncurrent_version_expiration_days" {
-  type    = number
-  default = 180
+  type        = number
+  description = "Set to null to skip creating a bucket lifecycle configuration"
+  default     = 180
 }
 
 variable "access_log_expiration_days" {
