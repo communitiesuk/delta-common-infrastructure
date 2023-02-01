@@ -24,6 +24,10 @@ data "aws_iam_policy" "aws_support_access" {
   arn = "arn:aws:iam::aws:policy/AWSSupportAccess"
 }
 
+data "aws_iam_policy" "cloudshell" {
+  arn = "arn:aws:iam::aws:policy/AWSCloudShellFullAccess"
+}
+
 # Defined in backend/main.tf
 data "aws_iam_policy" "tf_state_read_only" {
   arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/tf-state-read-only"
