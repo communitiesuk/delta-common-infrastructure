@@ -12,6 +12,7 @@ output "ca_server_private_key" {
   sensitive = true
 }
 
+# This is only correct when first creating the domain. Terraform does not have access to the updated password.
 output "directory_admin_password" {
   value     = random_password.directory_admin_password.result
   sensitive = true

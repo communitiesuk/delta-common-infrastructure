@@ -12,11 +12,6 @@ output "ad_ca_server_private_key" {
   sensitive = true
 }
 
-output "directory_admin_password" {
-  value     = module.active_directory.directory_admin_password
-  sensitive = true
-}
-
 output "ad_dns_servers" {
   value = module.active_directory.dns_servers
 }

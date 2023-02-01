@@ -15,8 +15,8 @@ then connect with RDP to localhost:3388
 ## RDP to management server as directory admin
 
 * Username: dluhcdata.local\admin
-* Password: from output directory_admin_password
-  * The production admin password is instead stored in Secrets Manager, as `production-active-directory-admin-password`. This is because Terraform does not pick up the change when you reset the password.
+* Password: from AWS secrets manager, e.g. `staging-active-directory-admin-password`. This is because Terraform does not pick up the change when you reset the password.
+  * If it is not in secrets manager, it may be in Terraform state from the output `directory_admin_password`
 
 ### RDP to CA server
 
