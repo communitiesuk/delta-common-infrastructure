@@ -31,6 +31,14 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudfront_logs" {
   bucket = aws_s3_bucket.cloudfront_logs.id
 
   rule {
+    id     = "default-to-intelligent-tiering"
+    status = "Enabled"
+    transition {
+      storage_class = "INTELLIGENT_TIERING"
+    }
+  }
+
+  rule {
     id = "expiration"
 
     filter {}
@@ -41,6 +49,17 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudfront_logs" {
 
     status = "Enabled"
   }
+}
+
+resource "aws_s3_bucket_intelligent_tiering_configuration" "cloudfront_logs" {
+  bucket = aws_s3_bucket.cloudfront_logs.bucket
+  name   = "EntireBucket"
+
+  tiering {
+    access_tier = "DEEP_ARCHIVE_ACCESS"
+    days        = 180
+  }
+  status = "Enabled"
 }
 
 resource "aws_s3_bucket_public_access_block" "cloudfront_logs" {
