@@ -28,8 +28,10 @@ provider "aws" {
 }
 
 locals {
-  environment      = "test"
-  apply_aws_shield = true
+  environment                    = "test"
+  apply_aws_shield               = true
+  cloudwatch_log_expiration_days = 30
+  s3_log_expiration_days         = 30
 }
 
 # In practice the ACM validation records will all overlap
@@ -104,6 +106,7 @@ module "bastion_log_group" {
 
   kms_key_alias_name = "${local.environment}-bastion-ssh-logs"
   log_group_names    = ["${local.environment}/ssh-bastion"]
+  retention_days     = local.cloudwatch_log_expiration_days
 }
 
 module "bastion" {
@@ -125,7 +128,7 @@ module "bastion" {
     zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
-  s3_access_log_expiration_days = 180
+  s3_access_log_expiration_days = local.s3_log_expiration_days
 }
 
 module "public_albs" {
@@ -136,6 +139,7 @@ module "public_albs" {
   certificates                  = module.ssl_certs.alb_certs
   environment                   = local.environment
   apply_aws_shield_to_delta_alb = local.apply_aws_shield
+  s3_log_expiration_days        = local.s3_log_expiration_days
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.
@@ -146,10 +150,11 @@ module "public_albs" {
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
-  environment           = local.environment
-  base_domains          = [var.primary_domain, var.secondary_domain]
-  waf_per_ip_rate_limit = 100000
-  apply_aws_shield      = local.apply_aws_shield
+  environment            = local.environment
+  base_domains           = [var.primary_domain, var.secondary_domain]
+  waf_per_ip_rate_limit  = 100000
+  apply_aws_shield       = local.apply_aws_shield
+  s3_log_expiration_days = local.s3_log_expiration_days
 
   delta = {
     alb = module.public_albs.delta
@@ -245,6 +250,7 @@ module "marklogic" {
 
   ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
   extra_instance_policy_arn            = data.aws_iam_policy.enable_session_manager.arn
+  cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
 }
 
 module "gh_runner" {

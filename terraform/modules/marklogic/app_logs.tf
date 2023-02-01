@@ -6,7 +6,8 @@ locals {
 }
 
 module "marklogic_log_group" {
-  source = "../encrypted_log_groups"
+  source         = "../encrypted_log_groups"
+  retention_days = var.cloudwatch_log_expiration_days
 
   kms_key_alias_name = "marklogic-logs-${var.environment}"
   log_group_names = concat(

@@ -28,7 +28,9 @@ provider "aws" {
 }
 
 locals {
-  apply_aws_shield = true
+  apply_aws_shield               = true
+  cloudwatch_log_expiration_days = 731
+  s3_log_expiration_days         = 731
 }
 
 # In practice the ACM validation records will all overlap
@@ -101,7 +103,7 @@ module "bastion_log_group" {
 
   kms_key_alias_name = "${local.environment}-bastion-ssh-logs"
   log_group_names    = ["${local.environment}/ssh-bastion"]
-  retention_days     = 180
+  retention_days     = local.cloudwatch_log_expiration_days
 }
 
 module "bastion" {
@@ -191,6 +193,7 @@ module "public_albs" {
   certificates                  = module.dluhc_preprod_only_ssl_certs.alb_certs
   environment                   = local.environment
   apply_aws_shield_to_delta_alb = local.apply_aws_shield
+  s3_log_expiration_days        = local.s3_log_expiration_days
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
@@ -198,9 +201,10 @@ module "public_albs" {
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
-  environment      = local.environment
-  base_domains     = [var.secondary_domain]
-  apply_aws_shield = local.apply_aws_shield
+  environment            = local.environment
+  base_domains           = [var.secondary_domain]
+  apply_aws_shield       = local.apply_aws_shield
+  s3_log_expiration_days = local.s3_log_expiration_days
   delta = {
     alb = module.public_albs.delta
     domain = {

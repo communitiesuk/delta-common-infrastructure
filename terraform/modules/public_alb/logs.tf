@@ -36,7 +36,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "alb_logs" {
     }
 
     expiration {
-      days = var.log_expiration_days
+      days = var.s3_log_expiration_days
     }
 
     status = "Enabled"

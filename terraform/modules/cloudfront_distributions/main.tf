@@ -1,7 +1,7 @@
 module "access_logs_bucket" {
   source          = "../cloudfront_access_logs_bucket"
   environment     = var.environment
-  expiration_days = 180
+  expiration_days = var.s3_log_expiration_days
 }
 
 module "jaspersoft_waf" {

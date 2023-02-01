@@ -16,6 +16,10 @@ variable "apply_aws_shield" {
   type = bool
 }
 
+variable "s3_log_expiration_days" {
+  type = number
+}
+
 variable "delta" {
   type = object({
     alb = object({

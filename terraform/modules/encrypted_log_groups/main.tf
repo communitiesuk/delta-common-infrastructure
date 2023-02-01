@@ -10,7 +10,7 @@ variable "log_group_names" {
 }
 
 variable "retention_days" {
-  default = 30
+  type = number
 }
 
 output "log_group_names" {
