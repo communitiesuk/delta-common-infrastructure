@@ -16,5 +16,5 @@ mainSteps:
     inputs:
       timeoutSeconds: '30'
       runCommand:
-        - "aws s3 cp {{ConfigLocation}} /tmp/cloudwatch_config.json"
+        - "aws s3 cp --region eu-west-1 {{ConfigLocation}} /tmp/cloudwatch_config.json"
         - "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/tmp/cloudwatch_config.json"
