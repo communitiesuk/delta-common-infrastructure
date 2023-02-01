@@ -14,7 +14,7 @@ resource "aws_ssm_maintenance_window_target" "ml_servers" {
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "ml_patch" {
   name              = "${var.environment}/marklogic-ssm-patch"
-  retention_in_days = 60
+  retention_in_days = var.cloudwatch_log_expiration_days
 }
 
 resource "aws_ssm_maintenance_window_task" "ml_patch" {

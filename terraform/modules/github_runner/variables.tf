@@ -37,3 +37,7 @@ variable "private_dns" {
 variable "extra_instance_policy_arn" {
   type = string
 }
+
+variable "cloudwatch_log_expiration_days" {
+  type = number
+}

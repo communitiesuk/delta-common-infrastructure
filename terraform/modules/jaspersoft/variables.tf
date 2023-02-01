@@ -80,3 +80,6 @@ variable "extra_instance_policy_arn" {
   description = "ARN of IAM policy to give instance necessary permissions for access via Session Manager"
 }
 
+variable "cloudwatch_log_expiration_days" {
+  type = number
+}

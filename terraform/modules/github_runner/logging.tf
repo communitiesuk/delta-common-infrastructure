@@ -69,7 +69,7 @@ resource "aws_kms_alias" "gh_log_groups" {
 resource "aws_cloudwatch_log_group" "gh_runners" {
   count             = length(local.loggroups_names)
   name              = local.loggroups_names[count.index]
-  retention_in_days = 30
+  retention_in_days = var.cloudwatch_log_expiration_days
   kms_key_id        = aws_kms_key.gh_log_groups.arn
 }
 

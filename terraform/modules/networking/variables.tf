@@ -54,3 +54,7 @@ variable "auth_server_domain" {
 variable "apply_aws_shield_to_nat_gateway" {
   type = bool
 }
+
+variable "cloudwatch_log_expiration_days" {
+  type = number
+}

@@ -7,7 +7,7 @@ resource "aws_cloudwatch_log_group" "main" {
   provider = aws.us-east-1
 
   name              = "aws-waf-logs-${var.log_group_suffix}"
-  retention_in_days = 30
+  retention_in_days = var.cloudwatch_log_expiration_days
 }
 
 resource "aws_wafv2_web_acl_logging_configuration" "main" {
