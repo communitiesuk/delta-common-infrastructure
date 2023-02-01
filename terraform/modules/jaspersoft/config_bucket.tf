@@ -3,7 +3,7 @@ module "config_bucket" {
 
   bucket_name            = "dluhc-delta-jasper-config-${var.environment}"
   access_log_bucket_name = "dluhc-delta-jasper-config-access-logs-${var.environment}"
-  force_destroy          = true
+  force_destroy          = false # The keystore is saved to here which is required to restore passwords from the database
 }
 
 locals {
