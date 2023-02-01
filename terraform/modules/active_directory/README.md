@@ -16,6 +16,7 @@ then connect with RDP to localhost:3388
 
 * Username: dluhcdata.local\admin
 * Password: from output directory_admin_password
+  * The production admin password is instead stored in Secrets Manager, as `production-active-directory-admin-password`
 
 ### RDP to CA server
 
