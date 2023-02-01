@@ -13,7 +13,7 @@ variable "subnet_ids" {
   type = list(string)
 }
 
-variable "log_expiration_days" {
+variable "s3_log_expiration_days" {
   type = number
 }
 

@@ -1,23 +1,3 @@
-variable "prefix" {
-  type = string
-}
-
-variable "excluded_rules" {
-  description = "Rules to be excluded from AWSManagedRulesCommonRuleSet"
-  type        = list(string)
-  default     = []
-}
-
-variable "ip_allowlist" {
-  type    = list(string)
-  default = null
-}
-
-variable "per_ip_rate_limit" {
-  type        = number
-  description = "Requests per five minutes"
-}
-
 resource "aws_wafv2_ip_set" "main" {
   provider = aws.us-east-1
   count    = var.ip_allowlist == null ? 0 : 1

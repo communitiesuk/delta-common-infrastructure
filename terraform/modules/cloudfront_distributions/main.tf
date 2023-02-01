@@ -1,7 +1,7 @@
 module "access_logs_bucket" {
   source          = "../cloudfront_access_logs_bucket"
   environment     = var.environment
-  expiration_days = 180
+  expiration_days = var.cloudfront_access_s3_log_expiration_days
 }
 
 module "jaspersoft_waf" {
@@ -10,8 +10,9 @@ module "jaspersoft_waf" {
   prefix            = "${var.environment}-jaspersoft-"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Editing queries triggers these rules
-  excluded_rules = ["CrossSiteScripting_BODY", "GenericLFI_BODY"]
-  ip_allowlist   = var.jaspersoft.ip_allowlist
+  excluded_rules                 = ["CrossSiteScripting_BODY", "GenericLFI_BODY"]
+  ip_allowlist                   = var.jaspersoft.ip_allowlist
+  cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
 }
 
 module "delta_website_waf" {
@@ -20,8 +21,9 @@ module "delta_website_waf" {
   log_group_suffix  = "delta-website-${var.environment}"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Orbeon triggers this rule
-  excluded_rules = ["CrossSiteScripting_BODY"]
-  ip_allowlist   = var.delta.ip_allowlist
+  excluded_rules                 = ["CrossSiteScripting_BODY"]
+  ip_allowlist                   = var.delta.ip_allowlist
+  cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
 }
 
 module "cpm_waf" {
@@ -30,8 +32,9 @@ module "cpm_waf" {
   log_group_suffix  = "cpm-${var.environment}"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # At least some e-claims POST requests trigger this rule
-  excluded_rules = ["CrossSiteScripting_BODY"]
-  ip_allowlist   = var.cpm.ip_allowlist
+  excluded_rules                 = ["CrossSiteScripting_BODY"]
+  ip_allowlist                   = var.cpm.ip_allowlist
+  cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
 }
 
 module "api_auth_waf" {
@@ -40,8 +43,9 @@ module "api_auth_waf" {
   log_group_suffix  = "delta-api-${var.environment}"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # XSS not issue for API
-  excluded_rules = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
-  ip_allowlist   = var.api.ip_allowlist
+  excluded_rules                 = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
+  ip_allowlist                   = var.api.ip_allowlist
+  cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
 }
 
 module "delta_cloudfront" {

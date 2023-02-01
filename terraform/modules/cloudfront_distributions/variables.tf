@@ -16,6 +16,14 @@ variable "apply_aws_shield" {
   type = bool
 }
 
+variable "waf_cloudwatch_log_expiration_days" {
+  type = number
+}
+
+variable "cloudfront_access_s3_log_expiration_days" {
+  type = number
+}
+
 variable "delta" {
   type = object({
     alb = object({

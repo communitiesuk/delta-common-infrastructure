@@ -29,6 +29,10 @@ variable "apply_aws_shield_to_delta_alb" {
   type = bool
 }
 
+variable "alb_s3_log_expiration_days" {
+  type = number
+}
+
 # These are sent by CloudFront in the X-Cloudfront-Key header and verified by the ALB listeners
 resource "random_password" "cloudfront_keys" {
   for_each = toset(["delta", "api", "keycloak", "cpm", "jaspersoft"])
@@ -39,11 +43,11 @@ resource "random_password" "cloudfront_keys" {
 module "delta_alb" {
   source = "../public_alb"
 
-  vpc                 = var.vpc
-  subnet_ids          = var.subnet_ids
-  prefix              = "${var.environment}-delta-site-"
-  log_expiration_days = 30
-  apply_aws_shield    = var.apply_aws_shield_to_delta_alb
+  vpc                    = var.vpc
+  subnet_ids             = var.subnet_ids
+  prefix                 = "${var.environment}-delta-site-"
+  s3_log_expiration_days = var.alb_s3_log_expiration_days
+  apply_aws_shield       = var.apply_aws_shield_to_delta_alb
 }
 
 output "delta" {
@@ -60,10 +64,10 @@ output "delta" {
 module "delta_api_alb" {
   source = "../public_alb"
 
-  vpc                 = var.vpc
-  subnet_ids          = var.subnet_ids
-  prefix              = "${var.environment}-delta-api-"
-  log_expiration_days = 30
+  vpc                    = var.vpc
+  subnet_ids             = var.subnet_ids
+  prefix                 = "${var.environment}-delta-api-"
+  s3_log_expiration_days = var.alb_s3_log_expiration_days
 }
 
 output "delta_api" {
@@ -80,10 +84,10 @@ output "delta_api" {
 module "keycloak_alb" {
   source = "../public_alb"
 
-  vpc                 = var.vpc
-  subnet_ids          = var.subnet_ids
-  prefix              = "${var.environment}-keycloak-"
-  log_expiration_days = 30
+  vpc                    = var.vpc
+  subnet_ids             = var.subnet_ids
+  prefix                 = "${var.environment}-keycloak-"
+  s3_log_expiration_days = var.alb_s3_log_expiration_days
 }
 
 output "keycloak" {
@@ -100,10 +104,10 @@ output "keycloak" {
 module "cpm_alb" {
   source = "../public_alb"
 
-  vpc                 = var.vpc
-  subnet_ids          = var.subnet_ids
-  prefix              = "${var.environment}-cpm-"
-  log_expiration_days = 30
+  vpc                    = var.vpc
+  subnet_ids             = var.subnet_ids
+  prefix                 = "${var.environment}-cpm-"
+  s3_log_expiration_days = var.alb_s3_log_expiration_days
 }
 
 output "cpm" {
@@ -120,10 +124,10 @@ output "cpm" {
 module "jaspersoft_alb" {
   source = "../public_alb"
 
-  vpc                 = var.vpc
-  subnet_ids          = var.subnet_ids
-  prefix              = "${var.environment}-jaspersoft-"
-  log_expiration_days = 30
+  vpc                    = var.vpc
+  subnet_ids             = var.subnet_ids
+  prefix                 = "${var.environment}-jaspersoft-"
+  s3_log_expiration_days = var.alb_s3_log_expiration_days
 }
 
 output "jaspersoft" {

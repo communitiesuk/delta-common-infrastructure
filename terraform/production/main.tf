@@ -28,7 +28,10 @@ provider "aws" {
 }
 
 locals {
-  apply_aws_shield = true
+  apply_aws_shield                     = true
+  cloudwatch_log_expiration_days       = 731
+  patch_cloudwatch_log_expiration_days = 90
+  s3_log_expiration_days               = 731
 }
 
 # In practice the ACM validation records will all overlap
@@ -87,13 +90,15 @@ module "dluhc_preprod_validation_records" {
 # }
 
 module "networking" {
-  source                          = "../modules/networking"
-  vpc_cidr_block                  = "10.30.0.0/16"
-  environment                     = "prod"
-  ssh_cidr_allowlist              = var.allowed_ssh_cidrs
-  ecr_repo_account_id             = var.ecr_repo_account_id
-  apply_aws_shield_to_nat_gateway = local.apply_aws_shield
-  auth_server_domain              = module.public_albs.keycloak.primary_hostname
+  source                                  = "../modules/networking"
+  vpc_cidr_block                          = "10.30.0.0/16"
+  environment                             = "prod"
+  ssh_cidr_allowlist                      = var.allowed_ssh_cidrs
+  ecr_repo_account_id                     = var.ecr_repo_account_id
+  apply_aws_shield_to_nat_gateway         = local.apply_aws_shield
+  auth_server_domain                      = module.public_albs.keycloak.primary_hostname
+  firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
+  vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
 }
 
 module "bastion_log_group" {
@@ -101,7 +106,7 @@ module "bastion_log_group" {
 
   kms_key_alias_name = "${local.environment}-bastion-ssh-logs"
   log_group_names    = ["${local.environment}/ssh-bastion"]
-  retention_days     = 180
+  retention_days     = local.cloudwatch_log_expiration_days
 }
 
 module "bastion" {
@@ -169,18 +174,21 @@ module "marklogic" {
 
   ebs_backup_error_notification_emails = [local.notification_email_address]
   extra_instance_policy_arn            = module.session_manager_config.policy_arn
+  app_cloudwatch_log_expiration_days   = local.cloudwatch_log_expiration_days
+  patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
 }
 
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id                 = module.networking.github_runner_private_subnet.id
-  environment               = local.environment
-  vpc                       = module.networking.vpc
-  github_token              = var.github_actions_runner_token
-  ssh_ingress_sg_id         = module.bastion.bastion_security_group_id
-  private_dns               = module.networking.private_dns
-  extra_instance_policy_arn = module.session_manager_config.policy_arn
+  subnet_id                      = module.networking.github_runner_private_subnet.id
+  environment                    = local.environment
+  vpc                            = module.networking.vpc
+  github_token                   = var.github_actions_runner_token
+  ssh_ingress_sg_id              = module.bastion.bastion_security_group_id
+  private_dns                    = module.networking.private_dns
+  extra_instance_policy_arn      = module.session_manager_config.policy_arn
+  cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
 }
 
 module "public_albs" {
@@ -191,6 +199,7 @@ module "public_albs" {
   certificates                  = module.dluhc_preprod_only_ssl_certs.alb_certs
   environment                   = local.environment
   apply_aws_shield_to_delta_alb = local.apply_aws_shield
+  alb_s3_log_expiration_days    = local.s3_log_expiration_days
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
@@ -198,9 +207,11 @@ module "public_albs" {
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
-  environment      = local.environment
-  base_domains     = [var.secondary_domain]
-  apply_aws_shield = local.apply_aws_shield
+  environment                              = local.environment
+  base_domains                             = [var.secondary_domain]
+  apply_aws_shield                         = local.apply_aws_shield
+  waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
+  cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
   delta = {
     alb = module.public_albs.delta
     domain = {
@@ -270,21 +281,22 @@ module "jaspersoft_patch_maintenance_window" {
 }
 
 module "jaspersoft" {
-  source                        = "../modules/jaspersoft"
-  private_instance_subnet       = module.networking.jaspersoft_private_subnets[0]
-  database_subnets              = module.networking.jaspersoft_private_subnets
-  vpc                           = module.networking.vpc
-  prefix                        = "dluhc-prd-"
-  ssh_key_name                  = aws_key_pair.jaspersoft_ssh_key.key_name
-  public_alb                    = module.public_albs.jaspersoft
-  allow_ssh_from_sg_id          = module.bastion.bastion_security_group_id
-  jaspersoft_binaries_s3_bucket = var.jasper_s3_bucket
-  private_dns                   = module.networking.private_dns
-  environment                   = local.environment
-  patch_maintenance_window      = module.jaspersoft_patch_maintenance_window
-  instance_type                 = "m6a.xlarge"
-  java_max_heap                 = "12G"
-  extra_instance_policy_arn     = module.session_manager_config.policy_arn
+  source                               = "../modules/jaspersoft"
+  private_instance_subnet              = module.networking.jaspersoft_private_subnets[0]
+  database_subnets                     = module.networking.jaspersoft_private_subnets
+  vpc                                  = module.networking.vpc
+  prefix                               = "dluhc-prd-"
+  ssh_key_name                         = aws_key_pair.jaspersoft_ssh_key.key_name
+  public_alb                           = module.public_albs.jaspersoft
+  allow_ssh_from_sg_id                 = module.bastion.bastion_security_group_id
+  jaspersoft_binaries_s3_bucket        = var.jasper_s3_bucket
+  private_dns                          = module.networking.private_dns
+  environment                          = local.environment
+  patch_maintenance_window             = module.jaspersoft_patch_maintenance_window
+  instance_type                        = "m6a.xlarge"
+  java_max_heap                        = "12G"
+  extra_instance_policy_arn            = module.session_manager_config.policy_arn
+  patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
 }
 
 module "guardduty" {
@@ -302,8 +314,9 @@ module "iam_roles" {
 }
 
 module "session_manager_config" {
-  source      = "../modules/session_manager_config"
-  environment = local.environment
+  source                         = "../modules/session_manager_config"
+  environment                    = local.environment
+  cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
 }
 
 module "account_security" {

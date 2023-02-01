@@ -2,12 +2,17 @@ variable "environment" {
   type = string
 }
 
+variable "cloudwatch_log_expiration_days" {
+  type = number
+}
+
 # Note that port forwarding sessions do not get logged
 module "session_manager_log_group" {
   source = "../encrypted_log_groups"
 
   kms_key_alias_name = "session-manager-logs"
   log_group_names    = ["session-manager-logs"]
+  retention_days     = var.cloudwatch_log_expiration_days
 }
 
 resource "aws_ssm_document" "session_manager_prefs" {
