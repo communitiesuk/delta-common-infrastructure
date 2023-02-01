@@ -126,7 +126,8 @@ locals {
     aws_subnet.ml_private_subnets,
     aws_subnet.keycloak_private,
     aws_subnet.mailhog,
-    [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server, aws_subnet.jaspersoft, aws_subnet.github_runner]
+    aws_subnet.jaspersoft,
+    [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server, aws_subnet.github_runner]
   )
 
   # /etc/yum.repos.d on the MarkLogic hosts references https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=x86_64
