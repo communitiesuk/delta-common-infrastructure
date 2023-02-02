@@ -5,6 +5,10 @@
 # tfsec:ignore:aws-iam-no-user-attached-policies
 resource "aws_iam_user" "cpm_ci" {
   name = "cpm-ci"
+
+  lifecycle {
+    ignore_changes = [tags, tags_all] # AWS uses tags for access key descriptions
+  }
 }
 
 # This user is used by the delta repo's CI workflows
@@ -12,6 +16,10 @@ resource "aws_iam_user" "cpm_ci" {
 # tfsec:ignore:aws-iam-no-user-attached-policies
 resource "aws_iam_user" "delta_ci" {
   name = "delta_ci"
+
+  lifecycle {
+    ignore_changes = [tags, tags_all] # AWS uses tags for access key descriptions
+  }
 }
 
 locals {

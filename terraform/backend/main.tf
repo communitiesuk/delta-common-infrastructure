@@ -128,6 +128,10 @@ resource "aws_iam_policy" "terraform_state_read_only" {
 # tfsec:ignore:aws-iam-no-user-attached-policies
 resource "aws_iam_user" "terraform_plan" {
   name = "terraform-ci-plan-read-only"
+
+  lifecycle {
+    ignore_changes = [tags, tags_all] # AWS uses tags for access key descriptions
+  }
 }
 
 resource "aws_iam_user_policy_attachment" "terraform_plan_state_read" {

@@ -3,6 +3,10 @@
 # tfsec:ignore:aws-iam-no-user-attached-policies
 resource "aws_iam_user" "marklogic_deploy_secret_reader" {
   name = "delta-marklogic-deploy-secret-reader-${var.environment}"
+
+  lifecycle {
+    ignore_changes = [tags, tags_all] # AWS uses tags for access key descriptions
+  }
 }
 
 resource "aws_kms_key" "ml_deploy_secrets" {

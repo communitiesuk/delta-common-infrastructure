@@ -5,6 +5,7 @@ resource "aws_iam_user" "dap" {
   lifecycle {
     # We manually create credentials and provide them to the DAP team. So let's not accidentally destroy this user
     prevent_destroy = true
+    ignore_changes  = [tags, tags_all] # AWS uses tags for access key descriptions
   }
 }
 
