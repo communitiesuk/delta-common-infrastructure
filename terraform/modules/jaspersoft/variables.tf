@@ -83,3 +83,7 @@ variable "extra_instance_policy_arn" {
 variable "patch_cloudwatch_log_expiration_days" {
   type = number
 }
+
+variable "config_s3_log_expiration_days" {
+  type = number
+}

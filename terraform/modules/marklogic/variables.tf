@@ -57,3 +57,15 @@ variable "app_cloudwatch_log_expiration_days" {
 variable "patch_cloudwatch_log_expiration_days" {
   type = number
 }
+
+variable "config_s3_log_expiration_days" {
+  type = number
+}
+
+variable "backup_s3_log_expiration_days" {
+  type = number
+}
+
+variable "dap_export_s3_log_expiration_days" {
+  type = number
+}

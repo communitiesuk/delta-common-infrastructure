@@ -50,3 +50,7 @@ variable "geo_restriction_enabled" {
 variable "apply_aws_shield" {
   type = bool
 }
+
+variable "swagger_s3_log_expiration_days" {
+  type = number
+}
