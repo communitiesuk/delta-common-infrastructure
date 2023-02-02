@@ -1,9 +1,10 @@
 module "swagger_bucket" {
   source = "../s3_bucket"
 
-  bucket_name            = "dluhc-delta-api-swagger-${var.environment}"
-  access_log_bucket_name = "dluhc-delta-api-swagger-access-logs-${var.environment}"
-  force_destroy          = true
+  bucket_name                   = "dluhc-delta-api-swagger-${var.environment}"
+  access_log_bucket_name        = "dluhc-delta-api-swagger-access-logs-${var.environment}"
+  force_destroy                 = true
+  access_s3_log_expiration_days = var.swagger_s3_log_expiration_days
 
   policy = data.aws_iam_policy_document.swagger_policy.json
 }

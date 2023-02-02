@@ -1,9 +1,10 @@
 module "config_bucket" {
   source = "../s3_bucket"
 
-  bucket_name            = "dluhc-delta-jasper-config-${var.environment}"
-  access_log_bucket_name = "dluhc-delta-jasper-config-access-logs-${var.environment}"
-  force_destroy          = false # The keystore is saved to here which is required to restore passwords from the database
+  bucket_name                   = "dluhc-delta-jasper-config-${var.environment}"
+  access_log_bucket_name        = "dluhc-delta-jasper-config-access-logs-${var.environment}"
+  force_destroy                 = false # The keystore is saved to here which is required to restore passwords from the database
+  access_s3_log_expiration_days = var.config_s3_log_expiration_days
 }
 
 locals {

@@ -31,7 +31,7 @@ module "state_bucket" {
   access_log_bucket_name             = "data-collection-service-tfstate-access-logs-production"
   kms_key_arn                        = aws_kms_key.state_bucket_encryption_key.arn
   noncurrent_version_expiration_days = 700
-  access_log_expiration_days         = 700
+  access_s3_log_expiration_days      = 700
 }
 
 # Encryption/recovery not required - lock not sensitive

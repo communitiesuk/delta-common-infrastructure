@@ -30,9 +30,10 @@ module "marklogic_log_group" {
 }
 
 module "config_files_bucket" {
-  source                 = "../s3_bucket"
-  bucket_name            = "${var.environment}-marklogic-config"
-  access_log_bucket_name = "${var.environment}-marklogic-config-access-logs"
+  source                        = "../s3_bucket"
+  bucket_name                   = "${var.environment}-marklogic-config"
+  access_log_bucket_name        = "${var.environment}-marklogic-config-access-logs"
+  access_s3_log_expiration_days = var.config_s3_log_expiration_days
 }
 
 resource "aws_s3_object" "cloudwatch_config" {

@@ -75,6 +75,7 @@ module "api_cloudfront" {
   geo_restriction_enabled        = var.api.disable_geo_restriction != true
   environment                    = var.environment
   apply_aws_shield               = var.apply_aws_shield
+  swagger_s3_log_expiration_days = var.swagger_s3_log_expiration_days
 }
 
 module "keycloak_cloudfront" {

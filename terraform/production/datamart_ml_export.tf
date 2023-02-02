@@ -5,11 +5,12 @@ locals {
 module "datamart_ml_backups" {
   source = "../modules/s3_bucket"
 
-  bucket_name             = "datamart-ml-backups-production"
-  access_log_bucket_name  = "datamart-ml-backups-access-logs-production"
-  force_destroy           = true
-  restrict_public_buckets = false
-  policy                  = data.aws_iam_policy_document.allow_access_from_datamart.json
+  bucket_name                   = "datamart-ml-backups-production"
+  access_log_bucket_name        = "datamart-ml-backups-access-logs-production"
+  force_destroy                 = true
+  restrict_public_buckets       = false
+  policy                        = data.aws_iam_policy_document.allow_access_from_datamart.json
+  access_s3_log_expiration_days = local.s3_log_expiration_days
 }
 
 data "aws_iam_policy_document" "allow_access_from_datamart" {
