@@ -60,7 +60,7 @@ module "delta_cloudfront" {
   is_ipv6_enabled                = var.delta.ip_allowlist == null
   geo_restriction_countries      = var.delta.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
-  error_page_bucket_domain       = module.swagger_bucket.bucket_regional_domain_name
+  error_page_bucket_domain       = module.error_bucket.bucket_regional_domain_name
 }
 
 module "api_cloudfront" {
@@ -77,7 +77,6 @@ module "api_cloudfront" {
   environment                    = var.environment
   apply_aws_shield               = var.apply_aws_shield
   swagger_s3_log_expiration_days = var.swagger_s3_log_expiration_days
-  error_page_bucket_domain       = module.swagger_bucket.bucket_regional_domain_name
 }
 
 module "keycloak_cloudfront" {
@@ -108,7 +107,7 @@ module "cpm_cloudfront" {
   is_ipv6_enabled                = var.cpm.ip_allowlist == null
   geo_restriction_countries      = var.cpm.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
-  error_page_bucket_domain       = module.swagger_bucket.bucket_regional_domain_name
+  error_page_bucket_domain       = module.error_bucket.bucket_regional_domain_name
 }
 
 module "jaspersoft_cloudfront" {
@@ -123,5 +122,5 @@ module "jaspersoft_cloudfront" {
   is_ipv6_enabled                = var.jaspersoft.ip_allowlist == null
   geo_restriction_countries      = var.jaspersoft.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
-  error_page_bucket_domain       = module.swagger_bucket.bucket_regional_domain_name
+  error_page_bucket_domain       = module.error_bucket.bucket_regional_domain_name
 }
