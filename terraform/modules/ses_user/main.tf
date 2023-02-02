@@ -27,6 +27,10 @@ variable "environment" {
 # tfsec:ignore:aws-iam-no-user-attached-policies
 resource "aws_iam_user" "smtp_user" {
   name = var.username
+
+  lifecycle {
+    ignore_changes = [tags, tags_all] # AWS uses tags for access key descriptions
+  }
 }
 
 resource "aws_iam_access_key" "smtp_user" {
