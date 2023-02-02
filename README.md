@@ -270,6 +270,7 @@ You should then configure AWS SRT support if not already enabled for this accoun
   * Grant access to the S3 bucket you created earlier.
 
 Then you need to manually configure Layer 7 (Application layer) protection:
+* **Talk to Ben or Hugh before doing this as it can cause issues with Terraform, see DT-245**
 * Navigate to the Protected resources tab
 * Select the Cloudfront distribution associated with the website. (See the ACL)
 * Choose Configure Protections -> Selected Resources
