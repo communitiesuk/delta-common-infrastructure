@@ -12,64 +12,54 @@ ${jsonencode({
               {
                   "file_path": "/var/opt/MarkLogic/Logs/${port_detail.port}_AccessLog.txt",
                   "log_group_name": "${app_log_group_base_name}-${port_detail.log_name_fragment}-${port_detail.port}-access",
-                  "log_stream_name": "{instance_id}",
-                  "retention_in_days": 60
+                  "log_stream_name": "{instance_id}"
               },
               {
                   "file_path": "/var/opt/MarkLogic/Logs/${port_detail.port}_ErrorLog.txt",
                   "log_group_name": "${app_log_group_base_name}-${port_detail.log_name_fragment}-${port_detail.port}-error",
-                  "log_stream_name": "{instance_id}",
-                  "retention_in_days": 60
+                  "log_stream_name": "{instance_id}"
               },
               {
                   "file_path": "/var/opt/MarkLogic/Logs/${port_detail.port}_RequestLog.txt",
                   "log_group_name": "${app_log_group_base_name}-${port_detail.log_name_fragment}-${port_detail.port}-request",
-                  "log_stream_name": "{instance_id}",
-                  "retention_in_days": 60
+                  "log_stream_name": "{instance_id}"
               }
             ]
           ]),[
             {
               "file_path": "/var/opt/MarkLogic/Logs/AuditLog.txt",
               "log_group_name": "${app_log_group_base_name}-audit",
-              "log_stream_name": "{instance_id}",
-              "retention_in_days": 60
+              "log_stream_name": "{instance_id}"
             },
             {
               "file_path": "/var/opt/MarkLogic/Logs/CrashLog.txt",
               "log_group_name": "${app_log_group_base_name}-crash",
-              "log_stream_name": "{instance_id}",
-              "retention_in_days": 60
+              "log_stream_name": "{instance_id}"
             },
             {
               "file_path": "/var/opt/MarkLogic/Logs/ErrorLog.txt",
               "log_group_name": "${app_log_group_base_name}-error",
-              "log_stream_name": "{instance_id}",
-              "retention_in_days": 60
+              "log_stream_name": "{instance_id}"
             },
             {
               "file_path": "/var/opt/MarkLogic/Logs/TaskServer_ErrorLog.txt",
               "log_group_name": "${app_log_group_base_name}-taskserver-error",
-              "log_stream_name": "{instance_id}",
-              "retention_in_days": 60
+              "log_stream_name": "{instance_id}"
             },
             {
               "file_path": "/var/opt/MarkLogic/Logs/TaskServer_RequestLog.txt",
               "log_group_name": "${app_log_group_base_name}-taskserver-request",
-              "log_stream_name": "{instance_id}",
-              "retention_in_days": 60
+              "log_stream_name": "{instance_id}"
             },
             {
               "file_path": "/var/log/amazon/ssm/errors.log",
               "log_group_name": "${ssm_log_group_name}",
-              "log_stream_name": "errors-{instance_id}",
-              "retention_in_days": 60
+              "log_stream_name": "errors-{instance_id}"
             },
             {
               "file_path": "/var/log/amazon/ssm/amazon-ssm-agent.log",
               "log_group_name": "${ssm_log_group_name}",
-              "log_stream_name": "info-{instance_id}",
-              "retention_in_days": 60
+              "log_stream_name": "info-{instance_id}"
             }
           ])
       }
