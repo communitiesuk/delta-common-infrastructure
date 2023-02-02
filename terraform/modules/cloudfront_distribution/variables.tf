@@ -50,3 +50,7 @@ variable "function_associations" {
   type    = list(object({ event_type = string, function_arn = string }))
   default = []
 }
+
+variable "error_page_bucket_domain" {
+  type = string
+}

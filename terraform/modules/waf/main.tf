@@ -158,7 +158,13 @@ resource "aws_wafv2_web_acl" "waf_acl" {
       name     = "ip-allowlist"
       priority = 4
       action {
-        block {}
+        block { # TODO DT-187 does this custom response stuff go here? how does this work with the above?
+          # custom_response {
+          #   custom_response_body_key = ???? // this would be a custom body for IP failures
+          #   response_code            = ????
+          #   header?
+          # }
+        }
       }
 
       statement {
