@@ -19,10 +19,5 @@ data "aws_iam_policy_document" "error_bucket_policy" {
       type        = "Service"
       identifiers = ["cloudfront.amazonaws.com"]
     }
-    # condition { TODO DT-187 this needs to be for every distribution? or do we need it at all?
-    #   test     = "StringEquals"
-    #   variable = "AWS:SourceArn"
-    #   values   = [aws_cloudfront_distribution.main.arn]
-    # }
   }
 }
