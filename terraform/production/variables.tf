@@ -11,7 +11,7 @@ variable "default_tags" {
 
 variable "primary_domain" {
   type    = string
-  default = "preprod.dluhc-dev.uk"
+  default = "communities.gov.uk"
 }
 
 variable "secondary_domain" {
