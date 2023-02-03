@@ -186,9 +186,20 @@ resource "aws_iam_policy" "ssm_adms_rdp" {
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "infra_support" {
   statement {
-    sid = "UpdateAutoscalingGroups"
+    sid       = "UpdateAutoscalingGroups"
+    actions   = ["autoscaling:UpdateAutoScalingGroup"]
+    resources = ["*"]
+  }
+
+  # Prevent deleting logs as we retain them in CloudWatch
+  # infra support would otherwise have permissions via CloudWatchFullAccess
+  statement {
+    sid    = "PreventLogDeletion"
+    effect = "Deny"
     actions = [
-      "autoscaling:UpdateAutoScalingGroup",
+      "logs:PutRetentionPolicy",
+      "logs:DeleteLogGroup",
+      "logs:DeleteLogStream",
     ]
     resources = ["*"]
   }
