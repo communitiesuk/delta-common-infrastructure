@@ -38,8 +38,9 @@ variable "delta" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
-    disable_geo_restriction = optional(bool)
-    ip_allowlist            = optional(list(string)) # Leave null to disable IP restrictions
+    # Leave null to disable restrictions
+    geo_restriction_countries = optional(list(string))
+    ip_allowlist              = optional(list(string))
   })
 }
 
@@ -53,8 +54,8 @@ variable "api" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
-    disable_geo_restriction = optional(bool)
-    ip_allowlist            = optional(list(string))
+    geo_restriction_countries = optional(list(string))
+    ip_allowlist              = optional(list(string))
   })
 }
 
@@ -68,8 +69,8 @@ variable "keycloak" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
-    disable_geo_restriction = optional(bool)
-    ip_allowlist            = optional(list(string))
+    geo_restriction_countries = optional(list(string))
+    ip_allowlist              = optional(list(string))
   })
 }
 
@@ -83,8 +84,8 @@ variable "cpm" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
-    disable_geo_restriction = optional(bool)
-    ip_allowlist            = optional(list(string))
+    geo_restriction_countries = optional(list(string))
+    ip_allowlist              = optional(list(string))
   })
 }
 
@@ -98,7 +99,7 @@ variable "jaspersoft" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
-    disable_geo_restriction = optional(bool)
-    ip_allowlist            = optional(list(string))
+    geo_restriction_countries = optional(list(string))
+    ip_allowlist              = optional(list(string))
   })
 }

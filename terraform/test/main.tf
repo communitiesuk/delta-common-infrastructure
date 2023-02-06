@@ -167,7 +167,8 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.secondary_domain}", "delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
     }
-    disable_geo_restriction = true
+    # So GitHub Actions can access for end to end tests
+    geo_restriction_countries = null
     # We don't want to IP restrict test (yet)
   }
   api = {
@@ -176,6 +177,7 @@ module "cloudfront_distributions" {
       aliases             = ["api.delta.${var.secondary_domain}", "api.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
     }
+    geo_restriction_countries = ["GB", "IE"]
   }
   keycloak = {
     alb = module.public_albs.keycloak
@@ -183,6 +185,7 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.secondary_domain}", "auth.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["keycloak"].arn
     }
+    geo_restriction_countries = ["GB", "IE"]
   }
   cpm = {
     alb = module.public_albs.cpm
@@ -190,6 +193,7 @@ module "cloudfront_distributions" {
       aliases             = ["cpm.${var.secondary_domain}", "cpm.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["cpm"].arn
     }
+    geo_restriction_countries = ["GB", "IE"]
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
@@ -197,6 +201,7 @@ module "cloudfront_distributions" {
       aliases             = ["reporting.${var.secondary_domain}", "reporting.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft"].arn
     }
+    geo_restriction_countries = ["GB", "IE"]
   }
 }
 
