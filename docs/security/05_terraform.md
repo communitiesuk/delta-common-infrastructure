@@ -14,5 +14,6 @@ The state files are encrypted server side using KMS.
 
 The state contains sensitive values, but in order to ensure state compromise would not directly compromise production, we avoid storing production secrets that can be used outside the VPC. We are not as strict for test/staging.
 
-Sensitive values stored in production tfstate:
+The following are exceptions, sensitive values that can be used outside the VPC:
+
 * SMTP credentials for each of Delta/CPM. The IAM policy for sending emails cannot be restricted to use within the VPC. We could manage these manually instead, but the impact is relatively low.
