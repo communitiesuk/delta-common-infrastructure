@@ -54,9 +54,9 @@ output "codeartifact_domain_arn" {
   value = module.codeartifact.domain_arn
 }
 
-# output "required_dns_records" {
-#   value = local.all_validation_dns_records
-# }
+output "required_dns_records" {
+  value = local.external_required_validation_dns_records
+}
 
 output "ad_dns_servers" {
   value = module.active_directory.dns_servers
