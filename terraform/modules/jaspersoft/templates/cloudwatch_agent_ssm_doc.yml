@@ -1,0 +1,20 @@
+---
+schemaVersion: "2.2"
+description: Install and configure the Cloudwatch agent
+parameters:
+  ConfigLocation:
+    type: String
+mainSteps:
+  - action: aws:configurePackage
+    name: installCloudwatchPackage
+    inputs:
+      action: Install
+      installationType: Uninstall and reinstall
+      name: AmazonCloudWatchAgent
+  - action: aws:runShellScript
+    name: startCloudwatchAgent
+    inputs:
+      timeoutSeconds: '30'
+      runCommand:
+        - "aws s3 cp --region eu-west-1 {{ConfigLocation}} /tmp/cloudwatch_config.json"
+        - "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/tmp/cloudwatch_config.json"
