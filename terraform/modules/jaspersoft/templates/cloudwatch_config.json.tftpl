@@ -9,23 +9,23 @@
         "collect_list": [
           {
             "file_path": "/opt/tomcat/base/logs/catalina*",
-            "log_group_name": "${environment}/jaspersoft-catalina",
-            "log_stream_name": "{instance_id}"
+            "log_group_name": "${app_log_group_name}",
+            "log_stream_name": "{instance_id}-catalina"
           },
           {
             "file_path": "/opt/tomcat/base/logs/localhost*",
-            "log_group_name": "${environment}/jaspersoft-localhost",
-            "log_stream_name": "{instance_id}"
+            "log_group_name": "${app_log_group_name}",
+            "log_stream_name": "{instance_id}-localhost"
           },
           {
             "file_path": "/opt/tomcat/base/logs/manager*",
-            "log_group_name": "${environment}/jaspersoft-manager",
-            "log_stream_name": "{instance_id}"
+            "log_group_name": "${app_log_group_name}",
+            "log_stream_name": "{instance_id}-manager"
           },
           {
             "file_path": "/opt/tomcat/base/logs/host-manager*",
-            "log_group_name": "${environment}/jaspersoft-host-manager",
-            "log_stream_name": "{instance_id}"
+            "log_group_name": "${app_log_group_name}",
+            "log_stream_name": "{instance_id}-host-manager"
           },
           {
             "file_path": "/var/log/amazon/ssm/errors.log",

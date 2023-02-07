@@ -1,8 +1,8 @@
 # Inspired by the app_logs in the marklogic module.
 
 locals {
-  app_log_group_base_name = "${var.environment}/jaspersoft"
-  ssm_log_group_name      = "${var.environment}/jaspersoft-ssm"
+  app_log_group_name = "${var.environment}/jaspersoft"
+  ssm_log_group_name = "${var.environment}/jaspersoft-ssm"
 }
 
 module "jaspersoft_log_group" {
@@ -10,12 +10,13 @@ module "jaspersoft_log_group" {
   retention_days = var.app_cloudwatch_log_expiration_days
 
   kms_key_alias_name = "jaspersoft-logs-${var.environment}"
-  log_group_names    = [local.app_log_group_base_name, local.ssm_log_group_name]
+  log_group_names    = [local.app_log_group_name, local.ssm_log_group_name]
 }
 
 resource "aws_s3_object" "cloudwatch_config" {
   content = templatefile("${path.module}/templates/cloudwatch_config.json.tftpl", {
     environment        = var.environment
+    app_log_group_name = local.app_log_group_name
     ssm_log_group_name = local.ssm_log_group_name
   })
   bucket = module.config_bucket.bucket
