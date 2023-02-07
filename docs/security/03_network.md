@@ -35,8 +35,6 @@ The following security groups allow open ingress from the internet:
 
 Several of the instances are SSM enabled and AWS Systems Manager Session Manager can be used to access them.
 
-TODO DT-165: Make sure logging and KMS is set up for session manager in eu-west-1
-
 Excluding application traffic the only other network ingress point is an IP-restricted SSH bastion.
 This is primarily used for development access in the test and staging accounts, but also acts as a backup method for accessing production.
 Developer's SSH public keys are uploaded to an S3 bucket, and the bastion host automatically fetches these and sets up a user per-key.  
@@ -44,6 +42,7 @@ SSH access logs from the instance are shipped to CloudWatch, and users do not ha
 
 There is also a GitHub runner instance in each environment attached to the delta-marklogic-deploy repository.
 This is not accessible from the internet, but it does fetch and execute jobs from GitHub Actions.
+See [07_cicd.md](./07_cicd.md) for further details.
 
 ## Egress
 
