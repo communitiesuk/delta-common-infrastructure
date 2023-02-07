@@ -33,9 +33,10 @@ data "aws_iam_policy" "tf_state_read_only" {
   arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/tf-state-read-only"
 }
 
-# To be used with CloudWatchReadOnlyAccess
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "cloudwatch_monitor" {
+  source_policy_documents = [data.aws_iam_policy.cloudwatch_read_only_access.policy]
+
   statement {
     sid = "UpdateLogsInsightsQueries"
     actions = [
@@ -180,4 +181,31 @@ data "aws_iam_policy_document" "ssm_adms_rdp" {
 resource "aws_iam_policy" "ssm_adms_rdp" {
   name   = "ssm-adms-rdp-${var.environment}"
   policy = data.aws_iam_policy_document.ssm_adms_rdp.json
+}
+
+# tfsec:ignore:aws-iam-no-policy-wildcards
+data "aws_iam_policy_document" "infra_support" {
+  statement {
+    sid       = "UpdateAutoscalingGroups"
+    actions   = ["autoscaling:UpdateAutoScalingGroup"]
+    resources = ["*"]
+  }
+
+  # Prevent deleting logs as we retain them in CloudWatch
+  # infra support would otherwise have permissions via CloudWatchFullAccess
+  statement {
+    sid    = "PreventLogDeletion"
+    effect = "Deny"
+    actions = [
+      "logs:PutRetentionPolicy",
+      "logs:DeleteLogGroup",
+      "logs:DeleteLogStream",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "infra_support" {
+  name   = "infra-support-${var.environment}"
+  policy = data.aws_iam_policy_document.infra_support.json
 }
