@@ -148,6 +148,22 @@ chmod +x /usr/local/sbin/aws-vault
 * `gpg: decryption failed: No secret key` in WSL.
   * `pass` is locked. unlock it by running `pass show mhclg` and entering your passphrase.
 
+### Session Manager access
+
+AWS Systems Manager Session Manager can be used to connect to instances inside the VPC.
+
+RDP and terminal sessions can be started from [Fleet Manager](https://eu-west-1.console.aws.amazon.com/systems-manager/managed-instances?region=eu-west-1) in the Systems Manager console.
+
+Port forwarding can also be used, for example to connect to the MarkLogic admin interface:
+
+* [Install the Session Manager plugin for the AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
+* Start a port forwarding session, there is a script provided for this in [manual_scripts/session_manager](./manual_scripts/session_manager/marklogic.sh)
+
+```sh
+# Arguments are environment, local port, remote port
+aws-vault exec delta-dev-infra -- bash ./manual_scripts/session_manager/marklogic.sh test 9001 8001
+```
+
 ## Creating an environment
 
 ### 1 AWS Shield Advanced
