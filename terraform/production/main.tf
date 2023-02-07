@@ -231,7 +231,8 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["delta"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.delta_website
+    ip_allowlist              = local.cloudfront_ip_allowlists.delta_website
+    geo_restriction_countries = ["GB", "IE"]
   }
   api = {
     alb = module.public_albs.delta_api
@@ -239,7 +240,8 @@ module "cloudfront_distributions" {
       aliases             = ["api.delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["api"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.delta_api
+    ip_allowlist              = local.cloudfront_ip_allowlists.delta_api
+    geo_restriction_countries = ["GB", "IE"]
   }
   keycloak = {
     alb = module.public_albs.keycloak
@@ -247,7 +249,8 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.delta_api
+    ip_allowlist              = local.cloudfront_ip_allowlists.delta_api
+    geo_restriction_countries = ["GB", "IE"]
   }
   cpm = {
     alb = module.public_albs.cpm
@@ -255,7 +258,8 @@ module "cloudfront_distributions" {
       aliases             = ["cpm.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.cpm
+    ip_allowlist              = local.cloudfront_ip_allowlists.cpm
+    geo_restriction_countries = ["GB", "IE"]
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
@@ -263,7 +267,8 @@ module "cloudfront_distributions" {
       aliases             = ["reporting.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.jaspersoft
+    ip_allowlist              = local.cloudfront_ip_allowlists.jaspersoft
+    geo_restriction_countries = ["GB", "IE"]
   }
 }
 

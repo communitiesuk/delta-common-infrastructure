@@ -164,6 +164,7 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.secondary_domain}", "delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
     }
+    geo_restriction_countries = ["GB", "IE", "IN"]
     # We don't want to restrict staging until we are able to confirm who needs access
   }
   api = {
@@ -172,6 +173,7 @@ module "cloudfront_distributions" {
       aliases             = ["api.delta.${var.secondary_domain}", "api.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
     }
+    geo_restriction_countries = ["GB", "IE", "IN"]
   }
   keycloak = {
     alb = module.public_albs.keycloak
@@ -179,6 +181,7 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.secondary_domain}", "auth.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["keycloak"].arn
     }
+    geo_restriction_countries = ["GB", "IE", "IN"]
   }
   cpm = {
     alb = module.public_albs.cpm
@@ -186,6 +189,7 @@ module "cloudfront_distributions" {
       aliases             = ["cpm.${var.secondary_domain}", "cpm.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["cpm"].arn
     }
+    geo_restriction_countries = ["GB", "IE", "IN"]
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
@@ -193,6 +197,7 @@ module "cloudfront_distributions" {
       aliases             = ["reporting.${var.secondary_domain}", "reporting.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft"].arn
     }
+    geo_restriction_countries = ["GB", "IE", "IN"]
   }
 }
 
