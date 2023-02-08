@@ -47,8 +47,9 @@ variable "mailhog_subnet" {
   default = false
 }
 
-variable "auth_server_domain" {
-  type = string
+variable "auth_server_domains" {
+  type        = list(string)
+  description = "To allow through firewall for API"
 }
 
 variable "apply_aws_shield_to_nat_gateway" {
