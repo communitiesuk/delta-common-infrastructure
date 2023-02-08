@@ -19,5 +19,19 @@ data "aws_iam_policy_document" "error_bucket_policy" {
       type        = "Service"
       identifiers = ["cloudfront.amazonaws.com"]
     }
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+
+      values   = [aws_cloudfront_distribution.main.arn]
+      ]
+    }
   }
+}
+
+resource "aws_s3_object" "error_page" {
+  bucket = module.error_bucket.bucket_name
+  key    = "error-page"
+  source = "./error.html"
 }

@@ -56,6 +56,13 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
+  origin {
+    domain_name = module.error_bucket.bucket_regional_domain_name
+    origin_id   = "error_origin"
+
+    origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
+  }
+
   enabled         = true
   is_ipv6_enabled = var.is_ipv6_enabled
 
@@ -79,14 +86,44 @@ resource "aws_cloudfront_distribution" "main" {
     default_ttl                = 0
     max_ttl                    = 86400
     response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+  }
 
-    dynamic "function_association" {
-      for_each = var.function_associations
-      content {
-        event_type   = function_association.value.event_type
-        function_arn = function_association.value.function_arn
+  ordered_cache_behavior {
+    allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+    cached_methods             = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id           = "error_origin"
+    path_pattern               = "/error.html"
+    viewer_protocol_policy     = "redirect-to-https"
+    min_ttl                    = 0
+    default_ttl                = 0
+    max_ttl                    = 86400
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+
+    forwarded_values {
+      query_string = false
+
+      cookies {
+        forward = "none"
       }
     }
+  }
+
+  custom_error_response {
+    error_code         = 502
+    response_code      = 502
+    response_page_path = "/error.html"
+  }
+
+  custom_error_response {
+    error_code         = 503
+    response_code      = 503
+    response_page_path = "/error.html"
+  }
+
+  custom_error_response {
+    error_code         = 504
+    response_code      = 504
+    response_page_path = "/error.html"
   }
 
   price_class = "PriceClass_100"
@@ -100,8 +137,8 @@ resource "aws_cloudfront_distribution" "main" {
 
   restrictions {
     geo_restriction {
-      restriction_type = var.geo_restriction_countries != null ? "whitelist" : "none"
-      locations        = var.geo_restriction_countries != null ? var.geo_restriction_countries : []
+      restriction_type = var.geo_restriction_enabled ? "whitelist" : "none"
+      locations        = var.geo_restriction_enabled ? ["GB", "IE"] : []
     }
   }
 
