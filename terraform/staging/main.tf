@@ -81,7 +81,7 @@ module "networking" {
   open_ingress_cidrs                      = [local.datamart_peering_vpc_cidr]
   ecr_repo_account_id                     = var.ecr_repo_account_id
   apply_aws_shield_to_nat_gateway         = local.apply_aws_shield
-  auth_server_domain                      = "auth.delta.stage.communities.gov.uk"
+  auth_server_domains                     = ["auth.delta.${var.primary_domain}", "auth.delta.${var.secondary_domain}"]
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
 

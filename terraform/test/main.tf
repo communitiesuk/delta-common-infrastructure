@@ -89,7 +89,7 @@ module "networking" {
   number_of_vpc_endpoint_subnets          = 1
   mailhog_subnet                          = true
   apply_aws_shield_to_nat_gateway         = local.apply_aws_shield
-  auth_server_domain                      = "auth.delta.test.communities.gov.uk"
+  auth_server_domains                     = ["auth.delta.${var.primary_domain}", "auth.delta.${var.secondary_domain}"]
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
 }

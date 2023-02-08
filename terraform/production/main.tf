@@ -96,7 +96,7 @@ module "networking" {
   ssh_cidr_allowlist                      = var.allowed_ssh_cidrs
   ecr_repo_account_id                     = var.ecr_repo_account_id
   apply_aws_shield_to_nat_gateway         = local.apply_aws_shield
-  auth_server_domain                      = module.public_albs.keycloak.primary_hostname
+  auth_server_domains                     = ["auth.delta.${var.primary_domain}", "auth.delta.${var.secondary_domain}"]
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   open_ingress_cidrs                      = [local.datamart_peering_vpc_cidr]
