@@ -99,6 +99,7 @@ module "networking" {
   auth_server_domain                      = module.public_albs.keycloak.primary_hostname
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
+  open_ingress_cidrs                      = [local.datamart_peering_vpc_cidr]
 }
 
 module "bastion_log_group" {
