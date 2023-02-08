@@ -3,7 +3,7 @@ locals {
   datamart_peering_vpc_account = "090682378586"
   datamart_peering_vpc_id      = "vpc-47219022"
   datamart_peering_vpc_cidr    = "192.168.0.0/16"
-  datamart_server_ip           = "192.168.7.253"
+  datamart_server_ip           = "192.168.9.240"
 }
 
 data "aws_route_table" "ad_management_server" {
