@@ -79,6 +79,14 @@ resource "aws_cloudfront_distribution" "main" {
     default_ttl                = 0
     max_ttl                    = 86400
     response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+
+    dynamic "function_association" {
+      for_each = var.function_associations
+      content {
+        event_type   = function_association.value.event_type
+        function_arn = function_association.value.function_arn
+      }
+    }
   }
 
   price_class = "PriceClass_100"

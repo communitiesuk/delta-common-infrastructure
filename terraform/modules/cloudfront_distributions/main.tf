@@ -90,6 +90,7 @@ module "keycloak_cloudfront" {
   is_ipv6_enabled                = var.keycloak.ip_allowlist == null
   geo_restriction_countries      = var.keycloak.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
+  function_associations          = [{ event_type = "viewer-request", function_arn = aws_cloudfront_function.keycloak_request.arn }]
 }
 
 module "cpm_cloudfront" {
