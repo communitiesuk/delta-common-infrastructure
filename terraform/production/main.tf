@@ -36,18 +36,18 @@ locals {
 
 # In practice the ACM validation records will all overlap
 # But create three sets anyway to be on the safe side, ACM is free
-# module "ssl_certs" {
-#   source = "../modules/ssl_certificates"
+module "ssl_certs" {
+  source = "../modules/ssl_certificates"
 
-#   primary_domain    = var.primary_domain
-#   secondary_domains = [var.secondary_domain]
-# }
+  primary_domain    = var.primary_domain
+  secondary_domains = [var.secondary_domain]
+}
 
-# module "communities_only_ssl_certs" {
-#   source = "../modules/ssl_certificates"
+module "communities_only_ssl_certs" {
+  source = "../modules/ssl_certificates"
 
-#   primary_domain = var.primary_domain
-# }
+  primary_domain = var.primary_domain
+}
 
 module "dluhc_preprod_only_ssl_certs" {
   source = "../modules/ssl_certificates"
@@ -70,11 +70,13 @@ locals {
   organisation_account_id    = "448312965134"
   environment                = "production"
   notification_email_address = "Group-DLUHCDeltaNotifications@softwire.com"
-  dns_cert_validation_records = setunion(
-    # module.communities_only_ssl_certs.required_validation_records,
+  all_validation_dns_records = setunion(
+    module.communities_only_ssl_certs.required_validation_records,
     module.dluhc_preprod_only_ssl_certs.required_validation_records,
-    # module.ssl_certs.required_validation_records,
+    module.ssl_certs.required_validation_records,
+    module.ses_identity.required_validation_records,
   )
+  external_required_validation_dns_records = [for record in local.all_validation_dns_records : record if !endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 # This dynamically creates resources, so the modules it depends on must be created first
@@ -82,12 +84,8 @@ locals {
 module "dluhc_preprod_validation_records" {
   source         = "../modules/dns_records"
   hosted_zone_id = var.hosted_zone_id
-  records        = [for record in local.dns_cert_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+  records        = [for record in local.all_validation_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
-
-# locals {
-#   all_validation_dns_records = concat(module.communities_only_ssl_certs.required_validation_records, module.ses_identity.required_validation_records)
-# }
 
 module "networking" {
   source                                  = "../modules/networking"
