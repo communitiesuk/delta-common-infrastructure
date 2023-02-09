@@ -251,6 +251,8 @@ Restore the "domain" inputs once the certificate validation records are in place
 If you are managing DNS for one of the domains, then create the necessary DNS records after the CloudFront distributions
 are created. Do this with the dns_records module.
 
+We use an origin timeout of 180 for the Delta website. This is above the normal limit of 60 and requires requesting a quota increase for the account from AWS support, which can be done [through the AWS console](https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&limitType=service-code-cloudfront-distributions).
+
 ### 7 JasperReports server
 
 Follow the setup instructions in the module readme.
