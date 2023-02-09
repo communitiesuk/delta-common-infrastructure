@@ -59,6 +59,8 @@ module "delta_cloudfront" {
   cloudfront_domain              = var.delta.domain
   is_ipv6_enabled                = var.delta.ip_allowlist == null
   geo_restriction_countries      = var.delta.geo_restriction_countries
+  geo_restriction_enabled        = var.delta.disable_geo_restriction != true
+  environment                    = var.environment
   apply_aws_shield               = var.apply_aws_shield
 }
 

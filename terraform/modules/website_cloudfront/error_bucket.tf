@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "error_bucket_policy" {
 }
 
 resource "aws_s3_object" "error_page" {
-  bucket = module.error_bucket.bucket_name
-  key    = "error-page"
+  bucket = module.error_bucket.bucket_arn
+  key    = "error.html"
   source = "./error.html"
 }
