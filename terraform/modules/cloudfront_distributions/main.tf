@@ -49,7 +49,7 @@ module "api_auth_waf" {
 }
 
 module "delta_cloudfront" {
-  source                         = "../cloudfront_distribution"
+  source                         = "../website_cloudfront"
   prefix                         = "delta-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta"
