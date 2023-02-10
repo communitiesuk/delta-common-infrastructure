@@ -13,11 +13,12 @@ variable "secondary_domains" {
 locals {
   all_domains = concat([var.primary_domain], var.secondary_domains)
   subdomains = {
-    delta      = "delta"
-    api        = "api.delta"
-    keycloak   = "auth.delta"
-    cpm        = "cpm"
-    jaspersoft = "reporting"
+    delta            = "delta"
+    api              = "api.delta"
+    keycloak         = "auth.delta"
+    cpm              = "cpm"
+    jaspersoft       = "reporting"
+    jaspersoft_delta = "reporting.delta"
   }
 }
 
@@ -33,6 +34,10 @@ resource "aws_acm_certificate" "cloudfront_certs" {
   domain_name               = "${each.value}.${var.primary_domain}"
   subject_alternative_names = [for domain in local.all_domains : "${each.value}.${domain}"]
   validation_method         = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 output "cloudfront_certs" {
@@ -49,6 +54,10 @@ resource "aws_acm_certificate" "alb_certs" {
   domain_name               = "${each.value}.${var.primary_domain}"
   subject_alternative_names = [for domain in local.all_domains : "${each.value}.${domain}"]
   validation_method         = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 output "alb_certs" {
