@@ -53,17 +53,12 @@ module "dap_export_job_window" {
 resource "aws_ssm_maintenance_window_target" "ml_server" {
   window_id     = module.dap_export_job_window.window_id
   name          = "marklogic-dap-s3-upload-${var.environment}"
-  description   = "This should contain one MarkLogic server from the ${var.environment} environment"
+  description   = "This should contain the MarkLogic servers from the ${var.environment} environment"
   resource_type = "INSTANCE"
 
   targets {
-    key    = "tag:Name"
-    values = ["MarkLogic-ASG-1"]
-  }
-
-  targets {
-    key    = "tag:environment"
-    values = [var.environment]
+    key    = "tag:aws:cloudformation:stack-name"
+    values = [local.stack_name]
   }
 }
 

@@ -41,8 +41,9 @@ resource "aws_lb_target_group" "ml_http" {
 
   health_check {
     protocol            = "HTTP"
-    path                = "/rest-api/swagger.json"
-    interval            = 10 #seconds
+    port                = "traffic-port"
+    path                = "/v1/config/properties"
+    interval            = 30 #seconds
     unhealthy_threshold = 10
     healthy_threshold   = 2
   }
