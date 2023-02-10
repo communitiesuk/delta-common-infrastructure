@@ -1,8 +1,8 @@
 module "error_bucket" {
   source = "../s3_bucket"
 
-  bucket_name                   = "dluhc-error-page-${var.environment}"
-  access_log_bucket_name        = "dluhc-error-page-access-logs-${var.environment}"
+  bucket_name                   = "${var.prefix}error-page"
+  access_log_bucket_name        = "${var.prefix}error-page-access-logs"
   force_destroy                 = true
   access_s3_log_expiration_days = 60
 
@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "error_bucket_policy" {
       test     = "StringEquals"
       variable = "AWS:SourceArn"
 
-      values   = [aws_cloudfront_distribution.main.arn]
+      values = [aws_cloudfront_distribution.main.arn]
     }
   }
 }
@@ -32,6 +32,6 @@ data "aws_iam_policy_document" "error_bucket_policy" {
 resource "aws_s3_object" "error_page" {
   bucket = module.error_bucket.bucket
   etag   = filemd5("${path.module}/error.html")
-  key    = "error.html"
+  key    = "static_errors/error.html"
   source = "${path.module}/error.html"
 }

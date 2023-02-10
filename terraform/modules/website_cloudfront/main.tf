@@ -92,7 +92,7 @@ resource "aws_cloudfront_distribution" "main" {
     allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
     cached_methods             = ["GET", "HEAD", "OPTIONS"]
     target_origin_id           = "error_origin"
-    path_pattern               = "/error.html"
+    path_pattern               = "/static_errors/*"
     viewer_protocol_policy     = "redirect-to-https"
     min_ttl                    = 0
     default_ttl                = 0
@@ -111,19 +111,19 @@ resource "aws_cloudfront_distribution" "main" {
   custom_error_response {
     error_code         = 502
     response_code      = 502
-    response_page_path = "/error.html"
+    response_page_path = "static_errors/error.html"
   }
 
   custom_error_response {
     error_code         = 503
     response_code      = 503
-    response_page_path = "/error.html"
+    response_page_path = "static_errors/error.html"
   }
 
   custom_error_response {
     error_code         = 504
     response_code      = 504
-    response_page_path = "/error.html"
+    response_page_path = "static_errors/error.html"
   }
 
   price_class = "PriceClass_100"

@@ -3,10 +3,6 @@ variable "prefix" {
   type        = string
 }
 
-variable "environment" {
-  type = string
-}
-
 variable "access_logs_bucket_domain_name" {
   type = string
 }
