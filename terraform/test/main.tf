@@ -113,7 +113,7 @@ module "bastion_log_group" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=f45b89c31b1e02e625d0c6d92a92463ebb8383b9"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=228faf05bb2dcaa1b85d429c982f9f3257952903"
 
   region                  = "eu-west-1"
   name_prefix             = "tst"
