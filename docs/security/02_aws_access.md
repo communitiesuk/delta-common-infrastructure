@@ -26,7 +26,7 @@ Managed in this repository, environment specific, see [roles.tf](../../terraform
 
 * `cloudwatch-monitor` - CloudWatch access
 * `application-support` - View logs and use SSM to connect to MarkLogic and Active Directory
-* `infra-support` - Same as above, plus ReadOnlyAccess, Terraform state read and access to AWS support tickets
+* `infra-support` - Same as above, plus ReadOnlyAccess, Terraform state read, access to AWS support tickets, and permissions to perform some common actions, like scaling up/down servers
 
 ## Alarms and monitoring
 

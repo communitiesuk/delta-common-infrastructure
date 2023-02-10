@@ -81,7 +81,7 @@ module "networking" {
   open_ingress_cidrs                      = [local.datamart_peering_vpc_cidr]
   ecr_repo_account_id                     = var.ecr_repo_account_id
   apply_aws_shield_to_nat_gateway         = local.apply_aws_shield
-  auth_server_domain                      = "auth.delta.stage.communities.gov.uk"
+  auth_server_domains                     = ["auth.delta.${var.primary_domain}", "auth.delta.${var.secondary_domain}"]
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
 
@@ -117,7 +117,16 @@ module "bastion" {
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1
   log_group_name          = module.bastion_log_group.log_group_names[0]
-  extra_userdata          = "yum install openldap-clients -y; sed -i 's/SELINUX=disabled/SELINUX=enforcing/g' /etc/selinux/config ; chmod 754 /usr/bin/as"
+  extra_userdata          = <<-EOT
+    yum install openldap-clients -y
+    sed -i 's/SELINUX=disabled/SELINUX=enforcing/g' /etc/selinux/config
+    chmod 754 /usr/bin/as
+
+    # Configure SSH banner:
+    echo "Legal Warning - Private System! This system and the data within it are private property. Access to the system is only available for authorised users and for authorised purposes. Unauthorised entry contravenes the Computer Misuse Act 1990 of the United Kingdom and may incur criminal penalties as well as damages." > /etc/ssh/banner
+    sed -i 's-#Banner none-Banner /etc/ssh/banner-g' /etc/ssh/sshd_config
+    systemctl restart sshd
+    EOT
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
   dns_config = {
@@ -155,6 +164,7 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.secondary_domain}", "delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
     }
+    geo_restriction_countries = ["GB", "IE", "IN"]
     # We don't want to restrict staging until we are able to confirm who needs access
   }
   api = {
@@ -163,6 +173,7 @@ module "cloudfront_distributions" {
       aliases             = ["api.delta.${var.secondary_domain}", "api.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
     }
+    geo_restriction_countries = ["GB", "IE", "IN"]
   }
   keycloak = {
     alb = module.public_albs.keycloak
@@ -170,6 +181,7 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.secondary_domain}", "auth.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["keycloak"].arn
     }
+    geo_restriction_countries = ["GB", "IE", "IN"]
   }
   cpm = {
     alb = module.public_albs.cpm
@@ -177,6 +189,7 @@ module "cloudfront_distributions" {
       aliases             = ["cpm.${var.secondary_domain}", "cpm.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["cpm"].arn
     }
+    geo_restriction_countries = ["GB", "IE", "IN"]
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
@@ -184,6 +197,7 @@ module "cloudfront_distributions" {
       aliases             = ["reporting.${var.secondary_domain}", "reporting.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft"].arn
     }
+    geo_restriction_countries = ["GB", "IE", "IN"]
   }
 }
 
@@ -294,6 +308,7 @@ module "jaspersoft" {
   patch_maintenance_window             = module.jaspersoft_patch_maintenance_window
   patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
   config_s3_log_expiration_days        = local.s3_log_expiration_days
+  app_cloudwatch_log_expiration_days   = local.cloudwatch_log_expiration_days
 }
 
 module "ses_identity" {

@@ -36,18 +36,18 @@ locals {
 
 # In practice the ACM validation records will all overlap
 # But create three sets anyway to be on the safe side, ACM is free
-# module "ssl_certs" {
-#   source = "../modules/ssl_certificates"
+module "ssl_certs" {
+  source = "../modules/ssl_certificates"
 
-#   primary_domain    = var.primary_domain
-#   secondary_domains = [var.secondary_domain]
-# }
+  primary_domain    = var.primary_domain
+  secondary_domains = [var.secondary_domain]
+}
 
-# module "communities_only_ssl_certs" {
-#   source = "../modules/ssl_certificates"
+module "communities_only_ssl_certs" {
+  source = "../modules/ssl_certificates"
 
-#   primary_domain = var.primary_domain
-# }
+  primary_domain = var.primary_domain
+}
 
 module "dluhc_preprod_only_ssl_certs" {
   source = "../modules/ssl_certificates"
@@ -70,11 +70,13 @@ locals {
   organisation_account_id    = "448312965134"
   environment                = "production"
   notification_email_address = "Group-DLUHCDeltaNotifications@softwire.com"
-  dns_cert_validation_records = setunion(
-    # module.communities_only_ssl_certs.required_validation_records,
+  all_validation_dns_records = setunion(
+    module.communities_only_ssl_certs.required_validation_records,
     module.dluhc_preprod_only_ssl_certs.required_validation_records,
-    # module.ssl_certs.required_validation_records,
+    module.ssl_certs.required_validation_records,
+    module.ses_identity.required_validation_records,
   )
+  external_required_validation_dns_records = [for record in local.all_validation_dns_records : record if !endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 # This dynamically creates resources, so the modules it depends on must be created first
@@ -82,12 +84,8 @@ locals {
 module "dluhc_preprod_validation_records" {
   source         = "../modules/dns_records"
   hosted_zone_id = var.hosted_zone_id
-  records        = [for record in local.dns_cert_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+  records        = [for record in local.all_validation_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
-
-# locals {
-#   all_validation_dns_records = concat(module.communities_only_ssl_certs.required_validation_records, module.ses_identity.required_validation_records)
-# }
 
 module "networking" {
   source                                  = "../modules/networking"
@@ -96,9 +94,10 @@ module "networking" {
   ssh_cidr_allowlist                      = var.allowed_ssh_cidrs
   ecr_repo_account_id                     = var.ecr_repo_account_id
   apply_aws_shield_to_nat_gateway         = local.apply_aws_shield
-  auth_server_domain                      = module.public_albs.keycloak.primary_hostname
+  auth_server_domains                     = ["auth.delta.${var.primary_domain}", "auth.delta.${var.secondary_domain}"]
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
+  open_ingress_cidrs                      = [local.datamart_peering_vpc_cidr]
 }
 
 module "bastion_log_group" {
@@ -121,7 +120,16 @@ module "bastion" {
   external_allowed_cidrs  = var.allowed_ssh_cidrs
   instance_count          = 1
   log_group_name          = module.bastion_log_group.log_group_names[0]
-  extra_userdata          = "yum install openldap-clients -y; sed -i 's/SELINUX=disabled/SELINUX=enforcing/g' /etc/selinux/config ; chmod 754 /usr/bin/as"
+  extra_userdata          = <<-EOT
+    yum install openldap-clients -y
+    sed -i 's/SELINUX=disabled/SELINUX=enforcing/g' /etc/selinux/config
+    chmod 754 /usr/bin/as
+
+    # Configure SSH banner:
+    echo "Legal Warning - Private System! This system and the data within it are private property. Access to the system is only available for authorised users and for authorised purposes. Unauthorised entry contravenes the Computer Misuse Act 1990 of the United Kingdom and may incur criminal penalties as well as damages." > /etc/ssh/banner
+    sed -i 's-#Banner none-Banner /etc/ssh/banner-g' /etc/ssh/sshd_config
+    systemctl restart sshd
+    EOT
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
 
@@ -222,7 +230,8 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["delta"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.delta_website
+    ip_allowlist              = local.cloudfront_ip_allowlists.delta_website
+    geo_restriction_countries = ["GB", "IE"]
   }
   api = {
     alb = module.public_albs.delta_api
@@ -230,7 +239,8 @@ module "cloudfront_distributions" {
       aliases             = ["api.delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["api"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.delta_api
+    ip_allowlist              = local.cloudfront_ip_allowlists.delta_api
+    geo_restriction_countries = ["GB", "IE"]
   }
   keycloak = {
     alb = module.public_albs.keycloak
@@ -238,7 +248,8 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.delta_api
+    ip_allowlist              = local.cloudfront_ip_allowlists.delta_api
+    geo_restriction_countries = ["GB", "IE"]
   }
   cpm = {
     alb = module.public_albs.cpm
@@ -246,7 +257,8 @@ module "cloudfront_distributions" {
       aliases             = ["cpm.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.cpm
+    ip_allowlist              = local.cloudfront_ip_allowlists.cpm
+    geo_restriction_countries = ["GB", "IE"]
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
@@ -254,7 +266,8 @@ module "cloudfront_distributions" {
       aliases             = ["reporting.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.jaspersoft
+    ip_allowlist              = local.cloudfront_ip_allowlists.jaspersoft
+    geo_restriction_countries = ["GB", "IE"]
   }
 }
 
@@ -302,6 +315,7 @@ module "jaspersoft" {
   extra_instance_policy_arn            = module.session_manager_config.policy_arn
   patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
   config_s3_log_expiration_days        = local.s3_log_expiration_days
+  app_cloudwatch_log_expiration_days   = local.cloudwatch_log_expiration_days
 }
 
 module "guardduty" {

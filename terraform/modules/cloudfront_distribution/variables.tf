@@ -37,11 +37,16 @@ variable "cloudfront_domain" {
   default = null
 }
 
-variable "geo_restriction_enabled" {
-  type    = bool
-  default = true
+variable "geo_restriction_countries" {
+  type        = list(string)
+  description = "Set to null to disable geo restriction"
 }
 
 variable "apply_aws_shield" {
   type = bool
+}
+
+variable "function_associations" {
+  type    = list(object({ event_type = string, function_arn = string }))
+  default = []
 }

@@ -76,7 +76,18 @@ data "aws_iam_policy_document" "jasper_cloudwatch" {
       "logs:DescribeLogStreams",
       "logs:PutLogEvents",
     ]
-    resources = ["${aws_cloudwatch_log_group.jasper_patch.arn}:*"]
+    resources = concat(
+      ["${aws_cloudwatch_log_group.jasper_patch.arn}:*"],
+    [for arn in module.jaspersoft_log_group.log_group_arns : "${arn}:*"])
+  }
+
+  statement {
+    actions = [
+      "cloudwatch:PutMetricData",
+      "ec2:DescribeVolumes",
+      "ec2:DescribeTags"
+    ]
+    resources = ["*"]
   }
 }
 

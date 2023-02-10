@@ -58,7 +58,7 @@ module "delta_cloudfront" {
   origin_domain                  = var.delta.alb.dns_name
   cloudfront_domain              = var.delta.domain
   is_ipv6_enabled                = var.delta.ip_allowlist == null
-  geo_restriction_enabled        = var.delta.disable_geo_restriction != true
+  geo_restriction_countries      = var.delta.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
 }
 
@@ -72,7 +72,7 @@ module "api_cloudfront" {
   origin_domain                  = var.api.alb.dns_name
   cloudfront_domain              = var.api.domain
   is_ipv6_enabled                = var.api.ip_allowlist == null
-  geo_restriction_enabled        = var.api.disable_geo_restriction != true
+  geo_restriction_countries      = var.api.geo_restriction_countries
   environment                    = var.environment
   apply_aws_shield               = var.apply_aws_shield
   swagger_s3_log_expiration_days = var.swagger_s3_log_expiration_days
@@ -88,8 +88,9 @@ module "keycloak_cloudfront" {
   origin_domain                  = var.keycloak.alb.dns_name
   cloudfront_domain              = var.keycloak.domain
   is_ipv6_enabled                = var.keycloak.ip_allowlist == null
-  geo_restriction_enabled        = var.keycloak.disable_geo_restriction != true
+  geo_restriction_countries      = var.keycloak.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
+  function_associations          = [{ event_type = "viewer-request", function_arn = aws_cloudfront_function.keycloak_request.arn }]
 }
 
 module "cpm_cloudfront" {
@@ -102,7 +103,7 @@ module "cpm_cloudfront" {
   origin_domain                  = var.cpm.alb.dns_name
   cloudfront_domain              = var.cpm.domain
   is_ipv6_enabled                = var.cpm.ip_allowlist == null
-  geo_restriction_enabled        = var.cpm.disable_geo_restriction != true
+  geo_restriction_countries      = var.cpm.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
 }
 
@@ -116,6 +117,6 @@ module "jaspersoft_cloudfront" {
   origin_domain                  = var.jaspersoft.alb.dns_name
   cloudfront_domain              = var.jaspersoft.domain
   is_ipv6_enabled                = var.jaspersoft.ip_allowlist == null
-  geo_restriction_enabled        = var.jaspersoft.disable_geo_restriction != true
+  geo_restriction_countries      = var.jaspersoft.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
 }

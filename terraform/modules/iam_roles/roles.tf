@@ -21,9 +21,8 @@ resource "aws_iam_role" "cloudwatch_monitor" {
 
 resource "aws_iam_role_policy_attachment" "cloudwatch_monitor" {
   for_each = {
-    cloudwatch_read_only       = data.aws_iam_policy.cloudwatch_read_only_access.arn
-    cloudwatch_auto_dashboards = data.aws_iam_policy.cloudwatch_automatic_dashboards_access.arn
     cloudwatch_monitor         = aws_iam_policy.cloudwatch_monitor.arn
+    cloudwatch_auto_dashboards = data.aws_iam_policy.cloudwatch_automatic_dashboards_access.arn
   }
 
   role       = aws_iam_role.cloudwatch_monitor.name
@@ -37,9 +36,8 @@ resource "aws_iam_role" "application_support" {
 
 resource "aws_iam_role_policy_attachment" "application_support" {
   for_each = {
-    cloudwatch_read_only       = data.aws_iam_policy.cloudwatch_read_only_access.arn
-    cloudwatch_auto_dashboards = data.aws_iam_policy.cloudwatch_automatic_dashboards_access.arn
     cloudwatch_monitor         = aws_iam_policy.cloudwatch_monitor.arn
+    cloudwatch_auto_dashboards = data.aws_iam_policy.cloudwatch_automatic_dashboards_access.arn
     ssm                        = aws_iam_policy.ssm_session_manager_basic.arn
     ssm_ml                     = aws_iam_policy.ssm_marklogic.arn
     ssm_ad                     = aws_iam_policy.ssm_adms_rdp.arn
@@ -63,6 +61,7 @@ resource "aws_iam_role_policy_attachment" "infrastructure_support" {
     aws_support     = data.aws_iam_policy.aws_support_access.arn
     tf_state        = data.aws_iam_policy.tf_state_read_only.arn
     cloudshell      = data.aws_iam_policy.cloudshell.arn
+    infra_support   = aws_iam_policy.infra_support.arn
   }
 
   role       = aws_iam_role.infrastructure_support.name

@@ -6,6 +6,8 @@ variable "bounce_complaint_notification_email" {
   type = string
 }
 
+data "aws_region" "current" {}
+
 resource "aws_ses_domain_identity" "main" {
   domain = var.domain
 
@@ -26,6 +28,12 @@ resource "aws_ses_domain_dkim" "main" {
   lifecycle {
     prevent_destroy = true
   }
+}
+
+resource "aws_ses_domain_mail_from" "main" {
+  domain                 = var.domain
+  mail_from_domain       = "mailfrom.${var.domain}"
+  behavior_on_mx_failure = "UseDefaultValue"
 }
 
 # It's currently not possible to disable Email Feedback Forwarding though Terraform
@@ -75,15 +83,24 @@ output "required_validation_records" {
       {
         record_name  = "${var.domain}."
         record_type  = "TXT"
-        record_value = "v=spf1 include:amazonses.com ~all"
+        record_value = "v=spf1 include:amazonses.com -all"
       },
       {
         record_name = "_dmarc.${var.domain}."
         record_type = "TXT"
-        # TODO DT-159: We should add a reporting email (the "rua" field)
+        # TODO DT-127: We should add a reporting email (the "rua" field)
         # https://dmarc.org/2015/08/receiving-dmarc-reports-outside-your-domain/
-        # And increase the pct
-        record_value = "v=DMARC1;p=quarantine;pct=25"
+        record_value = "v=DMARC1;p=quarantine"
+      },
+      {
+        record_name  = "${aws_ses_domain_mail_from.main.mail_from_domain}.",
+        record_type  = "MX"
+        record_value = "10 feedback-smtp.${data.aws_region.current.name}.amazonses.com"
+      },
+      {
+        record_name  = "${aws_ses_domain_mail_from.main.mail_from_domain}.",
+        record_type  = "TXT"
+        record_value = "v=spf1 include:amazonses.com -all"
       },
     ],
     [
