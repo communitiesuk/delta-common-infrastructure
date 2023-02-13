@@ -7,9 +7,13 @@ Get-AdUser -Filter * -SearchBase "OU=Groups,$targetBase" | ForEach-Object {
     Move-ADObject -Identity $_.ObjectGUID -TargetPath "CN=Datamart,OU=Users,$targetBase"
 } 
 
-# You could manually delete service users such as superuser, datamart-biz-stag01, cpm-biz-stag01
+# Manually delete service users such as superuser, datamart-biz-stag01, cpm-biz-stag01
 
 # ADMT sets –changepasswordatlogon to true. Undo that for users that had it false in Datamart (using )
+
+# Get Users who do not need to reset password, using pwdlastset as a proxy
+$deltaGroup = Get-ADGroup datamart-delta-user -Server $server
+Get-AdUser -Filter {pwdlastset -ne 0 -and MemberOf -eq $deltaGroup.DistinguishedName} -SearchBase "CN=datamart,CN=Users,DC=datamart,DC=local" -Server datamart.local | Select-Object @{n='SourceName';e={$_.SamAccountName}} | Export-Csv -Path .\users-no-pwd-reset.csv -NoTypeInformation
 $users = import-csv "users-no-pwd-reset.csv"
 Foreach($user in $users){
     Set-ADUser –ChangePasswordAtLogon $false -Identity $user.SourceName

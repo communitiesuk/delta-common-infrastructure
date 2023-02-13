@@ -9,7 +9,3 @@ Get-ADGroup -SearchBase "CN=datamart-delta,OU=Groups,$sourceBase" -Filter * -Ser
 
 # Migrate DeltaRegistrationRequests
 Get-AdUser -SearchBase "CN=DeltaRegistrationRequests,CN=Users,$sourceBase" -Filter *  -Server $server | Select-Object @{n='SourceName';e={$_.SamAccountName}} | Export-Csv -Path .\registration-requests-includefile.csv -NoTypeInformation
-
-# Get Users who do not need to reset password, using pwdlastset as a proxy
-$deltaGroup = Get-ADGroup datamart-delta-user -Server $server
-Get-AdUser -Filter {pwdlastset -ne 0 -and MemberOf -eq $deltaGroup} -SearchBase "CN=datamart,CN=Users,DC=datamart,DC=local" -Server $server | Select-Object @{n='SourceName';e={$_.SamAccountName}} | Export-Csv -Path .\users-no-pwd-reset.csv -NoTypeInformation

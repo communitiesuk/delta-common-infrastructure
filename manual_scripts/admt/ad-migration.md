@@ -86,4 +86,7 @@ This cannot be done with ADMT. To import the OUs inside OU=Delta-Organizations:
 
 ### Incremental migration
 
-Run `get_recently_changed.ps1` to generate include files for recently changed groups and users. Run the two migrations and then run the 
+Run `get_recently_changed.ps1` to generate include files for recently changed groups and users.
+* Run the group migration WITHOUT including any users
+* Run the user migration
+* Run tidy_up.
