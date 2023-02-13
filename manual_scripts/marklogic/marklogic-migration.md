@@ -1,6 +1,8 @@
 Restoring a database from MarkLogic
 * Create backups of the delta-content and payments-content databases from Datamart (stored in S3)
 * Restore the delta-content database in the DLUHC environment, along with the Security database
+  * Forest topology changed -> true
+  * Include auxiliary databases -> true
 * Restore the payments-content database in the DLUHC environment, *without* the security database
 
 Afterwards:

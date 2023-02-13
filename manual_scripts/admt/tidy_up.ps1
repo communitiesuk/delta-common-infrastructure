@@ -9,8 +9,12 @@ Get-AdUser -Filter * -SearchBase "OU=Groups,$targetBase" | ForEach-Object {
 
 # You could manually delete service users such as superuser, datamart-biz-stag01, cpm-biz-stag01
 
-# ADMT sets –changepasswordatlogonto true. Undo that.
-Get-ADUser -Filter {pwdlastset -eq 0} –searchbase "OU=Users,$targetBase" | Set-ADUser –ChangePasswordAtLogon $false
+# ADMT sets –changepasswordatlogon to true. Undo that for users that had it false in Datamart (using )
+$users = import-csv "users-no-pwd-reset.csv"
+Foreach($user in $users){
+    Set-ADUser –ChangePasswordAtLogon $false -Identity $user.SourceName
+}
+
 
 # Set PasswordNeverExpires for any migrated service users that we want to keep
 $serviceUsers = "sap-admin", "soap-ui-sap-admin", "cpm-admin", "achadmin-dclg"
