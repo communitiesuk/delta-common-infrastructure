@@ -203,6 +203,16 @@ data "aws_iam_policy_document" "infra_support" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    sid = "UseSessionManagerKey"
+    actions = [
+      "kms:GenerateDataKey"
+    ]
+    resources = [
+      var.session_manager_key_arn
+    ]
+  }
 }
 
 resource "aws_iam_policy" "infra_support" {
