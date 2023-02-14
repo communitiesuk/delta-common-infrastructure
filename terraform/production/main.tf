@@ -80,7 +80,7 @@ locals {
 }
 
 # This dynamically creates resources, so the modules it depends on must be created first
-# terraform apply -target module.dluhc_preprod_only_ssl_certs
+# terraform apply -target module.dluhc_preprod_only_ssl_certs -target module.ssl_certs
 module "dluhc_preprod_validation_records" {
   source         = "../modules/dns_records"
   hosted_zone_id = var.hosted_zone_id
@@ -240,7 +240,8 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["api"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.delta_api
-    geo_restriction_countries = ["GB", "IE"]
+    # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
+    geo_restriction_countries = null
   }
   keycloak = {
     alb = module.public_albs.keycloak
@@ -249,7 +250,8 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.delta_api
-    geo_restriction_countries = ["GB", "IE"]
+    # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
+    geo_restriction_countries = null
   }
   cpm = {
     alb = module.public_albs.cpm

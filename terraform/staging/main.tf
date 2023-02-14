@@ -173,7 +173,8 @@ module "cloudfront_distributions" {
       aliases             = ["api.delta.${var.secondary_domain}", "api.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
     }
-    geo_restriction_countries = ["GB", "IE", "IN"]
+    # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
+    geo_restriction_countries = null
   }
   keycloak = {
     alb = module.public_albs.keycloak
@@ -181,7 +182,8 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.secondary_domain}", "auth.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["keycloak"].arn
     }
-    geo_restriction_countries = ["GB", "IE", "IN"]
+    # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
+    geo_restriction_countries = null
   }
   cpm = {
     alb = module.public_albs.cpm
