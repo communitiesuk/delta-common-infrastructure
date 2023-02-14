@@ -45,3 +45,9 @@ variable "geo_restriction_countries" {
 variable "apply_aws_shield" {
   type = bool
 }
+
+variable "origin_read_timeout" {
+  type        = number
+  description = "Read timeout for the website origin"
+  default     = 60
+}

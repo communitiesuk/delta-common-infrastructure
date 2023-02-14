@@ -47,7 +47,7 @@ resource "aws_cloudfront_distribution" "main" {
       https_port             = 443
       origin_protocol_policy = var.cloudfront_domain == null ? "http-only" : "https-only"
       origin_ssl_protocols   = ["TLSv1.2"]
-      origin_read_timeout    = 60
+      origin_read_timeout    = var.origin_read_timeout
     }
 
     custom_header {

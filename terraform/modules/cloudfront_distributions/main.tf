@@ -62,6 +62,7 @@ module "delta_cloudfront" {
   geo_restriction_enabled        = var.delta.disable_geo_restriction != true
   environment                    = var.environment
   apply_aws_shield               = var.apply_aws_shield
+  origin_read_timeout            = var.delta.origin_read_timeout
 }
 
 module "api_cloudfront" {
