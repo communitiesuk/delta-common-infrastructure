@@ -361,3 +361,8 @@ module "mailhog" {
   }
   ses_user = module.ses_user
 }
+
+module "notifications" {
+  source      = "../modules/notifications"
+  environment = local.environment
+}

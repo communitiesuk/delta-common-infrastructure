@@ -362,3 +362,8 @@ module "account_security" {
   source                  = "../modules/account_security"
   organisation_account_id = local.organisation_account_id
 }
+
+module "notifications" {
+  source      = "../modules/notifications"
+  environment = local.environment
+}
