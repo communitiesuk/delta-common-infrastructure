@@ -35,8 +35,8 @@ resource "aws_iam_role_policy_attachment" "service_restore" {
 
 locals {
   ebs_backups = {
-    schedule       = "cron(0 2 * * ? *)"
-    retention_days = 30
+    schedule       = "cron(0 22 * * ? *)"
+    retention_days = 7
   }
 }
 
@@ -52,7 +52,7 @@ resource "aws_backup_plan" "ebs" {
     rule_name         = "marklogic-backup-rule-${var.environment}"
     target_vault_name = aws_backup_vault.ebs.name
     schedule          = local.ebs_backups.schedule
-    completion_window = 360
+    completion_window = 600 # Minutes
 
     lifecycle {
       delete_after = local.ebs_backups.retention_days
