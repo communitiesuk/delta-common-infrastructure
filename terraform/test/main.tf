@@ -316,6 +316,7 @@ module "jaspersoft" {
   patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
   config_s3_log_expiration_days        = local.s3_log_expiration_days
   app_cloudwatch_log_expiration_days   = local.cloudwatch_log_expiration_days
+  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }
 
 module "iam_roles" {
