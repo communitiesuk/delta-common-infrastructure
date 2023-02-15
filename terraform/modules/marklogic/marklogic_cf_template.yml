@@ -186,6 +186,7 @@ Parameters:
       - i3.8xlarge
       - i3.16xlarge
       - -------------- Bring-Your-Own-License Only --------------
+      - t3a.2xlarge
       - t2.small
       - t2.medium
       - t2.large
