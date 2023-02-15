@@ -59,8 +59,6 @@ module "delta_cloudfront" {
   cloudfront_domain              = var.delta.domain
   is_ipv6_enabled                = var.delta.ip_allowlist == null
   geo_restriction_countries      = var.delta.geo_restriction_countries
-  geo_restriction_enabled        = var.delta.disable_geo_restriction != true
-  environment                    = var.environment
   apply_aws_shield               = var.apply_aws_shield
   origin_read_timeout            = var.delta.origin_read_timeout
 }
@@ -94,7 +92,6 @@ module "keycloak_cloudfront" {
   geo_restriction_countries      = var.keycloak.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
   function_associations          = [{ event_type = "viewer-request", function_arn = aws_cloudfront_function.keycloak_request.arn }]
-  error_page_bucket_domain       = module.swagger_bucket.bucket_regional_domain_name
 }
 
 module "cpm_cloudfront" {

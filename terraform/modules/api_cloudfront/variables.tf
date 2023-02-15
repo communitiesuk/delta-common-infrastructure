@@ -54,7 +54,3 @@ variable "apply_aws_shield" {
 variable "swagger_s3_log_expiration_days" {
   type = number
 }
-
-variable "error_page_bucket_domain" {
-  type = string
-}
