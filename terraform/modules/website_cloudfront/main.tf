@@ -111,25 +111,19 @@ resource "aws_cloudfront_distribution" "main" {
   custom_error_response {
     error_code         = 502
     response_code      = 502
-    response_page_path = "static_errors/error.html"
+    response_page_path = "/static_errors/error.html"
   }
 
   custom_error_response {
     error_code         = 503
     response_code      = 503
-    response_page_path = "static_errors/error.html"
+    response_page_path = "/static_errors/503.html"
   }
 
   custom_error_response {
     error_code         = 504
     response_code      = 504
-    response_page_path = "static_errors/error.html"
-  }
-
-  custom_error_response {
-    error_code         = 513
-    response_code      = 503
-    response_page_path = "static_errors/maintenance.html"
+    response_page_path = "/static_errors/error.html"
   }
 
   price_class = "PriceClass_100"

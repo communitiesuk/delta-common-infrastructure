@@ -36,9 +36,9 @@ resource "aws_s3_object" "error_page" {
   source = "${path.module}/error.html"
 }
 
-resource "aws_s3_object" "maintenance_page" {
+resource "aws_s3_object" "unavailable_page" {
   bucket = module.error_bucket.bucket
-  etag   = filemd5("${path.module}/maintenance.html")
-  key    = "static_errors/maintenance.html"
-  source = "${path.module}/maintenance.html"
+  etag   = filemd5("${path.module}/503.html")
+  key    = "static_errors/503.html"
+  source = "${path.module}/503.html"
 }
