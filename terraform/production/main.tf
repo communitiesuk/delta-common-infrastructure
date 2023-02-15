@@ -187,6 +187,7 @@ module "marklogic" {
   config_s3_log_expiration_days        = local.s3_log_expiration_days
   dap_export_s3_log_expiration_days    = local.s3_log_expiration_days
   backup_s3_log_expiration_days        = local.s3_log_expiration_days
+  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }
 
 module "gh_runner" {
