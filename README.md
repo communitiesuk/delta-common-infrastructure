@@ -241,6 +241,8 @@ CloudFront distributions with HTTPS aliases require valid SSL certificates to cr
 If you're creating the distributions without valid SSL certificates (for example, so that you can give DLUHC all the records in one go)
 then set `domain = null` for each distribution to create without aliases.
 
+The production Delta website has an origin read timeout above the standard quota limit of 60 seconds, so request an increase through the console if you're using that.
+
 ```sh
 terraform apply -target module.public_albs -target module.cloudfront_distributions
 ```

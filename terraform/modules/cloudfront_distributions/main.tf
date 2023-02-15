@@ -49,7 +49,7 @@ module "api_auth_waf" {
 }
 
 module "delta_cloudfront" {
-  source                         = "../cloudfront_distribution"
+  source                         = "../website_cloudfront"
   prefix                         = "delta-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta"
@@ -60,6 +60,7 @@ module "delta_cloudfront" {
   is_ipv6_enabled                = var.delta.ip_allowlist == null
   geo_restriction_countries      = var.delta.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
+  origin_read_timeout            = var.delta.origin_read_timeout
 }
 
 module "api_cloudfront" {

@@ -126,6 +126,12 @@ resource "aws_wafv2_web_acl" "waf_acl" {
     }
   }
 
+  custom_response_body {
+    key          = "ip_error"
+    content      = "This resource is not available to your IP address"
+    content_type = "TEXT_PLAIN"
+  }
+
   # Either use the AWS managed IP reputation list, or an explicit allowlist
   dynamic "rule" {
     for_each = local.ip_reputation_enabled
@@ -158,7 +164,12 @@ resource "aws_wafv2_web_acl" "waf_acl" {
       name     = "ip-allowlist"
       priority = 4
       action {
-        block {}
+        block {
+          custom_response {
+            custom_response_body_key = "ip_error"
+            response_code            = 403
+          }
+        }
       }
 
       statement {
