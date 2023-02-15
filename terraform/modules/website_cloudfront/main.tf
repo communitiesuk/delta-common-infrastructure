@@ -33,6 +33,43 @@ resource "aws_cloudfront_response_headers_policy" "main" {
   }
 }
 
+resource "aws_cloudfront_response_headers_policy" "cache" {
+  name    = "${var.prefix}cloudfront-cache-policy"
+  comment = "Default security headers for responses" # TODO DT-65 change desc
+
+  security_headers_config {
+    frame_options {
+      frame_option = "SAMEORIGIN"
+      override     = false
+    }
+
+    referrer_policy {
+      referrer_policy = "no-referrer"
+      override        = false
+    }
+
+    strict_transport_security {
+      access_control_max_age_sec = 31536000
+      include_subdomains         = true
+      override                   = false
+    }
+  }
+
+  custom_headers_config {
+    items {
+      header   = "Permissions-Policy"
+      value    = "geolocation=(), interest-cohort=()"
+      override = false
+    }
+
+    items {
+      header   = "Cache-Control"
+      value    = "public, max-age=31536000"
+      override = true
+    }
+  }
+}
+
 resource "aws_cloudfront_distribution" "main" {
   aliases = var.cloudfront_domain == null ? [] : var.cloudfront_domain.aliases
 
@@ -105,6 +142,31 @@ resource "aws_cloudfront_distribution" "main" {
       cookies {
         forward = "none"
       }
+    }
+  }
+
+  dynamic "ordered_cache_behaviour" {
+
+  }
+  ordered_cache_behavior {
+    allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+    cached_methods             = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id           = "primary"
+    path_pattern               = "/resources/*" // TODO DT-65 terraform loop over paths
+    viewer_protocol_policy     = "redirect-to-https"
+    min_ttl                    = 0
+    default_ttl                = 0
+    max_ttl                    = 86400
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.cache.id
+
+    forwarded_values {
+      query_string = true
+
+      cookies {
+        forward = "all"
+      }
+
+      headers = ["*"]
     }
   }
 
