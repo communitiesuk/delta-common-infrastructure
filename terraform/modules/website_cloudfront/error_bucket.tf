@@ -30,8 +30,9 @@ data "aws_iam_policy_document" "error_bucket_policy" {
 }
 
 resource "aws_s3_object" "error_page" {
-  bucket = module.error_bucket.bucket
-  etag   = filemd5("${path.module}/error.html")
-  key    = "static_errors/error.html"
-  source = "${path.module}/error.html"
+  bucket       = module.error_bucket.bucket
+  etag         = filemd5("${path.module}/error.html")
+  key          = "static_errors/error.html"
+  source       = "${path.module}/error.html"
+  content_type = "text/html"
 }
