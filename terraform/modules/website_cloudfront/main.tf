@@ -126,6 +126,12 @@ resource "aws_cloudfront_distribution" "main" {
     response_page_path = "static_errors/error.html"
   }
 
+  custom_error_response {
+    error_code         = 513
+    response_code      = 503
+    response_page_path = "static_errors/maintenance.html"
+  }
+
   price_class = "PriceClass_100"
   web_acl_id  = var.waf_acl_arn
 
