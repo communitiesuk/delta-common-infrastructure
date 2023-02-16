@@ -113,5 +113,5 @@ Port forwarding can also be used, for example to connect to the MarkLogic admin 
 
 ```sh
 # Arguments are environment, local port, remote port
-aws-vault exec delta-dev-infra -- bash ./manual_scripts/session_manager/marklogic.sh test 9001 8001
+aws-vault exec delta-dev -- bash ./manual_scripts/session_manager/marklogic.sh test 9001 8001
 ```
