@@ -17,8 +17,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_high" {
   ok_actions        = [var.alarms_sns_topic_arn]
 
   dimensions = {
-    #    TODO:DT-51 How do I get the instances?
-    #    "InstanceId" = aws_cloudformation_stack.marklogic
+    #    TODO:DT-257 Consider per-instance alarms.
   }
 }
 
