@@ -42,7 +42,7 @@ locals {
 
 resource "aws_backup_vault" "ebs" {
   name          = "marklogic-backup-vault-${var.environment}"
-  force_destroy = true
+  force_destroy = false
 }
 
 resource "aws_backup_plan" "ebs" {
