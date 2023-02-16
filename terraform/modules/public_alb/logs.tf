@@ -1,7 +1,7 @@
 # Access logs bucket
 # tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
 resource "aws_s3_bucket" "alb_logs" {
-  bucket        = "${var.prefix}alb-access-logs"
+  bucket = "${var.prefix}alb-access-logs"
 }
 
 # Application Load Balancer access logs do not support using a customer-managed KMS key

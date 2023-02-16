@@ -567,7 +567,13 @@ Resources:
       UserData: !Base64
         'Fn::Join':
           - ''
-          - - MARKLOGIC_CLUSTER_NAME=
+          - - |+
+                #!/bin/bash
+                mkdir -p /delta
+                chmod 777 /delta
+                exit 0
+
+            - MARKLOGIC_CLUSTER_NAME=
             - !Ref MarkLogicDDBTable
             - |+
 
