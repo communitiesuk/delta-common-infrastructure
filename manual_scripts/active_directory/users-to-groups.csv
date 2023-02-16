@@ -1,10 +1,10 @@
 Group,SamAccountName
-datamart-delta-app-role,deltaapp
 AWS Delegated Administrators,deltaapp
 datamart-delta-admin,deltaapp
 datamart-delta-user,deltaapp
 datamart-delta-admin-dclg,deltaapp
 datamart-delta-user-dclg,deltaapp
+datamart-delta-marklogic-admin,deltaapp
 AWS Delegated Administrators,deltainternal
 AWS Delegated Administrators,jasperreports
 datamart-delta-admin,deltaadmin
