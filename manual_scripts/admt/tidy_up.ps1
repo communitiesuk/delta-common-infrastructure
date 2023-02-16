@@ -1,4 +1,5 @@
 $targetBase = "OU=dluhcdata,DC=dluhcdata,DC=local"
+$sourceServer = datamart.local
 
 # Move any users in the "Groups" OU to the correct "Users" OU
 Get-AdUser -Filter * -SearchBase "OU=Groups,$targetBase" | ForEach-Object {
@@ -11,12 +12,12 @@ Get-AdUser -Filter * -SearchBase "OU=Groups,$targetBase" | ForEach-Object {
 
 # ADMT sets –changepasswordatlogon to true. Undo that for users that had it false in Datamart (using )
 
-# Get Users who do not need to reset password, using pwdlastset as a proxy
-$deltaGroup = Get-ADGroup datamart-delta-user -Server $server
-Get-AdUser -Filter {pwdlastset -ne 0 -and MemberOf -eq $deltaGroup.DistinguishedName} -SearchBase "CN=datamart,CN=Users,DC=datamart,DC=local" -Server datamart.local | Select-Object @{n='SourceName';e={$_.SamAccountName}} | Export-Csv -Path .\users-no-pwd-reset.csv -NoTypeInformation
-$users = import-csv "users-no-pwd-reset.csv"
+# Get Users who do not need to reset password (using pwdlastset as a proxy) and update them accordingly (ADMT sets ChangePasswordAtLogon to true for everyone)
+$deltaGroup = Get-ADGroup datamart-delta-user -Server $sourceServer
+$users = Get-AdUser -Filter {pwdlastset -ne 0 -and MemberOf -eq $deltaGroup.DistinguishedName} -SearchBase "CN=datamart,CN=Users,DC=datamart,DC=local" -Server $sourceServer
+Write-Host "Number of users who do not need to change password: " $users.Count
 Foreach($user in $users){
-    Set-ADUser –ChangePasswordAtLogon $false -Identity $user.SourceName
+    Set-ADUser –ChangePasswordAtLogon $false -Identity $user.SamAccountName
 }
 
 
