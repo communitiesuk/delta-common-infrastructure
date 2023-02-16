@@ -50,3 +50,9 @@ variable "function_associations" {
   type    = list(object({ event_type = string, function_arn = string }))
   default = []
 }
+
+variable "origin_read_timeout" {
+  type        = number
+  description = "Read timeout for the main origin in seconds. Note that the default quota limit for this is 60, to increase above that request a quota increase first."
+  default     = 60
+}
