@@ -4,13 +4,13 @@
 
 By "AWS console" we mean the website <https://console.aws.amazon.com/>.
 
-1. Have an account in the mhclg AWS account, login with your IAM username and password <https://mhclg.signin.aws.amazon.com/console>
-2. Set up MFA on your account in the mhclg account (required for assuming the role in the other accounts)
+1. Have an account in the DLUHC AWS account (alias `mhclg`), login with your IAM username and password <https://mhclg.signin.aws.amazon.com/console>
+2. Set up MFA on your account in the DLUHC account (required for assuming the role in the other accounts)
     1. To do this log in to your account in the web console and navigate to IAM
     2. On the right hand side use the 'Quick links' section to quickly get to the tab 'My security credentials'
     3. Scroll down to the 'Multi-factor authentication' section and work through the wizard to add an MFA using your username as the device name
     4. Log out and back in again
-3. Generate and AWS Access Key in the mhclg account
+3. Generate and AWS Access Key in the DLUHC account
     1. To do this log in to your account in the web console and navigate to IAM
     2. On the right hand side use the 'Quick links' section to quickly get to the tab 'My security credentials'
     3. Scroll down to the 'Access keys' section and select 'Create access key'
@@ -48,7 +48,7 @@ For security, we use [aws-vault](https://github.com/99designs/aws-vault) for sec
     # then either source the .bashrc file or just run the line above in the console.
     # NOTE: You will need to unlock pass with your passphrase to use aws-vault,
     # otherwise you will get "gpg: decryption failed: No secret key"
-    # Do this with `pass show mhclg`
+    # Do this with `pass show dluhc`
     ```
 
 2. Open your AWS config file in whatever text editor you like
@@ -57,48 +57,48 @@ For security, we use [aws-vault](https://github.com/99designs/aws-vault) for sec
 3. Add the following contents to the file, filling in \<your AWS username> and \<role> where needed
 
    ```text
-   [profile mhclg]
+   [profile dluhc]
    region = eu-west-1
    mfa_serial = arn:aws:iam::448312965134:mfa/<your AWS username>
 
    [profile delta-dev]
-   source_profile = mhclg
-   include_profile = mhclg
+   source_profile = dluhc
+   include_profile = dluhc
    role_arn=arn:aws:iam::486283582667:role/<role>
 
    [profile delta-prod]
-   source_profile = mhclg
-   include_profile = mhclg
+   source_profile = dluhc
+   include_profile = dluhc
    role_arn=arn:aws:iam::468442790030:role/<role>
    ```
 
-4. From your terminal run `aws-vault add mhclg` and enter your Access Key ID and Secret Access Key when prompted
+4. From your terminal run `aws-vault add dluhc` and enter your Access Key ID and Secret Access Key when prompted
     * Note, when you enter the secret access key you will not be able to see your input
 5. If you run `aws-vault list` you should see something like
 
    ```text
    Profile                  Credentials              Sessions
    =======                  ===========              ========
-   mhclg                    mhclg                    -
+   dluhc                    dluhc                    -
    delta-dev                -                        -
    delta-prod               -                        -
    ```
 
 6. To use these credentials you use the command `aws-vault exec <profile>` - you will be prompted to enter an MFA code
-   for the mhclg account, this is used to create a session which will last a short period of time, during which you
+   for the DLUHC account, this is used to create a session which will last a short period of time, during which you
    won't need to enter them again
-    1. To run a single command run `aws-vault exec <profile> -- <command>` (where profile is one of 'mhclg',
+    1. To run a single command run `aws-vault exec <profile> -- <command>` (where profile is one of 'dluhc',
       `delta-dev` and `delta-prod`)
     2. To start an authenticated subshell run `aws-vault exec <profile>`
 
 ### Troubleshooting
 
 * `An error occurred (AccessDenied) when calling the ListBuckets operation: Access Denied`
-  * Are you using the right profile? The `mhclg` one is very limited.
+  * Are you using the right profile? The `dluhc` one is very limited.
 * `aws-vault: error: exec: aws-vault sessions should be nested with care, unset AWS_VAULT to force`
-  * You're trying to nest sessions (e.g. because you used `mhclg` and then `delta-dev`). Type `exit` to exit the mhclg session.
+  * You're trying to nest sessions (e.g. because you used `dluhc` and then `delta-dev`). Type `exit` to exit the dluhc session.
 * `gpg: decryption failed: No secret key` in WSL.
-  * `pass` is locked. unlock it by running `pass show mhclg` and entering your passphrase.
+  * `pass` is locked. unlock it by running `pass show dluhc` and entering your passphrase.
 
 ### Session Manager access
 
