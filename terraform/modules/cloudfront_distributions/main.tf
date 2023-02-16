@@ -60,7 +60,7 @@ module "delta_cloudfront" {
   is_ipv6_enabled                = var.delta.ip_allowlist == null
   geo_restriction_countries      = var.delta.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
-  origin_read_timeout            = var.delta.origin_read_timeout
+  origin_read_timeout            = var.delta.origin_read_timeout == null ? 60 : var.delta.origin_read_timeout
 }
 
 module "api_cloudfront" {
@@ -106,6 +106,7 @@ module "cpm_cloudfront" {
   is_ipv6_enabled                = var.cpm.ip_allowlist == null
   geo_restriction_countries      = var.cpm.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
+  origin_read_timeout            = var.cpm.origin_read_timeout == null ? 60 : var.cpm.origin_read_timeout
 }
 
 module "jaspersoft_cloudfront" {
