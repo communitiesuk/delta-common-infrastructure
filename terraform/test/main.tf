@@ -160,6 +160,7 @@ module "cloudfront_distributions" {
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
   swagger_s3_log_expiration_days           = local.s3_log_expiration_days
+  alarms_sns_topic_global_arn              = module.notifications.alarms_sns_topic_global_arn
 
   delta = {
     alb = module.public_albs.delta

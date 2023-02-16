@@ -17,8 +17,8 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_high" {
   ok_actions        = [var.alarms_sns_topic_arn]
 
   dimensions = {
-#    TODO:DT-51 How do I get the instances?
-#    "InstanceId" = aws_cloudformation_stack.marklogic
+    #    TODO:DT-51 How do I get the instances?
+    #    "InstanceId" = aws_cloudformation_stack.marklogic
   }
 }
 
@@ -36,7 +36,7 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilisation_high" {
   alarm_actions     = [var.alarms_sns_topic_arn]
   ok_actions        = [var.alarms_sns_topic_arn]
 
-  dimensions = { }
+  dimensions = {}
 }
 
 resource "aws_cloudwatch_metric_alarm" "disk_utilisation_high" {
@@ -53,7 +53,7 @@ resource "aws_cloudwatch_metric_alarm" "disk_utilisation_high" {
   alarm_actions     = [var.alarms_sns_topic_arn]
   ok_actions        = [var.alarms_sns_topic_arn]
 
-  dimensions = { }
+  dimensions = {}
 }
 
 resource "aws_cloudwatch_metric_alarm" "disk_utilisation_high_sustained" {
@@ -70,5 +70,5 @@ resource "aws_cloudwatch_metric_alarm" "disk_utilisation_high_sustained" {
   alarm_actions     = [var.alarms_sns_topic_arn]
   ok_actions        = [var.alarms_sns_topic_arn]
 
-  dimensions = { }
+  dimensions = {}
 }
