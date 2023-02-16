@@ -1,6 +1,7 @@
 Restoring a database from MarkLogic
 * Create backups of the delta-content, delta-testing-centre-content and payments-content databases from Datamart (stored in S3)
   * You may have to create empty target folders for each DB first.
+* Disable the rebalancer for all three databases 
 * Restore the delta-content database in the DLUHC environment, along with the Security database
   * Forest topology changed -> true
   * Include auxiliary databases -> true
@@ -19,4 +20,9 @@ Afterwards:
 * Update the post-migration-update-security.xqy query with the correct list of users to delete. Run it from the MarkLogic query console, targeting the Security database.
 * Run the Roxy deployment jobs from https://github.com/communitiesuk/delta-marklogic-deploy for both Delta and CPM.
 * Delete the external security "datamart-eclaims-sec"
-* Check the external securities "datamart-cpm-sec" and "datamart-sec" are configured correctly
+* Check the external securities "datamart-cpm-sec" and "datamart-sec" were configured correctly
+* Validate the migration succeeded:
+  * Number of records
+  * Forest sizes
+  * TODO DT-253: some sort of script to check documents' contents? 
+* Re-enable rebalancing for all three databases
