@@ -21,3 +21,8 @@ variable "per_ip_rate_limit" {
 variable "cloudwatch_log_expiration_days" {
   type = number
 }
+
+variable "alarms_sns_topic_global_arn" {
+  description = "SNS topic ARN to send alarm notifications to"
+  type        = string
+}

@@ -98,6 +98,7 @@ module "networking" {
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   open_ingress_cidrs                      = [local.datamart_peering_vpc_cidr]
+  alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
 }
 
 module "bastion_log_group" {

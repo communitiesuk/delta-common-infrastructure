@@ -84,7 +84,7 @@ module "networking" {
   auth_server_domains                     = ["auth.delta.${var.primary_domain}", "auth.delta.${var.secondary_domain}"]
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
-
+  alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
 }
 
 resource "tls_private_key" "bastion_ssh_key" {

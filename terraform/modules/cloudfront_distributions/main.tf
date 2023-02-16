@@ -13,6 +13,7 @@ module "jaspersoft_waf" {
   excluded_rules                 = ["CrossSiteScripting_BODY", "GenericLFI_BODY"]
   ip_allowlist                   = var.jaspersoft.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "delta_website_waf" {
@@ -24,6 +25,7 @@ module "delta_website_waf" {
   excluded_rules                 = ["CrossSiteScripting_BODY"]
   ip_allowlist                   = var.delta.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "cpm_waf" {
@@ -35,6 +37,7 @@ module "cpm_waf" {
   excluded_rules                 = ["CrossSiteScripting_BODY"]
   ip_allowlist                   = var.cpm.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "api_auth_waf" {
@@ -46,6 +49,7 @@ module "api_auth_waf" {
   excluded_rules                 = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
   ip_allowlist                   = var.api.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "delta_cloudfront" {
