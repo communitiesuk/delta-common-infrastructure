@@ -63,7 +63,8 @@ module "ses_identity" {
 }
 
 module "ses_monitoring" {
-  source = "../modules/ses_monitoring"
+  source               = "../modules/ses_monitoring"
+  alarms_sns_topic_arn = module.notifications.alarms_sns_topic_arn
 }
 
 locals {

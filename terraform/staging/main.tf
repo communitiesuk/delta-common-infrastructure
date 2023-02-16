@@ -345,7 +345,8 @@ module "cpm_ses_user" {
 }
 
 module "ses_monitoring" {
-  source = "../modules/ses_monitoring"
+  source               = "../modules/ses_monitoring"
+  alarms_sns_topic_arn = module.notifications.alarms_sns_topic_arn
 }
 
 module "iam_roles" {
