@@ -8,7 +8,7 @@ Set-ADFineGrainedPasswordPolicy -Identity CustomerPSO-03 `
 
 Add-ADFineGrainedPasswordPolicySubject -Identity CustomerPSO-03 -Subjects datamart-delta-user
 
- Set-ADFineGrainedPasswordPolicy -Identity CustomerPSO-01 `
+Set-ADFineGrainedPasswordPolicy -Identity CustomerPSO-01 `
   -ComplexityEnabled $False -ReversibleEncryptionEnabled $False -LockoutThreshold 0 `
   -MinPasswordAge 0 -MaxPasswordAge 0 -MinPasswordLength 0 -PasswordHistoryCount 0 `
   -Description "Service User Policy"
