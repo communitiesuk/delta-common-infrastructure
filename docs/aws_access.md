@@ -99,6 +99,8 @@ For security, we use [aws-vault](https://github.com/99designs/aws-vault) for sec
   * You're trying to nest sessions (e.g. because you used `dluhc` and then `delta-dev`). Type `exit` to exit the dluhc session.
 * `gpg: decryption failed: No secret key` in WSL.
   * `pass` is locked. unlock it by running `pass show dluhc` and entering your passphrase.
+* `aws-vault: error: add: The handle is invalid.`
+  * Use PowerShell instead of Git Bash for adding profiles
 
 ### Session Manager access
 
