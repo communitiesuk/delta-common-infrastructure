@@ -145,7 +145,7 @@ resource "aws_cloudwatch_metric_alarm" "nat_bytes_out" {
   namespace           = "AWS/NATGateway"
   period              = "300"
   statistic           = "Sum"
-  threshold           = "1000000" # 1MB. Edit the description if you increase this significantly.
+  threshold           = "10000000" # 10MB. Edit the description if you increase this significantly.
   alarm_description   = <<EOF
   Spike in outgoing network traffic through the NAT Gateway.
   Likely cause: The threshold for this alarm is set low and probably needs increasing.

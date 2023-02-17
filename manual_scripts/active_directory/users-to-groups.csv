@@ -1,8 +1,10 @@
 Group,SamAccountName
-datamart-delta-app-role,deltaapp
 AWS Delegated Administrators,deltaapp
 datamart-delta-admin,deltaapp
 datamart-delta-user,deltaapp
+datamart-delta-admin-dclg,deltaapp
+datamart-delta-user-dclg,deltaapp
+datamart-delta-marklogic-admin,deltaapp
 AWS Delegated Administrators,deltainternal
 AWS Delegated Administrators,jasperreports
 datamart-delta-admin,deltaadmin
@@ -20,3 +22,10 @@ jasperreports-admins,jasperadminuser
 jasperreports-users,jasperuser
 jasperreports-users,jasperreports-admins
 jasperreports-admins,datamart-delta-admin
+dluhc-service-users,keycloak
+dluhc-service-users,cpmapp
+dluhc-service-users,sap
+dluhc-service-users,jasperreports
+dluhc-service-users,deltainternal
+dluhc-service-users,deltaapp
+dluhc-service-users,deltaorbeon

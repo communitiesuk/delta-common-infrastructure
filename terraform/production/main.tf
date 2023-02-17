@@ -177,7 +177,7 @@ module "marklogic" {
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "r5a.4xlarge"
   private_dns              = module.networking.private_dns
-  data_volume_size_gb      = 2000
+  data_volume_size_gb      = 3000
   patch_maintenance_window = module.marklogic_patch_maintenance_window
 
   ebs_backup_error_notification_emails = [local.notification_email_address]
@@ -262,6 +262,7 @@ module "cloudfront_distributions" {
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.cpm
     geo_restriction_countries = ["GB", "IE"]
+    origin_read_timeout       = 180 # Required quota increase
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft

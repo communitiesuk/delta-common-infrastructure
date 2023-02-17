@@ -87,6 +87,7 @@ variable "cpm" {
     }))
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
+    origin_read_timeout       = optional(number)
   })
 }
 
