@@ -19,6 +19,7 @@ datamart-delta-payments-approvers,paymentapprover
 datamart-delta-report-users,reportuser
 datamart-cpm-soap-api,sap
 datamart-delta-admin,sap
+dluhc-service-users,sap
 datamart-delta-admin,cpmapp
 dluhc-service-users,cpmapp
 AWS Delegated Administrators,cpmapp
