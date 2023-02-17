@@ -22,3 +22,10 @@ jasperreports-admins,jasperadminuser
 jasperreports-users,jasperuser
 jasperreports-users,jasperreports-admins
 jasperreports-admins,datamart-delta-admin
+dluhc-service-users,keycloak
+dluhc-service-users,cpmapp
+dluhc-service-users,sap
+dluhc-service-users,jasperreports
+dluhc-service-users,deltainternal
+dluhc-service-users,deltaapp
+dluhc-service-users,deltaorbeon
