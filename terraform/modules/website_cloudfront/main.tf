@@ -145,28 +145,29 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
-  dynamic "ordered_cache_behaviour" {
+  dynamic "ordered_cache_behavior" {
+    for_each = ["/resources/*", "/public/*", "/govuk/assets/*"]
 
-  }
-  ordered_cache_behavior {
-    allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-    cached_methods             = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id           = "primary"
-    path_pattern               = "/resources/*" // TODO DT-65 terraform loop over paths
-    viewer_protocol_policy     = "redirect-to-https"
-    min_ttl                    = 0
-    default_ttl                = 0
-    max_ttl                    = 86400
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.cache.id
+    content {
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cached_methods             = ["GET", "HEAD", "OPTIONS"]
+      target_origin_id           = "primary"
+      path_pattern               = ordered_cache_behavior.value
+      viewer_protocol_policy     = "redirect-to-https"
+      min_ttl                    = 0
+      default_ttl                = 0
+      max_ttl                    = 86400
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.cache.id
 
-    forwarded_values {
-      query_string = true
+      forwarded_values {
+        query_string = true
 
-      cookies {
-        forward = "all"
+        cookies {
+          forward = "all"
+        }
+
+        headers = ["*"]
       }
-
-      headers = ["*"]
     }
   }
 
