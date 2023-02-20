@@ -18,3 +18,9 @@ variable "origin_latency_high_alarm_threshold_ms" {
   type        = number
   default     = 10000
 }
+
+variable "metric_period_seconds" {
+  description = "Metric sampling period in seconds"
+  type        = number
+  default     = 300
+}
