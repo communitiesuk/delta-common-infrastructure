@@ -1,5 +1,20 @@
+provider "aws" {
+  alias  = "us-east-1"
+  region = "us-east-1"
+}
+
 locals {
   alarm_description_template = "Average distribution %v %v last %d minutes"
+}
+
+# We need to enable enhanced monitoring to get 4xx, 5xx, OriginLatency & CacheHitRate (+ other metrics)
+resource "aws_cloudfront_monitoring_subscription" "main" {
+  distribution_id = var.cloudfront_distribution_id
+  monitoring_subscription {
+    realtime_metrics_subscription_config {
+      realtime_metrics_subscription_status = "Enabled"
+    }
+  }
 }
 
 resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
@@ -23,7 +38,7 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
   dimensions = {
-    "DistributionId" : aws_cloudfront_distribution.main.id,
+    "DistributionId" : var.cloudfront_distribution_id,
     "Region" : "Global"
   }
 }
@@ -49,19 +64,8 @@ resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
   dimensions = {
-    "DistributionId" : aws_cloudfront_distribution.main.id,
+    "DistributionId" : var.cloudfront_distribution_id,
     "Region" : "Global"
-  }
-}
-
-
-# We need to enable enhanced monitoring to get OriginLatency & CacheHitRate (+ other metrics)
-resource "aws_cloudfront_monitoring_subscription" "main" {
-  distribution_id = aws_cloudfront_distribution.main.id
-  monitoring_subscription {
-    realtime_metrics_subscription_config {
-      realtime_metrics_subscription_status = "Enabled"
-    }
   }
 }
 
@@ -86,7 +90,7 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_high_alarm" {
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
   dimensions = {
-    "DistributionId" : aws_cloudfront_distribution.main.id,
+    "DistributionId" : var.cloudfront_distribution_id,
     "Region" : "Global"
   }
 }
