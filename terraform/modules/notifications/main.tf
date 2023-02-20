@@ -7,6 +7,8 @@ locals {
   alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
 }
 
+# Non sensitive
+# tfsec:ignore:aws-sns-enable-topic-encryption
 resource "aws_sns_topic" "alarm_sns_topic" {
   name         = "metric-alarms-${var.environment}"
   display_name = "Notifications for change in metric alarm status"
@@ -20,6 +22,8 @@ resource "aws_sns_topic_subscription" "alarm_sns_topic" {
   endpoint  = each.value
 }
 
+# Non sensitive
+# tfsec:ignore:aws-sns-enable-topic-encryption
 resource "aws_sns_topic" "alarm_sns_topic_global" {
   # Note that this topic is meant for "Global" services - by convention, these
   # services are located in us-east-1, so that's where we need to create the SNS
