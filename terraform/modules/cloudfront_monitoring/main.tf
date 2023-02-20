@@ -25,13 +25,13 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
 
   alarm_name          = "${var.prefix}client-error-rate"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = var.alarm_evaluation_periods
 
   metric_name = "4xxErrorRate"
   namespace   = "AWS/CloudFront"
   period      = var.metric_period_seconds
   statistic   = "Average"
-  threshold   = 1
+  threshold   = var.error_rate_alarm_threshold_percent
 
   alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
@@ -51,13 +51,13 @@ resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
 
   alarm_name          = "${var.prefix}server-error-rate"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = var.alarm_evaluation_periods
 
   metric_name = "5xxErrorRate"
   namespace   = "AWS/CloudFront"
   period      = var.metric_period_seconds
   statistic   = "Average"
-  threshold   = 1
+  threshold   = var.error_rate_alarm_threshold_percent
 
   alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
@@ -77,7 +77,7 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_high_alarm" {
 
   alarm_name          = "${var.prefix}origin-latency-high-rate"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = var.alarm_evaluation_periods
 
   metric_name = "OriginLatency"
   namespace   = "AWS/CloudFront"

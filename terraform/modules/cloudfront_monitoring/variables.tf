@@ -13,14 +13,29 @@ variable "cloudfront_distribution_id" {
   type        = string
 }
 
+variable "error_rate_alarm_threshold_percent" {
+  description = "Threshold to trigger error alarm in percentage points"
+  type        = number
+  default     = 5
+}
+
 variable "origin_latency_high_alarm_threshold_ms" {
-  description = "threshold to trigger alarm in milliseconds"
+  description = "Threshold to trigger alarm in milliseconds"
   type        = number
   default     = 10000
 }
 
+variable "alarm_evaluation_periods" {
+  description = "How many 300s periods must fail before the alarm triggers"
+  type        = number
+  default     = 1
+}
+
 variable "metric_period_seconds" {
   description = "Metric sampling period in seconds"
+  # Note that
+  # - for basic metrics, this needs to be >= 300s
+  # - for detailed metrics, this needs to be >=60s
   type        = number
   default     = 300
 }
