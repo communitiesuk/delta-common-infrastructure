@@ -26,7 +26,7 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilisation_high" {
   metric_name         = "mem_used_percent"
   namespace           = "${var.environment}/Jaspersoft"
   period              = 300
-  statistic           = "Average"
+  statistic           = "Maximum"
   threshold           = 80
 
   alarm_description = format(local.alarm_description_template, "Memory Usage", "High", 5)
@@ -43,12 +43,13 @@ resource "aws_cloudwatch_metric_alarm" "disk_utilisation_high" {
   metric_name         = "disk_used_percent"
   namespace           = "${var.environment}/Jaspersoft"
   period              = 300
-  statistic           = "Average"
+  statistic           = "Maximum"
   threshold           = 80
 
-  alarm_description = format(local.alarm_description_template, "Disk Usage", "High", 5)
-  alarm_actions     = [var.alarms_sns_topic_arn]
-  ok_actions        = [var.alarms_sns_topic_arn]
+  alarm_description         = format(local.alarm_description_template, "Disk Usage", "High", 5)
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
 
   dimensions = {}
 }
