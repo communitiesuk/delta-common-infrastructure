@@ -117,7 +117,7 @@ resource "aws_cloudfront_distribution" "main" {
   custom_error_response {
     error_code         = 503
     response_code      = 503
-    response_page_path = "/static_errors/error.html"
+    response_page_path = "/static_errors/503.html"
   }
 
   custom_error_response {

@@ -36,3 +36,11 @@ resource "aws_s3_object" "error_page" {
   source       = "${path.module}/error.html"
   content_type = "text/html"
 }
+
+resource "aws_s3_object" "unavailable_page" {
+  bucket       = module.error_bucket.bucket
+  etag         = filemd5("${path.module}/503.html")
+  key          = "static_errors/503.html"
+  source       = "${path.module}/503.html"
+  content_type = "text/html"
+}
