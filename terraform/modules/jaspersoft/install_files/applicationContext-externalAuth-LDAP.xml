@@ -179,7 +179,7 @@
         </property>
         <property name="defaultInternalRoles">
             <list>
-                <!-- No default permissions, users must be in the jasperreports-users group -->
+                <!-- No default permissions, users must be in the jasperreports-users group. Delta roles get access by -->
                 <!-- <value>ROLE_USER</value> -->
             </list>
         </property>
@@ -188,6 +188,7 @@
             <map>
                 <entry>
                     <key>
+                        <!-- Users get access by having a Delta role in AD that is a member of jasperreports-users/admins-->
                         <value>ROLE_JASPERREPORTS-USERS</value>
                     </key>
                     <value>ROLE_USER</value>
