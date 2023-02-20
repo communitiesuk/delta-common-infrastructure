@@ -2,13 +2,13 @@ locals {
   alarm_description_template = "Average distribution %v %v last %d minutes"
 }
 
-resource "aws_cloudwatch_metric_alarm" "bad_request_error_rate_alarm" {
+resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
   # While metrics can be created cross-regionally, alarms can't
   # so we need to create this in us-east-1 as that's where the
   # Global cloudfront lives
   provider = aws.us-east-1
 
-  alarm_name          = "${var.prefix}bad-request-error-rate"
+  alarm_name          = "${var.prefix}client-error-rate"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
 
@@ -28,13 +28,13 @@ resource "aws_cloudwatch_metric_alarm" "bad_request_error_rate_alarm" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "internal_server_error_rate_alarm" {
+resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
   # While metrics can be created cross-regionally, alarms can't
   # so we need to create this in us-east-1 as that's where the
   # Global cloudfront lives
   provider = aws.us-east-1
 
-  alarm_name          = "${var.prefix}internal-server-error-rate"
+  alarm_name          = "${var.prefix}server-error-rate"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
 
