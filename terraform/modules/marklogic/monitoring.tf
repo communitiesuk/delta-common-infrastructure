@@ -5,7 +5,7 @@ locals {
 resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_high" {
   alarm_name          = "marklogic-${var.environment}-cpu-high"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 2
   metric_name         = "cpu_usage_active"
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
@@ -24,7 +24,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_high" {
 resource "aws_cloudwatch_metric_alarm" "memory_utilisation_high" {
   alarm_name          = "marklogic-${var.environment}-memory-used-high"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 2
   metric_name         = "mem_used_percent"
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
@@ -41,7 +41,7 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilisation_high" {
 resource "aws_cloudwatch_metric_alarm" "system_disk_utilisation_high" {
   alarm_name          = "marklogic-${var.environment}-system-disk-used-high"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 2
   metric_name         = "disk_used_percent"
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
@@ -61,7 +61,7 @@ resource "aws_cloudwatch_metric_alarm" "system_disk_utilisation_high" {
 resource "aws_cloudwatch_metric_alarm" "data_disk_utilisation_high" {
   alarm_name          = "marklogic-${var.environment}-data-disk-used-high"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 2
   metric_name         = "disk_used_percent"
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
