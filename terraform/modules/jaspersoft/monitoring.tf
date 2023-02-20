@@ -12,7 +12,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_high" {
   statistic           = "Average"
   threshold           = 80
 
-  alarm_description = format(local.alarm_description_template, "CPU", "High", 5)
+  alarm_description = format(local.alarm_description_template, "CPU", "High", 10)
   alarm_actions     = [var.alarms_sns_topic_arn]
   ok_actions        = [var.alarms_sns_topic_arn]
 
@@ -29,7 +29,7 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilisation_high" {
   statistic           = "Maximum"
   threshold           = 80
 
-  alarm_description = format(local.alarm_description_template, "Memory Usage", "High", 5)
+  alarm_description = format(local.alarm_description_template, "Memory Usage", "High", 10)
   alarm_actions     = [var.alarms_sns_topic_arn]
   ok_actions        = [var.alarms_sns_topic_arn]
 
@@ -46,7 +46,7 @@ resource "aws_cloudwatch_metric_alarm" "disk_utilisation_high" {
   statistic           = "Maximum"
   threshold           = 80
 
-  alarm_description         = format(local.alarm_description_template, "Disk Usage", "High", 5)
+  alarm_description         = format(local.alarm_description_template, "Disk Usage", "High", 10)
   alarm_actions             = [var.alarms_sns_topic_arn]
   ok_actions                = [var.alarms_sns_topic_arn]
   insufficient_data_actions = [var.alarms_sns_topic_arn]

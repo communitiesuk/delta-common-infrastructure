@@ -33,7 +33,7 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
   statistic   = "Average"
   threshold   = var.error_rate_alarm_threshold_percent
 
-  alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds / 60)
+  alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
@@ -59,7 +59,7 @@ resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
   statistic   = "Average"
   threshold   = var.error_rate_alarm_threshold_percent
 
-  alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds / 60)
+  alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
@@ -85,7 +85,7 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_high_alarm" {
   statistic   = "Average"
   threshold   = var.origin_latency_high_alarm_threshold_ms
 
-  alarm_description = format(local.alarm_description_template, "Origin Latency", "High", var.metric_period_seconds / 60)
+  alarm_description = format(local.alarm_description_template, "Origin Latency", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
