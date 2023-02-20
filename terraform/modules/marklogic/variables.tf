@@ -74,3 +74,8 @@ variable "alarms_sns_topic_arn" {
   description = "SNS topic ARN to send alarm notifications to"
   type        = string
 }
+
+variable "data_disk_usage_alarm_threshold_percent" {
+  description = "Percentage of disk utilisation that triggers the alarm"
+  type        = number
+}

@@ -9,7 +9,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_high" {
   metric_name         = "cpu_usage_active"
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
-  statistic           = "Average"
+  statistic           = "Maximum"
   threshold           = 80
 
   alarm_description = format(local.alarm_description_template, "CPU", "High", 5)
@@ -28,7 +28,7 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilisation_high" {
   metric_name         = "mem_used_percent"
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
-  statistic           = "Average"
+  statistic           = "Maximum"
   threshold           = 80
 
   alarm_description = format(local.alarm_description_template, "Memory Usage", "High", 5)
@@ -38,36 +38,62 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilisation_high" {
   dimensions = {}
 }
 
-resource "aws_cloudwatch_metric_alarm" "disk_utilisation_high" {
-  alarm_name          = "marklogic-${var.environment}-disk-used-high"
+resource "aws_cloudwatch_metric_alarm" "system_disk_utilisation_high" {
+  alarm_name          = "marklogic-${var.environment}-system-disk-used-high"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   metric_name         = "disk_used_percent"
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
-  statistic           = "Average"
+  statistic           = "Maximum"
   threshold           = 90
 
-  alarm_description = format(local.alarm_description_template, "Disk Usage", "High", 5)
-  alarm_actions     = [var.alarms_sns_topic_arn]
-  ok_actions        = [var.alarms_sns_topic_arn]
+  alarm_description         = format(local.alarm_description_template, "Disk Usage", "High", 5)
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
 
-  dimensions = {}
+  dimensions = {
+    path = "/"
+  }
 }
 
-resource "aws_cloudwatch_metric_alarm" "disk_utilisation_high_sustained" {
-  alarm_name          = "marklogic-${var.environment}-disk-used-high-sustained"
+resource "aws_cloudwatch_metric_alarm" "data_disk_utilisation_high" {
+  alarm_name          = "marklogic-${var.environment}-data-disk-used-high"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   metric_name         = "disk_used_percent"
   namespace           = "${var.environment}/MarkLogic"
-  period              = 3600
-  statistic           = "Average"
-  threshold           = 50
+  period              = 300
+  statistic           = "Maximum"
+  threshold           = 90
 
-  alarm_description = format(local.alarm_description_template, "Disk Usage", "High", 5)
-  alarm_actions     = [var.alarms_sns_topic_arn]
-  ok_actions        = [var.alarms_sns_topic_arn]
+  alarm_description         = format(local.alarm_description_template, "Disk Usage", "High", 5)
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
 
-  dimensions = {}
+  dimensions = {
+    path = "/var/opt/MarkLogic"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "data_disk_utilisation_high_sustained" {
+  alarm_name          = "marklogic-${var.environment}-data-disk-used-high-sustained"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 4
+  metric_name         = "disk_used_percent"
+  namespace           = "${var.environment}/MarkLogic"
+  period              = 900
+  statistic           = "Maximum"
+  threshold           = var.data_disk_usage_alarm_threshold_percent
+
+  alarm_description         = format(local.alarm_description_template, "Disk Usage", "High", 5)
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
+
+  dimensions = {
+    path = "/var/opt/MarkLogic"
+  }
 }

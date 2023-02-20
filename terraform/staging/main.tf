@@ -256,14 +256,15 @@ module "marklogic" {
   data_volume_size_gb      = 200
   patch_maintenance_window = module.marklogic_patch_maintenance_window
 
-  ebs_backup_error_notification_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
-  extra_instance_policy_arn            = module.session_manager_config.policy_arn
-  app_cloudwatch_log_expiration_days   = local.cloudwatch_log_expiration_days
-  patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
-  config_s3_log_expiration_days        = local.s3_log_expiration_days
-  dap_export_s3_log_expiration_days    = local.s3_log_expiration_days
-  backup_s3_log_expiration_days        = local.s3_log_expiration_days
-  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
+  ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  extra_instance_policy_arn               = module.session_manager_config.policy_arn
+  app_cloudwatch_log_expiration_days      = local.cloudwatch_log_expiration_days
+  patch_cloudwatch_log_expiration_days    = local.patch_cloudwatch_log_expiration_days
+  config_s3_log_expiration_days           = local.s3_log_expiration_days
+  dap_export_s3_log_expiration_days       = local.s3_log_expiration_days
+  backup_s3_log_expiration_days           = local.s3_log_expiration_days
+  alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
+  data_disk_usage_alarm_threshold_percent = 55
 }
 
 module "gh_runner" {
