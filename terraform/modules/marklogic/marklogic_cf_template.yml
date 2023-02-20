@@ -569,8 +569,9 @@ Resources:
           - ''
           - - |+
                 #!/bin/bash
-                mkdir -p /delta
+                mkdir -p /delta/export
                 chmod 777 /delta
+                chmod 777 /delta/export
                 exit 0
 
             - MARKLOGIC_CLUSTER_NAME=
