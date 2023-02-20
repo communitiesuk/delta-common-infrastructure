@@ -83,7 +83,7 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_high_alarm" {
   namespace   = "AWS/CloudFront"
   period      = 300
   statistic   = "Average"
-  threshold   = 10000
+  threshold   = var.origin_latency_high_alarm_threshold_ms
 
   alarm_description = format(local.alarm_description_template, "Origin Latency", "High", 5)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
