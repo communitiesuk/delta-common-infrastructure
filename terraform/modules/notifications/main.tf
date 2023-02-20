@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 locals {
-  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications@softwire.com"]
+  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
 }
 
 resource "aws_sns_topic" "alarm_sns_topic" {
