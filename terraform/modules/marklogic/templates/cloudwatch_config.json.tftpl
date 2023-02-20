@@ -69,9 +69,9 @@ ${jsonencode({
     "namespace": "${environment}/MarkLogic",
     "aggregation_dimensions": [
       [
-        "InstanceId"
+        "InstanceId",
       ],
-      []
+      ["path"]
     ],
     "append_dimensions": {
       "InstanceId": "$${aws:InstanceId}"

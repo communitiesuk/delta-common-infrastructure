@@ -36,6 +36,6 @@ variable "metric_period_seconds" {
   # Note that
   # - for basic metrics, this needs to be >= 300s
   # - for detailed metrics, this needs to be >=60s
-  type        = number
-  default     = 300
+  type    = number
+  default = 300
 }
