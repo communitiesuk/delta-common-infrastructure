@@ -28,7 +28,7 @@ variable "origin_latency_high_alarm_threshold_ms" {
 variable "alarm_evaluation_periods" {
   description = "How many 300s periods must fail before the alarm triggers"
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "metric_period_seconds" {
