@@ -24,6 +24,7 @@ locals {
     ip_allowlist        = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
   }
   ip_reputation_enabled = var.ip_allowlist == null ? [{}] : []
+  login_ip_rate_limit_enabled = var.login_ip_rate_limit_enabled ? [{}] : []
 }
 
 output "acl_arn" {
@@ -197,37 +198,40 @@ resource "aws_wafv2_web_acl" "waf_acl" {
     }
   }
 
-  rule {
-    name     = "login-ip-rate-limit"
-    priority = 50 + local.priority_base
+  dynamic "rule" {
+    for_each = local.login_ip_rate_limit_enabled
+    content {
+      name     = "login-ip-rate-limit"
+      priority = 50 + local.priority_base
 
-    action {
-      block {}
-    }
+      action {
+        block {}
+      }
 
-    statement {
-      rate_based_statement {
-        limit              = var.login_ip_rate_limit
-        aggregate_key_type = "IP"
-        scope_down_statement {
-          byte_match_statement {
-            field_to_match {
-              uri_path {}
-            }
-            positional_constraint = "STARTS_WITH"
-            search_string         = "/login"
-            text_transformation {
-              priority = 0
-              type     = "NONE"
+      statement {
+        rate_based_statement {
+          limit              = var.login_ip_rate_limit
+          aggregate_key_type = "IP"
+          scope_down_statement {
+            byte_match_statement {
+              field_to_match {
+                uri_path {}
+              }
+              positional_constraint = "STARTS_WITH"
+              search_string         = "/login"
+              text_transformation {
+                priority = 0
+                type     = "NONE"
+              }
             }
           }
         }
       }
-    }
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = local.metric_names.login_ip_rate_limit
-      sampled_requests_enabled   = true
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = local.metric_names.login_ip_rate_limit
+        sampled_requests_enabled   = true
+      }
     }
   }
 }
