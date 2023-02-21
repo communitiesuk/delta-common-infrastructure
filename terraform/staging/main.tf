@@ -167,7 +167,7 @@ module "cloudfront_distributions" {
   jaspersoft = {
     alb = module.public_albs.jaspersoft
     domain = {
-      aliases             = ["reporting.${var.primary_domain}"]
+      aliases             = ["reporting.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft"].arn
     }
     geo_restriction_countries = ["GB", "IE", "IN"]
@@ -226,6 +226,7 @@ module "marklogic" {
   backup_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 55
+  dap_external_role_arn                   = var.dap_external_role_arn
 }
 
 module "gh_runner" {

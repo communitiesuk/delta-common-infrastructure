@@ -79,3 +79,7 @@ variable "data_disk_usage_alarm_threshold_percent" {
   description = "Percentage of disk utilisation that triggers the alarm"
   type        = number
 }
+
+variable "dap_external_role_arn" {
+  type = string
+}

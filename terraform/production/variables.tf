@@ -47,3 +47,8 @@ variable "hosted_zone_id" {
   type    = string
   default = "Z05291902D4B4GXLXJDZQ"
 }
+
+variable "dap_external_role_arn" {
+  type    = string
+  default = "arn:aws:iam::062321884391:role/DSQL1"
+}

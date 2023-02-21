@@ -22,6 +22,11 @@ jasperreports-admins,jasperadminuser
 jasperreports-users,jasperuser
 jasperreports-users,jasperreports-admins
 jasperreports-admins,datamart-delta-admin
+jasperreports-users,datamart-delta-admin
+jasperreports-users,datamart-delta-report-users
+jasperreports-users,datamart-delta-sap-team-members
+jasperreports-users,datamart-delta-payments-reviewers
+jasperreports-users,datamart-delta-payments-approvers
 dluhc-service-users,keycloak
 dluhc-service-users,cpmapp
 dluhc-service-users,sap

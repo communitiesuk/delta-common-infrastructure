@@ -191,6 +191,7 @@ module "marklogic" {
   backup_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 50
+  dap_external_role_arn                   = var.dap_external_role_arn
 }
 
 module "gh_runner" {
@@ -272,7 +273,7 @@ module "cloudfront_distributions" {
   jaspersoft = {
     alb = module.public_albs.jaspersoft
     domain = {
-      aliases             = ["reporting.${var.secondary_domain}"]
+      aliases             = ["reporting.delta.${var.secondary_domain}"]
       acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.jaspersoft

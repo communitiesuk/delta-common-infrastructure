@@ -41,6 +41,8 @@ resource "aws_sns_topic" "main" {
 
 resource "aws_iam_role" "main" {
   name = "${var.prefix}-sns-publish-${var.environment}"
+  # Allow infra-support to iam:PassRole
+  path = "/${var.environment}-infra-passable/"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

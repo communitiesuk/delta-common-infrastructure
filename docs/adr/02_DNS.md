@@ -8,7 +8,7 @@ This is from exploring existing relevant DNS records.
 * delta.communities.gov.uk - delegated to Route53, and aliased to CloudFront
 * api.delta.communities.gov.uk - Returns A records, likely aliased to an ALB
 * auth.delta.communities.gov.uk - Returns A records, likely aliased to an ALB
-* reporting.communities.gov.uk - CNAME to an ALB
+* reporting.delta.communities.gov.uk - CNAME to an ALB
 * cpm.communities.gov.uk - CNAME to an ALB
 
 Note that the delegation of delta.communities.gov.uk currently has a high TTL that will need to be reduced before the migration.
@@ -16,7 +16,7 @@ Note that the delegation of delta.communities.gov.uk currently has a high TTL th
 ## Aims
 
 * No domain delegation - decision from DLUHC's Cyber team
-* delta.communities.gov.uk, reporting.communities.gov.uk, api.delta.communities.gov.uk and likely a couple of others pointing at our CloudFront distribution(s)
+* delta.communities.gov.uk, reporting.delta.communities.gov.uk, api.delta.communities.gov.uk and likely a couple of others pointing at our CloudFront distribution(s)
   * And similar for delta.staging.communities.gov.uk etc.
 * No regular changes required from DLUHC
   * So automated SSL certificate renewal for said CloudFront distribution
