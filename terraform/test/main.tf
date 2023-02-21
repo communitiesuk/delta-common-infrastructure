@@ -177,7 +177,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.jaspersoft
     domain = {
       aliases             = ["reporting.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
     }
     geo_restriction_countries = ["GB", "IE"]
   }

@@ -110,7 +110,7 @@ module "public_albs" {
 
   vpc                           = module.networking.vpc
   subnet_ids                    = module.networking.public_subnets[*].id
-  certificates                  = module.ssl_certs.alb_certs
+  certificates                  = module.communities_only_ssl_certs.alb_certs
   environment                   = local.environment
   apply_aws_shield_to_delta_alb = local.apply_aws_shield
   alb_s3_log_expiration_days    = local.s3_log_expiration_days
@@ -133,7 +133,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.delta
     domain = {
       aliases             = ["delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["delta"].arn
     }
     geo_restriction_countries = ["GB", "IE", "IN"]
     # We don't want to restrict staging until we are able to confirm who needs access
@@ -142,7 +142,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.delta_api
     domain = {
       aliases             = ["api.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["api"].arn
     }
     # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
     geo_restriction_countries = null
@@ -151,7 +151,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.keycloak
     domain = {
       aliases             = ["auth.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["keycloak"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
     # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
     geo_restriction_countries = null
@@ -160,7 +160,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.cpm
     domain = {
       aliases             = ["cpm.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["cpm"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
     geo_restriction_countries = ["GB", "IE", "IN"]
   }
@@ -168,7 +168,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.jaspersoft
     domain = {
       aliases             = ["reporting.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
     }
     geo_restriction_countries = ["GB", "IE", "IN"]
   }
