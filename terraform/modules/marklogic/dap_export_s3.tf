@@ -9,6 +9,34 @@ module "dap_export_bucket" {
   access_log_bucket_name             = "dluhc-delta-dap-export-access-logs-${var.environment}"
   access_s3_log_expiration_days      = var.dap_export_s3_log_expiration_days
   noncurrent_version_expiration_days = null
+  policy                             = data.aws_iam_policy_document.allow_access_from_dap.json
+}
+
+data "aws_iam_policy_document" "allow_access_from_dap" {
+  statement {
+    principals {
+      type        = "AWS"
+      identifiers = [var.dap_external_role_arn]
+    }
+
+    actions = [
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:GetEncryptionConfiguration",
+      "s3:GetBucketLocation"
+    ]
+
+    resources = [
+      module.dap_export_bucket.bucket_arn,
+      "${module.dap_export_bucket.bucket_arn}/latest/*",
+    ]
+
+    # condition {
+    #   test     = "IpAddress"
+    #   variable = "aws:SourceIp"
+    #   values   = ["52.17.138.171/32"]
+    # }
+  }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "dap_export" {
