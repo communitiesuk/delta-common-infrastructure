@@ -15,12 +15,13 @@ locals {
   excluded_rules = concat(var.excluded_rules, ["SizeRestrictions_BODY"])
 
   metric_names = {
-    main          = replace("${var.prefix}cloudfront-waf-acl", "-", "")
-    rate_limit    = replace("${var.prefix}cloudfront-waf-rate-limit", "-", "")
-    common        = replace("${var.prefix}cloudfront-waf-common-rules", "-", "")
-    bad_inputs    = replace("${var.prefix}cloudfront-waf-bad-inputs", "-", "")
-    ip_reputation = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
-    ip_allowlist  = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
+    main                = replace("${var.prefix}cloudfront-waf-acl", "-", "")
+    rate_limit          = replace("${var.prefix}cloudfront-waf-rate-limit", "-", "")
+    login_ip_rate_limit = replace("${var.prefix}cloudfront-waf-login-rate-limit", "-", "")
+    common              = replace("${var.prefix}cloudfront-waf-common-rules", "-", "")
+    bad_inputs          = replace("${var.prefix}cloudfront-waf-bad-inputs", "-", "")
+    ip_reputation       = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
+    ip_allowlist        = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
   }
   ip_reputation_enabled = var.ip_allowlist == null ? [{}] : []
 }
@@ -37,7 +38,7 @@ provider "aws" {
 locals {
   # Terraform is buggy around WAF changes, changing this so all the rules are updated will often fix it
   # https://github.com/hashicorp/terraform-provider-aws/issues/23992
-  priority_base = 100
+  priority_base = 300
 }
 
 resource "aws_wafv2_web_acl" "waf_acl" {
@@ -193,6 +194,40 @@ resource "aws_wafv2_web_acl" "waf_acl" {
         metric_name                = local.metric_names.ip_allowlist
         sampled_requests_enabled   = true
       }
+    }
+  }
+
+  rule {
+    name     = "login-ip-rate-limit"
+    priority = 50 + local.priority_base
+
+    action {
+      block {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = var.login_ip_rate_limit
+        aggregate_key_type = "IP"
+        scope_down_statement {
+          byte_match_statement {
+            field_to_match {
+              uri_path {}
+            }
+            positional_constraint = "STARTS_WITH"
+            search_string         = "/login"
+            text_transformation {
+              priority = 0
+              type     = "NONE"
+            }
+          }
+        }
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = local.metric_names.login_ip_rate_limit
+      sampled_requests_enabled   = true
     }
   }
 }
