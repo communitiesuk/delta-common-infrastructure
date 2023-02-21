@@ -125,7 +125,7 @@ resource "aws_cloudwatch_metric_alarm" "blocked_login_requests" {
     WebACL = aws_wafv2_web_acl.waf_acl.name
   }
 
-  # TODO
-  # alarm_actions = sns topic here
-  # ok_actions    = sns topic here
+  # TODO:DT-261 Consider whether this should be sent to a security SNS topic
+  alarm_actions = [var.alarms_sns_topic_global_arn]
+  ok_actions    = [var.alarms_sns_topic_global_arn]
 }
