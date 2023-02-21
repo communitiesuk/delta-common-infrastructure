@@ -48,3 +48,8 @@ variable "ecr_repo_account_id" {
   description = "AWS account id containing the ECR repo that ECS services will pull from"
   default     = "468442790030"
 }
+
+variable "dap_external_role_arn" {
+  type    = string
+  default = "arn:aws:iam::062321884391:role/DSQSS"
+}
