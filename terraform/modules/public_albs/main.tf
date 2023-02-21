@@ -136,7 +136,7 @@ output "jaspersoft" {
     dns_name          = module.jaspersoft_alb.dns_name
     security_group_id = module.jaspersoft_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["jaspersoft"].result
-    certificate_arn   = var.certificates["jaspersoft"].arn
-    primary_hostname  = var.certificates["jaspersoft"].primary_domain
+    certificate_arn   = var.certificates["jaspersoft_delta"].arn
+    primary_hostname  = var.certificates["jaspersoft_delta"].primary_domain
   }
 }

@@ -200,8 +200,8 @@ module "cloudfront_distributions" {
   jaspersoft = {
     alb = module.public_albs.jaspersoft
     domain = {
-      aliases             = ["reporting.${var.secondary_domain}", "reporting.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft"].arn
+      aliases             = ["reporting.delta.${var.secondary_domain}", "reporting.delta.${var.primary_domain}"]
+      acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
     }
     geo_restriction_countries = ["GB", "IE"]
   }

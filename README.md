@@ -160,7 +160,7 @@ Make sure the `jasper_s3_bucket` variable is set correctly.
 terraform apply -target module.jaspersoft
 ```
 
-Once the server has initialised JasperReports should be available at `https://reporting.<domain>`.
+Once the server has initialised JasperReports should be available at `https://reporting.delta.<domain>`.
 
 ### 8 Applications
 
