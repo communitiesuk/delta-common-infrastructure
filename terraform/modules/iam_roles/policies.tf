@@ -213,6 +213,14 @@ data "aws_iam_policy_document" "infra_support" {
       var.session_manager_key_arn
     ]
   }
+
+  statement {
+    sid = "PassAllowedRoles"
+    actions = [
+      "iam:PassRole"
+    ]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/staging-infra-passable/*"]
+  }
 }
 
 resource "aws_iam_policy" "infra_support" {
