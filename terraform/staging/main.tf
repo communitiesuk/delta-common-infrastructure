@@ -36,41 +36,10 @@ locals {
   s3_log_expiration_days               = 60
 }
 
-# In practice the ACM validation records will all overlap
-# But create three sets anyway to be on the safe side, ACM is free
-module "ssl_certs" {
-  source = "../modules/ssl_certificates"
-
-  primary_domain    = var.primary_domain
-  secondary_domains = [var.secondary_domain]
-}
-
 module "communities_only_ssl_certs" {
   source = "../modules/ssl_certificates"
 
   primary_domain = var.primary_domain
-}
-
-module "dluhc_dev_only_ssl_certs" {
-  source = "../modules/ssl_certificates"
-
-  primary_domain = var.secondary_domain
-}
-
-locals {
-  dns_cert_validation_records = setunion(
-    module.communities_only_ssl_certs.required_validation_records,
-    module.dluhc_dev_only_ssl_certs.required_validation_records,
-    module.ssl_certs.required_validation_records,
-  )
-}
-
-# This dynamically creates resources, so the modules it depends on must be created first
-# terraform apply -target module.dluhc_dev_only_ssl_certs -target module.communities_only_ssl_certs -target module.ssl_certs
-module "dluhc_dev_validation_records" {
-  source         = "../modules/dns_records"
-  hosted_zone_id = var.secondary_domain_zone_id
-  records        = [for record in local.dns_cert_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 module "networking" {
@@ -81,7 +50,7 @@ module "networking" {
   open_ingress_cidrs                      = [local.datamart_peering_vpc_cidr]
   ecr_repo_account_id                     = var.ecr_repo_account_id
   apply_aws_shield_to_nat_gateway         = local.apply_aws_shield
-  auth_server_domains                     = ["auth.delta.${var.primary_domain}", "auth.delta.${var.secondary_domain}"]
+  auth_server_domains                     = ["auth.delta.${var.primary_domain}"]
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
@@ -141,7 +110,7 @@ module "public_albs" {
 
   vpc                           = module.networking.vpc
   subnet_ids                    = module.networking.public_subnets[*].id
-  certificates                  = module.ssl_certs.alb_certs
+  certificates                  = module.communities_only_ssl_certs.alb_certs
   environment                   = local.environment
   apply_aws_shield_to_delta_alb = local.apply_aws_shield
   alb_s3_log_expiration_days    = local.s3_log_expiration_days
@@ -153,7 +122,7 @@ module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
   environment                              = local.environment
-  base_domains                             = [var.primary_domain, var.secondary_domain]
+  base_domains                             = [var.primary_domain]
   apply_aws_shield                         = local.apply_aws_shield
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
@@ -163,8 +132,8 @@ module "cloudfront_distributions" {
   delta = {
     alb = module.public_albs.delta
     domain = {
-      aliases             = ["delta.${var.secondary_domain}", "delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
+      aliases             = ["delta.${var.primary_domain}"]
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["delta"].arn
     }
     geo_restriction_countries = ["GB", "IE", "IN"]
     # We don't want to restrict staging until we are able to confirm who needs access
@@ -172,8 +141,8 @@ module "cloudfront_distributions" {
   api = {
     alb = module.public_albs.delta_api
     domain = {
-      aliases             = ["api.delta.${var.secondary_domain}", "api.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
+      aliases             = ["api.delta.${var.primary_domain}"]
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["api"].arn
     }
     # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
     geo_restriction_countries = null
@@ -181,8 +150,8 @@ module "cloudfront_distributions" {
   keycloak = {
     alb = module.public_albs.keycloak
     domain = {
-      aliases             = ["auth.delta.${var.secondary_domain}", "auth.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["keycloak"].arn
+      aliases             = ["auth.delta.${var.primary_domain}"]
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
     # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
     geo_restriction_countries = null
@@ -190,16 +159,16 @@ module "cloudfront_distributions" {
   cpm = {
     alb = module.public_albs.cpm
     domain = {
-      aliases             = ["cpm.${var.secondary_domain}", "cpm.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["cpm"].arn
+      aliases             = ["cpm.${var.primary_domain}"]
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
     geo_restriction_countries = ["GB", "IE", "IN"]
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
     domain = {
-      aliases             = ["reporting.delta.${var.secondary_domain}", "reporting.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
+      aliases             = ["reporting.delta.${var.primary_domain}"]
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
     }
     geo_restriction_countries = ["GB", "IE", "IN"]
   }
@@ -207,18 +176,10 @@ module "cloudfront_distributions" {
 
 locals {
   all_dns_records = setunion(
-    local.dns_cert_validation_records,
+    module.communities_only_ssl_certs.required_validation_records,
     module.cloudfront_distributions.required_dns_records,
     module.ses_identity.required_validation_records
   )
-}
-
-# This dynamically creates resources, so the modules it depends on must be created first
-# terraform apply -target module.cloudfront_distributions
-module "dluhc_dev_cloudfront_records" {
-  source         = "../modules/dns_records"
-  hosted_zone_id = var.secondary_domain_zone_id
-  records        = [for record in module.cloudfront_distributions.required_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 module "active_directory" {
