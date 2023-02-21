@@ -132,9 +132,8 @@ resource "aws_cloudwatch_metric_alarm" "dropped_packets" {
     Engine           = "Stateful"
   }
 
-  # TODO DT-49
-  # alarm_actions = sns topic here
-  # ok_actions    = sns topic here
+  alarm_actions = [var.alarms_sns_topic_arn]
+  ok_actions    = [var.alarms_sns_topic_arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "nat_bytes_out" {
@@ -157,7 +156,6 @@ resource "aws_cloudwatch_metric_alarm" "nat_bytes_out" {
     NatGatewayId = aws_nat_gateway.nat_gateway.id
   }
 
-  # TODO DT-49
-  # alarm_actions = sns topic here
-  # ok_actions    = sns topic here
+  alarm_actions = [var.alarms_sns_topic_arn]
+  ok_actions    = [var.alarms_sns_topic_arn]
 }

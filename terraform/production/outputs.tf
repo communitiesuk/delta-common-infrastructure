@@ -106,3 +106,11 @@ output "ml_http_target_group_arn" {
 output "session_manager_policy_arn" {
   value = module.session_manager_config.policy_arn
 }
+
+output "alarms_sns_topic_arn" {
+  value = module.notifications.alarms_sns_topic_arn
+}
+
+output "alarms_sns_topic_global_arn" {
+  value = module.notifications.alarms_sns_topic_global_arn
+}

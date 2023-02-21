@@ -105,3 +105,8 @@ variable "jaspersoft" {
     ip_allowlist              = optional(list(string))
   })
 }
+
+variable "alarms_sns_topic_global_arn" {
+  description = "SNS topic ARN to send alarm notifications to"
+  type        = string
+}

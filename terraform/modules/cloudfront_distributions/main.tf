@@ -13,6 +13,7 @@ module "jaspersoft_waf" {
   excluded_rules                 = ["CrossSiteScripting_BODY", "GenericLFI_BODY"]
   ip_allowlist                   = var.jaspersoft.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "delta_website_waf" {
@@ -24,6 +25,7 @@ module "delta_website_waf" {
   excluded_rules                 = ["CrossSiteScripting_BODY"]
   ip_allowlist                   = var.delta.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "cpm_waf" {
@@ -35,6 +37,7 @@ module "cpm_waf" {
   excluded_rules                 = ["CrossSiteScripting_BODY"]
   ip_allowlist                   = var.cpm.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "api_auth_waf" {
@@ -46,6 +49,7 @@ module "api_auth_waf" {
   excluded_rules                 = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
   ip_allowlist                   = var.api.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "delta_cloudfront" {
@@ -61,6 +65,7 @@ module "delta_cloudfront" {
   geo_restriction_countries      = var.delta.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
   origin_read_timeout            = var.delta.origin_read_timeout == null ? 60 : var.delta.origin_read_timeout
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "api_cloudfront" {
@@ -77,6 +82,7 @@ module "api_cloudfront" {
   environment                    = var.environment
   apply_aws_shield               = var.apply_aws_shield
   swagger_s3_log_expiration_days = var.swagger_s3_log_expiration_days
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "keycloak_cloudfront" {
@@ -92,6 +98,7 @@ module "keycloak_cloudfront" {
   geo_restriction_countries      = var.keycloak.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
   function_associations          = [{ event_type = "viewer-request", function_arn = aws_cloudfront_function.keycloak_request.arn }]
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "cpm_cloudfront" {
@@ -107,6 +114,7 @@ module "cpm_cloudfront" {
   geo_restriction_countries      = var.cpm.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
   origin_read_timeout            = var.cpm.origin_read_timeout == null ? 60 : var.cpm.origin_read_timeout
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 
 module "jaspersoft_cloudfront" {
@@ -121,4 +129,5 @@ module "jaspersoft_cloudfront" {
   is_ipv6_enabled                = var.jaspersoft.ip_allowlist == null
   geo_restriction_countries      = var.jaspersoft.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }

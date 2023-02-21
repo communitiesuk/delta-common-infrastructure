@@ -63,7 +63,8 @@ module "ses_identity" {
 }
 
 module "ses_monitoring" {
-  source = "../modules/ses_monitoring"
+  source               = "../modules/ses_monitoring"
+  alarms_sns_topic_arn = module.notifications.alarms_sns_topic_arn
 }
 
 locals {
@@ -98,6 +99,7 @@ module "networking" {
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   open_ingress_cidrs                      = [local.datamart_peering_vpc_cidr]
+  alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
 }
 
 module "bastion_log_group" {
@@ -180,13 +182,15 @@ module "marklogic" {
   data_volume_size_gb      = 3000
   patch_maintenance_window = module.marklogic_patch_maintenance_window
 
-  ebs_backup_error_notification_emails = [local.notification_email_address]
-  extra_instance_policy_arn            = module.session_manager_config.policy_arn
-  app_cloudwatch_log_expiration_days   = local.cloudwatch_log_expiration_days
-  patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
-  config_s3_log_expiration_days        = local.s3_log_expiration_days
-  dap_export_s3_log_expiration_days    = local.s3_log_expiration_days
-  backup_s3_log_expiration_days        = local.s3_log_expiration_days
+  ebs_backup_error_notification_emails    = [local.notification_email_address]
+  extra_instance_policy_arn               = module.session_manager_config.policy_arn
+  app_cloudwatch_log_expiration_days      = local.cloudwatch_log_expiration_days
+  patch_cloudwatch_log_expiration_days    = local.patch_cloudwatch_log_expiration_days
+  config_s3_log_expiration_days           = local.s3_log_expiration_days
+  dap_export_s3_log_expiration_days       = local.s3_log_expiration_days
+  backup_s3_log_expiration_days           = local.s3_log_expiration_days
+  alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
+  data_disk_usage_alarm_threshold_percent = 50
 }
 
 module "gh_runner" {
@@ -224,6 +228,7 @@ module "cloudfront_distributions" {
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
   swagger_s3_log_expiration_days           = local.s3_log_expiration_days
+  alarms_sns_topic_global_arn              = module.notifications.alarms_sns_topic_global_arn
   delta = {
     alb = module.public_albs.delta
     domain = {
@@ -320,6 +325,7 @@ module "jaspersoft" {
   patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
   config_s3_log_expiration_days        = local.s3_log_expiration_days
   app_cloudwatch_log_expiration_days   = local.cloudwatch_log_expiration_days
+  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }
 
 module "guardduty" {
@@ -345,4 +351,9 @@ module "session_manager_config" {
 module "account_security" {
   source                  = "../modules/account_security"
   organisation_account_id = local.organisation_account_id
+}
+
+module "notifications" {
+  source      = "../modules/notifications"
+  environment = local.environment
 }
