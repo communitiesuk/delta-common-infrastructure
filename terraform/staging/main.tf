@@ -135,6 +135,7 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["delta"].arn
     }
+    # Some TSO staff are located in India (IN)
     geo_restriction_countries = ["GB", "IE", "IN"]
     # We don't want to restrict staging until we are able to confirm who needs access
   }
