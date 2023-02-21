@@ -27,8 +27,8 @@ variable "login_ip_rate_limit" {
   default = 100
 }
 
-variable "login_ip_rate_limit_enabled"{
-  type = bool
+variable "login_ip_rate_limit_enabled" {
+  type    = bool
   default = false
 }
 

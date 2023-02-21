@@ -23,7 +23,7 @@ locals {
     ip_reputation       = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
     ip_allowlist        = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
   }
-  ip_reputation_enabled = var.ip_allowlist == null ? [{}] : []
+  ip_reputation_enabled       = var.ip_allowlist == null ? [{}] : []
   login_ip_rate_limit_enabled = var.login_ip_rate_limit_enabled ? [{}] : []
 }
 
@@ -39,7 +39,7 @@ provider "aws" {
 locals {
   # Terraform is buggy around WAF changes, changing this so all the rules are updated will often fix it
   # https://github.com/hashicorp/terraform-provider-aws/issues/23992
-  priority_base = 300
+  priority_base = 400
 }
 
 resource "aws_wafv2_web_acl" "waf_acl" {
