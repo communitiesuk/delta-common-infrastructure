@@ -29,9 +29,15 @@ module "delta_backup_bucket" {
 }
 
 # MarkLogic seems to need the "folders" to exist in S3
+# If you update these make sure to update the backups in delta-marklogic-deploy too
 resource "aws_s3_object" "delta_content_folder" {
   bucket = module.delta_backup_bucket.bucket
   key    = "delta-content/"
+}
+
+resource "aws_s3_object" "delta_content_weekly_folder" {
+  bucket = module.delta_backup_bucket.bucket
+  key    = "weekly/delta-content/"
 }
 
 resource "aws_s3_object" "security_folder" {
@@ -39,7 +45,17 @@ resource "aws_s3_object" "security_folder" {
   key    = "security/"
 }
 
+resource "aws_s3_object" "delta_testing_centre_content_folder" {
+  bucket = module.delta_backup_bucket.bucket
+  key    = "delta-testing-centre-content/"
+}
+
 resource "aws_s3_object" "payments_content" {
   bucket = module.cpm_backup_bucket.bucket
   key    = "payments-content/"
+}
+
+resource "aws_s3_object" "payments_content_weekly_folder" {
+  bucket = module.cpm_backup_bucket.bucket
+  key    = "weekly/payments-content/"
 }
