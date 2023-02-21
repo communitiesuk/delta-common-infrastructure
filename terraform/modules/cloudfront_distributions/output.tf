@@ -22,7 +22,7 @@ output "required_dns_records" {
         record_value = "${module.cpm_cloudfront.cloudfront_domain_name}."
       },
       {
-        record_name  = "reporting.${base_domain}."
+        record_name  = "reporting.delta.${base_domain}."
         record_type  = "CNAME"
         record_value = "${module.jaspersoft_cloudfront.cloudfront_domain_name}."
       },
