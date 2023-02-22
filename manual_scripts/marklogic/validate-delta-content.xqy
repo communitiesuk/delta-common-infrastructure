@@ -21,7 +21,7 @@ return xdmp:hash64(xdmp:quote($org))
 return ("Number of Organisations: " || fn:count($org-hashes), "Organisations hash: " || xdmp:hash64(xdmp:quote($org-hashes))),
 
 let $dataset-hashes := for $dataset in fn:collection("/dataset")
-order by $dataset/dataset:dataset/dataset:dataset-id
+order by fn:document-uri($dataset)
 return xdmp:hash64(xdmp:quote($dataset))
 
 return ("Number of Datasets: " || fn:count($dataset-hashes), "Datasets hash: " || xdmp:hash64(xdmp:quote($dataset-hashes))),
