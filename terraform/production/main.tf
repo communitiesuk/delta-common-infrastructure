@@ -355,6 +355,7 @@ module "account_security" {
 }
 
 module "notifications" {
-  source      = "../modules/notifications"
-  environment = local.environment
+  source                 = "../modules/notifications"
+  environment            = local.environment
+  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications@softwire.com"]
 }
