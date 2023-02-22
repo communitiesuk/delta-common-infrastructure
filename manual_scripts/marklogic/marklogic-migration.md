@@ -25,8 +25,9 @@ Afterwards:
   * cpm-ml-admin, see "cpm-app-ml-password-\<env>"
   * jasperreports, see "\<env>-jaspersoft-ml-password"
 * Update the post-migration-update-security.xqy query with the correct list of users to delete. Run it from the MarkLogic query console, targeting the Security database.
+* Enable app servers using the script from above
 * Run the Roxy deployment jobs from <https://github.com/communitiesuk/delta-marklogic-deploy> for both Delta and CPM.
 * Delete the external security "datamart-eclaims-sec"
 * Check the external securities "datamart-cpm-sec" and "datamart-sec" were configured correctly
-* Re-enable scheduled tasks, app servers and rebalancer using the scripts from above
+* Re-enable scheduled tasks and rebalancer using the scripts from above
 * Re-enable all scheduled backups

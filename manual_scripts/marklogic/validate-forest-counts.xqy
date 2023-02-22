@@ -23,6 +23,7 @@ dluhc:forest-summary("payments-content"),
 "Summary for delta-testing-centre-content",
 dluhc:forest-summary("delta-testing-centre-content"),
 "Summary for Security",
+(: Note the number of documents will be slightly different after the version upgrade :)
 dluhc:forest-summary("Security"),
 
 xdmp:invoke-function(function() {
