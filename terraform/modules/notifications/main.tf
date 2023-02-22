@@ -3,10 +3,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-locals {
-  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
-}
-
 # Non sensitive
 # tfsec:ignore:aws-sns-enable-topic-encryption
 resource "aws_sns_topic" "alarm_sns_topic" {
@@ -15,7 +11,7 @@ resource "aws_sns_topic" "alarm_sns_topic" {
 }
 
 resource "aws_sns_topic_subscription" "alarm_sns_topic" {
-  for_each = toset(local.alarm_sns_topic_emails)
+  for_each = toset(var.alarm_sns_topic_emails)
 
   topic_arn = aws_sns_topic.alarm_sns_topic.arn
   protocol  = "email"
@@ -37,7 +33,7 @@ resource "aws_sns_topic" "alarm_sns_topic_global" {
 resource "aws_sns_topic_subscription" "alarm_sns_topic_global" {
   provider = aws.us-east-1
 
-  for_each = toset(local.alarm_sns_topic_emails)
+  for_each = toset(var.alarm_sns_topic_emails)
 
   topic_arn = aws_sns_topic.alarm_sns_topic_global.arn
   protocol  = "email"

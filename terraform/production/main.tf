@@ -212,7 +212,7 @@ module "public_albs" {
 
   vpc                           = module.networking.vpc
   subnet_ids                    = module.networking.public_subnets[*].id
-  certificates                  = module.dluhc_preprod_only_ssl_certs.alb_certs
+  certificates                  = module.ssl_certs.alb_certs
   environment                   = local.environment
   apply_aws_shield_to_delta_alb = local.apply_aws_shield
   alb_s3_log_expiration_days    = local.s3_log_expiration_days
@@ -234,7 +234,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.delta
     domain = {
       aliases             = ["delta.${var.secondary_domain}"]
-      acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["delta"].arn
+      acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.delta_website
     geo_restriction_countries = ["GB", "IE"]
@@ -244,7 +244,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.delta_api
     domain = {
       aliases             = ["api.delta.${var.secondary_domain}"]
-      acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["api"].arn
+      acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
     }
     ip_allowlist = local.cloudfront_ip_allowlists.delta_api
     # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
@@ -254,7 +254,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.keycloak
     domain = {
       aliases             = ["auth.delta.${var.secondary_domain}"]
-      acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["keycloak"].arn
+      acm_certificate_arn = module.ssl_certs.cloudfront_certs["keycloak"].arn
     }
     ip_allowlist = local.cloudfront_ip_allowlists.delta_api
     # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
@@ -264,7 +264,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.cpm
     domain = {
       aliases             = ["cpm.${var.secondary_domain}"]
-      acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["cpm"].arn
+      acm_certificate_arn = module.ssl_certs.cloudfront_certs["cpm"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.cpm
     geo_restriction_countries = ["GB", "IE"]
@@ -274,7 +274,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.jaspersoft
     domain = {
       aliases             = ["reporting.delta.${var.secondary_domain}"]
-      acm_certificate_arn = module.dluhc_preprod_only_ssl_certs.cloudfront_certs["jaspersoft"].arn
+      acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.jaspersoft
     geo_restriction_countries = ["GB", "IE"]
@@ -355,6 +355,7 @@ module "account_security" {
 }
 
 module "notifications" {
-  source      = "../modules/notifications"
-  environment = local.environment
+  source                 = "../modules/notifications"
+  environment            = local.environment
+  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications@softwire.com"]
 }

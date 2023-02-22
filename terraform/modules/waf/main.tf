@@ -37,7 +37,7 @@ provider "aws" {
 locals {
   # Terraform is buggy around WAF changes, changing this so all the rules are updated will often fix it
   # https://github.com/hashicorp/terraform-provider-aws/issues/23992
-  priority_base = 100
+  priority_base = 200
 }
 
 resource "aws_wafv2_web_acl" "waf_acl" {
