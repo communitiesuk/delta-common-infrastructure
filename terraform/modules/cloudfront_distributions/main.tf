@@ -26,6 +26,9 @@ module "delta_website_waf" {
   ip_allowlist                   = var.delta.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
+
+  # TODO MIGRATION: Revert this post migration
+  waf_ip_restriction_http_response_code = 503
 }
 
 module "cpm_waf" {

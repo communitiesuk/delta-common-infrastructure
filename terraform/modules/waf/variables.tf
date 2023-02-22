@@ -26,3 +26,8 @@ variable "alarms_sns_topic_global_arn" {
   description = "SNS topic ARN to send alarm notifications to"
   type        = string
 }
+
+variable "waf_ip_restriction_http_response_code" {
+  type    = number
+  default = 403
+}

@@ -173,7 +173,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
         block {
           custom_response {
             custom_response_body_key = "ip_error"
-            response_code            = 403
+            response_code            = var.waf_ip_restriction_http_response_code
           }
         }
       }
