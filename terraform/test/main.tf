@@ -312,13 +312,13 @@ data "aws_iam_policy" "enable_session_manager" {
 }
 
 module "ses_user" {
-  source               = "../modules/ses_user"
-  username             = "ses-user-${local.environment}"
-  ses_identity_arn     = module.ses_identity.arn
-  from_address_pattern = "*@datacollection.dluhc-dev.uk"
-  environment          = local.environment
-  kms_key_arn          = null
-  vpc_id               = module.networking.vpc.id
+  source                = "../modules/ses_user"
+  username              = "ses-user-${local.environment}"
+  ses_identity_arn      = module.ses_identity.arn
+  from_address_patterns = ["*@datacollection.dluhc-dev.uk"]
+  environment           = local.environment
+  kms_key_arn           = null
+  vpc_id                = module.networking.vpc.id
 }
 
 module "mailhog" {
