@@ -206,7 +206,7 @@ module "marklogic_patch_maintenance_window" {
   schedule    = "cron(00 06 ? * TUE *)"
 
   # TODO DT-276: Re-enable
-  enable = false
+  enabled = false
 }
 
 module "marklogic" {
