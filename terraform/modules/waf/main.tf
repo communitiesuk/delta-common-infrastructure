@@ -37,7 +37,7 @@ provider "aws" {
 locals {
   # Terraform is buggy around WAF changes, changing this so all the rules are updated will often fix it
   # https://github.com/hashicorp/terraform-provider-aws/issues/23992
-  priority_base = 200
+  priority_base = 100
 }
 
 resource "aws_wafv2_web_acl" "waf_acl" {
@@ -134,7 +134,8 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
   custom_response_body {
     key          = "ip_error"
-    content      = "This resource is not available to your IP address"
+    # TODO MIGRATION: Revert this
+    content      = var.waf_ip_restriction_http_response_code == 403 ? "This resource is not available to your IP address" : "Delta: Service unavailable due to planned maintenance"
     content_type = "TEXT_PLAIN"
   }
 
