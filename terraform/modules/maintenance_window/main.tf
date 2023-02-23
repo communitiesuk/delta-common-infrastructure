@@ -11,6 +11,11 @@ variable "schedule" {
   description = "e.g. cron(00 06 ? * MON *)"
 }
 
+variable "enabled" {
+  type    = bool
+  default = true
+}
+
 output "window_id" {
   value = aws_ssm_maintenance_window.main.id
 }
@@ -25,6 +30,7 @@ output "errors_sns_topic_arn" {
 
 resource "aws_ssm_maintenance_window" "main" {
   name              = "${var.prefix}-${var.environment}"
+  enabled           = var.enabled
   schedule          = var.schedule
   schedule_timezone = "Etc/UTC"
   duration          = 2

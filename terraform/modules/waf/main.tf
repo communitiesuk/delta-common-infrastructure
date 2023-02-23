@@ -133,7 +133,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
   }
 
   custom_response_body {
-    key          = "ip_error"
+    key = "ip_error"
     # TODO MIGRATION: Revert this
     content      = var.waf_ip_restriction_http_response_code == 403 ? "This resource is not available to your IP address" : "Delta: Service unavailable due to planned maintenance"
     content_type = "TEXT_PLAIN"

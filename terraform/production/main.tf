@@ -168,6 +168,9 @@ module "marklogic_patch_maintenance_window" {
   environment = local.environment
   prefix      = "ml-instance-patching"
   schedule    = "cron(00 06 ? * WED *)"
+
+  # TODO DT-276: Re-enable
+  enable = false
 }
 
 module "marklogic" {
