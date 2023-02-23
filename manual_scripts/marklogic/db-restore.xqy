@@ -82,7 +82,7 @@ let $map := map:new((
 ))
 return xdmp:database-restore(
     $forest-ids,
-    "s3://datamart-ml-backups-production/delta-content/20230215-0300016866090/",
+    "s3://datamart-ml-backups-production/delta-content/20230223-1354074985260/",
     (),
     fn:false(),
     (),

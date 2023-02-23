@@ -13,6 +13,7 @@ declare %private function dluhc:forest-summary($database-name as xs:string) as x
   let $forest-ids := xdmp:database-forests($database)
   for $forest-id in $forest-ids
     let $forest-counts := xdmp:forest-counts($forest-id, ("document-count"))
+    order by $forest-counts/forest:forest-name/text()
   return $forest-counts/forest:forest-name/text() || " - " || $forest-counts/forest:document-count/text() || " documents"
 };
 
