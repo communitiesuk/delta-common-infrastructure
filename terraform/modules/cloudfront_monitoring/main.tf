@@ -27,10 +27,6 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = var.alarm_evaluation_periods
 
-  metric_name        = "4xxErrorRate"
-  namespace          = "AWS/CloudFront"
-  period             = var.metric_period_seconds
-  statistic          = "Average"
   threshold          = var.error_rate_alarm_threshold_percent
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
@@ -38,9 +34,39 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
-  dimensions = {
-    "DistributionId" : var.cloudfront_distribution_id,
-    "Region" : "Global"
+  metric_query {
+    id          = "thresholded_client_error_rate"
+    expression  = "IF(total_requests > 20, actual_client_error_rate, -1)"
+    label       = "Thresholded 4xx CloudFront error rate"
+    return_data = "true"
+  }
+
+  metric_query {
+    id = "actual_client_error_rate"
+    metric {
+      metric_name = "4xxErrorRate"
+      namespace   = "AWS/CloudFront"
+      period      = "300"
+      stat        = "Average"
+      dimensions = {
+        "DistributionId" : var.cloudfront_distribution_id,
+        "Region" : "Global"
+      }
+    }
+  }
+
+  metric_query {
+    id = "total_requests"
+    metric {
+      metric_name = "Requests"
+      namespace   = "AWS/CloudFront"
+      period      = "300"
+      stat        = "Sum"
+      dimensions = {
+        "DistributionId" : var.cloudfront_distribution_id,
+        "Region" : "Global"
+      }
+    }
   }
 }
 
@@ -54,10 +80,6 @@ resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = var.alarm_evaluation_periods
 
-  metric_name        = "5xxErrorRate"
-  namespace          = "AWS/CloudFront"
-  period             = var.metric_period_seconds
-  statistic          = "Average"
   threshold          = var.error_rate_alarm_threshold_percent
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
@@ -65,9 +87,39 @@ resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
-  dimensions = {
-    "DistributionId" : var.cloudfront_distribution_id,
-    "Region" : "Global"
+  metric_query {
+    id          = "thresholded_server_error_rate"
+    expression  = "IF(total_requests > 20, actual_server_error_rate, -1)"
+    label       = "Thresholded 5xx CloudFront error rate"
+    return_data = "true"
+  }
+
+  metric_query {
+    id = "actual_server_error_rate"
+    metric {
+      metric_name = "5xxErrorRate"
+      namespace   = "AWS/CloudFront"
+      period      = "300"
+      stat        = "Average"
+      dimensions = {
+        "DistributionId" : var.cloudfront_distribution_id,
+        "Region" : "Global"
+      }
+    }
+  }
+
+  metric_query {
+    id = "total_requests"
+    metric {
+      metric_name = "Requests"
+      namespace   = "AWS/CloudFront"
+      period      = "300"
+      stat        = "Sum"
+      dimensions = {
+        "DistributionId" : var.cloudfront_distribution_id,
+        "Region" : "Global"
+      }
+    }
   }
 }
 
