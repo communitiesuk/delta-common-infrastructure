@@ -27,11 +27,12 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = var.alarm_evaluation_periods
 
-  metric_name = "4xxErrorRate"
-  namespace   = "AWS/CloudFront"
-  period      = var.metric_period_seconds
-  statistic   = "Average"
-  threshold   = var.error_rate_alarm_threshold_percent
+  metric_name        = "4xxErrorRate"
+  namespace          = "AWS/CloudFront"
+  period             = var.metric_period_seconds
+  statistic          = "Average"
+  threshold          = var.error_rate_alarm_threshold_percent
+  treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
   alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
@@ -53,11 +54,12 @@ resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = var.alarm_evaluation_periods
 
-  metric_name = "5xxErrorRate"
-  namespace   = "AWS/CloudFront"
-  period      = var.metric_period_seconds
-  statistic   = "Average"
-  threshold   = var.error_rate_alarm_threshold_percent
+  metric_name        = "5xxErrorRate"
+  namespace          = "AWS/CloudFront"
+  period             = var.metric_period_seconds
+  statistic          = "Average"
+  threshold          = var.error_rate_alarm_threshold_percent
+  treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
   alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
@@ -79,11 +81,12 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_high_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = var.alarm_evaluation_periods
 
-  metric_name = "OriginLatency"
-  namespace   = "AWS/CloudFront"
-  period      = var.metric_period_seconds
-  statistic   = "Average"
-  threshold   = var.origin_latency_high_alarm_threshold_ms
+  metric_name        = "OriginLatency"
+  namespace          = "AWS/CloudFront"
+  period             = var.metric_period_seconds
+  statistic          = "Average"
+  threshold          = var.origin_latency_high_alarm_threshold_ms
+  treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
   alarm_description = format(local.alarm_description_template, "Origin Latency", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
