@@ -260,9 +260,10 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
     }
     # TODO MIGRATION: Remove
-    ip_allowlist              = local.cloudfront_ip_allowlists.delta_website
-    geo_restriction_countries = ["GB", "IE"]
-    origin_read_timeout       = 180 # Required quota increase
+    ip_allowlist                       = local.cloudfront_ip_allowlists.delta_website
+    geo_restriction_countries          = ["GB", "IE"]
+    origin_read_timeout                = 180 # Required quota increase
+    error_rate_alarm_threshold_percent = 10
   }
   api = {
     alb = module.public_albs.delta_api

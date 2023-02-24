@@ -16,7 +16,6 @@ variable "cloudfront_distribution_id" {
 variable "error_rate_alarm_threshold_percent" {
   description = "Threshold to trigger error alarm in percentage points"
   type        = number
-  default     = 5
 }
 
 variable "origin_latency_high_alarm_threshold_ms" {
