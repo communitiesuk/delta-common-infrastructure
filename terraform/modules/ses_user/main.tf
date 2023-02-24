@@ -14,8 +14,8 @@ variable "kms_key_arn" {
   type = string
 }
 
-variable "from_address_pattern" {
-  type        = string
+variable "from_address_patterns" {
+  type        = list(string)
   description = "for example 'marketing+.*@example.com'"
 }
 
@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "ses_sender" {
     condition {
       test     = "StringLike"
       variable = "ses:FromAddress"
-      values   = [var.from_address_pattern]
+      values   = var.from_address_patterns
     }
   }
 }
