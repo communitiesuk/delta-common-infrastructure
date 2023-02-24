@@ -51,7 +51,7 @@ let $users := (
 "fcf-evaluator",
 "Jack.Heywood",
 "nagaraja.joisa",
-"ed.outhwaite",
+(: "ed.outhwaite", Keeping "ed" and "ed.outhwaite" for now :)
 "dclg-minimal-privilege-user",
 "dclg-user",
 "graham.dagless",
@@ -77,7 +77,8 @@ let $users := (
 "adam.harrowven",
 "DATAMART_ML_ADMIN_PROD",
 "dwp-user",
-"Victoria.Holland"
+"Victoria.Holland",
+"payments-user"
 )
 return for $user in $users
   return sec:remove-user($user)
