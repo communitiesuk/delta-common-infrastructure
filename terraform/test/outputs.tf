@@ -142,3 +142,7 @@ output "alarms_sns_topic_arn" {
 output "alarms_sns_topic_global_arn" {
   value = module.notifications.alarms_sns_topic_global_arn
 }
+
+output "deploy_user_kms_key_arn" {
+  value = module.marklogic.deploy_user_kms_key_arn
+}
