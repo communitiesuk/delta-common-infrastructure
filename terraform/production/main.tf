@@ -76,7 +76,7 @@ module "cpm_ses_user" {
   source                = "../modules/ses_user"
   username              = "ses-user-cpm-app-${local.environment}"
   ses_identity_arn      = module.ses_identity.arn
-  from_address_patterns = ["cpm@datacollection.levellingup.gov.uk", "delta@datacollection.levellingup.gov.uk"]
+  from_address_patterns = ["cpm@datacollection.levellingup.gov.uk"]
   environment           = local.environment
   kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
   vpc_id                = module.networking.vpc.id
