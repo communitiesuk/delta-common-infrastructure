@@ -28,7 +28,20 @@ locals {
         "62.32.120.112/29",  # Home Connections
       ]
     )
-    delta_website = local.all_distribution_ip_allowlist
-    jaspersoft    = local.all_distribution_ip_allowlist
+    delta_website = concat(
+      local.all_distribution_ip_allowlist,
+      [
+        # DLUHC, for testing
+        "165.225.196.0/23",
+        "165.225.198.0/23",
+        "147.161.224.0/23",
+        "165.225.16.0/23",
+        "147.161.166.0/23",
+        "147.161.142.0/23",
+        "147.161.144.0/23",
+        "147.161.140.0/23",
+      ]
+    )
+    jaspersoft = local.all_distribution_ip_allowlist
   }
 }
