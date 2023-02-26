@@ -8,6 +8,7 @@ resource "aws_lb" "main" {
   subnets                    = var.subnet_ids
   drop_invalid_header_fields = true
   preserve_host_header       = true
+  idle_timeout               = 180
 
   access_logs {
     bucket  = aws_s3_bucket.alb_logs.bucket
