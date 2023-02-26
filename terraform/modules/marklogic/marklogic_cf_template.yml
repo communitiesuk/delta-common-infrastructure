@@ -566,7 +566,8 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 40
+            VolumeSize: 100
+            VolumeType: gp3
         - DeviceName: /dev/sdf
           NoDevice: true
           Ebs: {}
@@ -646,7 +647,8 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 40
+            VolumeSize: 100
+            VolumeType: gp3
         - DeviceName: /dev/sdf
           NoDevice: true
           Ebs: {}
@@ -719,7 +721,8 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 40
+            VolumeSize: 100
+            VolumeType: gp3
         - DeviceName: /dev/sdf
           NoDevice: true
           Ebs: {}
