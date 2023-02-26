@@ -30,7 +30,7 @@ Add-ADGroupMember -Identity Administrators -Members $User -Server "<source domai
 * We'll then use the target domain admin for the rest of the process, as they now have permissions across both domains
 * Continue with the guide to set up PES. [Direct download link](https://download.microsoft.com/download/a/1/0/a10798d3-cc25-4c32-a393-c06cd9f5d854/pwdmig.msi). Run the pwdmig.msi in admin mode (e.g. from an admin powershell terminal).
 
-You also need to keep the users' "guid" the same. ObjectGUID can't be migrated or manually set, so we instead need to store it in a new attribute. Upload the imported-guid.ldif file as a schema change to the AWS managed directory. 
+You also need to keep the users' "guid" the same. ObjectGUID can't be migrated or manually set, so we instead need to store it in a new attribute. Upload the `imported-guid.ldif` file as a schema change to the AWS managed directory. 
 
 ### Installation
 
@@ -89,6 +89,6 @@ This cannot be done with ADMT. To import the OUs inside OU=Delta-Organizations:
 ### Incremental migration
 
 Run `get_recently_changed.ps1` to generate include files for recently changed groups and users.
-* Run the group migration WITHOUT including any users
-* Run the user migration
+* Run the group migrations WITHOUT "copy group members"
+* Run the user migration - target folder should be "CN=datamart,OU=Users,..."
 * Run tidy_up.
