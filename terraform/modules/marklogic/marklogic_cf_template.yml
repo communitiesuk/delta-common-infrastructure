@@ -101,6 +101,7 @@ Parameters:
     AllowedValues:
       - standard
       - gp2
+      - gp3
     Default: gp2
   VolumeEncryption:
     Description: Whether to enable volume encryption
