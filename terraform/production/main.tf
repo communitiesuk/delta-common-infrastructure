@@ -239,7 +239,7 @@ module "public_albs" {
 
   vpc                           = module.networking.vpc
   subnet_ids                    = module.networking.public_subnets[*].id
-  certificates                  = module.ssl_certs.alb_certs
+  certificates                  = module.communities_only_ssl_certs.alb_certs
   environment                   = local.environment
   apply_aws_shield_to_delta_alb = local.apply_aws_shield
   alb_s3_log_expiration_days    = local.s3_log_expiration_days
@@ -251,7 +251,7 @@ module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
   environment                              = local.environment
-  base_domains                             = [var.secondary_domain]
+  base_domains                             = [var.primary_domain]
   apply_aws_shield                         = local.apply_aws_shield
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
@@ -260,7 +260,7 @@ module "cloudfront_distributions" {
   delta = {
     alb = module.public_albs.delta
     domain = {
-      aliases             = ["delta.${var.secondary_domain}", "delta.${var.primary_domain}"]
+      aliases             = ["delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
     }
     geo_restriction_countries          = ["GB", "IE"]
@@ -270,7 +270,7 @@ module "cloudfront_distributions" {
   api = {
     alb = module.public_albs.delta_api
     domain = {
-      aliases             = ["api.delta.${var.secondary_domain}", "api.delta.${var.primary_domain}"]
+      aliases             = ["api.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
     }
     ip_allowlist = local.cloudfront_ip_allowlists.delta_api
@@ -280,7 +280,7 @@ module "cloudfront_distributions" {
   keycloak = {
     alb = module.public_albs.keycloak
     domain = {
-      aliases             = ["auth.delta.${var.secondary_domain}", "auth.delta.${var.primary_domain}"]
+      aliases             = ["auth.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["keycloak"].arn
     }
     ip_allowlist = local.cloudfront_ip_allowlists.delta_api
@@ -290,7 +290,7 @@ module "cloudfront_distributions" {
   cpm = {
     alb = module.public_albs.cpm
     domain = {
-      aliases             = ["cpm.${var.secondary_domain}", "cpm.${var.primary_domain}"]
+      aliases             = ["cpm.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["cpm"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.cpm
@@ -300,7 +300,7 @@ module "cloudfront_distributions" {
   jaspersoft = {
     alb = module.public_albs.jaspersoft
     domain = {
-      aliases             = ["reporting.delta.${var.secondary_domain}", "reporting.delta.${var.primary_domain}"]
+      aliases             = ["reporting.delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.jaspersoft
