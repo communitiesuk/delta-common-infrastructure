@@ -28,9 +28,17 @@ variable "private_dns" {
   })
 }
 
-variable "data_volume_size_gb" {
-  description = "Size in GB of the data EBS volume for each instace"
-  default     = 20
+variable "data_volume" {
+  description = "MarkLogic data volume configuration"
+  # See https://aws.amazon.com/ebs/general-purpose/
+  # https://aws.amazon.com/ebs/pricing/
+  # Max IOPS is 16000, max throughput is 1000 MiB/s
+  # 3000 IOPS and 125 MiB/s bandwidth is included with the storage cost
+  type = object({
+    size_gb                = number
+    iops                   = number
+    throughput_MiB_per_sec = number
+  })
 }
 
 variable "ebs_backup_error_notification_emails" {

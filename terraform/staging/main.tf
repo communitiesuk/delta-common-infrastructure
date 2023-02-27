@@ -218,8 +218,12 @@ module "marklogic" {
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3a.2xlarge"
   private_dns              = module.networking.private_dns
-  data_volume_size_gb      = 200
   patch_maintenance_window = module.marklogic_patch_maintenance_window
+  data_volume = {
+    size_gb                = 200
+    iops                   = 3000
+    throughput_MiB_per_sec = 250
+  }
 
   ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
   extra_instance_policy_arn               = module.session_manager_config.policy_arn

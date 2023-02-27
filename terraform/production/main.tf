@@ -202,8 +202,12 @@ module "marklogic" {
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "r5a.8xlarge" # r6a is not allowed (as of 26/02/2023)
   private_dns              = module.networking.private_dns
-  data_volume_size_gb      = 3000
   patch_maintenance_window = module.marklogic_patch_maintenance_window
+  data_volume = {
+    size_gb                = 3000
+    iops                   = 16000
+    throughput_MiB_per_sec = 1000
+  }
 
   ebs_backup_error_notification_emails    = [local.notification_email_address]
   extra_instance_policy_arn               = module.session_manager_config.policy_arn
