@@ -1,3 +1,5 @@
+# Note that the MarkLogic dashboard is at terraform/modules/marklogic/monitoring_dashboard.tf
+
 module "website_dashboard" {
   source                     = "../cloudwatch_dashboard"
   dashboard_name             = var.delta_dashboard.dashboard_name
