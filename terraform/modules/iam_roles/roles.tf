@@ -15,8 +15,9 @@ locals {
 }
 
 resource "aws_iam_role" "cloudwatch_monitor" {
-  name               = "assume-cloudwatch-monitor-${var.environment}"
-  assume_role_policy = local.trust_organisation_account_policy
+  name                 = "assume-cloudwatch-monitor-${var.environment}"
+  assume_role_policy   = local.trust_organisation_account_policy
+  max_session_duration = 36000 # 10 hours
 }
 
 resource "aws_iam_role_policy_attachment" "cloudwatch_monitor" {
@@ -30,8 +31,9 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_monitor" {
 }
 
 resource "aws_iam_role" "application_support" {
-  name               = "assume-application-support-${var.environment}"
-  assume_role_policy = local.trust_organisation_account_policy
+  name                 = "assume-application-support-${var.environment}"
+  assume_role_policy   = local.trust_organisation_account_policy
+  max_session_duration = 36000 # 10 hours
 }
 
 resource "aws_iam_role_policy_attachment" "application_support" {
@@ -48,8 +50,9 @@ resource "aws_iam_role_policy_attachment" "application_support" {
 }
 
 resource "aws_iam_role" "infrastructure_support" {
-  name               = "assume-infra-support-${var.environment}"
-  assume_role_policy = local.trust_organisation_account_policy
+  name                 = "assume-infra-support-${var.environment}"
+  assume_role_policy   = local.trust_organisation_account_policy
+  max_session_duration = 36000 # 10 hours
 }
 
 resource "aws_iam_role_policy_attachment" "infrastructure_support" {
