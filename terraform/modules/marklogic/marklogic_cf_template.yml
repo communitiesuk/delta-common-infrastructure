@@ -101,6 +101,7 @@ Parameters:
     AllowedValues:
       - standard
       - gp2
+      - gp3
     Default: gp2
   VolumeEncryption:
     Description: Whether to enable volume encryption
@@ -558,7 +559,8 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 40
+            VolumeSize: 100
+            VolumeType: gp3
         - DeviceName: /dev/sdf
           NoDevice: true
           Ebs: {}
@@ -638,7 +640,8 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 40
+            VolumeSize: 100
+            VolumeType: gp3
         - DeviceName: /dev/sdf
           NoDevice: true
           Ebs: {}
@@ -711,7 +714,8 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 40
+            VolumeSize: 100
+            VolumeType: gp3
         - DeviceName: /dev/sdf
           NoDevice: true
           Ebs: {}

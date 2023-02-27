@@ -1,5 +1,5 @@
 locals {
-  ebs_volume_type = "gp2"
+  ebs_volume_type = "gp3"
 }
 
 resource "aws_ebs_volume" "marklogic_data_volumes" {
@@ -9,6 +9,8 @@ resource "aws_ebs_volume" "marklogic_data_volumes" {
   size              = var.data_volume_size_gb
   encrypted         = true
   type              = local.ebs_volume_type
+  iops              = 16000
+  throughput        = 1000 # MiB/s - This argument is only valid for a volume of type gp3
 
   tags = {
     Name = "marklogic-ebs-data-volume-${each.value.availability_zone}-${var.environment}"

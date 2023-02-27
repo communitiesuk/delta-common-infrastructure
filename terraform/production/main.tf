@@ -200,7 +200,7 @@ module "marklogic" {
   environment              = local.environment
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
-  instance_type            = "r5a.4xlarge"
+  instance_type            = "r5a.8xlarge" # r6a is not allowed (as of 26/02/2023)
   private_dns              = module.networking.private_dns
   data_volume_size_gb      = 3000
   patch_maintenance_window = module.marklogic_patch_maintenance_window
