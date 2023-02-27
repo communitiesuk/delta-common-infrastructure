@@ -17,3 +17,4 @@ variable "delta_cloudfront_distribution_id" {
   description = "Id of Delta Cloudfront distribution"
   type        = string
 }
+
