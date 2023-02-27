@@ -1,61 +1,58 @@
 locals {
   # ECS instance metrics from the Delta project. See <delta>/terraform/modules/delta_servers/app_logs.tf
-  ecs_metrics = var.instance_metric_namespace == null ? tolist([]) : tolist([{
-          width : 6,
-          height : 6,
-          x : 12,
-    y : 2,
-          type : "metric",
-          properties : {
-            "metrics" : [
-              [var.instance_metric_namespace, "cpu_usage_active", { id : "m1", stat : "Minimum" }],
-              ["...", { id : "m2" }],
-              ["...", { id : "m3", stat : "Maximum" }]
-            ],
-            "view" : "timeSeries",
-            "stacked" : false,
-            "region" : "eu-west-1",
-            "stat" : "Average",
-            "period" : 300,
-            "setPeriodToTimeRange" : false,
-            "sparkline" : true,
-            "trend" : true
-          }
-        },
-        {
-          type : "metric",
-          width : 6,
-          height : 6,
-          x : 12,
-          y : 8,
-          properties : {
-            "view" : "timeSeries",
-            "stacked" : false,
-            "metrics" : [
-              [var.instance_metric_namespace, "disk_used_percent", { id : "m1", stat : "Minimum" }],
-              ["...", { id : "m2" }],
-              ["...", { id : "m3", stat : "Maximum" }]
-            ],
-            "region" : "eu-west-1"
-          }
-        },
-        {
-          type : "metric",
-          width : 6,
-          height : 6,
-          x : 12,
-          y : 14,
-          properties : {
-            "view" : "timeSeries",
-            "stacked" : false,
-            "metrics" : [
-              [var.instance_metric_namespace, "mem_used_percent", { id : "m1", stat : "Minimum" }],
-              ["...", { id : "m2" }],
-              ["...", { id : "m3", stat : "Maximum" }]
-            ],
-            "region" : "eu-west-1"
-          }
-        }])
+  ecs_metrics = var.instance_metric_namespace == null ? tolist([]) : tolist([
+    {
+      width : 6,
+      height : 6,
+      x : 12,
+      y : 2,
+      type : "metric",
+      properties : {
+        "view" : "timeSeries",
+        "stacked" : false,
+        "metrics" : [
+          [var.instance_metric_namespace, "cpu_usage_active", { id : "m1", stat : "Minimum" }],
+          ["...", { id : "m2" }],
+          ["...", { id : "m3", stat : "Maximum" }]
+        ],
+        "region" : "eu-west-1",
+      }
+    },
+    {
+      type : "metric",
+      width : 6,
+      height : 6,
+      x : 12,
+      y : 8,
+      properties : {
+        "view" : "timeSeries",
+        "stacked" : false,
+        "metrics" : [
+          [var.instance_metric_namespace, "disk_used_percent", { id : "m1", stat : "Minimum" }],
+          ["...", { id : "m2" }],
+          ["...", { id : "m3", stat : "Maximum" }]
+        ],
+        "region" : "eu-west-1"
+      }
+    },
+    {
+      type : "metric",
+      width : 6,
+      height : 6,
+      x : 12,
+      y : 14,
+      properties : {
+        "view" : "timeSeries",
+        "stacked" : false,
+        "metrics" : [
+          [var.instance_metric_namespace, "mem_used_percent", { id : "m1", stat : "Minimum" }],
+          ["...", { id : "m2" }],
+          ["...", { id : "m3", stat : "Maximum" }]
+        ],
+        "region" : "eu-west-1"
+      }
+    }
+  ])
 }
 
 resource "aws_cloudwatch_dashboard" "main" {

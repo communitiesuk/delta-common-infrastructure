@@ -123,11 +123,14 @@ module "public_albs" {
 }
 
 module "dashboards" {
-  source                           = "../modules/cloudwatch_dashboards"
-  delta_alb_arn_suffix             = module.public_albs.delta.arn_suffix
-  delta_cloudfront_distribution_id = module.cloudfront_distributions.delta_cloudfront_distribution_id
-  delta_cloudfront_alarms          = module.cloudfront_distributions.delta_cloudfront_alarms
-  environment                      = local.environment
+  source = "../modules/cloudwatch_dashboards"
+  delta_dashboard = {
+    dashboard_name             = "${local.environment}-website"
+    cloudfront_distribution_id = module.cloudfront_distributions.delta_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.delta_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.delta.arn_suffix
+    instance_metric_namespace  = "${local.environment}/DeltaServers"
+  }
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.

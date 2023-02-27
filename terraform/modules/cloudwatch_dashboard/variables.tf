@@ -3,9 +3,9 @@ variable "dashboard_name" {
   type        = string
 }
 
-variable "instance_metric_namespace" {
-  description = "Namespace of metrics recorded by cloudwatch agent"
-  default = null
+variable "cloudfront_distribution_id" {
+  description = "Id of Cloudfront distribution"
+  type        = string
 }
 
 variable "cloudfront_alarms" {
@@ -18,8 +18,8 @@ variable "alb_arn_suffix" {
   type        = string
 }
 
-variable "cloudfront_distribution_id" {
-  description = "Id of Cloudfront distribution"
+variable "instance_metric_namespace" {
+  description = "Namespace of metrics recorded by cloudwatch agent"
   type        = string
+  default     = null
 }
-
