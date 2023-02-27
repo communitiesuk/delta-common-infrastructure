@@ -28,9 +28,13 @@ variable "private_dns" {
   })
 }
 
-variable "data_volume_size_gb" {
-  description = "Size in GB of the data EBS volume for each instace"
-  default     = 20
+variable "data_volume" {
+  description = "MarkLogic data volume configuration"
+  type = object({
+    size_gb                = number
+    iops                   = number
+    throughput_MiB_per_sec = number
+  })
 }
 
 variable "ebs_backup_error_notification_emails" {

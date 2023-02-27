@@ -227,7 +227,11 @@ module "marklogic" {
   instance_type            = "t3a.large"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
-  data_volume_size_gb      = 50
+  data_volume = {
+    size_gb                = 50
+    iops                   = 3000
+    throughput_MiB_per_sec = 250
+  }
 
   ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
   extra_instance_policy_arn               = data.aws_iam_policy.enable_session_manager.arn
