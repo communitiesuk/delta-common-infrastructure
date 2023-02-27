@@ -58,6 +58,14 @@ output "keycloak_cloudfront_domain" {
   value = module.keycloak_cloudfront.cloudfront_domain_name
 }
 
+output "keycloak_cloudfront_distribution_id" {
+  value = module.keycloak_cloudfront.cloudfront_distribution_id
+}
+
+output "keycloak_cloudfront_alarms" {
+  value = module.keycloak_cloudfront.cloudfront_alarms
+}
+
 output "cpm_cloudfront_domain" {
   value = module.cpm_cloudfront.cloudfront_domain_name
 }

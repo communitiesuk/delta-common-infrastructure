@@ -138,6 +138,13 @@ module "dashboards" {
     alb_arn_suffix             = module.public_albs.delta_api.arn_suffix
     instance_metric_namespace  = null
   }
+  keycloak_dashboard = {
+    dashboard_name             = "${local.environment}-keycloak"
+    cloudfront_distribution_id = module.cloudfront_distributions.keycloak_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.keycloak_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.keycloak.arn_suffix
+    instance_metric_namespace  = null
+  }
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.

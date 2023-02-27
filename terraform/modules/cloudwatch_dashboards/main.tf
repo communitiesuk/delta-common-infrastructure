@@ -15,3 +15,13 @@ module "api_dashboard" {
   cloudfront_distribution_id = var.api_dashboard.cloudfront_distribution_id
   instance_metric_namespace  = var.api_dashboard.instance_metric_namespace
 }
+
+module "keycloak_dashboard" {
+  source                     = "../cloudwatch_dashboard"
+  dashboard_name             = var.keycloak_dashboard.dashboard_name
+  alb_arn_suffix             = var.keycloak_dashboard.alb_arn_suffix
+  cloudfront_alarms          = var.keycloak_dashboard.cloudfront_alarms
+  cloudfront_distribution_id = var.keycloak_dashboard.cloudfront_distribution_id
+  instance_metric_namespace  = var.keycloak_dashboard.instance_metric_namespace
+}
+
