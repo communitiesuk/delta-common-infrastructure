@@ -10,7 +10,7 @@ By "AWS console" we mean the website <https://console.aws.amazon.com/>.
     2. On the right hand side use the 'Quick links' section to quickly get to the tab 'My security credentials'
     3. Scroll down to the 'Multi-factor authentication' section and work through the wizard to add an MFA using your username as the device name
     4. Log out and back in again
-3. Generate and AWS Access Key in the DLUHC account
+3. Generate and AWS Access Key in the DLUHC account (only required for using the CLI, see below)
     1. To do this log in to your account in the web console and navigate to IAM
     2. On the right hand side use the 'Quick links' section to quickly get to the tab 'My security credentials'
     3. Scroll down to the 'Access keys' section and select 'Create access key'
