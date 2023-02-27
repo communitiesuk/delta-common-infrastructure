@@ -288,7 +288,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             "view" : "timeSeries",
             "stacked" : false,
             "region" : "eu-west-1",
-            "stat" : "Maximum",
+            "stat" : "Average",
             "period" : 300
           }
         },
