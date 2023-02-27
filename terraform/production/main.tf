@@ -263,7 +263,7 @@ module "cloudfront_distributions" {
     ip_allowlist                       = local.cloudfront_ip_allowlists.delta_website
     geo_restriction_countries          = ["GB", "IE"]
     origin_read_timeout                = 180 # Required quota increase
-    error_rate_alarm_threshold_percent = 10
+    error_rate_alarm_threshold_percent = 5
   }
   api = {
     alb = module.public_albs.delta_api
