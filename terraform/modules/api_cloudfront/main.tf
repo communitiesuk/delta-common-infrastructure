@@ -161,4 +161,6 @@ module "monitoring" {
   cloudfront_distribution_id  = aws_cloudfront_distribution.main.id
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
   prefix                      = var.prefix
+
+  error_rate_alarm_threshold_percent = var.error_rate_alarm_threshold_percent
 }

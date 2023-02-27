@@ -41,7 +41,9 @@ variable "delta" {
     # Leave null to disable restrictions
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
-    origin_read_timeout       = optional(number)
+
+    origin_read_timeout                = optional(number)
+    error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -57,6 +59,8 @@ variable "api" {
     }))
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
+
+    error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -72,6 +76,8 @@ variable "keycloak" {
     }))
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
+
+    error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -87,7 +93,9 @@ variable "cpm" {
     }))
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
-    origin_read_timeout       = optional(number)
+
+    origin_read_timeout                = optional(number)
+    error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -103,6 +111,8 @@ variable "jaspersoft" {
     }))
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
+
+    error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
