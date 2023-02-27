@@ -28,10 +28,11 @@ locals {
         "62.32.120.112/29",  # Home Connections
       ]
     )
+    # This is only used if we're IP restricting for testing
     delta_website = concat(
       local.all_distribution_ip_allowlist,
       [
-        # DLUHC, for testing
+        # DLUHC
         "165.225.196.0/23",
         "165.225.198.0/23",
         "147.161.224.0/23",
