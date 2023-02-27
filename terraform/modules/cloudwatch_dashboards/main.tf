@@ -25,3 +25,12 @@ module "keycloak_dashboard" {
   instance_metric_namespace  = var.keycloak_dashboard.instance_metric_namespace
 }
 
+module "cpm_dashboard" {
+  source                     = "../cloudwatch_dashboard"
+  dashboard_name             = var.cpm_dashboard.dashboard_name
+  alb_arn_suffix             = var.cpm_dashboard.alb_arn_suffix
+  cloudfront_alarms          = var.cpm_dashboard.cloudfront_alarms
+  cloudfront_distribution_id = var.cpm_dashboard.cloudfront_distribution_id
+  instance_metric_namespace  = var.cpm_dashboard.instance_metric_namespace
+}
+

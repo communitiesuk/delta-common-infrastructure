@@ -116,6 +116,7 @@ module "cpm_alb" {
 output "cpm" {
   value = {
     arn               = module.cpm_alb.arn
+    arn_suffix        = module.cpm_alb.arn_suffix
     dns_name          = module.cpm_alb.dns_name
     security_group_id = module.cpm_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["cpm"].result
@@ -136,6 +137,7 @@ module "jaspersoft_alb" {
 output "jaspersoft" {
   value = {
     arn               = module.jaspersoft_alb.arn
+    arn_suffix        = module.delta_api_alb.arn_suffix
     dns_name          = module.jaspersoft_alb.dns_name
     security_group_id = module.jaspersoft_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["jaspersoft"].result

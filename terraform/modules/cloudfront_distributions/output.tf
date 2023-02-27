@@ -70,6 +70,14 @@ output "cpm_cloudfront_domain" {
   value = module.cpm_cloudfront.cloudfront_domain_name
 }
 
+output "cpm_cloudfront_distribution_id" {
+  value = module.cpm_cloudfront.cloudfront_distribution_id
+}
+
+output "cpm_cloudfront_alarms" {
+  value = module.cpm_cloudfront.cloudfront_alarms
+}
+
 output "jaspersoft_cloudfront_domain" {
   value = module.jaspersoft_cloudfront.cloudfront_domain_name
 }
