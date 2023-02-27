@@ -1,5 +1,5 @@
 locals {
-  # ECS instance metrics from the Delta project. See <delta>/terraform/modules/delta_servers/app_logs.tf
+  # ECS instance metrics from the deployment. E.g. see <delta>/terraform/modules/delta_servers/app_logs.tf
   ecs_metrics = var.instance_metric_namespace == null ? tolist([]) : tolist([
     {
       width : 6,

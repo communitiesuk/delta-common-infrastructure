@@ -74,6 +74,7 @@ module "delta_api_alb" {
 output "delta_api" {
   value = {
     arn               = module.delta_api_alb.arn
+    arn_suffix        = module.delta_api_alb.arn_suffix
     dns_name          = module.delta_api_alb.dns_name
     security_group_id = module.delta_api_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["api"].result
@@ -94,6 +95,7 @@ module "keycloak_alb" {
 output "keycloak" {
   value = {
     arn               = module.keycloak_alb.arn
+    arn_suffix        = module.keycloak_alb.arn_suffix
     dns_name          = module.keycloak_alb.dns_name
     security_group_id = module.keycloak_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["keycloak"].result

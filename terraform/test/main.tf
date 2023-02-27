@@ -131,6 +131,13 @@ module "dashboards" {
     alb_arn_suffix             = module.public_albs.delta.arn_suffix
     instance_metric_namespace  = "${local.environment}/DeltaServers"
   }
+  api_dashboard = {
+    dashboard_name             = "${local.environment}-api"
+    cloudfront_distribution_id = module.cloudfront_distributions.api_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.api_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.delta_api.arn_suffix
+    instance_metric_namespace  = null
+  }
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.
