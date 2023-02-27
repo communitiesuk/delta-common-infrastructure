@@ -34,6 +34,10 @@ output "delta_cloudfront_domain" {
   value = module.delta_cloudfront.cloudfront_domain_name
 }
 
+output "delta_cloudfront_distribution_id" {
+  value = module.delta_cloudfront.cloudfront_distribution_id
+}
+
 output "api_cloudfront_domain" {
   value = module.api_cloudfront.cloudfront_domain_name
 }
@@ -48,4 +52,8 @@ output "cpm_cloudfront_domain" {
 
 output "jaspersoft_cloudfront_domain" {
   value = module.jaspersoft_cloudfront.cloudfront_domain_name
+}
+
+output "delta_cloudfront_alarms" {
+  value = module.delta_cloudfront.cloudfront_alarms
 }

@@ -53,6 +53,7 @@ module "delta_alb" {
 output "delta" {
   value = {
     arn               = module.delta_alb.arn
+    arn_suffix        = module.delta_alb.arn_suffix
     dns_name          = module.delta_alb.dns_name
     security_group_id = module.delta_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["delta"].result

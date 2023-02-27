@@ -122,6 +122,14 @@ module "public_albs" {
   alb_s3_log_expiration_days    = local.s3_log_expiration_days
 }
 
+module "dashboards" {
+  source                           = "../modules/cloudwatch_dashboards"
+  delta_alb_arn_suffix             = module.public_albs.delta.arn_suffix
+  delta_cloudfront_distribution_id = module.cloudfront_distributions.delta_cloudfront_distribution_id
+  delta_cloudfront_alarms          = module.cloudfront_distributions.delta_cloudfront_alarms
+  environment                      = local.environment
+}
+
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.
 # This is intentional as we want to be able to create a new environment and give DLUHC all
 # the required DNS records in one go as approval can take several weeks.
