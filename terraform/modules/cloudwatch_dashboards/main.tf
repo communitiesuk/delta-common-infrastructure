@@ -34,3 +34,12 @@ module "cpm_dashboard" {
   instance_metric_namespace  = var.cpm_dashboard.instance_metric_namespace
 }
 
+module "jaspersoft_dashboard" {
+  source                     = "../cloudwatch_dashboard"
+  dashboard_name             = var.jaspersoft_dashboard.dashboard_name
+  alb_arn_suffix             = var.jaspersoft_dashboard.alb_arn_suffix
+  cloudfront_alarms          = var.jaspersoft_dashboard.cloudfront_alarms
+  cloudfront_distribution_id = var.jaspersoft_dashboard.cloudfront_distribution_id
+  instance_metric_namespace  = var.jaspersoft_dashboard.instance_metric_namespace
+}
+

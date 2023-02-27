@@ -152,6 +152,13 @@ module "dashboards" {
     alb_arn_suffix             = module.public_albs.cpm.arn_suffix
     instance_metric_namespace  = null
   }
+  jaspersoft_dashboard = {
+    dashboard_name             = "${local.environment}-jaspersoft"
+    cloudfront_distribution_id = module.cloudfront_distributions.jaspersoft_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.jaspersoft_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.jaspersoft.arn_suffix
+    instance_metric_namespace  = "${local.environment}/Jaspersoft"
+  }
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.

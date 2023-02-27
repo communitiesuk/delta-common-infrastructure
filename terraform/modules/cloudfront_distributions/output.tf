@@ -81,3 +81,11 @@ output "cpm_cloudfront_alarms" {
 output "jaspersoft_cloudfront_domain" {
   value = module.jaspersoft_cloudfront.cloudfront_domain_name
 }
+
+output "jaspersoft_cloudfront_distribution_id" {
+  value = module.jaspersoft_cloudfront.cloudfront_distribution_id
+}
+
+output "jaspersoft_cloudfront_alarms" {
+  value = module.jaspersoft_cloudfront.cloudfront_alarms
+}
