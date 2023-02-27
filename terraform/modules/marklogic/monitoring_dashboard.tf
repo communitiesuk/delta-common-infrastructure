@@ -41,7 +41,7 @@ resource "aws_cloudwatch_log_metric_filter" "taskserver_errorlog_error" {
 }
 
 resource "aws_cloudwatch_dashboard" "main" {
-  dashboard_name = "Marklogic-${var.environment}"
+  dashboard_name = "${var.environment}-marklogic"
   dashboard_body = jsonencode(
     {
       "widgets" : [
