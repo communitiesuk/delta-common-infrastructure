@@ -122,6 +122,45 @@ module "public_albs" {
   alb_s3_log_expiration_days    = local.s3_log_expiration_days
 }
 
+module "dashboards" {
+  source = "../modules/cloudwatch_dashboards"
+  delta_dashboard = {
+    dashboard_name             = "${local.environment}-website"
+    cloudfront_distribution_id = module.cloudfront_distributions.delta_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.delta_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.delta.arn_suffix
+    instance_metric_namespace  = "${local.environment}/DeltaServers"
+  }
+  api_dashboard = {
+    dashboard_name             = "${local.environment}-api"
+    cloudfront_distribution_id = module.cloudfront_distributions.api_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.api_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.delta_api.arn_suffix
+    instance_metric_namespace  = null
+  }
+  keycloak_dashboard = {
+    dashboard_name             = "${local.environment}-keycloak"
+    cloudfront_distribution_id = module.cloudfront_distributions.keycloak_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.keycloak_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.keycloak.arn_suffix
+    instance_metric_namespace  = null
+  }
+  cpm_dashboard = {
+    dashboard_name             = "${local.environment}-cpm"
+    cloudfront_distribution_id = module.cloudfront_distributions.cpm_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.cpm_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.cpm.arn_suffix
+    instance_metric_namespace  = null
+  }
+  jaspersoft_dashboard = {
+    dashboard_name             = "${local.environment}-jaspersoft"
+    cloudfront_distribution_id = module.cloudfront_distributions.jaspersoft_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.jaspersoft_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.jaspersoft.arn_suffix
+    instance_metric_namespace  = "${local.environment}/Jaspersoft"
+  }
+}
+
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.
 # This is intentional as we want to be able to create a new environment and give DLUHC all
 # the required DNS records in one go as approval can take several weeks.
