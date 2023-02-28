@@ -9,6 +9,34 @@ module "dap_export_bucket" {
   access_log_bucket_name             = "dluhc-delta-dap-export-access-logs-${var.environment}"
   access_s3_log_expiration_days      = var.dap_export_s3_log_expiration_days
   noncurrent_version_expiration_days = null
+  policy                             = data.aws_iam_policy_document.allow_access_from_dap.json
+}
+
+data "aws_iam_policy_document" "allow_access_from_dap" {
+  statement {
+    principals {
+      type        = "AWS"
+      identifiers = [var.dap_external_role_arn]
+    }
+
+    actions = [
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:GetEncryptionConfiguration",
+      "s3:GetBucketLocation"
+    ]
+
+    resources = [
+      module.dap_export_bucket.bucket_arn,
+      "${module.dap_export_bucket.bucket_arn}/latest/*",
+    ]
+
+    # condition {
+    #   test     = "IpAddress"
+    #   variable = "aws:SourceIp"
+    #   values   = ["52.17.138.171/32"]
+    # }
+  }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "dap_export" {
@@ -62,10 +90,17 @@ resource "aws_ssm_maintenance_window_target" "ml_server" {
   }
 }
 
+# Non sensitive job output
+# tfsec:ignore:aws-cloudwatch-log-group-customer-key
+resource "aws_cloudwatch_log_group" "dap_upload" {
+  name              = "${var.environment}/marklogic/dap-upload-task"
+  retention_in_days = var.patch_cloudwatch_log_expiration_days
+}
+
 resource "aws_ssm_maintenance_window_task" "dap_s3_upload" {
   window_id       = module.dap_export_job_window.window_id
   max_concurrency = 1
-  max_errors      = 0
+  max_errors      = 2 # It should succeed on one of the three hosts where the associated MarkLogic jobs have run
   priority        = 1
   task_arn        = "AWS-RunShellScript"
   task_type       = "RUN_COMMAND"
@@ -94,11 +129,16 @@ resource "aws_ssm_maintenance_window_task" "dap_s3_upload" {
           "set -ex",
           "if [ -z \"$(ls ${local.delta_export_path})\" ]; then echo 'Error ${local.delta_export_path} is empty nothing to export'; exit 1; fi",
           "rm -rf /delta/export-workdir && cp -r ${local.delta_export_path}/. /delta/export-workdir",
-          "cd /delta/export-workdir && find . -type f",
-          "aws s3 cp --region ${data.aws_region.current.name} /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/latest\"",
+          "cd /delta/export-workdir && echo 'Files to upload' && find . -type f",
+          "aws s3 cp --region ${data.aws_region.current.name} /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/latest\" --recursive",
           "aws s3 cp --region ${data.aws_region.current.name} /delta/export-workdir \"s3://${module.dap_export_bucket.bucket}/archive/$(date +%F)\" --recursive",
           "rm -rf ${local.delta_export_path}/*",
         ]
+      }
+
+      cloudwatch_config {
+        cloudwatch_log_group_name = aws_cloudwatch_log_group.dap_upload.name
+        cloudwatch_output_enabled = true
       }
     }
   }

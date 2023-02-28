@@ -50,3 +50,19 @@ variable "function_associations" {
   type    = list(object({ event_type = string, function_arn = string }))
   default = []
 }
+
+variable "origin_read_timeout" {
+  type        = number
+  description = "Read timeout for the main origin in seconds. Note that the default quota limit for this is 60, to increase above that request a quota increase first."
+  default     = 60
+}
+
+variable "alarms_sns_topic_global_arn" {
+  description = "SNS topic ARN to send alarm notifications to"
+  type        = string
+}
+
+variable "error_rate_alarm_threshold_percent" {
+  description = "Threshold to trigger error alarm in percentage points"
+  type        = number
+}

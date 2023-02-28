@@ -28,9 +28,17 @@ variable "private_dns" {
   })
 }
 
-variable "data_volume_size_gb" {
-  description = "Size in GB of the data EBS volume for each instace"
-  default     = 20
+variable "data_volume" {
+  description = "MarkLogic data volume configuration"
+  # See https://aws.amazon.com/ebs/general-purpose/
+  # https://aws.amazon.com/ebs/pricing/
+  # Max IOPS is 16000, max throughput is 1000 MiB/s
+  # 3000 IOPS and 125 MiB/s bandwidth is included with the storage cost
+  type = object({
+    size_gb                = number
+    iops                   = number
+    throughput_MiB_per_sec = number
+  })
 }
 
 variable "ebs_backup_error_notification_emails" {
@@ -68,4 +76,18 @@ variable "backup_s3_log_expiration_days" {
 
 variable "dap_export_s3_log_expiration_days" {
   type = number
+}
+
+variable "alarms_sns_topic_arn" {
+  description = "SNS topic ARN to send alarm notifications to"
+  type        = string
+}
+
+variable "data_disk_usage_alarm_threshold_percent" {
+  description = "Percentage of disk utilisation that triggers the alarm"
+  type        = number
+}
+
+variable "dap_external_role_arn" {
+  type = string
 }

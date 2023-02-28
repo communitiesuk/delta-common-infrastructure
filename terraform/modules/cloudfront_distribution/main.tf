@@ -47,7 +47,7 @@ resource "aws_cloudfront_distribution" "main" {
       https_port             = 443
       origin_protocol_policy = var.cloudfront_domain == null ? "http-only" : "https-only"
       origin_ssl_protocols   = ["TLSv1.2"]
-      origin_read_timeout    = 60
+      origin_read_timeout    = var.origin_read_timeout
     }
 
     custom_header {
@@ -133,3 +133,12 @@ resource "aws_shield_protection" "main" {
 # with the cloudfront distribution here.
 # See: https://aws.amazon.com/about-aws/whats-new/2020/02/aws-shield-advanced-now-supports-health-based-detection/
 # However, the benefit is minor (possibly faster response to DDoS) and the geo-restriction may interfere.
+
+module "monitoring" {
+  source                      = "../cloudfront_monitoring"
+  cloudfront_distribution_id  = aws_cloudfront_distribution.main.id
+  alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
+  prefix                      = var.prefix
+
+  error_rate_alarm_threshold_percent = var.error_rate_alarm_threshold_percent
+}

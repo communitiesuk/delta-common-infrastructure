@@ -1,5 +1,4 @@
 Group
-datamart-delta-app-role
 datamart-delta-min-privilege-role
 datamart-delta-data-providers
 datamart-delta-dataset-admins
@@ -29,7 +28,9 @@ datamart-delta-data-entry-clerks
 datamart-delta-self-certify-service
 datamart-delta-setup-managers
 datamart-delta-personal-data-owners
+datamart-delta-marklogic-admin
 datamart-user
 datamart-cpm-soap-api
 jasperreports-users
 jasperreports-admins
+dluhc-service-users

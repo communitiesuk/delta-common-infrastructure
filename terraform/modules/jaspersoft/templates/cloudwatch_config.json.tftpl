@@ -28,6 +28,11 @@
             "log_stream_name": "{instance_id}-host-manager"
           },
           {
+            "file_path": "/opt/tomcat/base/webapps/jasperserver/WEB-INF/logs/jasperserver.log",
+            "log_group_name": "${app_log_group_name}",
+            "log_stream_name": "{instance_id}-jasperserver"
+          },
+          {
             "file_path": "/var/log/amazon/ssm/errors.log",
             "log_group_name": "${ssm_log_group_name}",
             "log_stream_name": "errors-{instance_id}"
@@ -49,7 +54,9 @@
       ],
       []
     ],
-    "append_dimensions": { },
+    "append_dimensions": {
+      "InstanceId": "$${aws:InstanceId}"
+    },
     "metrics_collected": {
       "disk": {
         "measurement": [

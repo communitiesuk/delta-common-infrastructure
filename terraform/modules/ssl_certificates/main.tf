@@ -17,7 +17,6 @@ locals {
     api              = "api.delta"
     keycloak         = "auth.delta"
     cpm              = "cpm"
-    jaspersoft       = "reporting"
     jaspersoft_delta = "reporting.delta"
   }
 }

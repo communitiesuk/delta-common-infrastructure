@@ -8,6 +8,10 @@ resource "aws_cloudwatch_log_group" "main" {
 
   name              = "aws-waf-logs-${var.log_group_suffix}"
   retention_in_days = var.cloudwatch_log_expiration_days
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_wafv2_web_acl_logging_configuration" "main" {

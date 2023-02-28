@@ -33,9 +33,9 @@ resource "aws_cloudfront_response_headers_policy" "main" {
   }
 }
 
-resource "aws_cloudfront_response_headers_policy" "cache" {
-  name    = "${var.prefix}cloudfront-cache-policy"
-  comment = "Default security headers for responses" # TODO DT-65 change desc
+resource "aws_cloudfront_response_headers_policy" "static_errors" {
+  name    = "${var.prefix}cloudfront-policy-static-errors"
+  comment = "Headers for static error responses"
 
   security_headers_config {
     frame_options {
@@ -57,14 +57,8 @@ resource "aws_cloudfront_response_headers_policy" "cache" {
 
   custom_headers_config {
     items {
-      header   = "Permissions-Policy"
-      value    = "geolocation=(), interest-cohort=()"
-      override = false
-    }
-
-    items {
       header   = "Cache-Control"
-      value    = "public, max-age=31536000"
+      value    = "no-store"
       override = true
     }
   }
@@ -131,10 +125,10 @@ resource "aws_cloudfront_distribution" "main" {
     target_origin_id           = "error_origin"
     path_pattern               = "/static_errors/*"
     viewer_protocol_policy     = "redirect-to-https"
-    min_ttl                    = 0
-    default_ttl                = 60
+    min_ttl                    = 120
+    default_ttl                = 120
     max_ttl                    = 86400
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.static_errors.id
 
     forwarded_values {
       query_string = false
@@ -174,19 +168,19 @@ resource "aws_cloudfront_distribution" "main" {
   custom_error_response {
     error_code         = 502
     response_code      = 502
-    response_page_path = "static_errors/error.html"
+    response_page_path = "/static_errors/error.html"
   }
 
   custom_error_response {
     error_code         = 503
     response_code      = 503
-    response_page_path = "static_errors/error.html"
+    response_page_path = "/static_errors/503.html"
   }
 
   custom_error_response {
     error_code         = 504
     response_code      = 504
-    response_page_path = "static_errors/error.html"
+    response_page_path = "/static_errors/error.html"
   }
 
   price_class = "PriceClass_100"
@@ -233,3 +227,12 @@ resource "aws_shield_protection" "main" {
 # with the cloudfront distribution here.
 # See: https://aws.amazon.com/about-aws/whats-new/2020/02/aws-shield-advanced-now-supports-health-based-detection/
 # However, the benefit is minor (possibly faster response to DDoS) and the geo-restriction may interfere.
+
+module "monitoring" {
+  source                      = "../cloudfront_monitoring"
+  cloudfront_distribution_id  = aws_cloudfront_distribution.main.id
+  alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
+  prefix                      = var.prefix
+
+  error_rate_alarm_threshold_percent = var.error_rate_alarm_threshold_percent
+}

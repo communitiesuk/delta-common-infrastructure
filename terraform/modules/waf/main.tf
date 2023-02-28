@@ -34,6 +34,12 @@ provider "aws" {
   region = "us-east-1"
 }
 
+locals {
+  # Terraform is buggy around WAF changes, changing this so all the rules are updated will often fix it
+  # https://github.com/hashicorp/terraform-provider-aws/issues/23992
+  priority_base = 100
+}
+
 resource "aws_wafv2_web_acl" "waf_acl" {
   provider = aws.us-east-1
 
@@ -52,7 +58,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
   rule {
     name     = "overall-rate-limit"
-    priority = 1
+    priority = 10 + local.priority_base
 
     action {
       block {}
@@ -74,7 +80,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
   rule {
     name     = "aws-managed-common-rules"
-    priority = 2
+    priority = 20 + local.priority_base
 
     override_action {
       none {}
@@ -106,7 +112,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
   rule {
     name     = "aws-managed-bad-inputs"
-    priority = 3
+    priority = 30 + local.priority_base
 
     override_action {
       none {}
@@ -137,7 +143,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
     for_each = local.ip_reputation_enabled
     content {
       name     = "aws-ip-reputation"
-      priority = 4
+      priority = 40 + local.priority_base
 
       override_action {
         none {}
@@ -162,7 +168,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
     for_each = aws_wafv2_ip_set.main
     content {
       name     = "ip-allowlist"
-      priority = 4
+      priority = 40 + local.priority_base
       action {
         block {
           custom_response {

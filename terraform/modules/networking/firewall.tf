@@ -46,12 +46,20 @@ resource "aws_networkfirewall_firewall_policy" "main" {
 resource "aws_cloudwatch_log_group" "firewall_flow" {
   name              = "network-firewall-flow-${var.environment}"
   retention_in_days = var.firewall_cloudwatch_log_expiration_days
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "firewall_alert" {
   name              = "network-firewall-alert-${var.environment}"
   retention_in_days = var.firewall_cloudwatch_log_expiration_days
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_networkfirewall_logging_configuration" "main" {

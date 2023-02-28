@@ -119,3 +119,15 @@ output "session_manager_policy_arn" {
 output "ml_http_target_group_arn" {
   value = module.marklogic.ml_http_target_group_arn
 }
+
+output "alarms_sns_topic_arn" {
+  value = module.notifications.alarms_sns_topic_arn
+}
+
+output "alarms_sns_topic_global_arn" {
+  value = module.notifications.alarms_sns_topic_global_arn
+}
+
+output "deploy_user_kms_key_arn" {
+  value = module.marklogic.deploy_user_kms_key_arn
+}

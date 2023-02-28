@@ -28,6 +28,7 @@ variable "allowed_ssh_cidrs" {
   type = list(string)
   default = [
     "31.221.86.178/32", "167.98.33.82/32", "82.163.115.98/32", "87.224.105.250/32", "87.224.116.242/32", # Softwire
+    "3.11.115.33/32",                                                                                    # TSO (Vinod)
   ]
 }
 
@@ -47,4 +48,9 @@ variable "ecr_repo_account_id" {
   type        = string
   description = "AWS account id containing the ECR repo that ECS services will pull from"
   default     = "468442790030"
+}
+
+variable "dap_external_role_arn" {
+  type    = string
+  default = "arn:aws:iam::062321884391:role/DSQSS"
 }

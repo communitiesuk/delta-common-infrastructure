@@ -8,7 +8,7 @@ variable "environment" {
 
 variable "waf_per_ip_rate_limit" {
   type        = number
-  default     = 500
+  default     = 4000 # DT-65 Reduce this once browser-side caching is in place
   description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes"
 }
 
@@ -41,7 +41,9 @@ variable "delta" {
     # Leave null to disable restrictions
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
-    origin_read_timeout       = optional(number)
+
+    origin_read_timeout                = optional(number)
+    error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -57,6 +59,8 @@ variable "api" {
     }))
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
+
+    error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -72,6 +76,8 @@ variable "keycloak" {
     }))
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
+
+    error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -87,6 +93,9 @@ variable "cpm" {
     }))
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
+
+    origin_read_timeout                = optional(number)
+    error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -102,5 +111,12 @@ variable "jaspersoft" {
     }))
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
+
+    error_rate_alarm_threshold_percent = optional(number)
   })
+}
+
+variable "alarms_sns_topic_global_arn" {
+  description = "SNS topic ARN to send alarm notifications to"
+  type        = string
 }

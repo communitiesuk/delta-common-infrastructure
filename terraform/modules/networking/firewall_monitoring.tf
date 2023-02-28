@@ -132,9 +132,8 @@ resource "aws_cloudwatch_metric_alarm" "dropped_packets" {
     Engine           = "Stateful"
   }
 
-  # TODO DT-49
-  # alarm_actions = sns topic here
-  # ok_actions    = sns topic here
+  alarm_actions = [var.alarms_sns_topic_arn]
+  ok_actions    = [var.alarms_sns_topic_arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "nat_bytes_out" {
@@ -145,7 +144,7 @@ resource "aws_cloudwatch_metric_alarm" "nat_bytes_out" {
   namespace           = "AWS/NATGateway"
   period              = "300"
   statistic           = "Sum"
-  threshold           = "1000000" # 1MB. Edit the description if you increase this significantly.
+  threshold           = "10000000" # 10MB. Edit the description if you increase this significantly.
   alarm_description   = <<EOF
   Spike in outgoing network traffic through the NAT Gateway.
   Likely cause: The threshold for this alarm is set low and probably needs increasing.
@@ -157,7 +156,6 @@ resource "aws_cloudwatch_metric_alarm" "nat_bytes_out" {
     NatGatewayId = aws_nat_gateway.nat_gateway.id
   }
 
-  # TODO DT-49
-  # alarm_actions = sns topic here
-  # ok_actions    = sns topic here
+  alarm_actions = [var.alarms_sns_topic_arn]
+  ok_actions    = [var.alarms_sns_topic_arn]
 }
