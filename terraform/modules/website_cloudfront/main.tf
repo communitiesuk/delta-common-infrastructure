@@ -65,8 +65,8 @@ resource "aws_cloudfront_response_headers_policy" "static_errors" {
 }
 
 resource "aws_cloudfront_response_headers_policy" "cache" {
-  name    = "${var.prefix}cloudfront-cache-policy"
-  comment = "Default security headers for responses" # TODO DT-65 change desc
+  name    = "${var.prefix}cloudfront-policy-cache"
+  comment = "Headers for resources to be cached"
 
   security_headers_config {
     frame_options {
@@ -178,12 +178,13 @@ resource "aws_cloudfront_distribution" "main" {
 
   dynamic "ordered_cache_behavior" {
     for_each = ["/resources/*", "/public/*", "/govuk/assets/*"]
+    iterator = pattern
 
     content {
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
       cached_methods             = ["GET", "HEAD", "OPTIONS"]
       target_origin_id           = "primary"
-      path_pattern               = ordered_cache_behavior.value
+      path_pattern               = pattern.value
       viewer_protocol_policy     = "redirect-to-https"
       min_ttl                    = 0
       default_ttl                = 0
