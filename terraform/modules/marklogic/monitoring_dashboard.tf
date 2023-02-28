@@ -46,45 +46,20 @@ resource "aws_cloudwatch_dashboard" "main" {
     {
       "widgets" : [
         {
-          "height" : 5,
+          "height" : 2,
           "width" : 24,
-          "y" : 26,
+          "y" : 0,
           "x" : 0,
-          "type" : "log",
+          "type" : "alarm",
           "properties" : {
-            "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| filter @message like /Error/\n| sort @timestamp desc\n| limit 5",
-            "region" : "eu-west-1",
-            "stacked" : false,
-            "title" : "Recent Error log group entries: ${local.taskserver_error_log_group_name}",
-            "view" : "table"
-          }
-        },
-        {
-          "height" : 5,
-          "width" : 24,
-          "y" : 31,
-          "x" : 0,
-          "type" : "log",
-          "properties" : {
-            "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| filter @message like /Warning/\n| sort @timestamp desc\n| limit 5",
-            "region" : "eu-west-1",
-            "stacked" : false,
-            "title" : "Recent Warning log group entries: ${local.taskserver_error_log_group_name}",
-            "view" : "table"
-          }
-        },
-        {
-          "height" : 5,
-          "width" : 24,
-          "y" : 36,
-          "x" : 0,
-          "type" : "log",
-          "properties" : {
-            "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| sort @timestamp desc\n| limit 5",
-            "region" : "eu-west-1",
-            "stacked" : false,
-            "title" : "Recent log group entries: ${local.taskserver_error_log_group_name}",
-            "view" : "table"
+            "title" : "",
+            "alarms" : [
+              aws_cloudwatch_metric_alarm.cpu_utilisation_high.arn,
+              aws_cloudwatch_metric_alarm.memory_utilisation_high.arn,
+              aws_cloudwatch_metric_alarm.system_disk_utilisation_high.arn,
+              aws_cloudwatch_metric_alarm.data_disk_utilisation_high.arn,
+              aws_cloudwatch_metric_alarm.data_disk_utilisation_high_sustained.arn
+            ]
           }
         },
         {
@@ -321,20 +296,45 @@ resource "aws_cloudwatch_dashboard" "main" {
           }
         },
         {
-          "height" : 2,
+          "height" : 5,
           "width" : 24,
-          "y" : 0,
+          "y" : 26,
           "x" : 0,
-          "type" : "alarm",
+          "type" : "log",
           "properties" : {
-            "title" : "",
-            "alarms" : [
-              aws_cloudwatch_metric_alarm.cpu_utilisation_high.arn,
-              aws_cloudwatch_metric_alarm.memory_utilisation_high.arn,
-              aws_cloudwatch_metric_alarm.system_disk_utilisation_high.arn,
-              aws_cloudwatch_metric_alarm.data_disk_utilisation_high.arn,
-              aws_cloudwatch_metric_alarm.data_disk_utilisation_high_sustained.arn
-            ]
+            "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| filter @message like /Error/\n| sort @timestamp desc\n| limit 5",
+            "region" : "eu-west-1",
+            "stacked" : false,
+            "title" : "Recent Error log group entries: ${local.taskserver_error_log_group_name}",
+            "view" : "table"
+          }
+        },
+        {
+          "height" : 5,
+          "width" : 24,
+          "y" : 31,
+          "x" : 0,
+          "type" : "log",
+          "properties" : {
+            "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| filter @message like /Warning/\n| sort @timestamp desc\n| limit 5",
+            "region" : "eu-west-1",
+            "stacked" : false,
+            "title" : "Recent Warning log group entries: ${local.taskserver_error_log_group_name}",
+            "view" : "table"
+          }
+        },
+        {
+          "height" : 5,
+          "width" : 24,
+          "y" : 36,
+          "x" : 0,
+          "type" : "log",
+          "properties" : {
+            "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| sort @timestamp desc\n| limit 5",
+            "region" : "eu-west-1",
+            "stacked" : false,
+            "title" : "Recent log group entries: ${local.taskserver_error_log_group_name}",
+            "view" : "table"
           }
         },
         {
