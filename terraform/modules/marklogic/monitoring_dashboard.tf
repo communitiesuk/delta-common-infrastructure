@@ -46,13 +46,41 @@ resource "aws_cloudwatch_dashboard" "main" {
     {
       "widgets" : [
         {
-          "height" : 6,
+          "height" : 5,
           "width" : 24,
           "y" : 26,
           "x" : 0,
           "type" : "log",
           "properties" : {
-            "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| sort @timestamp desc\n| limit 20",
+            "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| filter @message like /Error/\n| sort @timestamp desc\n| limit 5",
+            "region" : "eu-west-1",
+            "stacked" : false,
+            "title" : "Recent Error log group entries: ${local.taskserver_error_log_group_name}",
+            "view" : "table"
+          }
+        },
+        {
+          "height" : 5,
+          "width" : 24,
+          "y" : 31,
+          "x" : 0,
+          "type" : "log",
+          "properties" : {
+            "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| filter @message like /Warning/\n| sort @timestamp desc\n| limit 5",
+            "region" : "eu-west-1",
+            "stacked" : false,
+            "title" : "Recent Warning log group entries: ${local.taskserver_error_log_group_name}",
+            "view" : "table"
+          }
+        },
+        {
+          "height" : 5,
+          "width" : 24,
+          "y" : 36,
+          "x" : 0,
+          "type" : "log",
+          "properties" : {
+            "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| sort @timestamp desc\n| limit 5",
             "region" : "eu-west-1",
             "stacked" : false,
             "title" : "Recent log group entries: ${local.taskserver_error_log_group_name}",
@@ -310,9 +338,9 @@ resource "aws_cloudwatch_dashboard" "main" {
           }
         },
         {
-          "height" : 15,
+          "height" : 24,
           "width" : 24,
-          "y" : 32,
+          "y" : 41,
           "x" : 0,
           "type" : "explorer",
           "properties" : {
