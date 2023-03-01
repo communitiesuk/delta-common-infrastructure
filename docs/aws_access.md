@@ -59,6 +59,10 @@ To use the CLI you will need an AWS Access Key and Secret.
 
 Install the AWS Command Line Interface: <https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html>
 
+Install the Session Manager plugin for the AWS CLI: <https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html>
+
+Restart your terminal after installing.
+
 ### Configure - with AWS Vault
 
 We use AWS Vault to securely store AWS credentials locally.
@@ -153,7 +157,7 @@ mfa_serial = arn:aws:iam::448312965134:mfa/<your AWS username>
 region = eu-west-1
 ```
 
-You'll then need to include `--profile delta-dev` or `--profile delta-prod` in your `aws` commands.
+You'll then need to include `--profile delta-dev` or `--profile delta-prod` in your `aws` commands, or set the `AWS_PROFILE` environment variable.
 
 ### Troubleshooting
 
@@ -172,10 +176,7 @@ AWS Systems Manager Session Manager can be used to connect to instances inside t
 
 Port forwarding can also be used, for example to connect to the MarkLogic admin interface:
 
-#### Install Session Manager plugin
-
-First [Install the Session Manager plugin for the AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
-
+If you haven't already first [Install the Session Manager plugin for the AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
 Restart your terminal after installing.
 
 #### Manually port forward
