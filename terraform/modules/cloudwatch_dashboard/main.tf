@@ -8,6 +8,7 @@ locals {
       y : 2,
       type : "metric",
       properties : {
+        "title" : "CPU used %",
         "view" : "timeSeries",
         "stacked" : false,
         "metrics" : [
@@ -25,6 +26,7 @@ locals {
       x : 12,
       y : 8,
       properties : {
+        "title" : "System disk used %",
         "view" : "timeSeries",
         "stacked" : false,
         "metrics" : [
@@ -42,6 +44,7 @@ locals {
       x : 12,
       y : 14,
       properties : {
+        "title" : "RAM used %",
         "view" : "timeSeries",
         "stacked" : false,
         "metrics" : [
@@ -79,6 +82,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 2,
           type : "metric",
           properties : {
+            "title" : "CloudFront 5xx error rates",
             "metrics" : [
               ["AWS/CloudFront", "5xxErrorRate", "Region", "Global", "DistributionId", var.cloudfront_distribution_id, { region : "us-east-1" }],
               [".", "504ErrorRate", ".", ".", ".", ".", { region : "us-east-1" }],
@@ -99,6 +103,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 8,
           type : "metric",
           properties : {
+            "title" : "CloudFront 4xx error rates",
             "metrics" : [
               ["AWS/CloudFront", "4xxErrorRate", "Region", "Global", "DistributionId", var.cloudfront_distribution_id, { region : "us-east-1" }],
               [".", "404ErrorRate", ".", ".", ".", ".", { region : "us-east-1" }],
@@ -123,13 +128,11 @@ resource "aws_cloudwatch_dashboard" "main" {
             "legend" : {
               "position" : "bottom"
             },
-            "title" : "RequestCount: Sum",
+            "title" : "ALB RequestCount",
             "region" : "eu-west-1",
-            "liveData" : false,
-            "start" : "-PT3H",
-            "end" : "P0D",
             "view" : "timeSeries",
             "stacked" : false,
+            "stat" : "Sum",
             "metrics" : [
               ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", var.alb_arn_suffix]
             ]
@@ -148,14 +151,12 @@ resource "aws_cloudwatch_dashboard" "main" {
             "legend" : {
               "position" : "bottom"
             },
-            "title" : "ActiveConnectionCount: Sum",
+            "title" : "ALB ActiveConnectionCount",
             "region" : "eu-west-1",
             "liveData" : false,
-            "start" : "-PT3H",
-            "end" : "P0D",
             "view" : "timeSeries",
             "stacked" : false,
-            "stat" : "Average",
+            "stat" : "Sum",
             "period" : 300
           }
         },
