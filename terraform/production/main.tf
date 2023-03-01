@@ -58,8 +58,12 @@ module "dluhc_preprod_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain                              = "datacollection.levellingup.gov.uk"
-  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications@softwire.com"
+  domain = "datacollection.levellingup.gov.uk"
+  bounce_complaint_notification_emails = [
+    "Group-DLUHCDeltaNotifications@softwire.com",
+    "Graham.Dagless@williamslea.com",
+    "justin.struth@williamslea.com",
+  ]
 }
 
 module "delta_ses_user" {

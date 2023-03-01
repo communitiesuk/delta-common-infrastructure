@@ -332,8 +332,8 @@ module "jaspersoft" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain                              = "datacollection.test.levellingup.gov.uk"
-  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications+staging@softwire.com"
+  domain                               = "datacollection.test.levellingup.gov.uk"
+  bounce_complaint_notification_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
 }
 
 module "delta_ses_user" {
