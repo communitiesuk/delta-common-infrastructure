@@ -77,12 +77,22 @@ data "aws_iam_policy_document" "ssm_session_manager_basic" {
 
   # tfsec:ignore:aws-iam-no-policy-wildcards
   statement {
-    sid = "TerminateOwnSessions"
+    sid = "ResumeOwnSessions"
     actions = [
       "ssm:TerminateSession",
       "ssm:ResumeSession",
     ]
     resources = ["arn:aws:ssm:*:*:session/$${aws:username}-*"]
+  }
+
+  # The CLI somehow ends up with a different session name sometimes, allow terminating all sessions
+  # tfsec:ignore:aws-iam-no-policy-wildcards
+  statement {
+    sid = "TerminateAllSessions"
+    actions = [
+      "ssm:TerminateSession",
+    ]
+    resources = ["arn:aws:ssm:*:*:session/*"]
   }
 
   statement {
