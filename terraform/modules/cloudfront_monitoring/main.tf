@@ -27,7 +27,7 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = var.alarm_evaluation_periods
 
-  threshold          = var.error_rate_alarm_threshold_percent
+  threshold          = var.client_error_rate_alarm_threshold_percent
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
   alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)
@@ -80,7 +80,7 @@ resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = var.alarm_evaluation_periods
 
-  threshold          = var.error_rate_alarm_threshold_percent
+  threshold          = var.server_error_rate_alarm_threshold_percent
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
   alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)

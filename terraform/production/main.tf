@@ -302,9 +302,10 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.primary_domain}"]
       acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
     }
-    geo_restriction_countries          = ["GB", "IE"]
-    origin_read_timeout                = 180 # Required quota increase
-    error_rate_alarm_threshold_percent = 5
+    geo_restriction_countries                 = ["GB", "IE"]
+    origin_read_timeout                       = 180 # Required quota increase
+    server_error_rate_alarm_threshold_percent = 5
+    client_error_rate_alarm_threshold_percent = 15 # TODO: DT-295 Reduce this
   }
   api = {
     alb = module.public_albs.delta_api

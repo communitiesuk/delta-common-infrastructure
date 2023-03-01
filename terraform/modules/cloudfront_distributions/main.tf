@@ -67,7 +67,8 @@ module "delta_cloudfront" {
   origin_read_timeout            = var.delta.origin_read_timeout == null ? 60 : var.delta.origin_read_timeout
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 
-  error_rate_alarm_threshold_percent = var.delta.error_rate_alarm_threshold_percent == null ? 20 : var.delta.error_rate_alarm_threshold_percent
+  server_error_rate_alarm_threshold_percent = var.delta.server_error_rate_alarm_threshold_percent == null ? 20 : var.delta.server_error_rate_alarm_threshold_percent
+  client_error_rate_alarm_threshold_percent = var.delta.client_error_rate_alarm_threshold_percent == null ? 20 : var.delta.client_error_rate_alarm_threshold_percent
 }
 
 module "api_cloudfront" {
@@ -86,7 +87,9 @@ module "api_cloudfront" {
   swagger_s3_log_expiration_days = var.swagger_s3_log_expiration_days
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 
-  error_rate_alarm_threshold_percent = var.api.error_rate_alarm_threshold_percent == null ? 20 : var.api.error_rate_alarm_threshold_percent
+  server_error_rate_alarm_threshold_percent = var.api.server_error_rate_alarm_threshold_percent == null ? 20 : var.api.server_error_rate_alarm_threshold_percent
+  client_error_rate_alarm_threshold_percent = var.api.client_error_rate_alarm_threshold_percent == null ? 20 : var.api.client_error_rate_alarm_threshold_percent
+
 }
 
 module "keycloak_cloudfront" {
@@ -104,8 +107,11 @@ module "keycloak_cloudfront" {
   function_associations          = [{ event_type = "viewer-request", function_arn = aws_cloudfront_function.keycloak_request.arn }]
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 
-  error_rate_alarm_threshold_percent = var.keycloak.error_rate_alarm_threshold_percent == null ? 20 : var.keycloak.error_rate_alarm_threshold_percent
+  server_error_rate_alarm_threshold_percent = var.keycloak.server_error_rate_alarm_threshold_percent == null ? 20 : var.keycloak.server_error_rate_alarm_threshold_percent
+  client_error_rate_alarm_threshold_percent = var.keycloak.client_error_rate_alarm_threshold_percent == null ? 20 : var.keycloak.client_error_rate_alarm_threshold_percent
+
 }
+
 
 module "cpm_cloudfront" {
   source                         = "../cloudfront_distribution"
@@ -122,7 +128,8 @@ module "cpm_cloudfront" {
   origin_read_timeout            = var.cpm.origin_read_timeout == null ? 60 : var.cpm.origin_read_timeout
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 
-  error_rate_alarm_threshold_percent = var.cpm.error_rate_alarm_threshold_percent == null ? 20 : var.cpm.error_rate_alarm_threshold_percent
+  server_error_rate_alarm_threshold_percent = var.cpm.server_error_rate_alarm_threshold_percent == null ? 20 : var.cpm.server_error_rate_alarm_threshold_percent
+  client_error_rate_alarm_threshold_percent = var.cpm.client_error_rate_alarm_threshold_percent == null ? 20 : var.cpm.client_error_rate_alarm_threshold_percent
 }
 
 module "jaspersoft_cloudfront" {
@@ -139,5 +146,6 @@ module "jaspersoft_cloudfront" {
   apply_aws_shield               = var.apply_aws_shield
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 
-  error_rate_alarm_threshold_percent = var.jaspersoft.error_rate_alarm_threshold_percent == null ? 20 : var.jaspersoft.error_rate_alarm_threshold_percent
+  server_error_rate_alarm_threshold_percent = var.jaspersoft.server_error_rate_alarm_threshold_percent == null ? 20 : var.jaspersoft.server_error_rate_alarm_threshold_percent
+  client_error_rate_alarm_threshold_percent = var.jaspersoft.client_error_rate_alarm_threshold_percent == null ? 20 : var.jaspersoft.client_error_rate_alarm_threshold_percent
 }
