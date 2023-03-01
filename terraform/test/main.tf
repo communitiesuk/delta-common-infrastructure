@@ -44,8 +44,8 @@ module "communities_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain                              = "datacollection.${var.secondary_domain}"
-  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications+test@softwire.com"
+  domain                               = "datacollection.${var.secondary_domain}"
+  bounce_complaint_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
 }
 
 # This dynamically creates resources, so the modules it depends on must be created first

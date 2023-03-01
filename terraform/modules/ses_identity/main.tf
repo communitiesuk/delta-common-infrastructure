@@ -2,8 +2,8 @@ variable "domain" {
   type = string
 }
 
-variable "bounce_complaint_notification_email" {
-  type = string
+variable "bounce_complaint_notification_emails" {
+  type = list(string)
 }
 
 data "aws_region" "current" {}
@@ -47,9 +47,11 @@ resource "aws_sns_topic" "email_delivery_problems" {
 }
 
 resource "aws_sns_topic_subscription" "email_delivery_problems" {
+  for_each = toset(var.bounce_complaint_notification_emails)
+
   topic_arn = aws_sns_topic.email_delivery_problems.arn
   protocol  = "email"
-  endpoint  = var.bounce_complaint_notification_email
+  endpoint  = each.value
 }
 
 # These seem to take a few minutes to set up
