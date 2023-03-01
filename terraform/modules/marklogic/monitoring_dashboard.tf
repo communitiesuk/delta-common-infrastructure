@@ -398,7 +398,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             "labels" : [
               {
                 "key" : "marklogic:stack:name",
-                "value" : "marklogic-stack-test"
+                "value" : local.stack_name
               }
             ],
             "widgetOptions" : {
