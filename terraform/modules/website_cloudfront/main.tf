@@ -208,5 +208,6 @@ module "monitoring" {
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
   prefix                      = var.prefix
 
-  error_rate_alarm_threshold_percent = var.error_rate_alarm_threshold_percent
+  server_error_rate_alarm_threshold_percent = var.server_error_rate_alarm_threshold_percent
+  client_error_rate_alarm_threshold_percent = var.client_error_rate_alarm_threshold_percent
 }

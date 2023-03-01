@@ -56,7 +56,12 @@ variable "alarms_sns_topic_global_arn" {
   type        = string
 }
 
-variable "error_rate_alarm_threshold_percent" {
-  description = "Threshold to trigger error alarm in percentage points"
+variable "server_error_rate_alarm_threshold_percent" {
+  description = "Threshold to trigger server error (5xx) alarm in percentage points"
+  type        = number
+}
+
+variable "client_error_rate_alarm_threshold_percent" {
+  description = "Threshold to trigger client error (4xx) alarm in percentage points"
   type        = number
 }

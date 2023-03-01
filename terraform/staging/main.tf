@@ -178,6 +178,7 @@ module "cloudfront_distributions" {
     # Some TSO staff are located in India (IN)
     geo_restriction_countries = ["GB", "IE", "IN"]
     # We don't want to restrict staging until we are able to confirm who needs access
+    client_error_rate_alarm_threshold_percent = 15 # TODO: DT-295 Reduce this
   }
   api = {
     alb = module.public_albs.delta_api
