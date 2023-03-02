@@ -213,15 +213,14 @@ resource "aws_wafv2_web_acl" "waf_acl" {
           limit              = var.login_ip_rate_limit
           aggregate_key_type = "IP"
           scope_down_statement {
-            byte_match_statement {
+            regex_pattern_set_reference_statement {
+              arn = aws_wafv2_regex_pattern_set.waf_rate_limit_urls.arn
               field_to_match {
                 uri_path {}
               }
-              positional_constraint = "STARTS_WITH"
-              search_string         = "/login"
               text_transformation {
                 priority = 0
-                type     = "NONE"
+                type     = "URL_DECODE"
               }
             }
           }
@@ -233,5 +232,22 @@ resource "aws_wafv2_web_acl" "waf_acl" {
         sampled_requests_enabled   = true
       }
     }
+  }
+}
+
+resource "aws_wafv2_regex_pattern_set" "waf_rate_limit_urls" {
+  name  = "${var.prefix}cloudfront-waf-regex-patterns"
+  scope = "CLOUDFRONT"
+
+  regular_expression {
+    regex_string = "/login"
+  }
+
+  regular_expression {
+    regex_string = "/forgot-password"
+  }
+
+  regular_expression {
+    regex_string = "reset-password"
   }
 }

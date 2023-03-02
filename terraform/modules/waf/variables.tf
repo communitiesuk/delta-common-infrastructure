@@ -24,7 +24,7 @@ variable "cloudwatch_log_expiration_days" {
 
 variable "login_ip_rate_limit" {
   type    = number
-  default = 100
+  default = 500
 }
 
 variable "login_ip_rate_limit_enabled" {
