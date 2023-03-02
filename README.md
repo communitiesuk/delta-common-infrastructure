@@ -133,6 +133,8 @@ Create SES credentials to pass to MarkLogic with the `ses_user` module if the en
 
 Now run the MarkLogic setup jobs from GitHub. See the [delta-marklogic-deploy](https://github.com/communitiesuk/delta-marklogic-deploy) repository for details.
 
+Set up replicas for the built in databases (Security, Meters, App-Services etc.), do NOT use Roxy's `--replicate-internals`, it will mess up the configuration.
+
 ### 6 Public ALBs and CloudFront
 
 CloudFront distributions with HTTPS aliases require valid SSL certificates to create successfully.

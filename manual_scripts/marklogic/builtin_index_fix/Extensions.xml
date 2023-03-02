@@ -1,0 +1,78 @@
+<database-properties xmlns="http://marklogic.com/manage">
+  <element-word-query-throughs>
+    <element-word-query-through>
+      <namespace-uri>http://schemas.microsoft.com/office/word/2003/wordml</namespace-uri>
+      <localname>p</localname>
+    </element-word-query-through>
+    <element-word-query-through>
+      <namespace-uri>http://schemas.openxmlformats.org/wordprocessingml/2006/main</namespace-uri>
+      <localname>p</localname>
+    </element-word-query-through>
+  </element-word-query-throughs>
+  <phrase-throughs>
+    <phrase-through>
+      <namespace-uri>http://marklogic.com/entity</namespace-uri>
+      <localname>coordinate credit-card-number date email facility gpe id location money nationality organization percent person phone-number religion time url utm</localname>
+    </phrase-through>
+    <phrase-through>
+      <namespace-uri>http://schemas.microsoft.com/office/word/2003/auxHint</namespace-uri>
+      <localname>t</localname>
+    </phrase-through>
+    <phrase-through>
+      <namespace-uri>http://schemas.microsoft.com/office/word/2003/wordml</namespace-uri>
+      <localname>br cr fldChar fldData fldSimple hlink noBreakHyphen permEnd permStart pgNum proofErr r softHyphen sym t tab</localname>
+    </phrase-through>
+    <phrase-through>
+      <namespace-uri>http://schemas.openxmlformats.org/wordprocessingml/2006/main</namespace-uri>
+      <localname>bookmarkEnd bookmarkStart commentRangeEnd commentRangeStart customXml endnoteReference fldSimple footnoteReference hyperlink ins instrText proofErr r sdt sdtContent smartTag t</localname>
+    </phrase-through>
+    <phrase-through>
+      <namespace-uri>http://www.w3.org/1999/xhtml</namespace-uri>
+      <localname>a abbr acronym b big br center cite code dfn em font i kbd q samp small span strong sub sup tt var</localname>
+    </phrase-through>
+  </phrase-throughs>
+  <phrase-arounds>
+    <phrase-around>
+      <namespace-uri>http://schemas.microsoft.com/office/word/2003/wordml</namespace-uri>
+      <localname>delInstrText delText endnote footnote instrText pict rPr</localname>
+    </phrase-around>
+    <phrase-around>
+      <namespace-uri>http://schemas.openxmlformats.org/wordprocessingml/2006/main</namespace-uri>
+      <localname>commentReference customXmlPr del pPr rPr sdtPr</localname>
+    </phrase-around>
+  </phrase-arounds>
+  <range-element-indexes>
+    <range-element-index>
+      <scalar-type>dateTime</scalar-type>
+      <namespace-uri>http://marklogic.com/xdmp/dls</namespace-uri>
+      <localname>created</localname>
+      <collation/>
+      <range-value-positions>false</range-value-positions>
+      <invalid-values>reject</invalid-values>
+    </range-element-index>
+    <range-element-index>
+      <scalar-type>dateTime</scalar-type>
+      <namespace-uri>http://marklogic.com/xdmp/dls</namespace-uri>
+      <localname>replaced</localname>
+      <collation/>
+      <range-value-positions>false</range-value-positions>
+      <invalid-values>reject</invalid-values>
+    </range-element-index>
+    <range-element-index>
+      <scalar-type>unsignedLong</scalar-type>
+      <namespace-uri>http://marklogic.com/xdmp/dls</namespace-uri>
+      <localname>version-id</localname>
+      <collation/>
+      <range-value-positions>false</range-value-positions>
+      <invalid-values>reject</invalid-values>
+    </range-element-index>
+    <range-element-index>
+      <scalar-type>dateTime</scalar-type>
+      <namespace-uri>http://marklogic.com/appservices/infostudio</namespace-uri>
+      <localname>fab-expiration</localname>
+      <collation/>
+      <range-value-positions>false</range-value-positions>
+      <invalid-values>reject</invalid-values>
+    </range-element-index>
+  </range-element-indexes>
+</database-properties>
