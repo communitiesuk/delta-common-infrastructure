@@ -39,20 +39,23 @@ locals {
 module "ssl_certs" {
   source = "../modules/ssl_certificates"
 
-  primary_domain    = var.primary_domain
-  secondary_domains = [var.secondary_domain]
+  primary_domain             = var.primary_domain
+  secondary_domains          = [var.secondary_domain]
+  validate_and_check_renewal = false
 }
 
 module "communities_only_ssl_certs" {
   source = "../modules/ssl_certificates"
 
-  primary_domain = var.primary_domain
+  primary_domain             = var.primary_domain
+  validate_and_check_renewal = true
 }
 
 module "dluhc_preprod_only_ssl_certs" {
   source = "../modules/ssl_certificates"
 
-  primary_domain = var.secondary_domain
+  primary_domain             = var.secondary_domain
+  validate_and_check_renewal = false
 }
 
 module "ses_identity" {

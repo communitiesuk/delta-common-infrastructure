@@ -38,7 +38,8 @@ locals {
 module "communities_only_ssl_certs" {
   source = "../modules/ssl_certificates"
 
-  primary_domain = var.primary_domain
+  primary_domain             = var.primary_domain
+  validate_and_check_renewal = true
 }
 
 module "ses_identity" {
