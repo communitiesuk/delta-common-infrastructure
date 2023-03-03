@@ -338,7 +338,7 @@ Mappings:
       BYOL: ami-0ec19ba5f6b69c54a
     eu-west-1:
       Enterprise: ami-0b276b3bb2c006e52
-      BYOL: ami-09a93a64cd7176e6e
+      BYOL: ami-07701d367691e0220 # Updated to 10.0-9.5, others left on 10.0-9.2
     ap-south-1:
       Enterprise: ami-0164d2e0228ab575f
       BYOL: ami-0d3a93d00a648c329
