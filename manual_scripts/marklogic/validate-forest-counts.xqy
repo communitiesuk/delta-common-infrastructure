@@ -11,10 +11,15 @@ declare namespace dluhc = "http://levellingup.gov.uk";
 declare %private function dluhc:forest-summary($database-name as xs:string) as xs:string* {
   let $database := xdmp:database($database-name)
   let $forest-ids := xdmp:database-forests($database)
-  for $forest-id in $forest-ids
+  let $forest-stats := for $forest-id in $forest-ids
     let $forest-counts := xdmp:forest-counts($forest-id, ("document-count"))
     order by $forest-counts/forest:forest-name/text()
-  return $forest-counts/forest:forest-name/text() || " - " || $forest-counts/forest:document-count/text() || " documents"
+    return $forest-counts
+  return (
+    for $f in $forest-stats
+      return $f/forest:forest-name/text() || " - " || $f/forest:document-count/text() || " documents",
+    $database-name || " - " || fn:sum(xs:int($forest-stats/forest:document-count)) || " documents"
+  )
 };
 
 "Summary for delta-content",
