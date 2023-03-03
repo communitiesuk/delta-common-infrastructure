@@ -236,8 +236,9 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 }
 
 resource "aws_wafv2_regex_pattern_set" "waf_rate_limit_urls" {
-  name  = "${var.prefix}cloudfront-waf-regex-patterns"
-  scope = "CLOUDFRONT"
+  provider = aws.us-east-1
+  name     = "${var.prefix}cloudfront-waf-regex-patterns"
+  scope    = "CLOUDFRONT"
 
   regular_expression {
     regex_string = "/login"
@@ -248,6 +249,6 @@ resource "aws_wafv2_regex_pattern_set" "waf_rate_limit_urls" {
   }
 
   regular_expression {
-    regex_string = "reset-password"
+    regex_string = "/reset-password"
   }
 }
