@@ -197,7 +197,7 @@ module "marklogic" {
   dap_export_s3_log_expiration_days       = local.s3_log_expiration_days
   backup_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
-  data_disk_usage_alarm_threshold_percent = 55
+  data_disk_usage_alarm_threshold_percent = 60
   dap_external_role_arns                  = var.dap_external_role_arns
   dap_job_notification_emails = concat(
     local.all_notifications_email_addresses,
