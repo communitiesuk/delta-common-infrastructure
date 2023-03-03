@@ -53,6 +53,7 @@ module "delta_alb" {
 output "delta" {
   value = {
     arn               = module.delta_alb.arn
+    arn_suffix        = module.delta_alb.arn_suffix
     dns_name          = module.delta_alb.dns_name
     security_group_id = module.delta_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["delta"].result
@@ -73,6 +74,7 @@ module "delta_api_alb" {
 output "delta_api" {
   value = {
     arn               = module.delta_api_alb.arn
+    arn_suffix        = module.delta_api_alb.arn_suffix
     dns_name          = module.delta_api_alb.dns_name
     security_group_id = module.delta_api_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["api"].result
@@ -93,6 +95,7 @@ module "keycloak_alb" {
 output "keycloak" {
   value = {
     arn               = module.keycloak_alb.arn
+    arn_suffix        = module.keycloak_alb.arn_suffix
     dns_name          = module.keycloak_alb.dns_name
     security_group_id = module.keycloak_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["keycloak"].result
@@ -113,6 +116,7 @@ module "cpm_alb" {
 output "cpm" {
   value = {
     arn               = module.cpm_alb.arn
+    arn_suffix        = module.cpm_alb.arn_suffix
     dns_name          = module.cpm_alb.dns_name
     security_group_id = module.cpm_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["cpm"].result
@@ -133,6 +137,7 @@ module "jaspersoft_alb" {
 output "jaspersoft" {
   value = {
     arn               = module.jaspersoft_alb.arn
+    arn_suffix        = module.jaspersoft_alb.arn_suffix
     dns_name          = module.jaspersoft_alb.dns_name
     security_group_id = module.jaspersoft_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["jaspersoft"].result

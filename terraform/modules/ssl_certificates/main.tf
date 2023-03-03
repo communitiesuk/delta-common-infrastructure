@@ -10,6 +10,10 @@ variable "secondary_domains" {
   default = []
 }
 
+variable "validate_and_check_renewal" {
+  type = bool
+}
+
 locals {
   all_domains = concat([var.primary_domain], var.secondary_domains)
   subdomains = {
@@ -39,6 +43,19 @@ resource "aws_acm_certificate" "cloudfront_certs" {
   }
 }
 
+resource "aws_acm_certificate_validation" "cloudfront_certs" {
+  for_each        = var.validate_and_check_renewal ? local.subdomains : {}
+  provider        = aws.us-east-1
+  certificate_arn = aws_acm_certificate.cloudfront_certs[each.key].arn
+
+  lifecycle {
+    postcondition {
+      condition     = aws_acm_certificate.cloudfront_certs[each.key].renewal_eligibility == "ELIGIBLE"
+      error_message = "Not eligible for renewal: ${each.value} is ${aws_acm_certificate.cloudfront_certs[each.key].renewal_eligibility}"
+    }
+  }
+}
+
 output "cloudfront_certs" {
   value = { for key, subdomain in local.subdomains : key => {
     arn            = aws_acm_certificate.cloudfront_certs[key].arn
@@ -56,6 +73,18 @@ resource "aws_acm_certificate" "alb_certs" {
 
   lifecycle {
     create_before_destroy = true
+  }
+}
+
+resource "aws_acm_certificate_validation" "alb_certs" {
+  for_each        = var.validate_and_check_renewal ? local.subdomains : {}
+  certificate_arn = aws_acm_certificate.alb_certs[each.key].arn
+
+  lifecycle {
+    postcondition {
+      condition     = aws_acm_certificate.alb_certs[each.key].renewal_eligibility == "ELIGIBLE"
+      error_message = "Not eligible for renewal: ${each.value} is ${aws_acm_certificate.alb_certs[each.key].renewal_eligibility}"
+    }
   }
 }
 

@@ -77,12 +77,22 @@ data "aws_iam_policy_document" "ssm_session_manager_basic" {
 
   # tfsec:ignore:aws-iam-no-policy-wildcards
   statement {
-    sid = "TerminateOwnSessions"
+    sid = "ResumeOwnSessions"
     actions = [
       "ssm:TerminateSession",
       "ssm:ResumeSession",
     ]
     resources = ["arn:aws:ssm:*:*:session/$${aws:username}-*"]
+  }
+
+  # The CLI somehow ends up with a different session name sometimes, allow terminating all sessions
+  # tfsec:ignore:aws-iam-no-policy-wildcards
+  statement {
+    sid = "TerminateAllSessions"
+    actions = [
+      "ssm:TerminateSession",
+    ]
+    resources = ["arn:aws:ssm:*:*:session/*"]
   }
 
   statement {
@@ -212,6 +222,14 @@ data "aws_iam_policy_document" "infra_support" {
     resources = [
       var.session_manager_key_arn
     ]
+  }
+
+  statement {
+    sid = "PassAllowedRoles"
+    actions = [
+      "iam:PassRole"
+    ]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/staging-infra-passable/*"]
   }
 }
 

@@ -33,6 +33,37 @@ resource "aws_cloudfront_response_headers_policy" "main" {
   }
 }
 
+resource "aws_cloudfront_response_headers_policy" "static_errors" {
+  name    = "${var.prefix}cloudfront-policy-static-errors"
+  comment = "Headers for static error responses"
+
+  security_headers_config {
+    frame_options {
+      frame_option = "SAMEORIGIN"
+      override     = false
+    }
+
+    referrer_policy {
+      referrer_policy = "no-referrer"
+      override        = false
+    }
+
+    strict_transport_security {
+      access_control_max_age_sec = 31536000
+      include_subdomains         = true
+      override                   = false
+    }
+  }
+
+  custom_headers_config {
+    items {
+      header   = "Cache-Control"
+      value    = "no-store"
+      override = true
+    }
+  }
+}
+
 resource "aws_cloudfront_distribution" "main" {
   aliases = var.cloudfront_domain == null ? [] : var.cloudfront_domain.aliases
 
@@ -94,10 +125,10 @@ resource "aws_cloudfront_distribution" "main" {
     target_origin_id           = "error_origin"
     path_pattern               = "/static_errors/*"
     viewer_protocol_policy     = "redirect-to-https"
-    min_ttl                    = 0
-    default_ttl                = 60
+    min_ttl                    = 120
+    default_ttl                = 120
     max_ttl                    = 86400
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.static_errors.id
 
     forwarded_values {
       query_string = false
@@ -176,4 +207,7 @@ module "monitoring" {
   cloudfront_distribution_id  = aws_cloudfront_distribution.main.id
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
   prefix                      = var.prefix
+
+  server_error_rate_alarm_threshold_percent = var.server_error_rate_alarm_threshold_percent
+  client_error_rate_alarm_threshold_percent = var.client_error_rate_alarm_threshold_percent
 }

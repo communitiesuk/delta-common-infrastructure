@@ -35,49 +35,26 @@ locals {
   s3_log_expiration_days               = 30
 }
 
-# In practice the ACM validation records will all overlap
-# But create three sets anyway to be on the safe side, ACM is free
-module "ssl_certs" {
-  source = "../modules/ssl_certificates"
-
-  primary_domain    = var.primary_domain
-  secondary_domains = [var.secondary_domain]
-}
-
 module "communities_only_ssl_certs" {
   source = "../modules/ssl_certificates"
 
-  primary_domain = var.primary_domain
-}
-
-module "dluhc_dev_only_ssl_certs" {
-  source = "../modules/ssl_certificates"
-
-  primary_domain = var.secondary_domain
+  primary_domain             = var.primary_domain
+  validate_and_check_renewal = true
 }
 
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain                              = "datacollection.${var.secondary_domain}"
-  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications+test@softwire.com"
-}
-
-locals {
-  dns_cert_and_email_validation_records = setunion(
-    module.communities_only_ssl_certs.required_validation_records,
-    module.dluhc_dev_only_ssl_certs.required_validation_records,
-    module.ssl_certs.required_validation_records,
-    module.ses_identity.required_validation_records
-  )
+  domain                               = "datacollection.${var.secondary_domain}"
+  bounce_complaint_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
 }
 
 # This dynamically creates resources, so the modules it depends on must be created first
-# terraform apply -target module.dluhc_dev_only_ssl_certs -target module.communities_only_ssl_certs -target module.ssl_certs -target module.ses_identity
+# terraform apply -target module.ses_identity
 module "dluhc_dev_validation_records" {
   source         = "../modules/dns_records"
   hosted_zone_id = var.secondary_domain_zone_id
-  records        = [for record in local.dns_cert_and_email_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+  records        = [for record in module.ses_identity.required_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 module "networking" {
@@ -140,10 +117,49 @@ module "public_albs" {
 
   vpc                           = module.networking.vpc
   subnet_ids                    = module.networking.public_subnets[*].id
-  certificates                  = module.ssl_certs.alb_certs
+  certificates                  = module.communities_only_ssl_certs.alb_certs
   environment                   = local.environment
   apply_aws_shield_to_delta_alb = local.apply_aws_shield
   alb_s3_log_expiration_days    = local.s3_log_expiration_days
+}
+
+module "dashboards" {
+  source = "../modules/cloudwatch_dashboards"
+  delta_dashboard = {
+    dashboard_name             = "${local.environment}-website"
+    cloudfront_distribution_id = module.cloudfront_distributions.delta_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.delta_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.delta.arn_suffix
+    instance_metric_namespace  = "${local.environment}/DeltaServers"
+  }
+  api_dashboard = {
+    dashboard_name             = "${local.environment}-api"
+    cloudfront_distribution_id = module.cloudfront_distributions.api_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.api_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.delta_api.arn_suffix
+    instance_metric_namespace  = null
+  }
+  keycloak_dashboard = {
+    dashboard_name             = "${local.environment}-keycloak"
+    cloudfront_distribution_id = module.cloudfront_distributions.keycloak_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.keycloak_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.keycloak.arn_suffix
+    instance_metric_namespace  = null
+  }
+  cpm_dashboard = {
+    dashboard_name             = "${local.environment}-cpm"
+    cloudfront_distribution_id = module.cloudfront_distributions.cpm_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.cpm_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.cpm.arn_suffix
+    instance_metric_namespace  = null
+  }
+  jaspersoft_dashboard = {
+    dashboard_name             = "${local.environment}-jaspersoft"
+    cloudfront_distribution_id = module.cloudfront_distributions.jaspersoft_cloudfront_distribution_id
+    cloudfront_alarms          = module.cloudfront_distributions.jaspersoft_cloudfront_alarms
+    alb_arn_suffix             = module.public_albs.jaspersoft.arn_suffix
+    instance_metric_namespace  = "${local.environment}/Jaspersoft"
+  }
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.
@@ -155,7 +171,7 @@ module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
 
   environment                              = local.environment
-  base_domains                             = [var.primary_domain, var.secondary_domain]
+  base_domains                             = [var.primary_domain]
   waf_per_ip_rate_limit                    = 100000
   apply_aws_shield                         = local.apply_aws_shield
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
@@ -166,42 +182,43 @@ module "cloudfront_distributions" {
   delta = {
     alb = module.public_albs.delta
     domain = {
-      aliases             = ["delta.${var.secondary_domain}", "delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
+      aliases             = ["delta.${var.primary_domain}"]
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["delta"].arn
     }
     # So GitHub Actions can access for end to end tests
     geo_restriction_countries = null
     # We don't want to IP restrict test (yet)
+    client_error_rate_alarm_threshold_percent = 15 # TODO: DT-295 Reduce this
   }
   api = {
     alb = module.public_albs.delta_api
     domain = {
-      aliases             = ["api.delta.${var.secondary_domain}", "api.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
+      aliases             = ["api.delta.${var.primary_domain}"]
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["api"].arn
     }
     geo_restriction_countries = ["GB", "IE"]
   }
   keycloak = {
     alb = module.public_albs.keycloak
     domain = {
-      aliases             = ["auth.delta.${var.secondary_domain}", "auth.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["keycloak"].arn
+      aliases             = ["auth.delta.${var.primary_domain}"]
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
     geo_restriction_countries = ["GB", "IE"]
   }
   cpm = {
     alb = module.public_albs.cpm
     domain = {
-      aliases             = ["cpm.${var.secondary_domain}", "cpm.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["cpm"].arn
+      aliases             = ["cpm.${var.primary_domain}"]
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
     geo_restriction_countries = ["GB", "IE"]
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
     domain = {
-      aliases             = ["reporting.delta.${var.secondary_domain}", "reporting.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
+      aliases             = ["reporting.delta.${var.primary_domain}"]
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
     }
     geo_restriction_countries = ["GB", "IE"]
   }
@@ -209,17 +226,10 @@ module "cloudfront_distributions" {
 
 locals {
   all_dns_records = setunion(
-    local.dns_cert_and_email_validation_records,
+    module.communities_only_ssl_certs.required_validation_records,
+    module.ses_identity.required_validation_records,
     module.cloudfront_distributions.required_dns_records,
   )
-}
-
-# This dynamically creates resources, so the modules it depends on must be created first
-# terraform apply -target module.cloudfront_distributions
-module "dluhc_dev_cloudfront_records" {
-  source         = "../modules/dns_records"
-  hosted_zone_id = var.secondary_domain_zone_id
-  records        = [for record in module.cloudfront_distributions.required_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 module "active_directory" {
@@ -258,7 +268,11 @@ module "marklogic" {
   instance_type            = "t3a.large"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
-  data_volume_size_gb      = 50
+  data_volume = {
+    size_gb                = 50
+    iops                   = 3000
+    throughput_MiB_per_sec = 250
+  }
 
   ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
   extra_instance_policy_arn               = data.aws_iam_policy.enable_session_manager.arn
@@ -269,6 +283,7 @@ module "marklogic" {
   backup_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 55
+  dap_external_role_arn                   = var.dap_external_role_arn
 }
 
 module "gh_runner" {
@@ -342,13 +357,13 @@ data "aws_iam_policy" "enable_session_manager" {
 }
 
 module "ses_user" {
-  source               = "../modules/ses_user"
-  username             = "ses-user-${local.environment}"
-  ses_identity_arn     = module.ses_identity.arn
-  from_address_pattern = "*@datacollection.dluhc-dev.uk"
-  environment          = local.environment
-  kms_key_arn          = null
-  vpc_id               = module.networking.vpc.id
+  source                = "../modules/ses_user"
+  username              = "ses-user-${local.environment}"
+  ses_identity_arn      = module.ses_identity.arn
+  from_address_patterns = ["*@datacollection.dluhc-dev.uk"]
+  environment           = local.environment
+  kms_key_arn           = null
+  vpc_id                = module.networking.vpc.id
 }
 
 module "mailhog" {
@@ -368,6 +383,7 @@ module "mailhog" {
 }
 
 module "notifications" {
-  source      = "../modules/notifications"
-  environment = local.environment
+  source                 = "../modules/notifications"
+  environment            = local.environment
+  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
 }

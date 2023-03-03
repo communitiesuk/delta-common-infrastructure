@@ -31,5 +31,6 @@ $oldUsers = (Get-AdUser -Filter {MemberOf -eq $deltaGroup.DistinguishedName} `
     -SearchBase "CN=datamart,CN=Users,DC=datamart,DC=local" -Server $sourceServer `
     | Select-Object -Property SamAccountName,ObjectGUID) 
 Foreach($user in $oldUsers) {
-    Set-AdUser -Identity $user.SamAccountName -EmployeeNumber $user.ObjectGUID
+    $guidBytes = $user.ObjectGUID.ToByteArray()
+    Set-AdUser -Identity $user.SamAccountName -Replace @{"imported-guid" = $guidBytes} 
 }

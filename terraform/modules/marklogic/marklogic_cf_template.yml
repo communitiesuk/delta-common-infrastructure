@@ -101,6 +101,7 @@ Parameters:
     AllowedValues:
       - standard
       - gp2
+      - gp3
     Default: gp2
   VolumeEncryption:
     Description: Whether to enable volume encryption
@@ -558,7 +559,8 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 40
+            VolumeSize: 100
+            VolumeType: gp3
         - DeviceName: /dev/sdf
           NoDevice: true
           Ebs: {}
@@ -569,8 +571,9 @@ Resources:
           - ''
           - - |+
                 #!/bin/bash
-                mkdir -p /delta
+                mkdir -p /delta/export
                 chmod 777 /delta
+                chmod 777 /delta/export
                 exit 0
 
             - MARKLOGIC_CLUSTER_NAME=
@@ -637,7 +640,8 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 40
+            VolumeSize: 100
+            VolumeType: gp3
         - DeviceName: /dev/sdf
           NoDevice: true
           Ebs: {}
@@ -710,7 +714,8 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 40
+            VolumeSize: 100
+            VolumeType: gp3
         - DeviceName: /dev/sdf
           NoDevice: true
           Ebs: {}

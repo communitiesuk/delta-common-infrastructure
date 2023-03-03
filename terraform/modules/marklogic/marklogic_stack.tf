@@ -32,7 +32,7 @@ resource "aws_cloudformation_stack" "marklogic" {
     DataVolume1 = aws_ebs_volume.marklogic_data_volumes[var.private_subnets[0].tags.Name].id
     DataVolume2 = aws_ebs_volume.marklogic_data_volumes[var.private_subnets[1].tags.Name].id
     DataVolume3 = aws_ebs_volume.marklogic_data_volumes[var.private_subnets[2].tags.Name].id
-    VolumeSize  = var.data_volume_size_gb
+    VolumeSize  = var.data_volume.size_gb
     VolumeType  = local.ebs_volume_type
 
     TargetGroupARNs       = join(",", concat([for tg in aws_lb_target_group.ml : tg.arn], [aws_lb_target_group.ml_http.arn]))
