@@ -1,6 +1,10 @@
 xquery version "1.0-ml";
 
-(: Duplicate doc deletion on production 2023-03-06 :)
+(:
+Duplicate doc deletion on production 2023-03-06
+Used to fix errors rebalancing
+See https://help.marklogic.com/knowledgebase/article/View/understanding-xdmp-dbdupuri-exceptions-how-they-can-occur-and-how-to-prevent-them
+:)
 
 let $dupes := (
 <dupe>
@@ -48,7 +52,7 @@ for $dupe in $dupes
     let $query :=
       'xquery version "1.0-ml";
       declare variable $URI as xs:string external;
-      xdmp:node-delete(xdmp:document-properties($URI))'
+      xdmp:document-delete($URI)'
 
     let $options := <options xmlns="xdmp:eval"><database>{xdmp:forest($forest-a-name)}</database></options>
     return xdmp:eval($query,(xs:QName("URI"),$doc),$options)
