@@ -224,7 +224,7 @@ module "marklogic" {
   dap_export_s3_log_expiration_days       = local.s3_log_expiration_days
   backup_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
-  data_disk_usage_alarm_threshold_percent = 50
+  data_disk_usage_alarm_threshold_percent = 55
   dap_external_role_arn                   = var.dap_external_role_arn
 }
 
@@ -312,7 +312,7 @@ module "cloudfront_distributions" {
     geo_restriction_countries                 = ["GB", "IE"]
     origin_read_timeout                       = 180 # Required quota increase
     server_error_rate_alarm_threshold_percent = 5
-    client_error_rate_alarm_threshold_percent = 15 # TODO: DT-295 Reduce this
+    client_error_rate_alarm_threshold_percent = 50 # TODO: DT-295 Reduce this
   }
   api = {
     alb = module.public_albs.delta_api
