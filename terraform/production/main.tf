@@ -312,7 +312,7 @@ module "cloudfront_distributions" {
     geo_restriction_countries                 = ["GB", "IE"]
     origin_read_timeout                       = 180 # Required quota increase
     server_error_rate_alarm_threshold_percent = 5
-    client_error_rate_alarm_threshold_percent = 20 # TODO: DT-295 Reduce this
+    client_error_rate_alarm_threshold_percent = 50 # TODO: DT-295 Reduce this
   }
   api = {
     alb = module.public_albs.delta_api
