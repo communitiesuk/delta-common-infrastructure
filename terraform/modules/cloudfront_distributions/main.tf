@@ -26,6 +26,7 @@ module "delta_website_waf" {
   ip_allowlist                   = var.delta.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
   login_ip_rate_limit_enabled    = true
+  login_ip_rate_limit            = var.login_ip_rate_limit
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
 }
 

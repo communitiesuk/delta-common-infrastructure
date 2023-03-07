@@ -24,7 +24,8 @@ variable "cloudwatch_log_expiration_days" {
 
 variable "login_ip_rate_limit" {
   type    = number
-  default = 500
+  default = 100
+  description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes to the login page"
 }
 
 variable "login_ip_rate_limit_enabled" {
