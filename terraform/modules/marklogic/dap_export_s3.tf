@@ -30,12 +30,6 @@ data "aws_iam_policy_document" "allow_access_from_dap" {
       module.dap_export_bucket.bucket_arn,
       "${module.dap_export_bucket.bucket_arn}/latest/*",
     ]
-
-    # condition {
-    #   test     = "IpAddress"
-    #   variable = "aws:SourceIp"
-    #   values   = ["52.17.138.171/32"]
-    # }
   }
 }
 

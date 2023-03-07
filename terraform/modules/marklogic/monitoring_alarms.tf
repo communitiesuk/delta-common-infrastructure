@@ -48,7 +48,7 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilisation_high_sustained" {
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
   statistic           = "Maximum"
-  threshold           = 80
+  threshold           = 85
 
   alarm_description         = format(local.alarm_description_template, "Memory Usage", "High (sustained)", 25)
   alarm_actions             = [var.alarms_sns_topic_arn]
