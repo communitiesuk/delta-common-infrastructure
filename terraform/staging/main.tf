@@ -269,7 +269,7 @@ module "marklogic" {
     throughput_MiB_per_sec = 250
   }
 
-  ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
   extra_instance_policy_arn               = module.session_manager_config.policy_arn
   app_cloudwatch_log_expiration_days      = local.cloudwatch_log_expiration_days
   patch_cloudwatch_log_expiration_days    = local.patch_cloudwatch_log_expiration_days
@@ -336,7 +336,7 @@ module "ses_identity" {
   source = "../modules/ses_identity"
 
   domain                               = "datacollection.test.levellingup.gov.uk"
-  bounce_complaint_notification_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  bounce_complaint_notification_emails = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
 }
 
 module "delta_ses_user" {
@@ -386,5 +386,5 @@ module "account_security" {
 module "notifications" {
   source                 = "../modules/notifications"
   environment            = local.environment
-  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  alarm_sns_topic_emails = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
 }

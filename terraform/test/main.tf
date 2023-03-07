@@ -46,7 +46,7 @@ module "ses_identity" {
   source = "../modules/ses_identity"
 
   domain                               = "datacollection.${var.secondary_domain}"
-  bounce_complaint_notification_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
+  bounce_complaint_notification_emails = ["Group-DLUHCDeltaDevNotifications+test@softwire.com"]
 }
 
 # This dynamically creates resources, so the modules it depends on must be created first
@@ -276,7 +276,7 @@ module "marklogic" {
     throughput_MiB_per_sec = 250
   }
 
-  ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
+  ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaDevNotifications+test@softwire.com"]
   extra_instance_policy_arn               = data.aws_iam_policy.enable_session_manager.arn
   app_cloudwatch_log_expiration_days      = local.cloudwatch_log_expiration_days
   patch_cloudwatch_log_expiration_days    = local.patch_cloudwatch_log_expiration_days
@@ -387,5 +387,5 @@ module "mailhog" {
 module "notifications" {
   source                 = "../modules/notifications"
   environment            = local.environment
-  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications+test@softwire.com"]
+  alarm_sns_topic_emails = ["Group-DLUHCDeltaDevNotifications+test@softwire.com"]
 }
