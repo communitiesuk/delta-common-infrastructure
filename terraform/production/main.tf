@@ -300,6 +300,7 @@ module "cloudfront_distributions" {
   base_domains                             = [var.primary_domain]
   apply_aws_shield                         = local.apply_aws_shield
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
+  login_ip_rate_limit                      = 100
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
   swagger_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_global_arn              = module.notifications.alarms_sns_topic_global_arn

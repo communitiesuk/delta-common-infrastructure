@@ -106,3 +106,26 @@ resource "aws_cloudwatch_metric_alarm" "blocked_requests" {
   alarm_actions = [var.alarms_sns_topic_global_arn]
   ok_actions    = [var.alarms_sns_topic_global_arn]
 }
+
+resource "aws_cloudwatch_metric_alarm" "blocked_login_requests" {
+  provider = aws.us-east-1
+
+  alarm_name          = "${var.prefix}cloudfront-waf-blocked-login-requests"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "BlockedRequests"
+  namespace           = "AWS/WAFV2"
+  period              = "300"
+  statistic           = "Sum"
+  threshold           = "1"
+  alarm_description   = "WAF ${aws_wafv2_web_acl.waf_acl.name} blocking large number of login requests"
+  treat_missing_data  = "notBreaching"
+  dimensions = {
+    Rule   = local.metric_names.login_ip_rate_limit
+    WebACL = aws_wafv2_web_acl.waf_acl.name
+  }
+
+  # TODO:DT-261 Consider whether this should be sent to a security SNS topic
+  alarm_actions = [var.alarms_sns_topic_global_arn]
+  ok_actions    = [var.alarms_sns_topic_global_arn]
+}

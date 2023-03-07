@@ -169,6 +169,7 @@ module "cloudfront_distributions" {
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
   swagger_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_global_arn              = module.notifications.alarms_sns_topic_global_arn
+  login_ip_rate_limit                      = 100
 
   delta = {
     alb = module.public_albs.delta
