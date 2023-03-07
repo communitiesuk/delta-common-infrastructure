@@ -22,6 +22,7 @@ Metadata:
           - DataVolume2
           - DataVolume3
           - LogSNS
+          - AMI
       - Label:
           default: "Network Configuration"
         Parameters:
@@ -50,6 +51,8 @@ Metadata:
         default: IAM Role
       LogSNS:
         default: Logging SNS ARN
+      AMI:
+        default: AMI Id
       VolumeSize:
         default: Volume Size
       VolumeType:
@@ -264,6 +267,9 @@ Parameters:
     Description: SNS Topic for logging - optional/advanced.
     Type: String
     Default: none
+  AMI:
+    Description: AMI Id, must match region, see https://aws.amazon.com/marketplace/server/configuration?productId=52ce1567-c738-4208-be90-08b575f2c41d
+    Type: String
   DataVolume1:
     Description: EBS Volume Id for MarkLogic data in AZ 1
     Type: 'AWS::EC2::Volume::Id'
@@ -320,52 +326,6 @@ Mappings:
       base: 'https://marklogic-db-template-releases.s3.amazonaws.com'
     S3Directory:
       base: '10.0-9.2'
-  LicenseRegion2AMI:
-    us-east-1:
-      Enterprise: ami-08b10a32d1221def3
-      BYOL: ami-0eca24b53a4d5dc3a
-    us-east-2:
-      Enterprise: ami-0d2e398e8105cf1e3
-      BYOL: ami-04db070506a1f22db
-    us-west-1:
-      Enterprise: ami-00e7b6915c31013ef
-      BYOL: ami-084f3874fd2de12ee
-    us-west-2:
-      Enterprise: ami-0f81d85adc910a25f
-      BYOL: ami-0aa5133a67b834646
-    eu-central-1:
-      Enterprise: ami-055cc5795296b8b85
-      BYOL: ami-0ec19ba5f6b69c54a
-    eu-west-1:
-      Enterprise: ami-0b276b3bb2c006e52
-      BYOL: ami-07701d367691e0220 # Updated to 10.0-9.5, others left on 10.0-9.2
-    ap-south-1:
-      Enterprise: ami-0164d2e0228ab575f
-      BYOL: ami-0d3a93d00a648c329
-    ap-southeast-1:
-      Enterprise: ami-02310db866f17a69f
-      BYOL: ami-02158425b13d36d9f
-    ap-southeast-2:
-      Enterprise: ami-07351a8464d4fa8d1
-      BYOL: ami-0010a6bf6ade789f2
-    ap-northeast-1:
-      Enterprise: ami-05d40f36c7a1b4c8a
-      BYOL: ami-05eefa37fb22f5c53
-    ap-northeast-2:
-      Enterprise: ami-0a41f478340b2931f
-      BYOL: ami-03937c7cc81a80369
-    sa-east-1:
-      Enterprise: ami-02d664a013a49c9cb
-      BYOL: ami-085296813223b1d0b
-    eu-west-2:
-      Enterprise: ami-0381ba0ad09712c77
-      BYOL: ami-0425b52ac2cbbd2ca
-    ca-central-1:
-      Enterprise: ami-00646b7b719cb6dd7
-      BYOL: ami-0891669fc4e3dad91
-    eu-west-3:
-      Enterprise: ami-0d6734e7d4405ec67
-      BYOL: ami-058a47544eb859250
 Resources:
   ManagedEniStack:
     Type: AWS::CloudFormation::Stack
@@ -565,7 +525,7 @@ Resources:
           NoDevice: true
           Ebs: {}
       KeyName: !Ref KeyName
-      ImageId: !If [EssentialEnterprise, !FindInMap [LicenseRegion2AMI,!Ref 'AWS::Region',"Enterprise"], !FindInMap [LicenseRegion2AMI, !Ref 'AWS::Region', "BYOL"]]
+      ImageId: !Ref AMI
       UserData: !Base64
         'Fn::Join':
           - ''
@@ -646,7 +606,7 @@ Resources:
           NoDevice: true
           Ebs: {}
       KeyName: !Ref KeyName
-      ImageId: !If [EssentialEnterprise, !FindInMap [LicenseRegion2AMI,!Ref 'AWS::Region',"Enterprise"], !FindInMap [LicenseRegion2AMI, !Ref 'AWS::Region', "BYOL"]]
+      ImageId: !Ref AMI
       UserData: !Base64
         'Fn::Join':
           - ''
@@ -720,7 +680,7 @@ Resources:
           NoDevice: true
           Ebs: {}
       KeyName: !Ref KeyName
-      ImageId: !If [EssentialEnterprise, !FindInMap [LicenseRegion2AMI,!Ref 'AWS::Region',"Enterprise"], !FindInMap [LicenseRegion2AMI, !Ref 'AWS::Region', "BYOL"]]
+      ImageId: !Ref AMI
       UserData: !Base64
         'Fn::Join':
           - ''
