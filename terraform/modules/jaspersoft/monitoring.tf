@@ -71,5 +71,5 @@ resource "aws_cloudwatch_metric_alarm" "limited_free_storage_space" {
   ok_actions                = [var.alarms_sns_topic_arn]
   insufficient_data_actions = [var.alarms_sns_topic_arn]
 
-  dimensions = { "DBInstanceIdentifier" = "${var.environment}-jaspersoft" }
+  dimensions = { "DBInstanceIdentifier" = aws_db_instance.jaspersoft.identifier }
 }
