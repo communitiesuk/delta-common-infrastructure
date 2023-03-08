@@ -57,19 +57,19 @@ resource "aws_cloudwatch_metric_alarm" "disk_utilisation_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "limited_free_storage_space" {
-  alarm_name = "jaspersoft-${var.environment}-limited-free-storage-space"
+  alarm_name          = "jaspersoft-${var.environment}-limited-free-storage-space"
   comparison_operator = "LessThanThreshold"
-  evaluation_periods = 2
-  metric_name = "FreeStorageSpace"
-  namespace = "AWS/RDS"
-  period = 300
-  statistic = "Minimum"
-  threshold = 3000000000 // Current values seem to be ~7,916,000,000
+  evaluation_periods  = 2
+  metric_name         = "FreeStorageSpace"
+  namespace           = "AWS/RDS"
+  period              = 300
+  statistic           = "Minimum"
+  threshold           = 3000000000 // Current values seem to be ~7,916,000,000
 
   alarm_description         = format(local.alarm_description_template, "Free Storage Space", "Low", 10)
   alarm_actions             = [var.alarms_sns_topic_arn]
   ok_actions                = [var.alarms_sns_topic_arn]
   insufficient_data_actions = [var.alarms_sns_topic_arn]
 
-  dimensions = {"DBInstanceIdentifier" = "${var.environment}-jaspersoft"}
+  dimensions = { "DBInstanceIdentifier" = "${var.environment}-jaspersoft" }
 }
