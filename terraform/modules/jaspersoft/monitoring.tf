@@ -64,7 +64,7 @@ resource "aws_cloudwatch_metric_alarm" "limited_free_storage_space" {
   namespace           = "AWS/RDS"
   period              = 300
   statistic           = "Minimum"
-  threshold           = 3000000000 // Current values seem to be ~7,916,000,000
+  threshold           = 3000000000 // 3 GB. At time of writing 7/10GB free.
 
   alarm_description         = format(local.alarm_description_template, "Free Storage Space", "Low", 10)
   alarm_actions             = [var.alarms_sns_topic_arn]
