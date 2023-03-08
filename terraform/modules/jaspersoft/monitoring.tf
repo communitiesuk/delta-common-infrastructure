@@ -57,7 +57,7 @@ resource "aws_cloudwatch_metric_alarm" "disk_utilisation_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "limited_free_storage_space" {
-  alarm_name          = "jaspersoft-${var.environment}-limited-free-storage-space"
+  alarm_name          = "jaspersoft-rds-${var.environment}-limited-free-storage-space"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = 2
   metric_name         = "FreeStorageSpace"
