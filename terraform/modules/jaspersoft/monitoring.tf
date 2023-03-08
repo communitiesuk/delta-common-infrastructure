@@ -66,7 +66,7 @@ resource "aws_cloudwatch_metric_alarm" "limited_free_storage_space" {
   statistic           = "Minimum"
   threshold           = 3000000000 // 3 GB. At time of writing 7/10GB free.
 
-  alarm_description         = format(local.alarm_description_template, "Free Storage Space", "Low", 10)
+  alarm_description         = "Low storage space remaining on JasperReports RDS instance"
   alarm_actions             = [var.alarms_sns_topic_arn]
   ok_actions                = [var.alarms_sns_topic_arn]
   insufficient_data_actions = [var.alarms_sns_topic_arn]
