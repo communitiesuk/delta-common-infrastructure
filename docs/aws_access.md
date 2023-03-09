@@ -69,7 +69,8 @@ If you have infra-support or developer access to any account, please always use 
 If not you can use _Configure - Access key in config file_ below.
 
 1. Install aws-vault as per the [instructions](https://github.com/99designs/aws-vault#installing)
-   1. If using WSL, this is probably something along the lines of:
+    * For Windows download a [release](https://github.com/99designs/aws-vault/releases/latest) and add to PATH, or install [Chocolatey](https://chocolatey.org/) and `choco install aws-vault`.
+    * If using WSL you will need `pass` as well, something like:
 
     ```shell
     sudo apt install pass
