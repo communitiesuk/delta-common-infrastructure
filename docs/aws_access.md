@@ -43,8 +43,6 @@ From there you can use Active Directory Users and Computers etc. to manage user 
 
 We use the AWS CLI for running Terraform commands locally and connecting to instances via AWS Systems Manager Session Manager, including for the MarkLogic admin UI and query console.
 
-For security, we use [aws-vault](https://github.com/99designs/aws-vault) for storing credentials locally.
-
 ### Generating an access key
 
 To use the CLI you will need an AWS Access Key and Secret.
