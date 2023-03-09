@@ -79,8 +79,7 @@ resource "aws_iam_policy" "ml_instance_policy" {
       },
       {
         Action = [
-          "ec2:AttachVolume",
-          "ec2:CreateVolume"
+          "ec2:AttachVolume"
         ]
         Effect   = "Allow"
         Resource = ["arn:aws:ec2:*:*:volume/*", "arn:aws:ec2:*:*:instance/*"]

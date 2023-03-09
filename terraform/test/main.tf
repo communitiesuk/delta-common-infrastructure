@@ -173,6 +173,7 @@ module "cloudfront_distributions" {
   environment                              = local.environment
   base_domains                             = [var.primary_domain]
   waf_per_ip_rate_limit                    = 100000
+  login_ip_rate_limit                      = 500
   apply_aws_shield                         = local.apply_aws_shield
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
@@ -266,6 +267,7 @@ module "marklogic" {
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3a.large"
+  marklogic_ami_version    = "10.0-9.5"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
   data_volume = {

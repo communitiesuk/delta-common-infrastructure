@@ -208,6 +208,7 @@ module "marklogic" {
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "r5a.8xlarge" # r6a is not allowed (as of 26/02/2023)
+  marklogic_ami_version    = "10.0-9.2"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
   data_volume = {
@@ -300,6 +301,7 @@ module "cloudfront_distributions" {
   base_domains                             = [var.primary_domain]
   apply_aws_shield                         = local.apply_aws_shield
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
+  login_ip_rate_limit                      = 100
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
   swagger_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_global_arn              = module.notifications.alarms_sns_topic_global_arn

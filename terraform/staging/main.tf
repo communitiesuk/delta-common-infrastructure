@@ -169,6 +169,7 @@ module "cloudfront_distributions" {
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
   swagger_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_global_arn              = module.notifications.alarms_sns_topic_global_arn
+  login_ip_rate_limit                      = 100
 
   delta = {
     alb = module.public_albs.delta
@@ -259,6 +260,7 @@ module "marklogic" {
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3a.2xlarge"
+  marklogic_ami_version    = "10.0-9.2"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
   data_volume = {
