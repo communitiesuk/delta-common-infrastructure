@@ -203,9 +203,12 @@ You can run multiple commands in separate terminals to forward multiple ports.
 
 #### Script for connecting to MarkLogic
 
-There is a script provided for this in [manual_scripts/session_manager](./manual_scripts/session_manager/marklogic.sh)
+There is a bash script provided for this in [manual_scripts/session_manager](./manual_scripts/session_manager/marklogic.sh)
 
 ```sh
 # Arguments are environment, local port, remote port
+# Using aws-vault
 aws-vault exec delta-dev -- bash ./manual_scripts/session_manager/marklogic.sh test 9001 8001
+# Using profiles
+AWS_PROFILE=delta-dev ./manual_scripts/session_manager/marklogic.sh test 9001 8001
 ```
