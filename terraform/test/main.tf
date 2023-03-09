@@ -189,7 +189,7 @@ module "cloudfront_distributions" {
     # So GitHub Actions can access for end to end tests
     geo_restriction_countries = null
     # We don't want to IP restrict test (yet)
-    client_error_rate_alarm_threshold_percent = 15 # TODO: DT-295 Reduce this
+    client_error_rate_alarm_threshold_percent = 15
   }
   api = {
     alb = module.public_albs.delta_api
