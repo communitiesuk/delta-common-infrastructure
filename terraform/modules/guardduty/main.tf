@@ -1,6 +1,5 @@
-variable "notification_email" {
-  type    = string
-  default = null
+variable "aws_security_topic_arn" {
+  type = string
 }
 
 resource "aws_guardduty_detector" "main" {
@@ -50,39 +49,8 @@ resource "aws_cloudwatch_event_rule" "console" {
 EOF
 }
 
-# tfsec:ignore:aws-sns-enable-topic-encryption
-resource "aws_sns_topic" "guardduty_events" {
-  name = "aws-guardduty-events"
-}
-
 resource "aws_cloudwatch_event_target" "sns" {
   rule      = aws_cloudwatch_event_rule.console.name
   target_id = "SendToGuarddutySNS"
-  arn       = aws_sns_topic.guardduty_events.arn
-}
-
-resource "aws_sns_topic_policy" "default" {
-  arn    = aws_sns_topic.guardduty_events.arn
-  policy = data.aws_iam_policy_document.sns_topic_policy.json
-}
-
-data "aws_iam_policy_document" "sns_topic_policy" {
-  statement {
-    effect  = "Allow"
-    actions = ["SNS:Publish"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["events.amazonaws.com"]
-    }
-
-    resources = [aws_sns_topic.guardduty_events.arn]
-  }
-}
-
-resource "aws_sns_topic_subscription" "user_updates_sqs_target" {
-  count     = var.notification_email == null ? 0 : 1
-  topic_arn = aws_sns_topic.guardduty_events.arn
-  protocol  = "email"
-  endpoint  = var.notification_email
+  arn       = var.aws_security_topic_arn
 }

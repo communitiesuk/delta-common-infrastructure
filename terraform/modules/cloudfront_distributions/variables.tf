@@ -135,3 +135,8 @@ variable "alarms_sns_topic_global_arn" {
 variable "wait_for_deployment" {
   type = bool
 }
+
+variable "security_sns_topic_global_arn" {
+  description = "SNS topic ARN to send security notifications to"
+  type        = string
+}
