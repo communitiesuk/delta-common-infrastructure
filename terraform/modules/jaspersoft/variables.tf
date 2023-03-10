@@ -17,6 +17,7 @@ variable "vpc" {
 variable "public_alb" {
   type = object({
     arn               = string
+    arn_suffix = string
     security_group_id = string
     certificate_arn   = string
     cloudfront_key    = string
@@ -95,4 +96,9 @@ variable "app_cloudwatch_log_expiration_days" {
 variable "alarms_sns_topic_arn" {
   description = "SNS topic ARN to send alarm notifications to"
   type        = string
+}
+
+variable "desired_count" {
+  type    = number
+  default = 1
 }

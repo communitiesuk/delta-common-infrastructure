@@ -117,3 +117,43 @@ resource "aws_cloudwatch_metric_alarm" "data_disk_utilisation_high_sustained" {
     path = "/var/opt/MarkLogic"
   }
 }
+
+resource "aws_cloudwatch_metric_alarm" "unhealthy_host_high" {
+  alarm_name          = "marklogic-load-balancer-unhealthy-host-count-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "UnHealthyHostCount"
+  namespace           = "AWS/NetworkELB"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 0
+
+  alarm_description = "There is at least one unhealthy host"
+  alarm_actions     = [var.alarms_sns_topic_arn]
+  ok_actions        = [var.alarms_sns_topic_arn]
+
+  dimensions = {
+    "TargetGroup" : aws_lb_target_group.ml["8001"].arn_suffix
+    "LoadBalancer" : aws_lb.ml_lb.arn_suffix
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "healthy_host_low" {
+  alarm_name          = "marklogic-load-balancer-healthy-host-count-low"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "HealthyHostCount"
+  namespace           = "AWS/NetworkELB"
+  period              = 300
+  statistic           = "Average"
+  threshold           = var.desired_count
+
+  alarm_description = "There are less healthy hosts than expected"
+  alarm_actions     = [var.alarms_sns_topic_arn]
+  ok_actions        = [var.alarms_sns_topic_arn]
+
+  dimensions = {
+    "TargetGroup" : aws_lb_target_group.ml["8001"].arn_suffix
+    "LoadBalancer" : aws_lb.ml_lb.arn_suffix
+  }
+}
