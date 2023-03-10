@@ -47,3 +47,7 @@ variable "jaspersoft_dashboard" {
     instance_metric_namespace  = string
   })
 }
+
+variable "alarms_sns_topic_arn" {
+  type = string
+}
