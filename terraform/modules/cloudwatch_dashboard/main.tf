@@ -1,10 +1,14 @@
 locals {
-  # ECS instance metrics from the deployment. E.g. see <delta>/terraform/modules/delta_servers/app_logs.tf
-  ecs_metrics = var.instance_metric_namespace == null ? tolist([]) : tolist([
+  green  = "#2ca02c"
+  blue   = "#1f77b4"
+  orange = "#ff7f0e"
+  red    = "#d62728"
+  # Instance metrics from the deployment. E.g. see <delta>/terraform/modules/delta_servers/app_logs.tf
+  instance_metrics = var.instance_metric_namespace == null ? tolist([]) : tolist([
     {
       width : 6,
       height : 6,
-      x : 12,
+      x : 18,
       y : 2,
       type : "metric",
       properties : {
@@ -23,7 +27,7 @@ locals {
       type : "metric",
       width : 6,
       height : 6,
-      x : 12,
+      x : 18,
       y : 8,
       properties : {
         "title" : "System disk used %",
@@ -41,7 +45,7 @@ locals {
       type : "metric",
       width : 6,
       height : 6,
-      x : 12,
+      x : 18,
       y : 14,
       properties : {
         "title" : "RAM used %",
@@ -122,6 +126,23 @@ resource "aws_cloudwatch_dashboard" "main" {
           width : 6,
           height : 6,
           x : 6,
+          y : 2,
+          type : "metric",
+          properties : {
+            "metrics" : [
+              ["AWS/ApplicationELB", "ProcessedBytes", "LoadBalancer", var.alb_arn_suffix]
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Sum",
+            "period" : 300
+          }
+        },
+        {
+          width : 6,
+          height : 6,
+          x : 6,
           y : 8,
           type : "metric",
           properties : {
@@ -164,23 +185,6 @@ resource "aws_cloudwatch_dashboard" "main" {
           width : 6,
           height : 6,
           x : 6,
-          y : 2,
-          type : "metric",
-          properties : {
-            "metrics" : [
-              ["AWS/ApplicationELB", "ProcessedBytes", "LoadBalancer", var.alb_arn_suffix]
-            ],
-            "view" : "timeSeries",
-            "stacked" : false,
-            "region" : "eu-west-1",
-            "stat" : "Sum",
-            "period" : 300
-          }
-        },
-        {
-          width : 6,
-          height : 6,
-          x : 6,
           y : 20,
           type : "metric",
           properties : {
@@ -194,7 +198,65 @@ resource "aws_cloudwatch_dashboard" "main" {
             "period" : 300
           }
         },
-      ], local.ecs_metrics)
+        {
+          width : 6,
+          height : 6,
+          x : 12,
+          y : 2,
+          type : "metric",
+          properties : {
+            "metrics" : [
+              ["AWS/ApplicationELB", "HTTPCode_ELB_4XX_Count", "LoadBalancer", var.alb_arn_suffix]
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Sum",
+            "period" : 300
+          }
+        },
+        {
+          width : 6,
+          height : 6,
+          x : 12,
+          y : 8,
+          type : "metric",
+          properties : {
+            "metrics" : [
+              ["AWS/ApplicationELB", "HTTPCode_ELB_5XX_Count", "LoadBalancer", var.alb_arn_suffix],
+              ["AWS/ApplicationELB", "HTTPCode_ELB_500_Count", "LoadBalancer", var.alb_arn_suffix],
+              ["AWS/ApplicationELB", "HTTPCode_ELB_502_Count", "LoadBalancer", var.alb_arn_suffix],
+              ["AWS/ApplicationELB", "HTTPCode_ELB_503_Count", "LoadBalancer", var.alb_arn_suffix],
+              ["AWS/ApplicationELB", "HTTPCode_ELB_504_Count", "LoadBalancer", var.alb_arn_suffix],
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Sum",
+            "period" : 300
+          }
+        },
+        {
+          width : 6,
+          height : 6,
+          x : 12,
+          y : 14,
+          type : "metric",
+          properties : {
+            "metrics" : [
+              ["AWS/ApplicationELB", "HTTPCode_Target_2XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.green }],
+              ["AWS/ApplicationELB", "HTTPCode_Target_3XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.blue }],
+              ["AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.orange }],
+              ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.red }],
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Sum",
+            "period" : 300
+          }
+        },
+      ], local.instance_metrics)
     }
   )
 }
