@@ -215,7 +215,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
           aggregate_key_type = "IP"
           scope_down_statement {
             regex_pattern_set_reference_statement {
-              arn = aws_wafv2_regex_pattern_set.waf_rate_limit_urls.arn
+              arn = aws_wafv2_regex_pattern_set.waf_rate_limit_urls[0].arn
               field_to_match {
                 uri_path {}
               }
@@ -238,6 +238,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
 resource "aws_wafv2_regex_pattern_set" "waf_rate_limit_urls" {
   provider = aws.us-east-1
+  count    = var.login_ip_rate_limit_enabled ? 1 : 0
   name     = "${var.prefix}cloudfront-waf-regex-patterns"
   scope    = "CLOUDFRONT"
 
