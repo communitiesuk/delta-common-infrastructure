@@ -1,53 +1,52 @@
-variable "delta_dashboard" {
+variable "delta_website" {
   type = object({
-    dashboard_name             = string
     cloudfront_distribution_id = string
-    cloudfront_alarms          = list(string)
     alb_arn_suffix             = string
     instance_metric_namespace  = string
   })
 }
 
-variable "api_dashboard" {
+variable "delta_api" {
   type = object({
-    dashboard_name             = string
     cloudfront_distribution_id = string
-    cloudfront_alarms          = list(string)
     alb_arn_suffix             = string
     instance_metric_namespace  = string
   })
 }
 
-variable "keycloak_dashboard" {
+variable "keycloak" {
   type = object({
-    dashboard_name             = string
     cloudfront_distribution_id = string
-    cloudfront_alarms          = list(string)
     alb_arn_suffix             = string
     instance_metric_namespace  = string
   })
 }
 
-variable "cpm_dashboard" {
+variable "cpm" {
   type = object({
-    dashboard_name             = string
     cloudfront_distribution_id = string
-    cloudfront_alarms          = list(string)
     alb_arn_suffix             = string
     instance_metric_namespace  = string
   })
 }
 
-variable "jaspersoft_dashboard" {
+variable "jaspersoft" {
   type = object({
-    dashboard_name             = string
     cloudfront_distribution_id = string
-    cloudfront_alarms          = list(string)
     alb_arn_suffix             = string
     instance_metric_namespace  = string
   })
+}
+
+variable "environment" {
+  type = string
 }
 
 variable "alarms_sns_topic_arn" {
+  type = string
+}
+
+# us-east-1 for CloudFront alarms
+variable "alarms_sns_topic_global_arn" {
   type = string
 }
