@@ -73,3 +73,25 @@ resource "aws_cloudwatch_metric_alarm" "limited_free_storage_space" {
 
   dimensions = { "DBInstanceIdentifier" = aws_db_instance.jaspersoft.identifier }
 }
+
+# There's only one Jaspersoft instance, so no need to check unhealthy too
+resource "aws_cloudwatch_metric_alarm" "healthy_host_low" {
+  alarm_name          = "jaspersoft-${var.environment}-healthy-host-count-low"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "HealthyHostCount"
+  namespace           = "AWS/ApplicationELB"
+  period              = 300
+  statistic           = "Minimum"
+  threshold           = 1
+
+  alarm_description  = "There are no healthy hosts"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "breaching"
+
+  dimensions = {
+    "TargetGroup" : aws_lb_target_group.main.arn_suffix
+    "LoadBalancer" : var.public_alb.arn_suffix
+  }
+}
