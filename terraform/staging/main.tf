@@ -180,7 +180,7 @@ module "cloudfront_distributions" {
     # Some TSO staff are located in India (IN)
     geo_restriction_countries = ["GB", "IE", "IN"]
     # We don't want to restrict staging until we are able to confirm who needs access
-    client_error_rate_alarm_threshold_percent = 15 # TODO: DT-295 Reduce this
+    client_error_rate_alarm_threshold_percent = 15
   }
   api = {
     alb = module.public_albs.delta_api
@@ -260,7 +260,7 @@ module "marklogic" {
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3a.2xlarge"
-  marklogic_ami_version    = "10.0-9.2"
+  marklogic_ami_version    = "10.0-9.5"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
   data_volume = {
@@ -269,7 +269,7 @@ module "marklogic" {
     throughput_MiB_per_sec = 250
   }
 
-  ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
   extra_instance_policy_arn               = module.session_manager_config.policy_arn
   app_cloudwatch_log_expiration_days      = local.cloudwatch_log_expiration_days
   patch_cloudwatch_log_expiration_days    = local.patch_cloudwatch_log_expiration_days
@@ -336,7 +336,7 @@ module "ses_identity" {
   source = "../modules/ses_identity"
 
   domain                               = "datacollection.test.levellingup.gov.uk"
-  bounce_complaint_notification_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  bounce_complaint_notification_emails = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
 }
 
 module "delta_ses_user" {
@@ -386,5 +386,5 @@ module "account_security" {
 module "notifications" {
   source                 = "../modules/notifications"
   environment            = local.environment
-  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  alarm_sns_topic_emails = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
 }

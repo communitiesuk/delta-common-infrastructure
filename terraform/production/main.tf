@@ -34,28 +34,11 @@ locals {
   s3_log_expiration_days               = 731
 }
 
-# In practice the ACM validation records will all overlap
-# But create three sets anyway to be on the safe side, ACM is free
-module "ssl_certs" {
-  source = "../modules/ssl_certificates"
-
-  primary_domain             = var.primary_domain
-  secondary_domains          = [var.secondary_domain]
-  validate_and_check_renewal = false
-}
-
 module "communities_only_ssl_certs" {
   source = "../modules/ssl_certificates"
 
   primary_domain             = var.primary_domain
   validate_and_check_renewal = true
-}
-
-module "dluhc_preprod_only_ssl_certs" {
-  source = "../modules/ssl_certificates"
-
-  primary_domain             = var.secondary_domain
-  validate_and_check_renewal = false
 }
 
 module "ses_identity" {
@@ -98,21 +81,10 @@ locals {
   organisation_account_id    = "448312965134"
   environment                = "production"
   notification_email_address = "Group-DLUHCDeltaNotifications@softwire.com"
-  all_validation_dns_records = setunion(
+  external_required_validation_dns_records = setunion(
     module.communities_only_ssl_certs.required_validation_records,
-    module.dluhc_preprod_only_ssl_certs.required_validation_records,
-    module.ssl_certs.required_validation_records,
     module.ses_identity.required_validation_records,
   )
-  external_required_validation_dns_records = [for record in local.all_validation_dns_records : record if !endswith(record.record_name, "${var.secondary_domain}.")]
-}
-
-# This dynamically creates resources, so the modules it depends on must be created first
-# terraform apply -target module.dluhc_preprod_only_ssl_certs -target module.ssl_certs
-module "dluhc_preprod_validation_records" {
-  source         = "../modules/dns_records"
-  hosted_zone_id = var.hosted_zone_id
-  records        = [for record in local.all_validation_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 module "networking" {
@@ -122,7 +94,7 @@ module "networking" {
   ssh_cidr_allowlist                      = var.allowed_ssh_cidrs
   ecr_repo_account_id                     = var.ecr_repo_account_id
   apply_aws_shield_to_nat_gateway         = local.apply_aws_shield
-  auth_server_domains                     = ["auth.delta.${var.primary_domain}", "auth.delta.${var.secondary_domain}"]
+  auth_server_domains                     = ["auth.delta.${var.primary_domain}"]
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   open_ingress_cidrs                      = [local.datamart_peering_vpc_cidr]
@@ -309,18 +281,18 @@ module "cloudfront_distributions" {
     alb = module.public_albs.delta
     domain = {
       aliases             = ["delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["delta"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["delta"].arn
     }
     geo_restriction_countries                 = ["GB", "IE"]
     origin_read_timeout                       = 180 # Required quota increase
     server_error_rate_alarm_threshold_percent = 5
-    client_error_rate_alarm_threshold_percent = 50 # TODO: DT-295 Reduce this
+    client_error_rate_alarm_threshold_percent = 50
   }
   api = {
     alb = module.public_albs.delta_api
     domain = {
       aliases             = ["api.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["api"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["api"].arn
     }
     ip_allowlist = local.cloudfront_ip_allowlists.delta_api
     # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
@@ -330,7 +302,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.keycloak
     domain = {
       aliases             = ["auth.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["keycloak"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
     ip_allowlist = local.cloudfront_ip_allowlists.delta_api
     # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
@@ -340,7 +312,7 @@ module "cloudfront_distributions" {
     alb = module.public_albs.cpm
     domain = {
       aliases             = ["cpm.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["cpm"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.cpm
     geo_restriction_countries = ["GB", "IE"]
@@ -350,19 +322,11 @@ module "cloudfront_distributions" {
     alb = module.public_albs.jaspersoft
     domain = {
       aliases             = ["reporting.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
+      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.jaspersoft
     geo_restriction_countries = ["GB", "IE"]
   }
-}
-
-# This dynamically creates resources, so the modules it depends on must be created first
-# terraform apply -target module.cloudfront_distributions
-module "dluhc_preprod_cloudfront_records" {
-  source         = "../modules/dns_records"
-  hosted_zone_id = var.hosted_zone_id
-  records        = [for record in module.cloudfront_distributions.required_dns_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {

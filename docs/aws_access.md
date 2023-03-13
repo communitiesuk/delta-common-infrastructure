@@ -43,8 +43,6 @@ From there you can use Active Directory Users and Computers etc. to manage user 
 
 We use the AWS CLI for running Terraform commands locally and connecting to instances via AWS Systems Manager Session Manager, including for the MarkLogic admin UI and query console.
 
-For security, we use [aws-vault](https://github.com/99designs/aws-vault) for storing credentials locally.
-
 ### Generating an access key
 
 To use the CLI you will need an AWS Access Key and Secret.
@@ -71,7 +69,8 @@ If you have infra-support or developer access to any account, please always use 
 If not you can use _Configure - Access key in config file_ below.
 
 1. Install aws-vault as per the [instructions](https://github.com/99designs/aws-vault#installing)
-   1. If using WSL, this is probably something along the lines of:
+    * For Windows download a [release](https://github.com/99designs/aws-vault/releases/latest) and add to PATH, or install [Chocolatey](https://chocolatey.org/) and `choco install aws-vault`.
+    * If using WSL you will need `pass` as well, something like:
 
     ```shell
     sudo apt install pass
@@ -205,9 +204,12 @@ You can run multiple commands in separate terminals to forward multiple ports.
 
 #### Script for connecting to MarkLogic
 
-There is a script provided for this in [manual_scripts/session_manager](./manual_scripts/session_manager/marklogic.sh)
+There is a bash script provided for this in [manual_scripts/session_manager](./manual_scripts/session_manager/marklogic.sh)
 
 ```sh
 # Arguments are environment, local port, remote port
+# Using aws-vault
 aws-vault exec delta-dev -- bash ./manual_scripts/session_manager/marklogic.sh test 9001 8001
+# Using profiles
+AWS_PROFILE=delta-dev ./manual_scripts/session_manager/marklogic.sh test 9001 8001
 ```

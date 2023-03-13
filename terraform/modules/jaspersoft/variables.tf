@@ -17,6 +17,7 @@ variable "vpc" {
 variable "public_alb" {
   type = object({
     arn               = string
+    arn_suffix        = string
     security_group_id = string
     certificate_arn   = string
     cloudfront_key    = string
