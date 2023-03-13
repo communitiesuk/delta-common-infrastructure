@@ -243,9 +243,29 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 14,
           type : "metric",
           properties : {
+            "title" : "ALB responses from targets",
             "metrics" : [
               ["AWS/ApplicationELB", "HTTPCode_Target_2XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.green }],
               ["AWS/ApplicationELB", "HTTPCode_Target_3XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.blue }],
+              ["AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.orange }],
+              ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.red }],
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Sum",
+            "period" : 300
+          }
+        },
+        {
+          width : 6,
+          height : 6,
+          x : 12,
+          y : 20,
+          type : "metric",
+          properties : {
+            "title" : "ALB error responses from targets",
+            "metrics" : [
               ["AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.orange }],
               ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.red }],
             ],
@@ -275,7 +295,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_target_server_error_rate_alarm" {
 
   metric_query {
     id          = "thresholded_server_error_rate"
-    expression  = "IF(FILL(error_response_count, 0) > ${var.alb_target_server_error_rate_alarm_threshold_count}, (FILL(error_response_count, 0) * 100)/FILL(ok_response_count, 1), 0)"
+    expression  = "IF(FILL(error_response_count, 0) > ${var.alb_target_server_error_rate_alarm_threshold_count}, (FILL(error_response_count, 0) * 100)/(FILL(ok_response_count, 1), FILL(error_response_count, 0)), 0)"
     label       = "Thresholded 5xx ALB target error rate %"
     return_data = "true"
   }
@@ -317,7 +337,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_target_client_error_rate_alarm" {
 
   metric_query {
     id          = "thresholded_client_error_rate"
-    expression  = "IF(FILL(error_response_count, 0) > ${var.alb_target_client_error_rate_alarm_threshold_count}, (FILL(error_response_count, 0) * 100)/FILL(ok_response_count, 1), 0)"
+    expression  = "IF(FILL(error_response_count, 0) > ${var.alb_target_client_error_rate_alarm_threshold_count}, (FILL(error_response_count, 0) * 100)/(FILL(ok_response_count, 1), FILL(error_response_count, 0)), 0)"
     label       = "Thresholded 4xx ALB target error rate %"
     return_data = "true"
   }
