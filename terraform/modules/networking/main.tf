@@ -102,6 +102,13 @@ locals {
       tls_allowed_domains  = [".github.com", "github.com", "golang.org", "go.googlesource.com", "gopkg.in"] # Downloading and installing golang and MailHog
       sid_offset           = 1100
     } : null
+    redis = {
+      subnets              = aws_subnet.redis
+      cidr                 = local.redis_cidr_10
+      http_allowed_domains = []
+      tls_allowed_domains  = []
+      sid_offset           = 1200
+    }
     marklogic = {
       cidr                 = local.ml_subnet_cidr_10
       http_allowed_domains = concat(["repo.ius.io", "mirrors.fedoraproject.org"])
