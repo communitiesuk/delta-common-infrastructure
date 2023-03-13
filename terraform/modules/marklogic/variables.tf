@@ -100,8 +100,3 @@ variable "marklogic_ami_version" {
     error_message = "Only specific versions allowed, configure AMIs for others"
   }
 }
-
-variable "desired_count" {
-  type    = number
-  default = 1
-}

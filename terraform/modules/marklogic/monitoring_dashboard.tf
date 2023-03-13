@@ -296,6 +296,23 @@ resource "aws_cloudwatch_dashboard" "main" {
           }
         },
         {
+          "height" : 6,
+          "width" : 6,
+          "y" : 20,
+          "x" : 0,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : [
+              ["AWS/NetworkELB", "HealthyHostCount", "TargetGroup", aws_lb_target_group.ml["8001"].arn_suffix, "LoadBalancer", aws_lb.ml_lb.arn_suffix]
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Minimum",
+            "period" : 300
+          }
+        },
+        {
           "height" : 5,
           "width" : 24,
           "y" : 26,
