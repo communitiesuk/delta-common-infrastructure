@@ -49,6 +49,7 @@ module "ses_identity" {
     "Group-DLUHCDeltaNotifications@softwire.com",
     "Graham.Dagless@williamslea.com",
     "justin.struth@williamslea.com",
+    "deltaadmin@levellingup.gov.uk",
   ]
 }
 
