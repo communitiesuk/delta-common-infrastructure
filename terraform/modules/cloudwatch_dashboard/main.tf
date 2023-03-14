@@ -286,12 +286,12 @@ resource "aws_cloudwatch_metric_alarm" "alb_target_server_error_rate_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
 
-  threshold          = var.alb_target_server_error_rate_alarm_threshold_percent
-  treat_missing_data = "notBreaching" # Data is missing if there are no requests
+  threshold = var.alb_target_server_error_rate_alarm_threshold_percent
 
-  alarm_description = "High ALB target 5xx error rate"
-  alarm_actions     = [var.alarms_sns_topic_arn]
-  ok_actions        = [var.alarms_sns_topic_arn]
+  alarm_description         = "High ALB target 5xx error rate"
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
 
   metric_query {
     id          = "thresholded_server_error_rate"
@@ -328,12 +328,12 @@ resource "aws_cloudwatch_metric_alarm" "alb_target_client_error_rate_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
 
-  threshold          = var.alb_target_client_error_rate_alarm_threshold_percent
-  treat_missing_data = "notBreaching" # Data is missing if there are no requests
+  threshold = var.alb_target_client_error_rate_alarm_threshold_percent
 
-  alarm_description = "High ALB target 4xx error rate"
-  alarm_actions     = [var.alarms_sns_topic_arn]
-  ok_actions        = [var.alarms_sns_topic_arn]
+  alarm_description         = "High ALB target 4xx error rate"
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
 
   metric_query {
     id          = "thresholded_client_error_rate"
