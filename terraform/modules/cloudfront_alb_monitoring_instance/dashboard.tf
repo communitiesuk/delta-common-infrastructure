@@ -142,6 +142,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 2,
           type : "metric",
           properties : {
+            "title" : "ALB ProcessedBytes",
             "metrics" : [
               ["AWS/ApplicationELB", "ProcessedBytes", "LoadBalancer", var.alb_arn_suffix]
             ],
@@ -204,6 +205,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 20,
           type : "metric",
           properties : {
+            "title" : "ALB NewConnectionCount",
             "metrics" : [
               ["AWS/ApplicationELB", "NewConnectionCount", "LoadBalancer", var.alb_arn_suffix]
             ],
@@ -221,6 +223,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 2,
           type : "metric",
           properties : {
+            "title" : "ALB-generated 4xx count",
             "metrics" : [
               ["AWS/ApplicationELB", "HTTPCode_ELB_4XX_Count", "LoadBalancer", var.alb_arn_suffix]
             ],
@@ -238,6 +241,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 8,
           type : "metric",
           properties : {
+            "title" : "ALB-generated 5xx count",
             "metrics" : [
               ["AWS/ApplicationELB", "HTTPCode_ELB_5XX_Count", "LoadBalancer", var.alb_arn_suffix],
               ["AWS/ApplicationELB", "HTTPCode_ELB_500_Count", "LoadBalancer", var.alb_arn_suffix],
