@@ -7,6 +7,7 @@ module "website_dashboard" {
   cloudfront_alarms          = var.delta_dashboard.cloudfront_alarms
   cloudfront_distribution_id = var.delta_dashboard.cloudfront_distribution_id
   instance_metric_namespace  = var.delta_dashboard.instance_metric_namespace
+  alarms_sns_topic_arn       = var.alarms_sns_topic_arn
 }
 
 module "api_dashboard" {
@@ -16,6 +17,7 @@ module "api_dashboard" {
   cloudfront_alarms          = var.api_dashboard.cloudfront_alarms
   cloudfront_distribution_id = var.api_dashboard.cloudfront_distribution_id
   instance_metric_namespace  = var.api_dashboard.instance_metric_namespace
+  alarms_sns_topic_arn       = var.alarms_sns_topic_arn
 }
 
 module "keycloak_dashboard" {
@@ -25,6 +27,7 @@ module "keycloak_dashboard" {
   cloudfront_alarms          = var.keycloak_dashboard.cloudfront_alarms
   cloudfront_distribution_id = var.keycloak_dashboard.cloudfront_distribution_id
   instance_metric_namespace  = var.keycloak_dashboard.instance_metric_namespace
+  alarms_sns_topic_arn       = var.alarms_sns_topic_arn
 }
 
 module "cpm_dashboard" {
@@ -34,6 +37,7 @@ module "cpm_dashboard" {
   cloudfront_alarms          = var.cpm_dashboard.cloudfront_alarms
   cloudfront_distribution_id = var.cpm_dashboard.cloudfront_distribution_id
   instance_metric_namespace  = var.cpm_dashboard.instance_metric_namespace
+  alarms_sns_topic_arn       = var.alarms_sns_topic_arn
 }
 
 module "jaspersoft_dashboard" {
@@ -43,5 +47,6 @@ module "jaspersoft_dashboard" {
   cloudfront_alarms          = var.jaspersoft_dashboard.cloudfront_alarms
   cloudfront_distribution_id = var.jaspersoft_dashboard.cloudfront_distribution_id
   instance_metric_namespace  = var.jaspersoft_dashboard.instance_metric_namespace
+  alarms_sns_topic_arn       = var.alarms_sns_topic_arn
 }
 

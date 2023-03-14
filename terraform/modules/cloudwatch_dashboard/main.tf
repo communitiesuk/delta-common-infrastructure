@@ -1,10 +1,14 @@
 locals {
-  # ECS instance metrics from the deployment. E.g. see <delta>/terraform/modules/delta_servers/app_logs.tf
-  ecs_metrics = var.instance_metric_namespace == null ? tolist([]) : tolist([
+  green  = "#2ca02c"
+  blue   = "#1f77b4"
+  orange = "#ff7f0e"
+  red    = "#d62728"
+  # Instance metrics from the deployment. E.g. see <delta>/terraform/modules/delta_servers/app_logs.tf
+  instance_metrics = var.instance_metric_namespace == null ? tolist([]) : tolist([
     {
       width : 6,
       height : 6,
-      x : 12,
+      x : 18,
       y : 2,
       type : "metric",
       properties : {
@@ -23,7 +27,7 @@ locals {
       type : "metric",
       width : 6,
       height : 6,
-      x : 12,
+      x : 18,
       y : 8,
       properties : {
         "title" : "System disk used %",
@@ -41,7 +45,7 @@ locals {
       type : "metric",
       width : 6,
       height : 6,
-      x : 12,
+      x : 18,
       y : 14,
       properties : {
         "title" : "RAM used %",
@@ -71,7 +75,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           x : 0,
           type : "alarm",
           properties : {
-            "alarms" : var.cloudfront_alarms,
+            "alarms" : concat(var.cloudfront_alarms, [aws_cloudwatch_metric_alarm.alb_target_server_error_rate_alarm.arn, aws_cloudwatch_metric_alarm.alb_target_client_error_rate_alarm.arn]),
             "title" : "Alarms"
           }
         },
@@ -122,6 +126,23 @@ resource "aws_cloudwatch_dashboard" "main" {
           width : 6,
           height : 6,
           x : 6,
+          y : 2,
+          type : "metric",
+          properties : {
+            "metrics" : [
+              ["AWS/ApplicationELB", "ProcessedBytes", "LoadBalancer", var.alb_arn_suffix]
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Sum",
+            "period" : 300
+          }
+        },
+        {
+          width : 6,
+          height : 6,
+          x : 6,
           y : 8,
           type : "metric",
           properties : {
@@ -164,23 +185,6 @@ resource "aws_cloudwatch_dashboard" "main" {
           width : 6,
           height : 6,
           x : 6,
-          y : 2,
-          type : "metric",
-          properties : {
-            "metrics" : [
-              ["AWS/ApplicationELB", "ProcessedBytes", "LoadBalancer", var.alb_arn_suffix]
-            ],
-            "view" : "timeSeries",
-            "stacked" : false,
-            "region" : "eu-west-1",
-            "stat" : "Sum",
-            "period" : 300
-          }
-        },
-        {
-          width : 6,
-          height : 6,
-          x : 6,
           y : 20,
           type : "metric",
           properties : {
@@ -194,7 +198,169 @@ resource "aws_cloudwatch_dashboard" "main" {
             "period" : 300
           }
         },
-      ], local.ecs_metrics)
+        {
+          width : 6,
+          height : 6,
+          x : 12,
+          y : 2,
+          type : "metric",
+          properties : {
+            "metrics" : [
+              ["AWS/ApplicationELB", "HTTPCode_ELB_4XX_Count", "LoadBalancer", var.alb_arn_suffix]
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Sum",
+            "period" : 300
+          }
+        },
+        {
+          width : 6,
+          height : 6,
+          x : 12,
+          y : 8,
+          type : "metric",
+          properties : {
+            "metrics" : [
+              ["AWS/ApplicationELB", "HTTPCode_ELB_5XX_Count", "LoadBalancer", var.alb_arn_suffix],
+              ["AWS/ApplicationELB", "HTTPCode_ELB_500_Count", "LoadBalancer", var.alb_arn_suffix],
+              ["AWS/ApplicationELB", "HTTPCode_ELB_502_Count", "LoadBalancer", var.alb_arn_suffix],
+              ["AWS/ApplicationELB", "HTTPCode_ELB_503_Count", "LoadBalancer", var.alb_arn_suffix],
+              ["AWS/ApplicationELB", "HTTPCode_ELB_504_Count", "LoadBalancer", var.alb_arn_suffix],
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Sum",
+            "period" : 300
+          }
+        },
+        {
+          width : 6,
+          height : 6,
+          x : 12,
+          y : 14,
+          type : "metric",
+          properties : {
+            "title" : "ALB responses from targets",
+            "metrics" : [
+              ["AWS/ApplicationELB", "HTTPCode_Target_2XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.green }],
+              ["AWS/ApplicationELB", "HTTPCode_Target_3XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.blue }],
+              ["AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.orange }],
+              ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.red }],
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Sum",
+            "period" : 300
+          }
+        },
+        {
+          width : 6,
+          height : 6,
+          x : 12,
+          y : 20,
+          type : "metric",
+          properties : {
+            "title" : "ALB error responses from targets",
+            "metrics" : [
+              ["AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.orange }],
+              ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.red }],
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Sum",
+            "period" : 300
+          }
+        },
+      ], local.instance_metrics)
     }
   )
+}
+
+resource "aws_cloudwatch_metric_alarm" "alb_target_server_error_rate_alarm" {
+  alarm_name          = "${var.dashboard_name}-target-server-error-rate"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+
+  threshold = var.alb_target_server_error_rate_alarm_threshold_percent
+
+  alarm_description         = "High ALB target 5xx error rate"
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
+
+  metric_query {
+    id          = "thresholded_server_error_rate"
+    expression  = "IF(FILL(error_response_count, 0) > ${var.alb_target_server_error_rate_alarm_threshold_count}, (FILL(error_response_count, 0) * 100)/(FILL(ok_response_count, 1) + FILL(error_response_count, 0)), 0)"
+    label       = "Thresholded 5xx ALB target error rate %"
+    return_data = "true"
+  }
+
+  metric_query {
+    id = "error_response_count"
+    metric {
+      metric_name = "HTTPCode_Target_5XX_Count"
+      namespace   = "AWS/ApplicationELB"
+      period      = "300"
+      stat        = "Sum"
+      dimensions  = { "LoadBalancer" : var.alb_arn_suffix }
+    }
+  }
+
+  metric_query {
+    id = "ok_response_count"
+    metric {
+      metric_name = "HTTPCode_Target_2XX_Count"
+      namespace   = "AWS/ApplicationELB"
+      period      = "300"
+      stat        = "Sum"
+      dimensions  = { "LoadBalancer" : var.alb_arn_suffix }
+    }
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "alb_target_client_error_rate_alarm" {
+  alarm_name          = "${var.dashboard_name}-target-client-error-rate"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+
+  threshold = var.alb_target_client_error_rate_alarm_threshold_percent
+
+  alarm_description         = "High ALB target 4xx error rate"
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
+
+  metric_query {
+    id          = "thresholded_client_error_rate"
+    expression  = "IF(FILL(error_response_count, 0) > ${var.alb_target_client_error_rate_alarm_threshold_count}, (FILL(error_response_count, 0) * 100)/(FILL(ok_response_count, 1) + FILL(error_response_count, 0)), 0)"
+    label       = "Thresholded 4xx ALB target error rate %"
+    return_data = "true"
+  }
+
+  metric_query {
+    id = "error_response_count"
+    metric {
+      metric_name = "HTTPCode_Target_4XX_Count"
+      namespace   = "AWS/ApplicationELB"
+      period      = "300"
+      stat        = "Sum"
+      dimensions  = { "LoadBalancer" : var.alb_arn_suffix }
+    }
+  }
+
+  metric_query {
+    id = "ok_response_count"
+    metric {
+      metric_name = "HTTPCode_Target_2XX_Count"
+      namespace   = "AWS/ApplicationELB"
+      period      = "300"
+      stat        = "Sum"
+      dimensions  = { "LoadBalancer" : var.alb_arn_suffix }
+    }
+  }
 }

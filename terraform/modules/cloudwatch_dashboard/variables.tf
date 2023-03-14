@@ -23,3 +23,31 @@ variable "instance_metric_namespace" {
   type        = string
   default     = null
 }
+
+variable "alb_target_server_error_rate_alarm_threshold_percent" {
+  type        = number
+  description = "Threshold for alarm on 5xx responses as percentage of 2xx responses, count threshold must also be met"
+  default     = 10
+}
+
+variable "alb_target_server_error_rate_alarm_threshold_count" {
+  type        = number
+  description = "Static threshold for minimum number of 5xx responses in period to trigger alarm"
+  default     = 20
+}
+
+variable "alb_target_client_error_rate_alarm_threshold_percent" {
+  type        = number
+  description = "Threshold for alarm on 4xx responses as percentage of 2xx responses, count threshold must also be met"
+  default     = 20
+}
+
+variable "alb_target_client_error_rate_alarm_threshold_count" {
+  type        = number
+  description = "Static threshold for minimum number of 4xx responses in period to trigger alarm"
+  default     = 50
+}
+
+variable "alarms_sns_topic_arn" {
+  type = string
+}
