@@ -131,7 +131,7 @@ resource "aws_cloudfront_distribution" "main" {
     response_headers_policy_id = aws_cloudfront_response_headers_policy.static_errors.id
 
     forwarded_values {
-      query_string = false
+      query_string = true
 
       cookies {
         forward = "none"
