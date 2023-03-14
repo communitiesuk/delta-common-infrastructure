@@ -64,43 +64,6 @@ resource "aws_cloudfront_response_headers_policy" "static_errors" {
   }
 }
 
-resource "aws_cloudfront_response_headers_policy" "cache" {
-  name    = "${var.prefix}cloudfront-policy-cache"
-  comment = "Headers for resources to be cached"
-
-  security_headers_config {
-    frame_options {
-      frame_option = "SAMEORIGIN"
-      override     = false
-    }
-
-    referrer_policy {
-      referrer_policy = "no-referrer"
-      override        = false
-    }
-
-    strict_transport_security {
-      access_control_max_age_sec = 31536000
-      include_subdomains         = true
-      override                   = false
-    }
-  }
-
-  custom_headers_config {
-    items {
-      header   = "Permissions-Policy"
-      value    = "geolocation=(), interest-cohort=()"
-      override = false
-    }
-
-    items {
-      header   = "Cache-Control"
-      value    = "public, max-age=31536000"
-      override = true
-    }
-  }
-}
-
 resource "aws_cloudfront_distribution" "main" {
   aliases = var.cloudfront_domain == null ? [] : var.cloudfront_domain.aliases
 
@@ -189,16 +152,10 @@ resource "aws_cloudfront_distribution" "main" {
       min_ttl                    = 0
       default_ttl                = 0
       max_ttl                    = 86400
-      response_headers_policy_id = aws_cloudfront_response_headers_policy.cache.id
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
 
       forwarded_values {
         query_string = true
-
-        cookies {
-          forward = "all"
-        }
-
-        headers = ["*"]
       }
     }
   }
