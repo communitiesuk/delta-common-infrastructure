@@ -133,13 +133,3 @@ resource "aws_shield_protection" "main" {
 # with the cloudfront distribution here.
 # See: https://aws.amazon.com/about-aws/whats-new/2020/02/aws-shield-advanced-now-supports-health-based-detection/
 # However, the benefit is minor (possibly faster response to DDoS) and the geo-restriction may interfere.
-
-module "monitoring" {
-  source                      = "../cloudfront_monitoring"
-  cloudfront_distribution_id  = aws_cloudfront_distribution.main.id
-  alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
-  prefix                      = var.prefix
-
-  server_error_rate_alarm_threshold_percent = var.server_error_rate_alarm_threshold_percent
-  client_error_rate_alarm_threshold_percent = var.client_error_rate_alarm_threshold_percent
-}

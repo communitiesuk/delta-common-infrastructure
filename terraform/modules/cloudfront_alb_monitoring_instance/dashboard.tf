@@ -3,6 +3,7 @@ locals {
   blue   = "#1f77b4"
   orange = "#ff7f0e"
   red    = "#d62728"
+
   # Instance metrics from the deployment. E.g. see <delta>/terraform/modules/delta_servers/app_logs.tf
   instance_metrics = var.instance_metric_namespace == null ? tolist([]) : tolist([
     {
@@ -63,7 +64,7 @@ locals {
 }
 
 resource "aws_cloudwatch_dashboard" "main" {
-  dashboard_name = var.dashboard_name
+  dashboard_name = "${var.prefix}-cloudfront-alb"
   dashboard_body = jsonencode(
     {
       "widgets" : concat([
@@ -75,7 +76,13 @@ resource "aws_cloudwatch_dashboard" "main" {
           x : 0,
           type : "alarm",
           properties : {
-            "alarms" : concat(var.cloudfront_alarms, [aws_cloudwatch_metric_alarm.alb_target_server_error_rate_alarm.arn, aws_cloudwatch_metric_alarm.alb_target_client_error_rate_alarm.arn]),
+            "alarms" : [
+              aws_cloudwatch_metric_alarm.alb_target_server_error_rate_alarm.arn,
+              aws_cloudwatch_metric_alarm.alb_target_client_error_rate_alarm.arn,
+              aws_cloudwatch_metric_alarm.client_error_rate_alarm.arn,
+              aws_cloudwatch_metric_alarm.server_error_rate_alarm.arn,
+              aws_cloudwatch_metric_alarm.origin_latency_high_alarm.arn,
+            ],
             "title" : "Alarms"
           }
         },
@@ -88,7 +95,10 @@ resource "aws_cloudwatch_dashboard" "main" {
           properties : {
             "title" : "CloudFront 5xx error rates",
             "metrics" : [
-              ["AWS/CloudFront", "5xxErrorRate", "Region", "Global", "DistributionId", var.cloudfront_distribution_id, { region : "us-east-1" }],
+              [
+                "AWS/CloudFront", "5xxErrorRate", "Region", "Global", "DistributionId", var.cloudfront_distribution_id,
+                { region : "us-east-1" }
+              ],
               [".", "504ErrorRate", ".", ".", ".", ".", { region : "us-east-1" }],
               [".", "503ErrorRate", ".", ".", ".", ".", { region : "us-east-1" }],
               [".", "502ErrorRate", ".", ".", ".", ".", { region : "us-east-1" }]
@@ -109,7 +119,10 @@ resource "aws_cloudwatch_dashboard" "main" {
           properties : {
             "title" : "CloudFront 4xx error rates",
             "metrics" : [
-              ["AWS/CloudFront", "4xxErrorRate", "Region", "Global", "DistributionId", var.cloudfront_distribution_id, { region : "us-east-1" }],
+              [
+                "AWS/CloudFront", "4xxErrorRate", "Region", "Global", "DistributionId", var.cloudfront_distribution_id,
+                { region : "us-east-1" }
+              ],
               [".", "404ErrorRate", ".", ".", ".", ".", { region : "us-east-1" }],
               [".", "403ErrorRate", ".", ".", ".", ".", { region : "us-east-1" }],
               [".", "401ErrorRate", ".", ".", ".", ".", { region : "us-east-1" }]
@@ -129,6 +142,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 2,
           type : "metric",
           properties : {
+            "title" : "ALB ProcessedBytes",
             "metrics" : [
               ["AWS/ApplicationELB", "ProcessedBytes", "LoadBalancer", var.alb_arn_suffix]
             ],
@@ -167,7 +181,10 @@ resource "aws_cloudwatch_dashboard" "main" {
           type : "metric",
           properties : {
             "metrics" : [
-              ["AWS/ApplicationELB", "ActiveConnectionCount", "LoadBalancer", var.alb_arn_suffix, { id : "m1", stat : "Sum" }]
+              [
+                "AWS/ApplicationELB", "ActiveConnectionCount", "LoadBalancer", var.alb_arn_suffix,
+                { id : "m1", stat : "Sum" }
+              ]
             ],
             "legend" : {
               "position" : "bottom"
@@ -188,6 +205,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 20,
           type : "metric",
           properties : {
+            "title" : "ALB NewConnectionCount",
             "metrics" : [
               ["AWS/ApplicationELB", "NewConnectionCount", "LoadBalancer", var.alb_arn_suffix]
             ],
@@ -205,6 +223,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 2,
           type : "metric",
           properties : {
+            "title" : "ALB-generated 4xx count",
             "metrics" : [
               ["AWS/ApplicationELB", "HTTPCode_ELB_4XX_Count", "LoadBalancer", var.alb_arn_suffix]
             ],
@@ -222,6 +241,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           y : 8,
           type : "metric",
           properties : {
+            "title" : "ALB-generated 5xx count",
             "metrics" : [
               ["AWS/ApplicationELB", "HTTPCode_ELB_5XX_Count", "LoadBalancer", var.alb_arn_suffix],
               ["AWS/ApplicationELB", "HTTPCode_ELB_500_Count", "LoadBalancer", var.alb_arn_suffix],
@@ -245,10 +265,22 @@ resource "aws_cloudwatch_dashboard" "main" {
           properties : {
             "title" : "ALB responses from targets",
             "metrics" : [
-              ["AWS/ApplicationELB", "HTTPCode_Target_2XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.green }],
-              ["AWS/ApplicationELB", "HTTPCode_Target_3XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.blue }],
-              ["AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.orange }],
-              ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.red }],
+              [
+                "AWS/ApplicationELB", "HTTPCode_Target_2XX_Count", "LoadBalancer", var.alb_arn_suffix,
+                { color : local.green }
+              ],
+              [
+                "AWS/ApplicationELB", "HTTPCode_Target_3XX_Count", "LoadBalancer", var.alb_arn_suffix,
+                { color : local.blue }
+              ],
+              [
+                "AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix,
+                { color : local.orange }
+              ],
+              [
+                "AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix,
+                { color : local.red }
+              ],
             ],
             "view" : "timeSeries",
             "stacked" : false,
@@ -266,8 +298,14 @@ resource "aws_cloudwatch_dashboard" "main" {
           properties : {
             "title" : "ALB error responses from targets",
             "metrics" : [
-              ["AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.orange }],
-              ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix, { "color" : local.red }],
+              [
+                "AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix,
+                { color : local.orange }
+              ],
+              [
+                "AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix,
+                { color : local.red }
+              ],
             ],
             "view" : "timeSeries",
             "stacked" : false,
@@ -279,88 +317,4 @@ resource "aws_cloudwatch_dashboard" "main" {
       ], local.instance_metrics)
     }
   )
-}
-
-resource "aws_cloudwatch_metric_alarm" "alb_target_server_error_rate_alarm" {
-  alarm_name          = "${var.dashboard_name}-target-server-error-rate"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
-
-  threshold = var.alb_target_server_error_rate_alarm_threshold_percent
-
-  alarm_description         = "High ALB target 5xx error rate"
-  alarm_actions             = [var.alarms_sns_topic_arn]
-  ok_actions                = [var.alarms_sns_topic_arn]
-  insufficient_data_actions = [var.alarms_sns_topic_arn]
-
-  metric_query {
-    id          = "thresholded_server_error_rate"
-    expression  = "IF(FILL(error_response_count, 0) > ${var.alb_target_server_error_rate_alarm_threshold_count}, (FILL(error_response_count, 0) * 100)/(FILL(ok_response_count, 1) + FILL(error_response_count, 0)), 0)"
-    label       = "Thresholded 5xx ALB target error rate %"
-    return_data = "true"
-  }
-
-  metric_query {
-    id = "error_response_count"
-    metric {
-      metric_name = "HTTPCode_Target_5XX_Count"
-      namespace   = "AWS/ApplicationELB"
-      period      = "300"
-      stat        = "Sum"
-      dimensions  = { "LoadBalancer" : var.alb_arn_suffix }
-    }
-  }
-
-  metric_query {
-    id = "ok_response_count"
-    metric {
-      metric_name = "HTTPCode_Target_2XX_Count"
-      namespace   = "AWS/ApplicationELB"
-      period      = "300"
-      stat        = "Sum"
-      dimensions  = { "LoadBalancer" : var.alb_arn_suffix }
-    }
-  }
-}
-
-resource "aws_cloudwatch_metric_alarm" "alb_target_client_error_rate_alarm" {
-  alarm_name          = "${var.dashboard_name}-target-client-error-rate"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
-
-  threshold = var.alb_target_client_error_rate_alarm_threshold_percent
-
-  alarm_description         = "High ALB target 4xx error rate"
-  alarm_actions             = [var.alarms_sns_topic_arn]
-  ok_actions                = [var.alarms_sns_topic_arn]
-  insufficient_data_actions = [var.alarms_sns_topic_arn]
-
-  metric_query {
-    id          = "thresholded_client_error_rate"
-    expression  = "IF(FILL(error_response_count, 0) > ${var.alb_target_client_error_rate_alarm_threshold_count}, (FILL(error_response_count, 0) * 100)/(FILL(ok_response_count, 1) + FILL(error_response_count, 0)), 0)"
-    label       = "Thresholded 4xx ALB target error rate %"
-    return_data = "true"
-  }
-
-  metric_query {
-    id = "error_response_count"
-    metric {
-      metric_name = "HTTPCode_Target_4XX_Count"
-      namespace   = "AWS/ApplicationELB"
-      period      = "300"
-      stat        = "Sum"
-      dimensions  = { "LoadBalancer" : var.alb_arn_suffix }
-    }
-  }
-
-  metric_query {
-    id = "ok_response_count"
-    metric {
-      metric_name = "HTTPCode_Target_2XX_Count"
-      namespace   = "AWS/ApplicationELB"
-      period      = "300"
-      stat        = "Sum"
-      dimensions  = { "LoadBalancer" : var.alb_arn_suffix }
-    }
-  }
 }

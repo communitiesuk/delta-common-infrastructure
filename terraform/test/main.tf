@@ -54,7 +54,10 @@ module "ses_identity" {
 module "dluhc_dev_validation_records" {
   source         = "../modules/dns_records"
   hosted_zone_id = var.secondary_domain_zone_id
-  records        = [for record in module.ses_identity.required_validation_records : record if endswith(record.record_name, "${var.secondary_domain}.")]
+  records = [
+    for record in module.ses_identity.required_validation_records : record
+    if endswith(record.record_name, "${var.secondary_domain}.")
+  ]
 }
 
 module "networking" {
@@ -123,44 +126,36 @@ module "public_albs" {
   alb_s3_log_expiration_days    = local.s3_log_expiration_days
 }
 
-module "dashboards" {
-  source = "../modules/cloudwatch_dashboards"
-  delta_dashboard = {
-    dashboard_name             = "${local.environment}-website"
+module "cloudfront_alb_monitoring" {
+  source = "../modules/cloudfront_alb_monitoring"
+  delta_website = {
     cloudfront_distribution_id = module.cloudfront_distributions.delta_cloudfront_distribution_id
-    cloudfront_alarms          = module.cloudfront_distributions.delta_cloudfront_alarms
     alb_arn_suffix             = module.public_albs.delta.arn_suffix
     instance_metric_namespace  = "${local.environment}/DeltaServers"
   }
-  api_dashboard = {
-    dashboard_name             = "${local.environment}-api"
+  delta_api = {
     cloudfront_distribution_id = module.cloudfront_distributions.api_cloudfront_distribution_id
-    cloudfront_alarms          = module.cloudfront_distributions.api_cloudfront_alarms
     alb_arn_suffix             = module.public_albs.delta_api.arn_suffix
     instance_metric_namespace  = null
   }
-  keycloak_dashboard = {
-    dashboard_name             = "${local.environment}-keycloak"
+  keycloak = {
     cloudfront_distribution_id = module.cloudfront_distributions.keycloak_cloudfront_distribution_id
-    cloudfront_alarms          = module.cloudfront_distributions.keycloak_cloudfront_alarms
     alb_arn_suffix             = module.public_albs.keycloak.arn_suffix
     instance_metric_namespace  = null
   }
-  cpm_dashboard = {
-    dashboard_name             = "${local.environment}-cpm"
+  cpm = {
     cloudfront_distribution_id = module.cloudfront_distributions.cpm_cloudfront_distribution_id
-    cloudfront_alarms          = module.cloudfront_distributions.cpm_cloudfront_alarms
     alb_arn_suffix             = module.public_albs.cpm.arn_suffix
     instance_metric_namespace  = null
   }
-  jaspersoft_dashboard = {
-    dashboard_name             = "${local.environment}-jaspersoft"
+  jaspersoft = {
     cloudfront_distribution_id = module.cloudfront_distributions.jaspersoft_cloudfront_distribution_id
-    cloudfront_alarms          = module.cloudfront_distributions.jaspersoft_cloudfront_alarms
     alb_arn_suffix             = module.public_albs.jaspersoft.arn_suffix
     instance_metric_namespace  = "${local.environment}/Jaspersoft"
   }
-  alarms_sns_topic_arn = module.notifications.alarms_sns_topic_arn
+  alarms_sns_topic_arn        = module.notifications.alarms_sns_topic_arn
+  alarms_sns_topic_global_arn = module.notifications.alarms_sns_topic_global_arn
+  environment                 = local.environment
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates.
