@@ -131,10 +131,35 @@ resource "aws_cloudfront_distribution" "main" {
     response_headers_policy_id = aws_cloudfront_response_headers_policy.static_errors.id
 
     forwarded_values {
-      query_string = false
+      query_string = true
 
       cookies {
         forward = "none"
+      }
+    }
+  }
+
+  dynamic "ordered_cache_behavior" {
+    for_each = ["/resources/*", "/public/*", "/govuk/assets/*"]
+    iterator = pattern
+
+    content {
+      allowed_methods            = ["HEAD", "GET", "OPTIONS"]
+      cached_methods             = ["GET", "HEAD", "OPTIONS"]
+      target_origin_id           = "primary"
+      path_pattern               = pattern.value
+      viewer_protocol_policy     = "redirect-to-https"
+      min_ttl                    = 0
+      default_ttl                = 0
+      max_ttl                    = 86400
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+
+      forwarded_values {
+        query_string = true
+
+        cookies {
+          forward = "none"
+        }
       }
     }
   }
