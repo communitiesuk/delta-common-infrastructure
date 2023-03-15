@@ -12,6 +12,12 @@ variable "waf_per_ip_rate_limit" {
   description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes"
 }
 
+variable "login_ip_rate_limit" {
+  type        = number
+  default     = 100
+  description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes to the login page"
+}
+
 variable "apply_aws_shield" {
   type = bool
 }
@@ -42,8 +48,9 @@ variable "delta" {
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
 
-    origin_read_timeout                = optional(number)
-    error_rate_alarm_threshold_percent = optional(number)
+    origin_read_timeout                       = optional(number)
+    server_error_rate_alarm_threshold_percent = optional(number)
+    client_error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -60,7 +67,8 @@ variable "api" {
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
 
-    error_rate_alarm_threshold_percent = optional(number)
+    server_error_rate_alarm_threshold_percent = optional(number)
+    client_error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -77,7 +85,8 @@ variable "keycloak" {
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
 
-    error_rate_alarm_threshold_percent = optional(number)
+    server_error_rate_alarm_threshold_percent = optional(number)
+    client_error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -94,8 +103,9 @@ variable "cpm" {
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
 
-    origin_read_timeout                = optional(number)
-    error_rate_alarm_threshold_percent = optional(number)
+    origin_read_timeout                       = optional(number)
+    server_error_rate_alarm_threshold_percent = optional(number)
+    client_error_rate_alarm_threshold_percent = optional(number)
   })
 }
 
@@ -112,7 +122,8 @@ variable "jaspersoft" {
     geo_restriction_countries = optional(list(string))
     ip_allowlist              = optional(list(string))
 
-    error_rate_alarm_threshold_percent = optional(number)
+    server_error_rate_alarm_threshold_percent = optional(number)
+    client_error_rate_alarm_threshold_percent = optional(number)
   })
 }
 

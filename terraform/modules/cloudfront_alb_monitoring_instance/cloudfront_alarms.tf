@@ -23,20 +23,20 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
   # Global cloudfront lives
   provider = aws.us-east-1
 
-  alarm_name          = "${var.prefix}client-error-rate"
+  alarm_name          = "${var.prefix}-client-error-rate"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = var.alarm_evaluation_periods
+  evaluation_periods  = 2
 
-  threshold          = var.error_rate_alarm_threshold_percent
+  threshold          = var.cloudfront_client_error_rate_alarm_threshold_percent
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
-  alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)
+  alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.cloudfront_metric_period_seconds * 2 / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
   metric_query {
     id          = "thresholded_client_error_rate"
-    expression  = "IF(total_requests > 20, actual_client_error_rate, -1)"
+    expression  = "IF(total_requests > 50, actual_client_error_rate, -1)"
     label       = "Thresholded 4xx CloudFront error rate"
     return_data = "true"
   }
@@ -76,20 +76,20 @@ resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
   # Global cloudfront lives
   provider = aws.us-east-1
 
-  alarm_name          = "${var.prefix}server-error-rate"
+  alarm_name          = "${var.prefix}-server-error-rate"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = var.alarm_evaluation_periods
+  evaluation_periods  = 2
 
-  threshold          = var.error_rate_alarm_threshold_percent
+  threshold          = var.cloudfront_server_error_rate_alarm_threshold_percent
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
-  alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)
+  alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.cloudfront_metric_period_seconds * 2 / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
   metric_query {
     id          = "thresholded_server_error_rate"
-    expression  = "IF(total_requests > 20, actual_server_error_rate, -1)"
+    expression  = "IF(total_requests > 50, actual_server_error_rate, -1)"
     label       = "Thresholded 5xx CloudFront error rate"
     return_data = "true"
   }
@@ -129,18 +129,18 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_high_alarm" {
   # Global cloudfront lives
   provider = aws.us-east-1
 
-  alarm_name          = "${var.prefix}origin-latency-high-rate"
+  alarm_name          = "${var.prefix}-origin-latency-high-rate"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = var.alarm_evaluation_periods
+  evaluation_periods  = 2
 
   metric_name        = "OriginLatency"
   namespace          = "AWS/CloudFront"
-  period             = var.metric_period_seconds
+  period             = var.cloudfront_metric_period_seconds
   statistic          = "Average"
-  threshold          = var.origin_latency_high_alarm_threshold_ms
+  threshold          = var.cloudfront_origin_latency_high_alarm_threshold_ms
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
-  alarm_description = format(local.alarm_description_template, "Origin Latency", "High", var.metric_period_seconds * var.alarm_evaluation_periods / 60)
+  alarm_description = format(local.alarm_description_template, "Origin Latency", "High", var.cloudfront_metric_period_seconds * 2 / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 

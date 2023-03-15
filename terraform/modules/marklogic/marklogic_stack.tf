@@ -11,6 +11,11 @@ data "aws_secretsmanager_secret_version" "ml_admin_user" {
 
 locals {
   stack_name = "marklogic-stack-${var.environment}"
+  amis = {
+    # https://aws.amazon.com/marketplace/server/configuration?productId=52ce1567-c738-4208-be90-08b575f2c41d
+    "10.0-9.2" = "ami-09a93a64cd7176e6e"
+    "10.0-9.5" = "ami-07701d367691e0220"
+  }
 }
 
 resource "aws_cloudformation_stack" "marklogic" {
@@ -28,6 +33,7 @@ resource "aws_cloudformation_stack" "marklogic" {
     PrivateSubnet1 = var.private_subnets[0].id
     PrivateSubnet2 = var.private_subnets[1].id
     PrivateSubnet3 = var.private_subnets[2].id
+    AMI            = local.amis[var.marklogic_ami_version]
 
     DataVolume1 = aws_ebs_volume.marklogic_data_volumes[var.private_subnets[0].tags.Name].id
     DataVolume2 = aws_ebs_volume.marklogic_data_volumes[var.private_subnets[1].tags.Name].id

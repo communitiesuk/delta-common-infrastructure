@@ -30,9 +30,27 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilisation_high" {
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
   statistic           = "Maximum"
-  threshold           = 80
+  threshold           = 90
 
   alarm_description         = format(local.alarm_description_template, "Memory Usage", "High", 10)
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
+
+  dimensions = {}
+}
+
+resource "aws_cloudwatch_metric_alarm" "memory_utilisation_high_sustained" {
+  alarm_name          = "marklogic-${var.environment}-memory-used-high-sustained"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 5
+  metric_name         = "mem_used_percent"
+  namespace           = "${var.environment}/MarkLogic"
+  period              = 300
+  statistic           = "Maximum"
+  threshold           = 85
+
+  alarm_description         = format(local.alarm_description_template, "Memory Usage", "High (sustained)", 25)
   alarm_actions             = [var.alarms_sns_topic_arn]
   ok_actions                = [var.alarms_sns_topic_arn]
   insufficient_data_actions = [var.alarms_sns_topic_arn]
@@ -97,5 +115,48 @@ resource "aws_cloudwatch_metric_alarm" "data_disk_utilisation_high_sustained" {
 
   dimensions = {
     path = "/var/opt/MarkLogic"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "unhealthy_host_high" {
+  alarm_name          = "marklogic-${var.environment}-lb-unhealthy-host-count-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "UnHealthyHostCount"
+  namespace           = "AWS/NetworkELB"
+  period              = 300
+  statistic           = "Maximum"
+  threshold           = 0
+
+  alarm_description  = "There is at least one unhealthy host"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "breaching"
+
+  dimensions = {
+    # The target groups all use the same healthcheck so it doesn't matter which one we pick
+    "TargetGroup" : aws_lb_target_group.ml["8001"].arn_suffix
+    "LoadBalancer" : aws_lb.ml_lb.arn_suffix
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "healthy_host_low" {
+  alarm_name          = "marklogic-${var.environment}-lb-healthy-host-count-low"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "HealthyHostCount"
+  namespace           = "AWS/NetworkELB"
+  period              = 300
+  statistic           = "Minimum"
+  threshold           = 3
+
+  alarm_description  = "There are less healthy hosts than expected"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "breaching"
+
+  dimensions = {
+    "TargetGroup" : aws_lb_target_group.ml["8001"].arn_suffix
+    "LoadBalancer" : aws_lb.ml_lb.arn_suffix
   }
 }

@@ -1,8 +1,9 @@
 # Inspired by the app_logs in the `delta` project.
 
 locals {
-  app_log_group_base_name = "${var.environment}/marklogic"
-  ssm_log_group_name      = "${var.environment}/marklogic-ssm"
+  app_log_group_base_name         = "${var.environment}/marklogic"
+  ssm_log_group_name              = "${var.environment}/marklogic-ssm"
+  taskserver_error_log_group_name = "${local.app_log_group_base_name}-taskserver-error"
 }
 
 module "marklogic_log_group" {
@@ -23,7 +24,7 @@ module "marklogic_log_group" {
       "${local.app_log_group_base_name}-audit",
       "${local.app_log_group_base_name}-crash",
       "${local.app_log_group_base_name}-error",
-      "${local.app_log_group_base_name}-taskserver-error",
+      local.taskserver_error_log_group_name,
       "${local.app_log_group_base_name}-taskserver-request"
     ]
   )

@@ -189,6 +189,9 @@
                 <entry>
                     <key>
                         <!-- Users get access by having a Delta role in AD that is a member of jasperreports-users/-admins -->
+                        <!-- Files/folders in the JasperSoft UI can have permissions configured individually and reference external roles. -->
+                        <!-- Normal Delta users have read only access to the Delta folder -->
+                        <!-- datamart-delta-user-dclg users have (read+write) access to the Reports/MHCLG folder; we explicitly set "no access" for normal users -->
                         <value>ROLE_JASPERREPORTS-USERS</value>
                     </key>
                     <value>ROLE_USER</value>

@@ -75,6 +75,11 @@ output "mailhog_private_subnet" {
   description = "Private /24 subnet for MailHog, if enabled"
 }
 
+output "redis_private_subnets" {
+  value       = aws_subnet.redis
+  description = "Private /24 subnets for redis"
+}
+
 output "private_dns" {
   value = {
     zone_id     = aws_route53_zone.private.zone_id

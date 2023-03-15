@@ -10,4 +10,4 @@ One exception: the test environment (and only the test environment) has an extra
 
 ## IP restrictions
 
-In production the Delta API, Keycloak, CPM and Jaspersoft CloudFront distributions are IP restricted to lists that include developers and consumers of the APIs. See [ip_lists.tf](terraform/production/ip_lists.tf) for the allowlists.
+In production the Delta API, Keycloak, CPM and Jaspersoft CloudFront distributions are IP restricted to lists that include developers and consumers of the APIs. See [ip_lists.tf](../../terraform/production/ip_lists.tf) for the allowlists.

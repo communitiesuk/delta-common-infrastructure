@@ -39,7 +39,8 @@ locals {
 module "communities_only_ssl_certs" {
   source = "../modules/ssl_certificates"
 
-  primary_domain = var.primary_domain
+  primary_domain             = var.primary_domain
+  validate_and_check_renewal = true
 }
 
 module "networking" {
@@ -116,6 +117,38 @@ module "public_albs" {
   alb_s3_log_expiration_days    = local.s3_log_expiration_days
 }
 
+module "cloudfront_alb_monitoring" {
+  source = "../modules/cloudfront_alb_monitoring"
+  delta_website = {
+    cloudfront_distribution_id = module.cloudfront_distributions.delta_cloudfront_distribution_id
+    alb_arn_suffix             = module.public_albs.delta.arn_suffix
+    instance_metric_namespace  = "${local.environment}/DeltaServers"
+  }
+  delta_api = {
+    cloudfront_distribution_id = module.cloudfront_distributions.api_cloudfront_distribution_id
+    alb_arn_suffix             = module.public_albs.delta_api.arn_suffix
+    instance_metric_namespace  = null
+  }
+  keycloak = {
+    cloudfront_distribution_id = module.cloudfront_distributions.keycloak_cloudfront_distribution_id
+    alb_arn_suffix             = module.public_albs.keycloak.arn_suffix
+    instance_metric_namespace  = null
+  }
+  cpm = {
+    cloudfront_distribution_id = module.cloudfront_distributions.cpm_cloudfront_distribution_id
+    alb_arn_suffix             = module.public_albs.cpm.arn_suffix
+    instance_metric_namespace  = null
+  }
+  jaspersoft = {
+    cloudfront_distribution_id = module.cloudfront_distributions.jaspersoft_cloudfront_distribution_id
+    alb_arn_suffix             = module.public_albs.jaspersoft.arn_suffix
+    instance_metric_namespace  = "${local.environment}/Jaspersoft"
+  }
+  alarms_sns_topic_arn        = module.notifications.alarms_sns_topic_arn
+  alarms_sns_topic_global_arn = module.notifications.alarms_sns_topic_global_arn
+  environment                 = local.environment
+}
+
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
 # See comment in test/main.tf
 module "cloudfront_distributions" {
@@ -128,6 +161,7 @@ module "cloudfront_distributions" {
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
   swagger_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_global_arn              = module.notifications.alarms_sns_topic_global_arn
+  login_ip_rate_limit                      = 100
 
   delta = {
     alb = module.public_albs.delta
@@ -138,6 +172,7 @@ module "cloudfront_distributions" {
     # Some TSO staff are located in India (IN)
     geo_restriction_countries = ["GB", "IE", "IN"]
     # We don't want to restrict staging until we are able to confirm who needs access
+    client_error_rate_alarm_threshold_percent = 15
   }
   api = {
     alb = module.public_albs.delta_api
@@ -217,6 +252,7 @@ module "marklogic" {
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3a.2xlarge"
+  marklogic_ami_version    = "10.0-9.5"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
   data_volume = {
@@ -225,7 +261,7 @@ module "marklogic" {
     throughput_MiB_per_sec = 250
   }
 
-  ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
   extra_instance_policy_arn               = module.session_manager_config.policy_arn
   app_cloudwatch_log_expiration_days      = local.cloudwatch_log_expiration_days
   patch_cloudwatch_log_expiration_days    = local.patch_cloudwatch_log_expiration_days
@@ -291,8 +327,8 @@ module "jaspersoft" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain                              = "datacollection.test.levellingup.gov.uk"
-  bounce_complaint_notification_email = "Group-DLUHCDeltaNotifications+staging@softwire.com"
+  domain                               = "datacollection.test.levellingup.gov.uk"
+  bounce_complaint_notification_emails = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
 }
 
 module "delta_ses_user" {
@@ -342,5 +378,5 @@ module "account_security" {
 module "notifications" {
   source                 = "../modules/notifications"
   environment            = local.environment
-  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications+staging@softwire.com"]
+  alarm_sns_topic_emails = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
 }
