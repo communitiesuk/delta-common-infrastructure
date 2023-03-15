@@ -144,7 +144,7 @@ resource "aws_cloudfront_distribution" "main" {
     iterator = pattern
 
     content {
-      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      allowed_methods            = ["HEAD", "GET", "OPTIONS"]
       cached_methods             = ["GET", "HEAD", "OPTIONS"]
       target_origin_id           = "primary"
       path_pattern               = pattern.value
