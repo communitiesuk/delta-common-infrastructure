@@ -53,6 +53,14 @@ data "aws_iam_policy_document" "cloudwatch_monitor" {
     ]
     resources = ["*"]
   }
+  statement {
+    sid = "SESSuppressionList"
+    actions = [
+      "ses:ListSuppressedDestinations",
+      "ses:GetSuppressedDestination",
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "cloudwatch_monitor" {
@@ -193,6 +201,24 @@ resource "aws_iam_policy" "ssm_adms_rdp" {
   policy = data.aws_iam_policy_document.ssm_adms_rdp.json
 }
 
+data "aws_iam_policy_document" "application_support" {
+  statement {
+    sid = "ManageSESSuppressionList"
+    actions = [
+      "ses:ListSuppressedDestinations",
+      "ses:GetSuppressedDestination",
+      "ses:DeleteSuppressedDestination",
+      "ses:PutSuppressedDestination",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "application_support" {
+  name   = "application-support-${var.environment}"
+  policy = data.aws_iam_policy_document.application_support.json
+}
+
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "infra_support" {
   statement {
@@ -230,6 +256,17 @@ data "aws_iam_policy_document" "infra_support" {
       "iam:PassRole"
     ]
     resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/staging-infra-passable/*"]
+  }
+
+  statement {
+    sid = "ManageSESSuppressionList"
+    actions = [
+      "ses:ListSuppressedDestinations",
+      "ses:GetSuppressedDestination",
+      "ses:DeleteSuppressedDestination",
+      "ses:PutSuppressedDestination",
+    ]
+    resources = ["*"]
   }
 }
 
