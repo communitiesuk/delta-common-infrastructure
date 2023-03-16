@@ -8,13 +8,13 @@ response=$(curl --anyauth --user admin:admin -X POST -i -d @./check_forest_state
                -H "Accept: multipart/mixed; boundary=BOUNDARY" \
                http://localhost:8002/v1/eval)
 
-MUST_WAIT=$(echo "$response" | grep query-result | cut -d ':' -f2)
-echo "Must wait: ${MUST_WAIT}"
+STATUS=$(echo "$response" | grep output | cut -d ':' -f2)
+echo "Status: ${STATUS}"
 
-if [[ true == "$MUST_WAIT" ]]; then
+if [[ "WAITING_FOR_REPLICATION" == "$STATUS" ]]; then
   echo "Waiting for all forests to be in 'open'/'sync replicating' state"
   SECONDS=0
-  until [[ false == "$MUST_WAIT" ]]; do
+  until [[ "READY_FOR_RESTART" == "$STATUS" ]]; do
       if (( SECONDS > 600 )); then
           echo "Error: giving up waiting for forests to enter 'open'/'sync replicating' state"
           exit 1
@@ -25,12 +25,9 @@ if [[ true == "$MUST_WAIT" ]]; then
                      -H "Content-type: application/x-www-form-urlencoded" \
                      -H "Accept: multipart/mixed; boundary=BOUNDARY" \
                      http://localhost:8002/v1/eval)
-      MUST_WAIT=$(echo "$response" | grep query-result | cut -d ':' -f2)
-      echo "Waiting: ${MUST_WAIT}"
+      STATUS=$(echo "$response" | grep output | cut -d ':' -f2)
+      echo "Status: ${STATUS}"
   done
 fi
 
-if [[ false == "$MUST_WAIT" ]]; then
-  echo "All forests in 'open'/'sync replicating' state"
-  exit 0
-fi
+echo "All forests in 'open'/'sync replicating' state"

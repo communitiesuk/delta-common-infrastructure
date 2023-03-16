@@ -14,4 +14,8 @@ let $all-forests-open-or-sync-replicating := (
 )
 
 let $must-wait := ($all-forests-open-or-sync-replicating = "false")
-return ("query-result:" || $must-wait)
+let $output :=
+    if ($must-wait)
+    then "WAITING_FOR_REPLICATION"
+    else "READY_FOR_RESTART"
+return ("output:" || $output)
