@@ -1,3 +1,4 @@
+xquery=
 xquery version "1.0-ml";
 
 declare namespace h = "http://marklogic.com/xdmp/status/host";
@@ -13,4 +14,4 @@ let $all-forests-open-or-sync-replicating := (
 )
 
 let $must-wait := ($all-forests-open-or-sync-replicating = "false")
-return $must-wait
+return ("query-result:" || $must-wait)
