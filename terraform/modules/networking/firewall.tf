@@ -317,6 +317,10 @@ locals {
   ]
 
   base_firewall_rules = <<EOT
+# Custom rules
+# GitHub runner allow access to productionresultssa*.blob.core.windows.net, see github_runner in networking/main.tf
+pass tls ${local.github_runner_cidr_10} [1024:] -> any 443 (tls.sni; content:"productionresultssa"; startswith; pcre: "/productionresultssa[^.]*\.blob\.core\.windows\.net/"; msg:"Custom GitHub runner rule allow access to productionresultssa*.blob.core.windows.net"; flow:to_server; sid:399;)
+
 # The drop http and tls seem to kick in earlier than only dropping established TCP flows
 drop http any any -> any any (msg:"Drop HTTP traffic without allowlisted Host header"; sid:5001; rev:1;)
 drop tls  any any -> any any (msg:"Drop TLS traffic without allowlisted SNI"; sid:5002; rev:1;)

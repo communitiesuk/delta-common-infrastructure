@@ -27,9 +27,12 @@ locals {
       http_allowed_domains = []
       # See https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners#communication-between-self-hosted-runners-and-github
       tls_allowed_domains = [
-        "github.com", "api.github.com", "codeload.github.com",
+        "github.com", "api.github.com",
+        "codeload.github.com",
         "objects.githubusercontent.com", "objects-origin.githubusercontent.com", "github-releases.githubusercontent.com", "github-registry-files.githubusercontent.com",
         ".actions.githubusercontent.com",
+        "actions-results-receiver-production.githubapp.com",
+        # Custom rule for productionresultssa*.blob.core.windows.net in firewall.tf to support the wildcard
       ]
       sid_offset = 300
     }

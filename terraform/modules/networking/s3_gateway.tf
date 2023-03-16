@@ -108,6 +108,7 @@ data "aws_iam_policy_document" "s3_gateway" {
       "arn:aws:s3:::aws-quickstart-${data.aws_region.current.name}/*",
       # ECS https://docs.aws.amazon.com/AmazonECR/latest/userguide/vpc-endpoints.html#ecr-minimum-s3-perms
       "arn:aws:s3:::prod-${data.aws_region.current.name}-starport-layer-bucket/*",
+      "arn:aws:s3:::aws-fleet-manager-artifacts-${data.aws_region.current.name}/*",
     ]
   }
 }
