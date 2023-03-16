@@ -67,7 +67,7 @@ resource "aws_cloudfront_response_headers_policy" "static_errors" {
 resource "aws_cloudfront_distribution" "main" {
   aliases = var.cloudfront_domain == null ? [] : var.cloudfront_domain.aliases
 
-  wait_for_deployment = false
+  wait_for_deployment = var.wait_for_deployment
 
   origin {
     domain_name = var.origin_domain
