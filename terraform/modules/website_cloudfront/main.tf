@@ -160,6 +160,8 @@ resource "aws_cloudfront_distribution" "main" {
         cookies {
           forward = "none"
         }
+
+        headers = ["Host"]
       }
     }
   }
