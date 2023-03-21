@@ -307,7 +307,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           "properties" : {
             "metrics" : [
               ["AWS/NetworkELB", "HealthyHostCount", "TargetGroup", aws_lb_target_group.ml["8001"].arn_suffix, "LoadBalancer", aws_lb.ml_lb.arn_suffix],
-              ["AWS/NetworkELB", "UnHealthyHostCount", "TargetGroup", aws_lb_target_group.ml["8001"].arn_suffix, "LoadBalancer", aws_lb.ml_lb.arn_suffix, { stat : "Maximum" } ]
+              ["AWS/NetworkELB", "UnHealthyHostCount", "TargetGroup", aws_lb_target_group.ml["8001"].arn_suffix, "LoadBalancer", aws_lb.ml_lb.arn_suffix, { stat : "Maximum" }]
             ],
             "view" : "timeSeries",
             "stacked" : false,
