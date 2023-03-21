@@ -46,7 +46,7 @@ resource "aws_cloudwatch_dashboard" "main" {
     {
       "widgets" : [
         {
-          "height" : 2,
+          "height" : 3,
           "width" : 24,
           "y" : 0,
           "x" : 0,
@@ -56,16 +56,19 @@ resource "aws_cloudwatch_dashboard" "main" {
             "alarms" : [
               aws_cloudwatch_metric_alarm.cpu_utilisation_high.arn,
               aws_cloudwatch_metric_alarm.memory_utilisation_high.arn,
+              aws_cloudwatch_metric_alarm.memory_utilisation_high_sustained,
               aws_cloudwatch_metric_alarm.system_disk_utilisation_high.arn,
               aws_cloudwatch_metric_alarm.data_disk_utilisation_high.arn,
-              aws_cloudwatch_metric_alarm.data_disk_utilisation_high_sustained.arn
+              aws_cloudwatch_metric_alarm.data_disk_utilisation_high_sustained.arn,
+              aws_cloudwatch_metric_alarm.healthy_host_low.arn,
+              aws_cloudwatch_metric_alarm.unhealthy_host_high.arn,
             ]
           }
         },
         {
           "height" : 6,
           "width" : 6,
-          "y" : 8,
+          "y" : 9,
           "x" : 6,
           "type" : "metric",
           "properties" : {
@@ -88,7 +91,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 2,
+          "y" : 3,
           "x" : 6,
           "type" : "metric",
           "properties" : {
@@ -117,7 +120,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 2,
+          "y" : 3,
           "x" : 18,
           "type" : "metric",
           "properties" : {
@@ -135,7 +138,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 8,
+          "y" : 9,
           "x" : 18,
           "type" : "metric",
           "properties" : {
@@ -153,7 +156,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 14,
+          "y" : 15,
           "x" : 18,
           "type" : "metric",
           "properties" : {
@@ -171,7 +174,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 2,
+          "y" : 3,
           "x" : 0,
           "type" : "metric",
           "properties" : {
@@ -190,7 +193,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 8,
+          "y" : 9,
           "x" : 0,
           "type" : "metric",
           "properties" : {
@@ -207,7 +210,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 2,
+          "y" : 3,
           "x" : 12,
           "type" : "metric",
           "properties" : {
@@ -225,7 +228,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 8,
+          "y" : 9,
           "x" : 12,
           "type" : "metric",
           "properties" : {
@@ -243,7 +246,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 20,
+          "y" : 21,
           "x" : 12,
           "type" : "metric",
           "properties" : {
@@ -260,7 +263,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 14,
+          "y" : 15,
           "x" : 12,
           "type" : "metric",
           "properties" : {
@@ -279,7 +282,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 14,
+          "y" : 15,
           "x" : 0,
           "type" : "metric",
           "properties" : {
@@ -298,12 +301,13 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 20,
+          "y" : 21,
           "x" : 0,
           "type" : "metric",
           "properties" : {
             "metrics" : [
-              ["AWS/NetworkELB", "HealthyHostCount", "TargetGroup", aws_lb_target_group.ml["8001"].arn_suffix, "LoadBalancer", aws_lb.ml_lb.arn_suffix]
+              ["AWS/NetworkELB", "HealthyHostCount", "TargetGroup", aws_lb_target_group.ml["8001"].arn_suffix, "LoadBalancer", aws_lb.ml_lb.arn_suffix],
+              ["AWS/NetworkELB", "UnHealthyHostCount", "TargetGroup", aws_lb_target_group.ml["8001"].arn_suffix, "LoadBalancer", aws_lb.ml_lb.arn_suffix, { stat : "Maximum" } ]
             ],
             "view" : "timeSeries",
             "stacked" : false,
@@ -315,7 +319,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 5,
           "width" : 24,
-          "y" : 26,
+          "y" : 27,
           "x" : 0,
           "type" : "log",
           "properties" : {
@@ -329,7 +333,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 5,
           "width" : 24,
-          "y" : 31,
+          "y" : 3,
           "x" : 0,
           "type" : "log",
           "properties" : {
@@ -343,7 +347,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 5,
           "width" : 24,
-          "y" : 36,
+          "y" : 37,
           "x" : 0,
           "type" : "log",
           "properties" : {
@@ -357,7 +361,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 24,
           "width" : 24,
-          "y" : 41,
+          "y" : 42,
           "x" : 0,
           "type" : "explorer",
           "properties" : {
