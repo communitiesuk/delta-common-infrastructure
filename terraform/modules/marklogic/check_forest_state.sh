@@ -11,7 +11,7 @@ response=$(curl --anyauth --user admin:admin -X POST -i -d @./check_forest_state
 STATUS=$(echo "$response" | grep output | cut -d ':' -f2)
 echo "Status: ${STATUS}"
 
-if [[ "WAITING_FOR_REPLICATION" == "$STATUS" ]]; then
+if [[ "READY_FOR_RESTART" != "$STATUS" ]]; then
   echo "Waiting for all forests to be in 'open'/'sync replicating' state"
   SECONDS=0
   until [[ "READY_FOR_RESTART" == "$STATUS" ]]; do

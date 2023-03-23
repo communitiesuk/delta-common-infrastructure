@@ -1,12 +1,20 @@
+# TODO: Move this to variables.tf
+variable "host_names" {
+  description = "Target names"
+  type        = list(string)
+  default     = ["MarkLogic-ASG-1", "MarkLogic-ASG-2", "MarkLogic-ASG-3"]
+}
+
 resource "aws_ssm_maintenance_window_target" "ml_servers" {
+  for_each = toset(var.host_names)
   window_id     = var.patch_maintenance_window.window_id
   name          = "marklogic-${var.environment}"
   description   = "MarkLogic servers from the ${var.environment} environment"
   resource_type = "INSTANCE"
 
   targets {
-    key    = "tag:marklogic:stack:name"
-    values = [local.stack_name]
+    key    = "Name" # Filter by the Name tag instead
+    values = [each.value]
   }
 }
 
@@ -18,6 +26,7 @@ resource "aws_cloudwatch_log_group" "ml_patch" {
 }
 
 resource "aws_ssm_maintenance_window_task" "ml_patch" {
+  for_each = toset(var.host_names)
   name            = "marklogic-patch-${var.environment}"
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
@@ -29,7 +38,7 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
 
   targets {
     key    = "WindowTargetIds"
-    values = [aws_ssm_maintenance_window_target.ml_servers.id]
+    values = [aws_ssm_maintenance_window_target.ml_servers[each.key].id]
   }
 
   task_invocation_parameters {
