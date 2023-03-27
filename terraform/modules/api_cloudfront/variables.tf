@@ -54,3 +54,7 @@ variable "apply_aws_shield" {
 variable "swagger_s3_log_expiration_days" {
   type = number
 }
+
+variable "wait_for_deployment" {
+  type = bool
+}

@@ -56,3 +56,7 @@ variable "origin_read_timeout" {
   description = "Read timeout for the main origin in seconds. Note that the default quota limit for this is 60, to increase above that request a quota increase first."
   default     = 60
 }
+
+variable "wait_for_deployment" {
+  type = bool
+}
