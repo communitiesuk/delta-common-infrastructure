@@ -56,7 +56,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             "alarms" : [
               aws_cloudwatch_metric_alarm.cpu_utilisation_high.arn,
               aws_cloudwatch_metric_alarm.memory_utilisation_high.arn,
-              aws_cloudwatch_metric_alarm.memory_utilisation_high_sustained,
+              aws_cloudwatch_metric_alarm.memory_utilisation_high_sustained.arn,
               aws_cloudwatch_metric_alarm.system_disk_utilisation_high.arn,
               aws_cloudwatch_metric_alarm.data_disk_utilisation_high.arn,
               aws_cloudwatch_metric_alarm.data_disk_utilisation_high_sustained.arn,
