@@ -3,7 +3,7 @@ resource "aws_cloudwatch_dashboard" "waf_dashboard" {
 
   dashboard_body = jsonencode(
     {
-      widgets = [
+      widgets = concat([
         {
           type = "metric",
           properties = {
@@ -36,7 +36,7 @@ resource "aws_cloudwatch_dashboard" "waf_dashboard" {
             "stat" : "Sum",
             "view" : "timeSeries",
             "stacked" : false,
-            "metrics" : [
+            "metrics" : concat([
               ["AWS/WAFV2", "BlockedRequests", "Rule", local.metric_names.rate_limit, "WebACL", aws_wafv2_web_acl.waf_acl.name],
               ["AWS/WAFV2", "BlockedRequests", "Rule", local.metric_names.common, "WebACL", aws_wafv2_web_acl.waf_acl.name],
               ["AWS/WAFV2", "CountedRequests", "Rule", local.metric_names.common, "WebACL", aws_wafv2_web_acl.waf_acl.name],
@@ -44,7 +44,11 @@ resource "aws_cloudwatch_dashboard" "waf_dashboard" {
               ["AWS/WAFV2", "CountedRequests", "Rule", local.metric_names.bad_inputs, "WebACL", aws_wafv2_web_acl.waf_acl.name],
               ["AWS/WAFV2", "BlockedRequests", "Rule", local.metric_names.ip_reputation, "WebACL", aws_wafv2_web_acl.waf_acl.name],
               ["AWS/WAFV2", "CountedRequests", "Rule", local.metric_names.ip_reputation, "WebACL", aws_wafv2_web_acl.waf_acl.name],
-            ],
+              ],
+              !var.login_ip_rate_limit_enabled ? [] : [
+                ["AWS/WAFV2", "BlockedRequests", "Rule", local.metric_names.login_ip_rate_limit, "WebACL", aws_wafv2_web_acl.waf_acl.name],
+                ["AWS/WAFV2", "CountedRequests", "Rule", local.metric_names.login_ip_rate_limit, "WebACL", aws_wafv2_web_acl.waf_acl.name],
+            ]),
             "region" : "us-east-1",
             "title" : "Blocked and counted requests by rule group",
             "yAxis" : {
@@ -79,7 +83,28 @@ resource "aws_cloudwatch_dashboard" "waf_dashboard" {
           x      = 12
           y      = 0
         },
-      ]
+        ],
+        !var.login_ip_rate_limit_enabled ? [] : [
+          {
+            type = "metric",
+            properties = {
+              "title" : "Blocked login requests alarm",
+              "annotations" : {
+                "alarms" : [aws_cloudwatch_metric_alarm.blocked_login_requests[0].arn]
+              },
+              "liveData" : false,
+              "start" : "-PT3H",
+              "end" : "PT0H",
+              "region" : "us-east-1",
+              "view" : "timeSeries",
+              "stacked" : false
+            }
+            height = 8
+            width  = 8
+            x      = 12
+            y      = 0
+          }
+      ])
     }
   )
 }
@@ -109,6 +134,7 @@ resource "aws_cloudwatch_metric_alarm" "blocked_requests" {
 
 resource "aws_cloudwatch_metric_alarm" "blocked_login_requests" {
   provider = aws.us-east-1
+  count    = var.login_ip_rate_limit_enabled ? 1 : 0
 
   alarm_name          = "${var.prefix}cloudfront-waf-blocked-login-requests"
   comparison_operator = "GreaterThanOrEqualToThreshold"
