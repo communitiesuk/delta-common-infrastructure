@@ -13,8 +13,12 @@ resource "aws_ssm_maintenance_window_target" "ml_servers" {
   resource_type = "INSTANCE"
 
   targets {
-    key    = "Name" # Filter by the Name tag instead
+    key    = "tag:Name" # Filter by the Name tag instead
     values = [each.value]
+  }
+  targets {
+    key    = "tag:marklogic:stack:name"
+    values = [local.stack_name]
   }
 }
 
@@ -26,19 +30,19 @@ resource "aws_cloudwatch_log_group" "ml_patch" {
 }
 
 resource "aws_ssm_maintenance_window_task" "ml_patch" {
-  for_each = toset(var.host_names)
+  count = length(var.host_names)
   name            = "marklogic-patch-${var.environment}"
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
   max_errors      = 0
-  priority        = 1
+  priority        = count.index
   task_arn        = "AWS-RunShellScript"
   task_type       = "RUN_COMMAND"
   cutoff_behavior = "CONTINUE_TASK"
 
   targets {
     key    = "WindowTargetIds"
-    values = [aws_ssm_maintenance_window_target.ml_servers[each.key].id]
+    values = [aws_ssm_maintenance_window_target.ml_servers[var.host_names[count.index]].id]
   }
 
   task_invocation_parameters {
@@ -55,13 +59,51 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
 
       parameter {
         name   = "commands"
-        values = [file("${path.module}/patch.sh")]
+        values = [file("${path.module}/check_forest_state.sh"), file("${path.module}/patch.sh")]
       }
 
       cloudwatch_config {
         cloudwatch_log_group_name = aws_cloudwatch_log_group.ml_patch.name
         cloudwatch_output_enabled = true
       }
+    }
+  }
+}
+
+resource "aws_ssm_maintenance_window_task" "ml_restart" {
+  for_each = toset(var.host_names)
+  name            = "marklogic-restart-${var.environment}"
+  window_id       = var.patch_maintenance_window.window_id
+  max_concurrency = 1
+  max_errors      = 0
+  priority        = length(var.host_names)
+  task_arn        = "AWS-RunShellScript"
+  task_type       = "RUN_COMMAND"
+  cutoff_behavior = "CONTINUE_TASK"
+
+  targets {
+    key    = "WindowTargetIds"
+    values = [aws_ssm_maintenance_window_target.ml_servers[each.key].id]
+  }
+
+  task_invocation_parameters {
+    run_command_parameters {
+      comment         = "Restart marklogic"
+      timeout_seconds = 1800
+
+      service_role_arn = var.patch_maintenance_window.service_role_arn
+      notification_config {
+        notification_arn    = var.patch_maintenance_window.errors_sns_topic_arn
+        notification_events = ["TimedOut", "Cancelled", "Failed"]
+        notification_type   = "Command"
+      }
+
+      parameter {
+        name   = "commands"
+        values = [file("${path.module}/restart_server.sh")]
+      }
+
+      # TODO: Ask whether it's worth adding a cloudwatch config here
     }
   }
 }
