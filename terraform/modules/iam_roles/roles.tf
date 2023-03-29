@@ -24,6 +24,7 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_monitor" {
   for_each = {
     cloudwatch_monitor         = aws_iam_policy.cloudwatch_monitor.arn
     cloudwatch_auto_dashboards = data.aws_iam_policy.cloudwatch_automatic_dashboards_access.arn
+    cloudshell                 = data.aws_iam_policy.cloudshell.arn
   }
 
   role       = aws_iam_role.cloudwatch_monitor.name
@@ -44,6 +45,7 @@ resource "aws_iam_role_policy_attachment" "application_support" {
     ssm_ml                     = aws_iam_policy.ssm_marklogic.arn
     ssm_ad                     = aws_iam_policy.ssm_adms_rdp.arn
     application_support        = aws_iam_policy.application_support.arn
+    cloudshell                 = data.aws_iam_policy.cloudshell.arn
   }
 
   role       = aws_iam_role.application_support.name

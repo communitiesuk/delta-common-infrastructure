@@ -44,10 +44,6 @@ locals {
       repo_name = "keycloak",
       push_user = aws_iam_user.delta_ci.name
     },
-    "swagger" = {
-      repo_name = "delta-api-swagger",
-      push_user = aws_iam_user.delta_ci.name
-    }
   }
 }
 
