@@ -29,6 +29,20 @@ resource "aws_cloudwatch_log_group" "ml_patch" {
   retention_in_days = var.patch_cloudwatch_log_expiration_days
 }
 
+resource "aws_s3_object" "ml_patch_forest_state_script" {
+  bucket = module.config_files_bucket.bucket
+  key    = "check_forest_state.xqy"
+  source = "${path.module}/check_forest_state.xqy"
+  etag = md5(file("${path.module}/check_forest_state.xqy"))
+}
+
+resource "aws_s3_object" "ml_restart_script" {
+  bucket = module.config_files_bucket.bucket
+  key    = "restart_server.xqy"
+  source = "${path.module}/restart_server.xqy"
+  etag = md5(file("${path.module}/restart_server.xqy"))
+}
+
 resource "aws_ssm_maintenance_window_task" "ml_patch" {
   count = length(var.host_names)
   name            = "marklogic-patch-${var.environment}"
