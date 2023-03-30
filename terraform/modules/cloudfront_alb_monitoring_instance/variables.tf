@@ -17,7 +17,7 @@ variable "instance_metric_namespace" {
 variable "alb_target_server_error_rate_alarm_threshold_percent" {
   type        = number
   description = "Threshold for alarm on 5xx responses as percentage of 2xx responses, count threshold must also be met"
-  default     = 10
+  default     = 5
 }
 
 variable "alb_target_server_error_rate_alarm_threshold_count" {
@@ -29,13 +29,13 @@ variable "alb_target_server_error_rate_alarm_threshold_count" {
 variable "alb_target_client_error_rate_alarm_threshold_percent" {
   type        = number
   description = "Threshold for alarm on 4xx responses as percentage of 2xx responses, count threshold must also be met"
-  default     = 20
+  default     = 5
 }
 
 variable "alb_target_client_error_rate_alarm_threshold_count" {
   type        = number
   description = "Static threshold for minimum number of 4xx responses in period to trigger alarm"
-  default     = 50
+  default     = 30
 }
 
 variable "alarms_sns_topic_arn" {
@@ -66,13 +66,19 @@ variable "cloudfront_server_error_rate_alarm_threshold_percent" {
 variable "cloudfront_client_error_rate_alarm_threshold_percent" {
   description = "Threshold to trigger client error (4xx) alarm in percentage points"
   type        = number
-  default     = 40 # CloudFront error rate includes geo-blocked requests
+  default     = 25 # CloudFront error rate includes geo-blocked requests
 }
 
-variable "cloudfront_origin_latency_high_alarm_threshold_ms" {
+variable "cloudfront_average_origin_latency_high_alarm_threshold_ms" {
   description = "Threshold to trigger alarm in milliseconds"
   type        = number
-  default     = 10000
+  default     = 5000
+}
+
+variable "cloudfront_p90_origin_latency_high_alarm_threshold_ms" {
+  description = "Optional, threshold to trigger alarm in milliseconds"
+  type        = number
+  default     = null
 }
 
 variable "cloudfront_metric_period_seconds" {

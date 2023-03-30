@@ -54,7 +54,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_target_client_error_rate_alarm" {
 
   metric_query {
     id          = "thresholded_client_error_rate"
-    expression  = "IF(FILL(error_response_count, 0) > 50, (FILL(error_response_count, 0) * 100)/(FILL(ok_response_count, 1) + FILL(error_response_count, 0)), 0)"
+    expression  = "IF(FILL(error_response_count, 0) > ${var.alb_target_client_error_rate_alarm_threshold_count}, (FILL(error_response_count, 0) * 100)/(FILL(ok_response_count, 1) + FILL(error_response_count, 0)), 0)"
     label       = "Thresholded 4xx ALB target error rate %"
     return_data = "true"
   }
