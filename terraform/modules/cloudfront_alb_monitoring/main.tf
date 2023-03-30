@@ -7,7 +7,7 @@ module "website_cloudfront_alb_monitoring" {
   instance_metric_namespace   = var.delta_website.instance_metric_namespace
   alarms_sns_topic_arn        = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
-  prefix                      = "delta-website-${var.environment}"
+  prefix                      = "${var.environment}-delta-website"
 }
 
 module "api_cloudfront_alb_monitoring" {
@@ -17,7 +17,9 @@ module "api_cloudfront_alb_monitoring" {
   instance_metric_namespace   = var.delta_api.instance_metric_namespace
   alarms_sns_topic_arn        = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
-  prefix                      = "delta-api-${var.environment}"
+  prefix                      = "${var.environment}-delta-api-"
+
+  cloudfront_origin_latency_high_alarm_threshold_ms = 60000
 }
 
 module "keycloak_cloudfront_alb_monitoring" {
@@ -27,7 +29,7 @@ module "keycloak_cloudfront_alb_monitoring" {
   instance_metric_namespace   = var.keycloak.instance_metric_namespace
   alarms_sns_topic_arn        = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
-  prefix                      = "keycloak-${var.environment}"
+  prefix                      = "${var.environment}-keycloak"
 }
 
 module "cpm_cloudfront_alb_monitoring" {
@@ -37,7 +39,9 @@ module "cpm_cloudfront_alb_monitoring" {
   instance_metric_namespace   = var.cpm.instance_metric_namespace
   alarms_sns_topic_arn        = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
-  prefix                      = "cpm-${var.environment}"
+  prefix                      = "${var.environment}-cpm-"
+
+  cloudfront_origin_latency_high_alarm_threshold_ms = 60000
 }
 
 module "jaspersoft_cloudfront_alb_monitoring" {
@@ -47,6 +51,6 @@ module "jaspersoft_cloudfront_alb_monitoring" {
   instance_metric_namespace   = var.jaspersoft.instance_metric_namespace
   alarms_sns_topic_arn        = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
-  prefix                      = "jaspersoft-${var.environment}"
+  prefix                      = "${var.environment}-jaspersoft"
 }
 

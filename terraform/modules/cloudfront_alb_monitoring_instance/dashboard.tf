@@ -64,7 +64,7 @@ locals {
 }
 
 resource "aws_cloudwatch_dashboard" "main" {
-  dashboard_name = "${var.prefix}-cloudfront-alb"
+  dashboard_name = var.prefix
   dashboard_body = jsonencode(
     {
       "widgets" : concat([
