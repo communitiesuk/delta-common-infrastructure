@@ -17,7 +17,7 @@ module "api_cloudfront_alb_monitoring" {
   instance_metric_namespace   = var.delta_api.instance_metric_namespace
   alarms_sns_topic_arn        = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
-  prefix                      = "${var.environment}-delta-api-"
+  prefix                      = "${var.environment}-delta-api"
 
   cloudfront_origin_latency_high_alarm_threshold_ms = 60000
 }
@@ -39,7 +39,7 @@ module "cpm_cloudfront_alb_monitoring" {
   instance_metric_namespace   = var.cpm.instance_metric_namespace
   alarms_sns_topic_arn        = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
-  prefix                      = "${var.environment}-cpm-"
+  prefix                      = "${var.environment}-cpm"
 
   cloudfront_origin_latency_high_alarm_threshold_ms = 60000
 }
