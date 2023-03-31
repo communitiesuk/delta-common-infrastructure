@@ -160,3 +160,58 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_low" {
     "LoadBalancer" : aws_lb.ml_lb.arn_suffix
   }
 }
+
+resource "aws_cloudwatch_metric_alarm" "queue_length_high" {
+  alarm_name          = "marklogic-${var.environment}-queue-length-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  threshold           = 5
+
+  alarm_description  = "Queue length is higher than expected"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "notBreaching"
+
+  dynamic "metric_query" {
+    for_each = aws_ebs_volume.marklogic_data_volumes
+    iterator = volume
+
+    content {
+      id = "volume_${replace(volume.value.availability_zone, "-", "_")}_queue_length"
+      metric {
+        metric_name = "VolumeQueueLength"
+        namespace   = "${var.environment}/MarkLogic"
+        period      = "300"
+        stat        = "p90"
+        dimensions = {
+          "VolumeId" = "${volume.value.id}"
+        }
+      }
+    }
+  }
+
+  metric_query {
+    id          = "maximum_queue_length"
+    expression  = "MAX(METRICS())"
+    label       = "Maximum queue length for EBS volumes"
+    return_data = "true"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "swap_usage_high" {
+  alarm_name          = "marklogic-${var.environment}-swap-used-percent-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "swap_used_percent"
+  namespace           = "${var.environment}/MarkLogic"
+  period              = 300
+  statistic           = "Maximum"
+  threshold           = 1
+
+  alarm_description  = "Swap usage percentage is higher than expected"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "notBreaching"
+
+  dimensions = {}
+}

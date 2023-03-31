@@ -40,6 +40,46 @@ resource "aws_cloudwatch_log_metric_filter" "taskserver_errorlog_error" {
   }
 }
 
+# how to compose the widget string: join("",[each.value, "-dev", var.location, var.platform])
+# from https://stackoverflow.com/questions/67897315/can-terraform-concatenate-variables-fed-from-a-for-each-loop-with-a-string
+# no, don't think this works
+# need to perform a mapping, something like this? https://stackoverflow.com/questions/59381410/how-can-i-convert-a-list-to-a-string-in-terraform
+# some kind of super cursed format() use inside a list comprehension? only need to make the metric list which can go into the jsonencode() where appropriate
+
+locals {
+  read_iops = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeReadOps", "VolumeId", "${volume.id}", { "id" : "readOps_${replace(volume.availability_zone, "-", "_")}", "stat" : "Sum", "visible" : false }]
+  ]
+  write_iops = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeWriteOps", "VolumeId", "${volume.id}", { "id" : "writeOps_${replace(volume.availability_zone, "-", "_")}", "stat" : "Sum", "visible" : false }]
+  ]
+  throughput = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    [{
+      "expression" : "(readOps_${replace(volume.availability_zone, "-", "_")} + writeOps_${replace(volume.availability_zone, "-", "_")})/PERIOD(readOps_${replace(volume.availability_zone, "-", "_")})",
+      "label" : "${volume.availability_zone}",
+      "id" : "throughput_${replace(volume.availability_zone, "-", "_")}"
+    }]
+  ]
+  read_iops_visible = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeReadOps", "VolumeId", "${volume.id}", { "id" : "readOps_${replace(volume.availability_zone, "-", "_")}", "stat" : "Sum" }]
+  ]
+  write_iops_visible = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeWriteOps", "VolumeId", "${volume.id}", { "id" : "writeOps_${replace(volume.availability_zone, "-", "_")}", "stat" : "Sum" }]
+  ]
+  queue_length = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeQueueLength", "VolumeId", "${volume.id}", { "region" : "eu-west-1", "label" : "${volume.availability_zone}" }]
+  ]
+  idle_time = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeIdleTime", "VolumeId", "${volume.id}", { "region" : "eu-west-1", "label" : "${volume.availability_zone}" }]
+  ]
+  read_latency = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeTotalReadTime", "VolumeId", "${volume.id}", { "stat" : "Average", "region" : "eu-west-1", "label" : "${volume.availability_zone}" }]
+  ]
+  write_latency = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeTotalWriteTime", "VolumeId", "${volume.id}", { "stat" : "Average", "region" : "eu-west-1", "label" : "${volume.availability_zone}" }]
+  ]
+}
+
 resource "aws_cloudwatch_dashboard" "main" {
   dashboard_name = "${var.environment}-marklogic"
   dashboard_body = jsonencode(
@@ -434,6 +474,165 @@ resource "aws_cloudwatch_dashboard" "main" {
             "period" : 300,
             "splitBy" : "",
             "region" : "eu-west-1"
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 48,
+          "x" : 0,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : concat(local.read_iops, local.write_iops, local.throughput),
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Average",
+            "title" : "EBS volume throughput",
+            "period" : 300,
+            "yAxis" : {
+                "left": {
+                    "label": "IOPS/300s",
+                    "showUnits": false
+                }
+            },
+                "annotations": {
+                "horizontal": [
+                    {
+                        "label": "IOPS limit",
+                        "value": var.data_volume.iops
+                    }
+                ]
+            }
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 48,
+          "x" : 6,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.read_iops_visible,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Average",
+            "title" : "EBS volume read IOPS",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "IOPS/300s",
+                "showUnits" : false
+              }
+            },
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 48,
+          "x" : 12,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.write_iops_visible,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Average",
+            "title" : "EBS volume write IOPS",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "IOPS/300s",
+                "showUnits" : false
+              }
+            },
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 48,
+          "x" : 18,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.idle_time,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Average",
+            "title" : "EBS volume idle time",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "Idle time"
+              }
+            }
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 54,
+          "x" : 0,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.queue_length,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Average",
+            "title" : "EBS volume queue length",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "Queue length",
+                "showUnits" : false
+              }
+            }
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 54,
+          "x" : 6,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.read_latency,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Average",
+            "title" : "EBS volume read latency",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "Read latency"
+              }
+            }
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 54,
+          "x" : 12,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.write_latency,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "eu-west-1",
+            "stat" : "Average",
+            "title" : "EBS volume write latency",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "Write latency"
+              }
+            }
           }
         }
       ]
