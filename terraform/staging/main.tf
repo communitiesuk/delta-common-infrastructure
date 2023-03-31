@@ -169,9 +169,8 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["delta"].arn
     }
-    # Some TSO staff are located in India (IN)
-    geo_restriction_countries = ["GB", "IE", "IN"]
-    # We don't want to restrict staging until we are able to confirm who needs access
+    geo_restriction_countries = ["GB", "IE"]
+    # We don't want to IP restrict staging until we are able to confirm who needs access
     client_error_rate_alarm_threshold_percent = 15
   }
   api = {
@@ -198,7 +197,7 @@ module "cloudfront_distributions" {
       aliases             = ["cpm.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
-    geo_restriction_countries = ["GB", "IE", "IN"]
+    geo_restriction_countries = ["GB", "IE"]
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
@@ -206,7 +205,7 @@ module "cloudfront_distributions" {
       aliases             = ["reporting.delta.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
     }
-    geo_restriction_countries = ["GB", "IE", "IN"]
+    geo_restriction_countries = ["GB", "IE"]
   }
 }
 
