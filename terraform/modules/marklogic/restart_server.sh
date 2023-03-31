@@ -2,10 +2,15 @@
 
 set -euo pipefail
 
-echo "Script starting at $(date --iso-8601=seconds)"
+echo "Starting restart server script at $(date --iso-8601=seconds)"
 
-restart_server_script=`aws s3 cp --region eu-west-1 s3://test-marklogic-config/restart_server.xqy /restart_server.xqy`
-echo "$restart_server_script"
+printf 'xquery=
+        xquery version "1.0-ml";
+        xdmp:restart((xdmp:host()), "Restarting MarkLogic Server so that replication ends up the right way around")
+' > restart_server.xqy
+
+#restart_server_script=`aws s3 cp --region eu-west-1 s3://test-marklogic-config/restart_server.xqy /restart_server.xqy`
+#echo "$restart_server_script"
 
 echo "Restarting Marklogic server"
 

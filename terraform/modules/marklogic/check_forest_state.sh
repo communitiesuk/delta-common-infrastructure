@@ -2,10 +2,11 @@
 
 set -euo pipefail
 
+echo "Starting check forest state script at $(date --iso-8601=seconds)"
+
 check_forest_state_script=`aws s3 cp --region eu-west-1 s3://test-marklogic-config/check_forest_state.xqy /check_forest_state.xqy`
 echo "$check_forest_state_script"
 
-echo "Script starting at $(date --iso-8601=seconds)"
 response=$(curl --anyauth --user admin:spoken-chest -X POST -d @./check_forest_state.xqy \
                -H "Content-type: application/x-www-form-urlencoded" \
                -H "Accept: text/plain" \

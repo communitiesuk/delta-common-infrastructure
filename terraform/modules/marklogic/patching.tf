@@ -6,7 +6,7 @@ variable "host_names" {
 }
 
 resource "aws_ssm_maintenance_window_target" "ml_servers" {
-  for_each = toset(var.host_names)
+  for_each      = toset(var.host_names)
   window_id     = var.patch_maintenance_window.window_id
   name          = "marklogic-${var.environment}"
   description   = "MarkLogic servers from the ${var.environment} environment"
@@ -29,22 +29,22 @@ resource "aws_cloudwatch_log_group" "ml_patch" {
   retention_in_days = var.patch_cloudwatch_log_expiration_days
 }
 
-resource "aws_s3_object" "ml_patch_forest_state_script" {
+resource "aws_s3_object" "ml_check_forest_state_script" {
   bucket = module.config_files_bucket.bucket
   key    = "check_forest_state.xqy"
   source = "${path.module}/check_forest_state.xqy"
-  etag = md5(file("${path.module}/check_forest_state.xqy"))
+  etag   = md5(file("${path.module}/check_forest_state.xqy"))
 }
 
-resource "aws_s3_object" "ml_restart_script" {
+resource "aws_s3_object" "ml_final_forest_state_script" {
   bucket = module.config_files_bucket.bucket
-  key    = "restart_server.xqy"
-  source = "${path.module}/restart_server.xqy"
-  etag = md5(file("${path.module}/restart_server.xqy"))
+  key    = "final_forest_state.xqy"
+  source = "${path.module}/final_forest_state.xqy"
+  etag   = md5(file("${path.module}/final_forest_state.xqy"))
 }
 
 resource "aws_ssm_maintenance_window_task" "ml_patch" {
-  count = length(var.host_names)
+  count           = length(var.host_names)
   name            = "marklogic-patch-${var.environment}"
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
@@ -73,7 +73,7 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
 
       parameter {
         name   = "commands"
-        values = [file("${path.module}/check_forest_state.sh"), file("${path.module}/patch.sh")]
+        values = [file("${path.module}/patch.sh")]
       }
 
       cloudwatch_config {
@@ -85,7 +85,7 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
 }
 
 resource "aws_ssm_maintenance_window_task" "ml_restart" {
-  for_each = toset(var.host_names)
+  for_each        = toset(var.host_names)
   name            = "marklogic-restart-${var.environment}"
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
@@ -114,7 +114,7 @@ resource "aws_ssm_maintenance_window_task" "ml_restart" {
 
       parameter {
         name   = "commands"
-        values = [file("${path.module}/restart_server.sh")]
+        values = [file("${path.module}/restart_server.sh"), file("${path.module}/final_forest_state.sh")]
       }
 
       # TODO: Ask whether it's worth adding a cloudwatch config here
