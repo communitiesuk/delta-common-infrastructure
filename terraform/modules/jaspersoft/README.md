@@ -80,17 +80,15 @@ aws s3 cp js-7.8.1_hotfixed_2022-04-15.zip s3://dluhc-jaspersoft-bin
 
 ## Updating Tomcat
 
-As root:
-
 ```sh
 # cd into the Tomcat folder
 cd /opt/tomcat
 # Note the current version, look for the target of the latest symlink
 ls -l
 # Stop tomcat
-systemctl stop tomcat
+sudo systemctl stop tomcat
 # Delete symlink
-rm latest
+sudo rm latest
 
 # Install new version
 TOMCAT_VERSION=9.0.70
@@ -101,10 +99,10 @@ rm -f /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz
 # Recreate symlink
 sudo -u tomcat ln -s /opt/tomcat/apache-tomcat-${TOMCAT_VERSION} /opt/tomcat/latest
 # Restart tomcat
-systemctl start tomcat
+sudo systemctl start tomcat
 # Tail the logs while it starts, takes about a minute
 # Fine to ignore OperationNotSupportedException: Context is read only
-tail -f base/logs/catalina.out
+sudo tail -f base/logs/catalina.out
 ```
 
 Check it's working again. If something goes wrong try deleting base/work and base/temp and restarting Tomcat again.
