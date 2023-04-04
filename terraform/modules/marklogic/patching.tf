@@ -1,4 +1,3 @@
-# TODO: Move this to variables.tf
 variable "host_names" {
   description = "Target names"
   type        = list(string)
@@ -72,8 +71,15 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
       }
 
       parameter {
-        name   = "commands"
-        values = [file("${path.module}/patch.sh")]
+        name = "commands"
+        values = [
+          templatefile("${path.module}/patch.sh",
+            {
+              ENVIRONMENT             = var.environment,
+              MARKLOGIC_CONFIG_BUCKET = module.config_files_bucket.bucket,
+              AWS_REGION              = data.aws_region.current.name
+          })
+        ]
       }
 
       cloudwatch_config {

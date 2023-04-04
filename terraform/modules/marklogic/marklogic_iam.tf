@@ -237,7 +237,12 @@ resource "aws_iam_policy" "ml_asg" {
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "ml_asg" {
   statement {
-    actions   = ["autoscaling:DescribeAutoScalingInstances", "autoscaling:EnterStandby", "autoscaling:ExitStandby"]
+    actions = [
+      "autoscaling:DescribeAutoScalingInstances",
+      "autoscaling:EnterStandby",
+      "autoscaling:ExitStandby",
+      "secretsmanager:GetSecretValue"
+    ]
     resources = ["*"]
   }
 }

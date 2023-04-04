@@ -13,12 +13,12 @@ let $all-forests-in-correct-state := (
       return
         if (($rep-forest and $current-state = "sync replicating") or ($current-state = "open" and fn:not($rep-forest)))
         then ()
-        else "false"
+        else fn:concat($current-name, ":", $current-state)
 )
 
-let $failed := ($all-forests-in-correct-state = "false")
+let $success := fn:empty($all-forests-in-correct-state)
 let $output :=
-    if ($failed)
-    then "ERROR"
-    else "ALL_FORESTS_IN_CORRECT_STATE"
+    if ($success)
+    then "ALL_FORESTS_IN_CORRECT_STATE"
+    else string-join($all-forests-in-correct-state,",&#10;")
 return ("output:" || $output)

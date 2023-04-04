@@ -9,39 +9,43 @@ INSTANCE_ID=`curl -sS -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.2
 AUTOSCALING_GROUP_NAME=`aws autoscaling describe-auto-scaling-instances --instance-ids $INSTANCE_ID --query 'AutoScalingInstances[0].AutoScalingGroupName' --output text`
 LIFECYCLE_STATE=`aws autoscaling describe-auto-scaling-instances --instance-ids $INSTANCE_ID --query 'AutoScalingInstances[0].LifecycleState' --output text`
 
-echo "Instance ${INSTANCE_ID}"
-echo "Autoscaling group ${AUTOSCALING_GROUP_NAME}; ${LIFECYCLE_STATE}"
+echo "Instance $${INSTANCE_ID}"
+echo "Autoscaling group $${AUTOSCALING_GROUP_NAME}; $${LIFECYCLE_STATE}"
+
+ML_USER_PASS=$(aws secretsmanager get-secret-value --secret-id ml-admin-user-${ENVIRONMENT} --region ${AWS_REGION} --query SecretString --output text)
+yum install jq -y # TODO: Does this need to run everytime?
+ML_USER=$(echo $ML_USER_PASS | jq -r '.username')
+ML_PASS=$(echo $ML_USER_PASS | jq -r '.password')
 
 if [[ "InService" == $LIFECYCLE_STATE ]]; then
   echo "Starting to check forest state at $(date --iso-8601=seconds)"
 
-  check_forest_state_script=`aws s3 cp --region eu-west-1 s3://test-marklogic-config/check_forest_state.xqy /check_forest_state.xqy`
-  echo "$check_forest_state_script"
+ aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/check_forest_state.xqy /check_forest_state.xqy
 
-  response=$(curl --anyauth --user admin:spoken-chest -X POST -d @./check_forest_state.xqy \
+  response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @./check_forest_state.xqy \
                  -H "Content-type: application/x-www-form-urlencoded" \
                  -H "Accept: text/plain" \
                  http://localhost:8002/v1/eval)
 
-  STATUS=$(echo "$response" | tr -d '\015' | grep output | cut -d ':' -f2)
-  echo "Status: ${STATUS}"
+  FOREST_STATUS=$(echo "$response" | tr -d '\015' | grep output | cut -d ':' -f2)
+  echo "Forest status: $${FOREST_STATUS}"
 
-  if [ "READY_FOR_RESTART" != "$STATUS" ]; then
+  if [ "READY_FOR_RESTART" != "$FOREST_STATUS" ]; then
     echo "Waiting for all forests to be in 'open'/'sync replicating' state"
     SECONDS=0
-    until [[ "READY_FOR_RESTART" == "$STATUS" ]]; do
+    until [[ "READY_FOR_RESTART" == "$FOREST_STATUS" ]]; do
         if (( SECONDS > 600 )); then
             echo "Error: giving up waiting for forests to enter 'open'/'sync replicating' state"
             exit 1
         fi
 
         sleep 10
-        response=$(curl --anyauth --user admin:spoken-chest -X POST -d @./check_forest_state.xqy \
+        response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @./check_forest_state.xqy \
                        -H "Content-type: application/x-www-form-urlencoded" \
                        -H "Accept: text/plain" \
                        http://localhost:8002/v1/eval)
-        STATUS=$(echo "$response" | tr -d '\015' | grep output | cut -d ':' -f2)
-        echo "Status: ${STATUS}"
+        FOREST_STATUS=$(echo "$response" | tr -d '\015' | grep output | cut -d ':' -f2)
+        echo "Forest status: $${FOREST_STATUS}"
     done
   fi
 
@@ -59,7 +63,7 @@ if [[ "InService" == $LIFECYCLE_STATE ]]; then
 
     sleep 10
     LIFECYCLE_STATE=`aws autoscaling describe-auto-scaling-instances --instance-ids $INSTANCE_ID --query 'AutoScalingInstances[0].LifecycleState' --output text`
-    echo "Current state: ${LIFECYCLE_STATE}"
+    echo "Current state: $${LIFECYCLE_STATE}"
   done
   
   echo "Running yum update"
@@ -81,11 +85,11 @@ if [[ "Standby" == $LIFECYCLE_STATE ]]; then
 
     sleep 10
     LIFECYCLE_STATE=`aws autoscaling describe-auto-scaling-instances --instance-ids $INSTANCE_ID --query 'AutoScalingInstances[0].LifecycleState' --output text`
-    echo "Current state: ${LIFECYCLE_STATE}"
+    echo "Current state: $${LIFECYCLE_STATE}"
   done
   echo "Patching complete at $(date --iso-8601=seconds)"
   exit 0
 fi
 
-echo "Unexpected instance state ${LIFECYCLE_STATE}"
+echo "Unexpected instance state $${LIFECYCLE_STATE}"
 exit 1
