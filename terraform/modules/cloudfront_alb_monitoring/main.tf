@@ -8,6 +8,9 @@ module "website_cloudfront_alb_monitoring" {
   alarms_sns_topic_arn        = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
   prefix                      = "${var.environment}-delta-website"
+
+  cloudfront_p90_origin_latency_high_alarm_threshold_ms     = 10000
+  cloudfront_average_origin_latency_high_alarm_threshold_ms = 6000
 }
 
 module "api_cloudfront_alb_monitoring" {
@@ -19,7 +22,7 @@ module "api_cloudfront_alb_monitoring" {
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
   prefix                      = "${var.environment}-delta-api"
 
-  cloudfront_origin_latency_high_alarm_threshold_ms = 60000
+  cloudfront_average_origin_latency_high_alarm_threshold_ms = 60000
 }
 
 module "keycloak_cloudfront_alb_monitoring" {
@@ -41,7 +44,7 @@ module "cpm_cloudfront_alb_monitoring" {
   alarms_sns_topic_global_arn = var.alarms_sns_topic_global_arn
   prefix                      = "${var.environment}-cpm"
 
-  cloudfront_origin_latency_high_alarm_threshold_ms = 60000
+  cloudfront_average_origin_latency_high_alarm_threshold_ms = 60000
 }
 
 module "jaspersoft_cloudfront_alb_monitoring" {

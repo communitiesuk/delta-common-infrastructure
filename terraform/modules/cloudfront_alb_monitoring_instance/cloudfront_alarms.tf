@@ -1,3 +1,6 @@
+# While metrics can be created cross-regionally, alarms can't
+# so we need to create these in us-east-1 as that's where the
+# Global cloudfront lives
 provider "aws" {
   alias  = "us-east-1"
   region = "us-east-1"
@@ -25,7 +28,7 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
 
   alarm_name          = "${var.prefix}-client-error-rate"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
+  evaluation_periods  = 4 # CloudFront error rate includes geo-blocked requests, so this can be noisy
 
   threshold          = var.cloudfront_client_error_rate_alarm_threshold_percent
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
@@ -71,9 +74,6 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
-  # While metrics can be created cross-regionally, alarms can't
-  # so we need to create this in us-east-1 as that's where the
-  # Global cloudfront lives
   provider = aws.us-east-1
 
   alarm_name          = "${var.prefix}-server-error-rate"
@@ -124,12 +124,9 @@ resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "origin_latency_high_alarm" {
-  # While metrics can be created cross-regionally, alarms can't
-  # so we need to create this in us-east-1 as that's where the
-  # Global cloudfront lives
   provider = aws.us-east-1
 
-  alarm_name          = "${var.prefix}-origin-latency-high-rate"
+  alarm_name          = "${var.prefix}-origin-latency-average-high-rate"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
 
@@ -137,10 +134,35 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_high_alarm" {
   namespace          = "AWS/CloudFront"
   period             = var.cloudfront_metric_period_seconds
   statistic          = "Average"
-  threshold          = var.cloudfront_origin_latency_high_alarm_threshold_ms
+  threshold          = var.cloudfront_average_origin_latency_high_alarm_threshold_ms
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
   alarm_description = format(local.alarm_description_template, "Origin Latency", "High", var.cloudfront_metric_period_seconds * 2 / 60)
+  alarm_actions     = [var.alarms_sns_topic_global_arn]
+  ok_actions        = [var.alarms_sns_topic_global_arn]
+
+  dimensions = {
+    "DistributionId" : var.cloudfront_distribution_id,
+    "Region" : "Global"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "origin_latency_p90_high_alarm" {
+  provider = aws.us-east-1
+  count    = var.cloudfront_p90_origin_latency_high_alarm_threshold_ms == null ? 0 : 1
+
+  alarm_name          = "${var.prefix}-origin-latency-p90-high-rate"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+
+  metric_name        = "OriginLatency"
+  namespace          = "AWS/CloudFront"
+  period             = var.cloudfront_metric_period_seconds
+  extended_statistic = "p90"
+  threshold          = var.cloudfront_p90_origin_latency_high_alarm_threshold_ms
+  treat_missing_data = "notBreaching" # Data is missing if there are no requests
+
+  alarm_description = format(local.alarm_description_template, "Origin Latency P90", "High", var.cloudfront_metric_period_seconds * 2 / 60)
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
