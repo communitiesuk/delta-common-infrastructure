@@ -616,7 +616,7 @@ Resources:
                 yum install jq -y
                 exit 0
 
-          - - MARKLOGIC_CLUSTER_NAME=
+            - MARKLOGIC_CLUSTER_NAME=
             - !Ref MarkLogicDDBTable
             - |+
 
@@ -691,11 +691,11 @@ Resources:
         'Fn::Join':
           - ''
           - - |+
-              #!/bin/bash
-              yum install jq -y
-              exit 0
+                #!/bin/bash
+                yum install jq -y
+                exit 0
 
-          - - MARKLOGIC_CLUSTER_NAME=
+            - MARKLOGIC_CLUSTER_NAME=
             - !Ref MarkLogicDDBTable
             - |+
 

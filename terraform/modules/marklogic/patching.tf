@@ -12,7 +12,7 @@ resource "aws_ssm_maintenance_window_target" "ml_servers" {
   resource_type = "INSTANCE"
 
   targets {
-    key    = "tag:Name" # Filter by the Name tag instead
+    key    = "tag:Name"
     values = [each.value]
   }
   targets {
@@ -91,6 +91,7 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
 }
 
 resource "aws_ssm_maintenance_window_task" "ml_restart" {
+  for_each        = toset(var.host_names)
   name            = "marklogic-restart-${var.environment}"
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
@@ -102,7 +103,7 @@ resource "aws_ssm_maintenance_window_task" "ml_restart" {
 
   targets {
     key    = "WindowTargetIds"
-    values = [aws_ssm_maintenance_window_target.ml_servers["MarkLogic-ASG-1"].id]
+    values = [aws_ssm_maintenance_window_target.ml_servers[each.key].id]
   }
 
   task_invocation_parameters {
@@ -118,8 +119,60 @@ resource "aws_ssm_maintenance_window_task" "ml_restart" {
       }
 
       parameter {
-        name   = "commands"
-        values = [file("${path.module}/restart_server.sh"), file("${path.module}/final_forest_state.sh")]
+        name = "commands"
+        values = [
+          templatefile("${path.module}/restart_server.sh",
+            {
+              ENVIRONMENT             = var.environment,
+              MARKLOGIC_CONFIG_BUCKET = module.config_files_bucket.bucket,
+              AWS_REGION              = data.aws_region.current.name
+          })]
+      }
+
+      cloudwatch_config {
+        cloudwatch_log_group_name = aws_cloudwatch_log_group.ml_patch.name
+        cloudwatch_output_enabled = true
+      }
+    }
+  }
+}
+
+resource "aws_ssm_maintenance_window_task" "ml_final_forest_check" {
+  name            = "marklogic-restart-${var.environment}"
+  window_id       = var.patch_maintenance_window.window_id
+  max_concurrency = 1
+  max_errors      = 0
+  priority        = length(var.host_names) + 1
+  task_arn        = "AWS-RunShellScript"
+  task_type       = "RUN_COMMAND"
+  cutoff_behavior = "CONTINUE_TASK"
+
+  targets {
+    key    = "WindowTargetIds"
+    values = [aws_ssm_maintenance_window_target.ml_servers["MarkLogic-ASG-1"].id]
+  }
+
+  task_invocation_parameters {
+    run_command_parameters {
+      comment         = "Final forest state check"
+      timeout_seconds = 1800
+
+      service_role_arn = var.patch_maintenance_window.service_role_arn
+      notification_config {
+        notification_arn    = var.patch_maintenance_window.errors_sns_topic_arn
+        notification_events = ["TimedOut", "Cancelled", "Failed"]
+        notification_type   = "Command"
+      }
+
+      parameter {
+        name = "commands"
+        values = [
+          templatefile("${path.module}/final_forest_state.sh",
+            {
+              ENVIRONMENT             = var.environment,
+              MARKLOGIC_CONFIG_BUCKET = module.config_files_bucket.bucket,
+              AWS_REGION              = data.aws_region.current.name
+            })]
       }
 
       cloudwatch_config {

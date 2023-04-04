@@ -4,7 +4,7 @@ xquery version "1.0-ml";
 declare namespace h = "http://marklogic.com/xdmp/status/host";
 declare namespace f = "http://marklogic.com/xdmp/status/forest";
 
-let $all-forests-in-correct-state := (
+let $forests-in-incorrect-state := (
     for $forest-id in xdmp:forests()
       let $current-forest-status := xdmp:forest-status($forest-id)
       let $current-name := $current-forest-status/(f:forest-name)
@@ -16,9 +16,9 @@ let $all-forests-in-correct-state := (
         else fn:concat($current-name, ":", $current-state)
 )
 
-let $success := fn:empty($all-forests-in-correct-state)
+let $success := fn:empty($forests-in-incorrect-state)
 let $output :=
     if ($success)
     then "ALL_FORESTS_IN_CORRECT_STATE"
-    else string-join($all-forests-in-correct-state,",&#10;")
+    else string-join($forests-in-incorrect-state,",")
 return ("output:" || $output)

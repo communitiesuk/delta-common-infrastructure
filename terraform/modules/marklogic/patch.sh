@@ -21,10 +21,10 @@ if [[ "InService" == $LIFECYCLE_STATE ]]; then
   echo "Starting to check forest state at $(date --iso-8601=seconds)"
   aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/check_forest_state.xqy /check_forest_state.xqy
 
-  response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @./check_forest_state.xqy \
+  response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/check_forest_state.xqy \
                  -H "Content-type: application/x-www-form-urlencoded" \
                  -H "Accept: text/plain" \
-                 http://localhost:8002/v1/eval)
+                 http://localhost:8002/v1/eval || echo "Connection failed")
 
   FOREST_STATUS=$(echo "$response" | tr -d '\015' | grep output | cut -d ':' -f2)
   echo "Forest status: $${FOREST_STATUS}"
@@ -39,10 +39,10 @@ if [[ "InService" == $LIFECYCLE_STATE ]]; then
         fi
 
         sleep 10
-        response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @./check_forest_state.xqy \
+        response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/check_forest_state.xqy \
                        -H "Content-type: application/x-www-form-urlencoded" \
                        -H "Accept: text/plain" \
-                       http://localhost:8002/v1/eval)
+                       http://localhost:8002/v1/eval || echo "Connection failed")
         FOREST_STATUS=$(echo "$response" | tr -d '\015' | grep output | cut -d ':' -f2)
         echo "Forest status: $${FOREST_STATUS}"
     done
