@@ -13,14 +13,13 @@ echo "Instance $${INSTANCE_ID}"
 echo "Autoscaling group $${AUTOSCALING_GROUP_NAME}; $${LIFECYCLE_STATE}"
 
 ML_USER_PASS=$(aws secretsmanager get-secret-value --secret-id ml-admin-user-${ENVIRONMENT} --region ${AWS_REGION} --query SecretString --output text)
-yum install jq -y # TODO: Does this need to run everytime?
+yum install jq -y # This command has been added to marklogic_cf_template.yml but will need to remain here until the instances are re-created
 ML_USER=$(echo $ML_USER_PASS | jq -r '.username')
 ML_PASS=$(echo $ML_USER_PASS | jq -r '.password')
 
 if [[ "InService" == $LIFECYCLE_STATE ]]; then
   echo "Starting to check forest state at $(date --iso-8601=seconds)"
-
- aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/check_forest_state.xqy /check_forest_state.xqy
+  aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/check_forest_state.xqy /check_forest_state.xqy
 
   response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @./check_forest_state.xqy \
                  -H "Content-type: application/x-www-form-urlencoded" \

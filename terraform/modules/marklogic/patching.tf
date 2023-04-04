@@ -91,7 +91,6 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
 }
 
 resource "aws_ssm_maintenance_window_task" "ml_restart" {
-  for_each        = toset(var.host_names)
   name            = "marklogic-restart-${var.environment}"
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
@@ -103,7 +102,7 @@ resource "aws_ssm_maintenance_window_task" "ml_restart" {
 
   targets {
     key    = "WindowTargetIds"
-    values = [aws_ssm_maintenance_window_target.ml_servers[each.key].id]
+    values = [aws_ssm_maintenance_window_target.ml_servers["MarkLogic-ASG-1"].id]
   }
 
   task_invocation_parameters {
@@ -123,7 +122,10 @@ resource "aws_ssm_maintenance_window_task" "ml_restart" {
         values = [file("${path.module}/restart_server.sh"), file("${path.module}/final_forest_state.sh")]
       }
 
-      # TODO: Ask whether it's worth adding a cloudwatch config here
+      cloudwatch_config {
+        cloudwatch_log_group_name = aws_cloudwatch_log_group.ml_patch.name
+        cloudwatch_output_enabled = true
+      }
     }
   }
 }
