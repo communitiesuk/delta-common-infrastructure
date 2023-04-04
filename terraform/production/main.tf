@@ -47,8 +47,6 @@ module "ses_identity" {
   domain = "datacollection.levellingup.gov.uk"
   bounce_complaint_notification_emails = [
     "Group-DLUHCDeltaNotifications@softwire.com",
-    "Graham.Dagless@williamslea.com",
-    "justin.struth@williamslea.com",
     "deltaadmin@levellingup.gov.uk",
   ]
 }
