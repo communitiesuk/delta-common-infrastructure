@@ -76,13 +76,13 @@ resource "aws_cloudwatch_dashboard" "main" {
           x : 0,
           type : "alarm",
           properties : {
-            "alarms" : [
+            "alarms" : concat([
               aws_cloudwatch_metric_alarm.alb_target_server_error_rate_alarm.arn,
               aws_cloudwatch_metric_alarm.alb_target_client_error_rate_alarm.arn,
               aws_cloudwatch_metric_alarm.client_error_rate_alarm.arn,
               aws_cloudwatch_metric_alarm.server_error_rate_alarm.arn,
               aws_cloudwatch_metric_alarm.origin_latency_high_alarm.arn,
-            ],
+            ], aws_cloudwatch_metric_alarm.origin_latency_p90_high_alarm[*].arn),
             "title" : "Alarms"
           }
         },
@@ -131,6 +131,26 @@ resource "aws_cloudwatch_dashboard" "main" {
             "stacked" : false,
             "region" : "eu-west-1",
             "stat" : "Average",
+            "period" : 300
+          }
+        },
+        {
+          width : 6,
+          height : 6,
+          x : 0,
+          y : 14,
+          type : "metric",
+          properties : {
+            "title" : "Origin response time",
+            "metrics" : [
+              [
+                "AWS/CloudFront", "OriginLatency", "Region", "Global", "DistributionId", var.cloudfront_distribution_id, { stat : "Average" }
+              ],
+              [".", "504ErrorRate", ".", ".", ".", ".", { stat : "p90" }],
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : "us-east-1",
             "period" : 300
           }
         },
