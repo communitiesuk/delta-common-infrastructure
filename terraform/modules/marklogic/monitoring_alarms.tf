@@ -162,7 +162,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_low" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "queue_length_high" {
-  alarm_name          = "marklogic-${var.environment}-queue-length-high"
+  alarm_name          = "marklogic-${var.environment}-ebs-queue-length-high"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   threshold           = 5
@@ -180,11 +180,11 @@ resource "aws_cloudwatch_metric_alarm" "queue_length_high" {
       id = "volume_${replace(volume.value.availability_zone, "-", "_")}_queue_length"
       metric {
         metric_name = "VolumeQueueLength"
-        namespace   = "${var.environment}/MarkLogic"
+        namespace   = "AWS/EBS"
         period      = "300"
         stat        = "p90"
         dimensions = {
-          "VolumeId" = "${volume.value.id}"
+          "VolumeId" = volume.value.id
         }
       }
     }
