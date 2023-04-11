@@ -40,12 +40,6 @@ resource "aws_cloudwatch_log_metric_filter" "taskserver_errorlog_error" {
   }
 }
 
-# how to compose the widget string: join("",[each.value, "-dev", var.location, var.platform])
-# from https://stackoverflow.com/questions/67897315/can-terraform-concatenate-variables-fed-from-a-for-each-loop-with-a-string
-# no, don't think this works
-# need to perform a mapping, something like this? https://stackoverflow.com/questions/59381410/how-can-i-convert-a-list-to-a-string-in-terraform
-# some kind of super cursed format() use inside a list comprehension? only need to make the metric list which can go into the jsonencode() where appropriate
-
 locals {
   read_iops = [for volume in aws_ebs_volume.marklogic_data_volumes :
     ["AWS/EBS", "VolumeReadOps", "VolumeId", "${volume.id}", { "id" : "readOps_${replace(volume.availability_zone, "-", "_")}", "stat" : "Sum", "visible" : false }]
@@ -527,8 +521,9 @@ resource "aws_cloudwatch_dashboard" "main" {
             "period" : 300,
             "yAxis" : {
               "left" : {
-                "label" : "IOPS/300s",
-                "showUnits" : false
+                "label" : "IOPS",
+                "showUnits" : false,
+                "min" : 0
               }
             },
             "annotations" : {
@@ -557,7 +552,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             "period" : 300,
             "yAxis" : {
               "left" : {
-                "label" : "IOPS/300s",
+                "label" : "Read ops/300s",
                 "showUnits" : false,
                 "min" : 0
               }
@@ -580,7 +575,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             "period" : 300,
             "yAxis" : {
               "left" : {
-                "label" : "IOPS/300s",
+                "label" : "Write ops/300s",
                 "showUnits" : false,
                 "min" : 0
               }
