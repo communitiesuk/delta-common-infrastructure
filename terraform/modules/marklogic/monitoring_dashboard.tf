@@ -412,7 +412,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 5,
           "width" : 24,
-          "y" : 3,
+          "y" : 32,
           "x" : 0,
           "type" : "log",
           "properties" : {
