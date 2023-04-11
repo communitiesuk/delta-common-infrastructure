@@ -40,6 +40,40 @@ resource "aws_cloudwatch_log_metric_filter" "taskserver_errorlog_error" {
   }
 }
 
+locals {
+  read_iops = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeReadOps", "VolumeId", "${volume.id}", { "id" : "readOps_${replace(volume.availability_zone, "-", "_")}", "stat" : "Sum", "visible" : false }]
+  ]
+  write_iops = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeWriteOps", "VolumeId", "${volume.id}", { "id" : "writeOps_${replace(volume.availability_zone, "-", "_")}", "stat" : "Sum", "visible" : false }]
+  ]
+  throughput = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    [{
+      "expression" : "(readOps_${replace(volume.availability_zone, "-", "_")} + writeOps_${replace(volume.availability_zone, "-", "_")})/PERIOD(readOps_${replace(volume.availability_zone, "-", "_")})",
+      "label" : "${volume.availability_zone}",
+      "id" : "throughput_${replace(volume.availability_zone, "-", "_")}"
+    }]
+  ]
+  read_iops_visible = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeReadOps", "VolumeId", "${volume.id}", { "id" : "readOps_${replace(volume.availability_zone, "-", "_")}", "stat" : "Sum" }]
+  ]
+  write_iops_visible = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeWriteOps", "VolumeId", "${volume.id}", { "id" : "writeOps_${replace(volume.availability_zone, "-", "_")}", "stat" : "Sum" }]
+  ]
+  queue_length = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeQueueLength", "VolumeId", "${volume.id}", { "region" : data.aws_region.current.name, "label" : "${volume.availability_zone}" }]
+  ]
+  idle_time = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeIdleTime", "VolumeId", "${volume.id}", { "region" : data.aws_region.current.name, "label" : "${volume.availability_zone}" }]
+  ]
+  read_time = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeTotalReadTime", "VolumeId", "${volume.id}", { "stat" : "Average", "region" : data.aws_region.current.name, "label" : "${volume.availability_zone}" }]
+  ]
+  write_time = [for volume in aws_ebs_volume.marklogic_data_volumes :
+    ["AWS/EBS", "VolumeTotalWriteTime", "VolumeId", "${volume.id}", { "stat" : "Average", "region" : data.aws_region.current.name, "label" : "${volume.availability_zone}" }]
+  ]
+}
+
 resource "aws_cloudwatch_dashboard" "main" {
   dashboard_name = "${var.environment}-marklogic"
   dashboard_body = jsonencode(
@@ -79,13 +113,18 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Average",
             "period" : 300,
             "setPeriodToTimeRange" : false,
             "sparkline" : true,
             "trend" : true,
-            "title" : "Data drive disk usage "
+            "title" : "Data drive disk usage",
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -102,7 +141,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Average",
             "period" : 300,
             "setPeriodToTimeRange" : false,
@@ -130,7 +169,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "period" : 900,
             "stat" : "Sum"
           }
@@ -148,7 +187,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "period" : 900,
             "stat" : "Sum"
           }
@@ -166,7 +205,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "period" : 900,
             "stat" : "Sum"
           }
@@ -185,9 +224,14 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "period" : 300,
-            "stat" : "Average"
+            "stat" : "Average",
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -204,7 +248,12 @@ resource "aws_cloudwatch_dashboard" "main" {
               ["...", { id : "m2" }],
               ["...", { id : "m3", stat : "Maximum" }]
             ],
-            "region" : "eu-west-1"
+            "region" : data.aws_region.current.name,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -220,9 +269,14 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "period" : 300,
-            "stat" : "Sum"
+            "stat" : "Sum",
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -238,9 +292,14 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Sum",
-            "period" : 300
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -255,9 +314,14 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Maximum",
-            "period" : 300
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -274,9 +338,14 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Sum",
-            "period" : 300
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -293,9 +362,14 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Average",
-            "period" : 300
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -311,9 +385,14 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Minimum",
-            "period" : 300
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -324,7 +403,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           "type" : "log",
           "properties" : {
             "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| filter @message like /Error/\n| sort @timestamp desc\n| limit 5",
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stacked" : false,
             "title" : "Recent Error log group entries: ${local.taskserver_error_log_group_name}",
             "view" : "table"
@@ -333,12 +412,12 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 5,
           "width" : 24,
-          "y" : 3,
+          "y" : 32,
           "x" : 0,
           "type" : "log",
           "properties" : {
             "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| filter @message like /Warning/\n| sort @timestamp desc\n| limit 5",
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stacked" : false,
             "title" : "Recent Warning log group entries: ${local.taskserver_error_log_group_name}",
             "view" : "table"
@@ -352,7 +431,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           "type" : "log",
           "properties" : {
             "query" : "SOURCE '${local.taskserver_error_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| sort @timestamp desc\n| limit 5",
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stacked" : false,
             "title" : "Recent log group entries: ${local.taskserver_error_log_group_name}",
             "view" : "table"
@@ -392,16 +471,6 @@ resource "aws_cloudwatch_dashboard" "main" {
                 "stat" : "Average"
               },
               {
-                "metricName" : "StatusCheckFailed_Instance",
-                "resourceType" : "AWS::EC2::Instance",
-                "stat" : "Sum"
-              },
-              {
-                "metricName" : "StatusCheckFailed_System",
-                "resourceType" : "AWS::EC2::Instance",
-                "stat" : "Sum"
-              },
-              {
                 "metricName" : "StatusCheckFailed",
                 "resourceType" : "AWS::EC2::Instance",
                 "stat" : "Sum"
@@ -433,7 +502,174 @@ resource "aws_cloudwatch_dashboard" "main" {
             },
             "period" : 300,
             "splitBy" : "",
-            "region" : "eu-west-1"
+            "region" : data.aws_region.current.name
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 48,
+          "x" : 0,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : concat(local.read_iops, local.write_iops, local.throughput),
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : data.aws_region.current.name,
+            "stat" : "Average",
+            "title" : "EBS volume throughput",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "IOPS",
+                "showUnits" : false,
+                "min" : 0
+              }
+            },
+            "annotations" : {
+              "horizontal" : [
+                {
+                  "label" : "IOPS limit",
+                  "value" : var.data_volume.iops
+                }
+              ]
+            }
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 48,
+          "x" : 6,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.read_iops_visible,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : data.aws_region.current.name,
+            "stat" : "Average",
+            "title" : "EBS volume read IOPS",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "Read ops/300s",
+                "showUnits" : false,
+                "min" : 0
+              }
+            },
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 48,
+          "x" : 12,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.write_iops_visible,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : data.aws_region.current.name,
+            "stat" : "Average",
+            "title" : "EBS volume write IOPS",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "Write ops/300s",
+                "showUnits" : false,
+                "min" : 0
+              }
+            },
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 48,
+          "x" : 18,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.idle_time,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : data.aws_region.current.name,
+            "stat" : "Average",
+            "title" : "EBS volume idle time",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "Idle time",
+                "min" : 0,
+                "max" : 60
+              }
+            }
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 54,
+          "x" : 0,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.queue_length,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : data.aws_region.current.name,
+            "stat" : "Average",
+            "title" : "EBS volume queue length",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "Queue length",
+                "showUnits" : false,
+                "min" : 0
+              }
+            }
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 54,
+          "x" : 6,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.read_time,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : data.aws_region.current.name,
+            "stat" : "Average",
+            "title" : "EBS volume read time",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "Read time",
+                "min" : 0
+              }
+            }
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 54,
+          "x" : 12,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : local.write_time,
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : data.aws_region.current.name,
+            "stat" : "Average",
+            "title" : "EBS volume write time",
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "label" : "Write time",
+                "min" : 0
+              }
+            }
           }
         }
       ]
