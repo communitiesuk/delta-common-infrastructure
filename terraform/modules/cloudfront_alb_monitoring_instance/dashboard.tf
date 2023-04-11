@@ -1,3 +1,5 @@
+data "aws_region" "current" {}
+
 locals {
   green  = "#2ca02c"
   blue   = "#1f77b4"
@@ -21,7 +23,7 @@ locals {
           ["...", { id : "m2" }],
           ["...", { id : "m3", stat : "Maximum" }]
         ],
-        "region" : "eu-west-1",
+        "region" : data.aws_region.current.name,
       }
     },
     {
@@ -39,7 +41,7 @@ locals {
           ["...", { id : "m2" }],
           ["...", { id : "m3", stat : "Maximum" }]
         ],
-        "region" : "eu-west-1"
+        "region" : data.aws_region.current.name
       }
     },
     {
@@ -57,7 +59,7 @@ locals {
           ["...", { id : "m2" }],
           ["...", { id : "m3", stat : "Maximum" }]
         ],
-        "region" : "eu-west-1"
+        "region" : data.aws_region.current.name
       }
     }
   ])
@@ -105,7 +107,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Average",
             "period" : 300
           }
@@ -129,7 +131,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Average",
             "period" : 300
           }
@@ -168,7 +170,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Sum",
             "period" : 300
           }
@@ -184,7 +186,7 @@ resource "aws_cloudwatch_dashboard" "main" {
               "position" : "bottom"
             },
             "title" : "ALB RequestCount",
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "view" : "timeSeries",
             "stacked" : false,
             "stat" : "Sum",
@@ -210,7 +212,7 @@ resource "aws_cloudwatch_dashboard" "main" {
               "position" : "bottom"
             },
             "title" : "ALB ActiveConnectionCount",
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "liveData" : false,
             "view" : "timeSeries",
             "stacked" : false,
@@ -231,7 +233,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Sum",
             "period" : 300
           }
@@ -249,7 +251,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Sum",
             "period" : 300
           }
@@ -271,7 +273,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Sum",
             "period" : 300
           }
@@ -304,7 +306,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Sum",
             "period" : 300
           }
@@ -329,7 +331,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ],
             "view" : "timeSeries",
             "stacked" : false,
-            "region" : "eu-west-1",
+            "region" : data.aws_region.current.name,
             "stat" : "Sum",
             "period" : 300
           }
