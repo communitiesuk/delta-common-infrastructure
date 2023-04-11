@@ -80,6 +80,8 @@ aws s3 cp js-7.8.1_hotfixed_2022-04-15.zip s3://dluhc-jaspersoft-bin
 
 ## Updating Tomcat
 
+Change `TOMCAT_VERSION` to the updated version.
+
 ```sh
 # cd into the Tomcat folder
 cd /opt/tomcat
