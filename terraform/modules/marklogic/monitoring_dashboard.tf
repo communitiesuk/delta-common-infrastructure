@@ -72,10 +72,10 @@ locals {
   idle_time = [for volume in aws_ebs_volume.marklogic_data_volumes :
     ["AWS/EBS", "VolumeIdleTime", "VolumeId", "${volume.id}", { "region" : data.aws_region.current.name, "label" : "${volume.availability_zone}" }]
   ]
-  read_latency = [for volume in aws_ebs_volume.marklogic_data_volumes :
+  read_time = [for volume in aws_ebs_volume.marklogic_data_volumes :
     ["AWS/EBS", "VolumeTotalReadTime", "VolumeId", "${volume.id}", { "stat" : "Average", "region" : data.aws_region.current.name, "label" : "${volume.availability_zone}" }]
   ]
-  write_latency = [for volume in aws_ebs_volume.marklogic_data_volumes :
+  write_time = [for volume in aws_ebs_volume.marklogic_data_volumes :
     ["AWS/EBS", "VolumeTotalWriteTime", "VolumeId", "${volume.id}", { "stat" : "Average", "region" : data.aws_region.current.name, "label" : "${volume.availability_zone}" }]
   ]
 }
@@ -125,7 +125,12 @@ resource "aws_cloudwatch_dashboard" "main" {
             "setPeriodToTimeRange" : false,
             "sparkline" : true,
             "trend" : true,
-            "title" : "Data drive disk usage "
+            "title" : "Data drive disk usage",
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -227,7 +232,12 @@ resource "aws_cloudwatch_dashboard" "main" {
             "stacked" : false,
             "region" : data.aws_region.current.name,
             "period" : 300,
-            "stat" : "Average"
+            "stat" : "Average",
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -244,7 +254,12 @@ resource "aws_cloudwatch_dashboard" "main" {
               ["...", { id : "m2" }],
               ["...", { id : "m3", stat : "Maximum" }]
             ],
-            "region" : data.aws_region.current.name
+            "region" : data.aws_region.current.name,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -262,7 +277,12 @@ resource "aws_cloudwatch_dashboard" "main" {
             "stacked" : false,
             "region" : data.aws_region.current.name,
             "period" : 300,
-            "stat" : "Sum"
+            "stat" : "Sum",
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -280,7 +300,12 @@ resource "aws_cloudwatch_dashboard" "main" {
             "stacked" : false,
             "region" : data.aws_region.current.name,
             "stat" : "Sum",
-            "period" : 300
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -297,7 +322,12 @@ resource "aws_cloudwatch_dashboard" "main" {
             "stacked" : false,
             "region" : data.aws_region.current.name,
             "stat" : "Maximum",
-            "period" : 300
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -316,7 +346,12 @@ resource "aws_cloudwatch_dashboard" "main" {
             "stacked" : false,
             "region" : data.aws_region.current.name,
             "stat" : "Sum",
-            "period" : 300
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -335,7 +370,12 @@ resource "aws_cloudwatch_dashboard" "main" {
             "stacked" : false,
             "region" : data.aws_region.current.name,
             "stat" : "Average",
-            "period" : 300
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -353,7 +393,12 @@ resource "aws_cloudwatch_dashboard" "main" {
             "stacked" : false,
             "region" : data.aws_region.current.name,
             "stat" : "Minimum",
-            "period" : 300
+            "period" : 300,
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
           }
         },
         {
@@ -432,16 +477,6 @@ resource "aws_cloudwatch_dashboard" "main" {
                 "stat" : "Average"
               },
               {
-                "metricName" : "StatusCheckFailed_Instance",
-                "resourceType" : "AWS::EC2::Instance",
-                "stat" : "Sum"
-              },
-              {
-                "metricName" : "StatusCheckFailed_System",
-                "resourceType" : "AWS::EC2::Instance",
-                "stat" : "Sum"
-              },
-              {
                 "metricName" : "StatusCheckFailed",
                 "resourceType" : "AWS::EC2::Instance",
                 "stat" : "Sum"
@@ -491,18 +526,18 @@ resource "aws_cloudwatch_dashboard" "main" {
             "title" : "EBS volume throughput",
             "period" : 300,
             "yAxis" : {
-                "left": {
-                    "label": "IOPS/300s",
-                    "showUnits": false
-                }
+              "left" : {
+                "label" : "IOPS/300s",
+                "showUnits" : false
+              }
             },
-                "annotations": {
-                "horizontal": [
-                    {
-                        "label": "IOPS limit",
-                        "value": var.data_volume.iops
-                    }
-                ]
+            "annotations" : {
+              "horizontal" : [
+                {
+                  "label" : "IOPS limit",
+                  "value" : var.data_volume.iops
+                }
+              ]
             }
           }
         },
@@ -523,7 +558,8 @@ resource "aws_cloudwatch_dashboard" "main" {
             "yAxis" : {
               "left" : {
                 "label" : "IOPS/300s",
-                "showUnits" : false
+                "showUnits" : false,
+                "min" : 0
               }
             },
           }
@@ -545,7 +581,8 @@ resource "aws_cloudwatch_dashboard" "main" {
             "yAxis" : {
               "left" : {
                 "label" : "IOPS/300s",
-                "showUnits" : false
+                "showUnits" : false,
+                "min" : 0
               }
             },
           }
@@ -566,7 +603,9 @@ resource "aws_cloudwatch_dashboard" "main" {
             "period" : 300,
             "yAxis" : {
               "left" : {
-                "label" : "Idle time"
+                "label" : "Idle time",
+                "min" : 0,
+                "max" : 60
               }
             }
           }
@@ -588,7 +627,8 @@ resource "aws_cloudwatch_dashboard" "main" {
             "yAxis" : {
               "left" : {
                 "label" : "Queue length",
-                "showUnits" : false
+                "showUnits" : false,
+                "min" : 0
               }
             }
           }
@@ -600,16 +640,17 @@ resource "aws_cloudwatch_dashboard" "main" {
           "x" : 6,
           "type" : "metric",
           "properties" : {
-            "metrics" : local.read_latency,
+            "metrics" : local.read_time,
             "view" : "timeSeries",
             "stacked" : false,
             "region" : data.aws_region.current.name,
             "stat" : "Average",
-            "title" : "EBS volume read latency",
+            "title" : "EBS volume read time",
             "period" : 300,
             "yAxis" : {
               "left" : {
-                "label" : "Read latency"
+                "label" : "Read time",
+                "min" : 0
               }
             }
           }
@@ -621,16 +662,17 @@ resource "aws_cloudwatch_dashboard" "main" {
           "x" : 12,
           "type" : "metric",
           "properties" : {
-            "metrics" : local.write_latency,
+            "metrics" : local.write_time,
             "view" : "timeSeries",
             "stacked" : false,
             "region" : data.aws_region.current.name,
             "stat" : "Average",
-            "title" : "EBS volume write latency",
+            "title" : "EBS volume write time",
             "period" : 300,
             "yAxis" : {
               "left" : {
-                "label" : "Write latency"
+                "label" : "Write time",
+                "min" : 0
               }
             }
           }
