@@ -9,16 +9,15 @@ ML_USER_PASS=$(aws secretsmanager get-secret-value --secret-id ml-admin-user-${E
 ML_USER=$(echo $ML_USER_PASS | jq -r '.username')
 ML_PASS=$(echo $ML_USER_PASS | jq -r '.password')
 
-aws s3 cp --region eu-west-1 s3://${MARKLOGIC_CONFIG_BUCKET}/final_forest_state.xqy /final_forest_state.xqy
+aws s3 cp --region eu-west-1 s3://${MARKLOGIC_CONFIG_BUCKET}/final_forest_state.xqy /patching/final_forest_state.xqy
 
 set +e
-response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/final_forest_state.xqy \
+response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/final_forest_state.xqy \
                -H "Content-type: application/x-www-form-urlencoded" \
                -H "Accept: text/plain" \
-               http://localhost:8002/v1/eval || "Failed connecting to Marklogic") # or set +e -> will carry on executing even if it fails i.e throws an error
+               http://localhost:8002/v1/eval || echo "output:Failed connecting to Marklogic")
 
 STATUS=$(echo "$response" | tr -d '\015' | grep output | cut -d ':' -f2)
-echo "Status: $${STATUS}"
 
 if [ "ALL_FORESTS_IN_CORRECT_STATE" != "$STATUS" ]; then
   echo "Waiting for forests to be in the correct state"
@@ -30,11 +29,13 @@ if [ "ALL_FORESTS_IN_CORRECT_STATE" != "$STATUS" ]; then
     fi
 
     sleep 10
-    response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/final_forest_state.xqy \
+    response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/final_forest_state.xqy \
                    -H "Content-type: application/x-www-form-urlencoded" \
                    -H "Accept: text/plain" \
-                   http://localhost:8002/v1/eval || "Failed connecting to Marklogic")
-    echo "Status: $${STATUS}"
+                   http://localhost:8002/v1/eval || echo "output:Failed connecting to Marklogic")
+
+    STATUS=$(echo "$response" | tr -d '\015' | grep output | cut -d ':' -f2)
+    echo "waiting for the following forests: $${STATUS}"
   done
 fi
 

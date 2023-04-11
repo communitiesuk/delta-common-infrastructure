@@ -248,6 +248,6 @@ data "aws_iam_policy_document" "ml_asg_patching" {
     actions = [
       "secretsmanager:GetSecretValue"
     ]
-    resources = ["arn:aws:secretsmanager:eu-west-1:486283582667:secret:ml-admin-user-test-GRFpgN"] # TODO: add stage ARN
+    resources = [data.aws_secretsmanager_secret_version.ml_admin_user.arn]
   }
 }

@@ -13,7 +13,7 @@ let $forests-in-incorrect-state := (
       return
         if (($rep-forest and $current-state = "sync replicating") or ($current-state = "open" and fn:not($rep-forest)))
         then ()
-        else fn:concat($current-name, ":", $current-state)
+        else $current-name
 )
 
 let $success := fn:empty($forests-in-incorrect-state)

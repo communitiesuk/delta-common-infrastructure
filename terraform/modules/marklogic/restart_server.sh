@@ -11,11 +11,11 @@ ML_PASS=$(echo $ML_USER_PASS | jq -r '.password')
 printf 'xquery=
         xquery version "1.0-ml";
         xdmp:restart((xdmp:host()), "Restarting MarkLogic Server so that replication ends up the right way around")
-' > restart_server.xqy
+' > /patching/restart_server.xqy
 
 echo "Restarting Marklogic server"
 
-curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @./restart_server.xqy \
+curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/restart_server.xqy \
                -H "Content-type: application/x-www-form-urlencoded" \
                -H "Accept: text/plain" \
                http://localhost:8002/v1/eval

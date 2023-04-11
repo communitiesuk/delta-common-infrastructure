@@ -16,15 +16,17 @@ ML_USER_PASS=$(aws secretsmanager get-secret-value --secret-id ml-admin-user-${E
 yum install jq -y # This command has been added to marklogic_cf_template.yml but will need to remain here until the instances are re-created
 ML_USER=$(echo $ML_USER_PASS | jq -r '.username')
 ML_PASS=$(echo $ML_USER_PASS | jq -r '.password')
+mkdir -p /patching # Folder for any patching-related files that are copied down
 
 if [[ "InService" == $LIFECYCLE_STATE ]]; then
   echo "Starting to check forest state at $(date --iso-8601=seconds)"
-  aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/check_forest_state.xqy /check_forest_state.xqy
+  aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/check_forest_state.xqy /patching/check_forest_state.xqy
 
-  response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/check_forest_state.xqy \
+  set +e
+  response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/check_forest_state.xqy \
                  -H "Content-type: application/x-www-form-urlencoded" \
                  -H "Accept: text/plain" \
-                 http://localhost:8002/v1/eval || echo "Connection failed")
+                 http://localhost:8002/v1/eval || echo "output:Connection failed")
 
   FOREST_STATUS=$(echo "$response" | tr -d '\015' | grep output | cut -d ':' -f2)
   echo "Forest status: $${FOREST_STATUS}"
@@ -39,15 +41,16 @@ if [[ "InService" == $LIFECYCLE_STATE ]]; then
         fi
 
         sleep 10
-        response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/check_forest_state.xqy \
+        response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/check_forest_state.xqy \
                        -H "Content-type: application/x-www-form-urlencoded" \
                        -H "Accept: text/plain" \
-                       http://localhost:8002/v1/eval || echo "Connection failed")
+                       http://localhost:8002/v1/eval || echo "output:Connection failed")
         FOREST_STATUS=$(echo "$response" | tr -d '\015' | grep output | cut -d ':' -f2)
         echo "Forest status: $${FOREST_STATUS}"
     done
   fi
 
+  set -e
   echo "All forests in 'open'/'sync replicating' state"
 
   echo "Requesting enter-standby"
