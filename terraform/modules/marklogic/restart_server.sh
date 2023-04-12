@@ -8,6 +8,8 @@ ML_USER_PASS=$(aws secretsmanager get-secret-value --secret-id ml-admin-user-${E
 ML_USER=$(echo $ML_USER_PASS | jq -r '.username')
 ML_PASS=$(echo $ML_USER_PASS | jq -r '.password')
 
+bash /patching/check_forest_state.sh "$ML_USER" "$ML_PASS" # No need to copy check_forest_state.sh and .xqy from S3 as this is done in patch.sh
+
 printf 'xquery=
         xquery version "1.0-ml";
         xdmp:restart((xdmp:host()), "Restarting MarkLogic Server so that replication ends up the right way around")

@@ -28,11 +28,18 @@ resource "aws_cloudwatch_log_group" "ml_patch" {
   retention_in_days = var.patch_cloudwatch_log_expiration_days
 }
 
-resource "aws_s3_object" "ml_check_forest_state_script" {
+resource "aws_s3_object" "ml_check_forest_state_xquery_script" {
   bucket = module.config_files_bucket.bucket
   key    = "check_forest_state.xqy"
   source = "${path.module}/check_forest_state.xqy"
   etag   = filemd5("${path.module}/check_forest_state.xqy")
+}
+
+resource "aws_s3_object" "ml_check_forest_state_shell_script" {
+  bucket = module.config_files_bucket.bucket
+  key    = "check_forest_state.sh"
+  source = "${path.module}/check_forest_state.sh"
+  etag   = filemd5("${path.module}/check_forest_state.sh")
 }
 
 resource "aws_s3_object" "ml_final_forest_state_script" {
@@ -96,7 +103,7 @@ resource "aws_ssm_maintenance_window_task" "ml_restart" {
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
   max_errors      = 0
-  priority        = length(var.host_names) + count.index #TODO: only restart one at a time
+  priority        = length(var.host_names) + count.index
   task_arn        = "AWS-RunShellScript"
   task_type       = "RUN_COMMAND"
   cutoff_behavior = "CONTINUE_TASK"
@@ -142,7 +149,7 @@ resource "aws_ssm_maintenance_window_task" "ml_final_forest_check" {
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
   max_errors      = 0
-  priority        = length(var.host_names) + 1
+  priority        = 2 * length(var.host_names) # Must run after ml_patch and ml_restart have completed
   task_arn        = "AWS-RunShellScript"
   task_type       = "RUN_COMMAND"
   cutoff_behavior = "CONTINUE_TASK"
