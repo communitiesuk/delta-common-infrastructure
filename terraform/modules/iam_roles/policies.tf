@@ -255,7 +255,7 @@ data "aws_iam_policy_document" "infra_support" {
     actions = [
       "iam:PassRole"
     ]
-    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/staging-infra-passable/*"]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.environment}-infra-passable/*"]
   }
 
   statement {
