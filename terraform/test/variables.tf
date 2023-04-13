@@ -48,7 +48,7 @@ variable "ecr_repo_account_id" {
   default     = "468442790030"
 }
 
-variable "dap_external_role_arn" {
-  type    = string
-  default = "arn:aws:iam::062321884391:role/DSQSS"
+variable "dap_external_role_arns" {
+  type    = list(string)
+  default = ["arn:aws:iam::062321884391:role/DSQSS"]
 }
