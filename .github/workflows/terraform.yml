@@ -1,54 +1,25 @@
-name: "Reusable Terraform workflow"
+name: "Terraform apply"
 
 on:
-  workflow_call:
-    inputs:
-      workdir:
-        required: true
-        type: string
-        description: directory to run Terraform commands from
-      plan_environment:
-        required: false
-        default: ''
-        type: string
-        description: Environment to run the plan in
-      apply_environment:
-        required: true
-        type: string
-        description: Environment to run the apply in
-    secrets:
-      access_key:
-        required: true
-      secret_Key:
-        required: true
   workflow_dispatch:
     inputs:
-      workdir:
+      environment:
         required: true
         type: string
-        description: Directory to run Terraform commands from
-      plan_environment:
-        required: false
-        default: ''
-        type: string
-        description: Environment to run the plan in  - can be blank for test/staging
-      apply_environment:
-        required: true
-        type: string
-        description: Environment to run the apply in
+        description: Environment
 
 jobs:
   plan:
     name: Terraform plan
     runs-on: ubuntu-latest
-    concurrency: tfstate-${{ inputs.workdir }}
-    environment: ${{ inputs.plan_environment }}
+    concurrency: tfstate-${{ inputs.environment }}
+    # Note environment is not required, the repository-level access key has enough permissions to run a plan
     outputs:
       plan: ${{ steps.plan.outputs.stdout }}
       plan_exitcode: ${{ steps.plan.outputs.exitcode }}
     defaults:
       run:
-        working-directory: ${{ inputs.workdir }}
+        working-directory: ${{ inputs.environment }}
     env:
       AWS_REGION: "eu-west-1"
     steps:
@@ -87,12 +58,12 @@ jobs:
     name: Terraform apply
     needs: plan
     runs-on: ubuntu-latest
-    concurrency: tfstate-${{ inputs.workdir }}
-    environment: ${{ inputs.apply_environment }}
+    concurrency: tfstate-${{ inputs.environment }}
+    environment: ${{ inputs.environment }}
     if: needs.plan.outputs.plan_exitcode == 2
     defaults:
       run:
-        working-directory: ${{ inputs.workdir }}
+        working-directory: ${{ inputs.environment }}
     env:
       AWS_REGION: "eu-west-1"
     steps:
