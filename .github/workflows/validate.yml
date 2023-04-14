@@ -1,4 +1,4 @@
-name: "Validate and plan for pull request"
+name: "Validate and plan"
 
 on:
   pull_request:
