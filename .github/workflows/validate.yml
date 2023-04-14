@@ -1,7 +1,13 @@
-name: "Validate and plan for pull request"
+name: "Validate and plan"
 
 on:
   pull_request:
+    paths:
+      - "terraform/**"
+      - ".github/workflows/**"
+  push:
+    branches:
+      - "main"
     paths:
       - "terraform/**"
       - ".github/workflows/**"
@@ -19,6 +25,17 @@ jobs:
           terraform_version: 1.3.6
       - name: Check formatting of all Terraform files
         run: terraform fmt -check -diff -recursive
+  tfsec:
+    name: tfsec check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: terraform/
+          github_token: ${{ secrets.GITHUB_TOKEN }}
   plan_test:
     name: Test Terraform plan
     runs-on: ubuntu-latest
