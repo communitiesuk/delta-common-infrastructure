@@ -6,7 +6,7 @@ on:
       environment:
         required: true
         type: string
-        description: Environment
+        description: Either "test" or "staging". Production deployments are applied manually.
 
 jobs:
   plan:
