@@ -88,8 +88,8 @@ variable "data_disk_usage_alarm_threshold_percent" {
   type        = number
 }
 
-variable "dap_external_role_arn" {
-  type = string
+variable "dap_external_role_arns" {
+  type = list(string)
 }
 
 variable "marklogic_ami_version" {

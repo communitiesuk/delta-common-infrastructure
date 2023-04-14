@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "allow_access_from_dap" {
   statement {
     principals {
       type        = "AWS"
-      identifiers = [var.dap_external_role_arn]
+      identifiers = var.dap_external_role_arns
     }
 
     actions = [

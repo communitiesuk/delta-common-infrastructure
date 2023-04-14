@@ -48,7 +48,9 @@ variable "hosted_zone_id" {
   default = "Z05291902D4B4GXLXJDZQ"
 }
 
-variable "dap_external_role_arn" {
-  type    = string
-  default = "arn:aws:iam::062321884391:role/DSQL1"
+variable "dap_external_role_arns" {
+  type = list(string)
+  # "DSQL1" is DAP's production server.
+  # "DSQSS" is DAP's staging/test server. Added here for MSD-54917, informed they exist in the same environment.
+  default = ["arn:aws:iam::062321884391:role/DSQL1", "arn:aws:iam::062321884391:role/DSQSS"]
 }
