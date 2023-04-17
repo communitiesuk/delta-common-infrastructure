@@ -10,7 +10,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_high" {
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
   statistic           = "Average"
-  threshold           = 90
+  threshold           = 95 # TODO: DT-300 reduce this
 
   alarm_description         = format(local.alarm_description_template, "CPU", "High", 10)
   alarm_actions             = [var.alarms_sns_topic_arn]
