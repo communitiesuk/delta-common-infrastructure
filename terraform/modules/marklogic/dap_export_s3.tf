@@ -67,9 +67,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "dap_export" {
 module "dap_export_job_window" {
   source = "../maintenance_window"
 
-  environment = var.environment
-  prefix      = "marklogic-dap-job"
-  schedule    = "cron(00 04 ? * * *)"
+  environment       = var.environment
+  prefix            = "marklogic-dap-job"
+  schedule          = "cron(00 04 ? * * *)"
+  subscribed_emails = var.dap_job_notification_emails
 }
 
 resource "aws_ssm_maintenance_window_target" "ml_server" {

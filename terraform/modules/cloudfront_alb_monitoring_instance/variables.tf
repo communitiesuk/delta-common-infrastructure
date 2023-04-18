@@ -42,6 +42,15 @@ variable "alarms_sns_topic_arn" {
   type = string
 }
 
+variable "security_sns_topic_global_arn" {
+  description = "SNS topic ARN to send security notifications to"
+  type        = string
+}
+
+variable "enable_aws_shield_alarms" {
+  type = bool
+}
+
 variable "prefix" {
   description = "The dashboard name and prefix for all other resources"
   type        = string
