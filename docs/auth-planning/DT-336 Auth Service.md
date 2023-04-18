@@ -37,6 +37,8 @@ Aim: Stop Delta sending plaintext credentials to Orbeon. This resolves the speci
 * Make required configuration and infrastructure code changes (TSO have done this manually on Datamart staging)
 * Test and deploy SAML changes
 
+See Appendix 2 below for a diagram of the SAML changes.
+
 ## Phase 2 - Authentication service for Delta
 
 Aims:
@@ -62,7 +64,8 @@ In some cases it may be simpler to move functionality into the authentication se
 
 ## Phase 4 - Replace AD
 
-Now that the auth service is the only component talking to Active Directory, we can replace it with a relational database, migrating existing users across.
+Now that the auth service is the only component talking to Active Directory, we can replace it with a different database, migrating existing users across.
+This lets us fully integrate SSO into the registration process without requiring the accounts to exist already.
 
 Move user and organisation data out of MarkLogic. Put PII deletion/anonymisation processes in place to comply with GDPR.
 
@@ -70,7 +73,7 @@ Move user and organisation data out of MarkLogic. Put PII deletion/anonymisation
 
 This gives us a foundation to make further improvements, for example:
 
-* Update and improve Delta's user and account management
+* Update & improve, or possibly separate out and replace Delta's user and account management
 * Enrol external organisations in SSO
 * Splitting Delta into multiple services without being tied to Active Directory and MarkLogic for auth
 
@@ -82,8 +85,8 @@ _The target architecture in the medium term_
 ### Appendix 1 - other limitations of the current setup
 
 * Delta's authentication setup is buggy and insecure
-* Most requests are not encrypted in transit, many of which include plaintext user credentials
-* Some requests are completely unauthenticated
+* Within the VPC most requests are not encrypted in transit, many of which include plaintext user credentials
+  * And some requests are completely unauthenticated
 * Active Directory (on premises) is poorly suited to managing Website users
   * It's expensive (though not compared to MarkLogic), requires specialised knowledge and is hard to extend
   * Load balancing between Domain Controllers results in consistency issues, so there is no automatic failover, unlike the rest of the infrastructure
