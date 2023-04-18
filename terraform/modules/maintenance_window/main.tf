@@ -16,6 +16,10 @@ variable "enabled" {
   default = true
 }
 
+variable "subscribed_emails" {
+  type = list(string)
+}
+
 output "window_id" {
   value = aws_ssm_maintenance_window.main.id
 }
@@ -43,7 +47,13 @@ resource "aws_sns_topic" "main" {
   name = "${var.prefix}-ssm-errors-${var.environment}"
 }
 
-# TODO DT-49: Add subscription
+resource "aws_sns_topic_subscription" "email" {
+  for_each = toset(var.subscribed_emails)
+
+  topic_arn = aws_sns_topic.main.arn
+  protocol  = "email"
+  endpoint  = each.value
+}
 
 resource "aws_iam_role" "main" {
   name = "${var.prefix}-sns-publish-${var.environment}"
