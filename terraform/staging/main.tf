@@ -34,6 +34,7 @@ locals {
   cloudwatch_log_expiration_days       = 60
   patch_cloudwatch_log_expiration_days = 60
   s3_log_expiration_days               = 60
+  all_notifications_email_addresses    = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
 }
 
 module "communities_only_ssl_certs" {
@@ -147,6 +148,7 @@ module "cloudfront_alb_monitoring" {
   alarms_sns_topic_arn          = module.notifications.alarms_sns_topic_arn
   alarms_sns_topic_global_arn   = module.notifications.alarms_sns_topic_global_arn
   security_sns_topic_global_arn = module.notifications.security_sns_topic_global_arn
+  enable_aws_shield_alarms      = local.apply_aws_shield
   environment                   = local.environment
 }
 
@@ -237,9 +239,10 @@ module "active_directory" {
 module "marklogic_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
-  environment = local.environment
-  prefix      = "ml-instance-patching"
-  schedule    = "cron(00 06 ? * TUE *)"
+  environment       = local.environment
+  prefix            = "ml-instance-patching"
+  schedule          = "cron(00 06 ? * TUE *)"
+  subscribed_emails = local.all_notifications_email_addresses
 
   # TODO DT-276: Re-enable
   enabled = false
@@ -262,7 +265,7 @@ module "marklogic" {
     throughput_MiB_per_sec = 250
   }
 
-  ebs_backup_error_notification_emails    = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
+  ebs_backup_error_notification_emails    = local.all_notifications_email_addresses
   extra_instance_policy_arn               = module.session_manager_config.policy_arn
   app_cloudwatch_log_expiration_days      = local.cloudwatch_log_expiration_days
   patch_cloudwatch_log_expiration_days    = local.patch_cloudwatch_log_expiration_days
@@ -272,6 +275,7 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 70
   dap_external_role_arns                  = var.dap_external_role_arns
+  dap_job_notification_emails             = local.all_notifications_email_addresses
 }
 
 module "gh_runner" {
@@ -300,9 +304,10 @@ resource "aws_key_pair" "jaspersoft_ssh_key" {
 module "jaspersoft_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
-  environment = local.environment
-  prefix      = "jasper-instance-patching"
-  schedule    = "cron(00 06 ? * TUE *)"
+  environment       = local.environment
+  prefix            = "jasper-instance-patching"
+  schedule          = "cron(00 06 ? * TUE *)"
+  subscribed_emails = local.all_notifications_email_addresses
 }
 
 module "jaspersoft" {
@@ -329,7 +334,7 @@ module "ses_identity" {
   source = "../modules/ses_identity"
 
   domain                               = "datacollection.test.levellingup.gov.uk"
-  bounce_complaint_notification_emails = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
+  bounce_complaint_notification_emails = local.all_notifications_email_addresses
 }
 
 module "delta_ses_user" {
@@ -379,8 +384,8 @@ module "account_security" {
 module "notifications" {
   source                    = "../modules/notifications"
   environment               = local.environment
-  alarm_sns_topic_emails    = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
-  security_sns_topic_emails = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
+  alarm_sns_topic_emails    = local.all_notifications_email_addresses
+  security_sns_topic_emails = local.all_notifications_email_addresses
 }
 
 module "guardduty" {

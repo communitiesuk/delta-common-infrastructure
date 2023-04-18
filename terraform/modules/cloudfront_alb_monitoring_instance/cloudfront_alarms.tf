@@ -173,6 +173,7 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_p90_high_alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ddos_attack" {
+  count    = var.enable_aws_shield_alarms ? 1 : 0
   provider = aws.us-east-1
 
   alarm_name          = "${var.prefix}-ddos-attack"
