@@ -251,9 +251,10 @@ module "cloudfront_alb_monitoring" {
     alb_arn_suffix             = module.public_albs.jaspersoft.arn_suffix
     instance_metric_namespace  = "${local.environment}/Jaspersoft"
   }
-  alarms_sns_topic_arn        = module.notifications.alarms_sns_topic_arn
-  alarms_sns_topic_global_arn = module.notifications.alarms_sns_topic_global_arn
-  environment                 = local.environment
+  alarms_sns_topic_arn          = module.notifications.alarms_sns_topic_arn
+  alarms_sns_topic_global_arn   = module.notifications.alarms_sns_topic_global_arn
+  security_sns_topic_global_arn = module.notifications.security_sns_topic_global_arn
+  environment                   = local.environment
 }
 
 # Effectively a circular dependency between Cloudfront and the DNS records that DLUHC manage to validate the certificates
@@ -269,6 +270,7 @@ module "cloudfront_distributions" {
   swagger_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_global_arn              = module.notifications.alarms_sns_topic_global_arn
   wait_for_deployment                      = true
+  security_sns_topic_global_arn            = module.notifications.security_sns_topic_global_arn
 
   delta = {
     alb = module.public_albs.delta
@@ -363,7 +365,7 @@ module "jaspersoft" {
 module "guardduty" {
   source = "../modules/guardduty"
 
-  notification_email = local.notification_email_address
+  aws_security_topic_arn = module.notifications.security_sns_topic_arn
 }
 
 module "iam_roles" {
@@ -386,7 +388,8 @@ module "account_security" {
 }
 
 module "notifications" {
-  source                 = "../modules/notifications"
-  environment            = local.environment
-  alarm_sns_topic_emails = ["Group-DLUHCDeltaNotifications@softwire.com"]
+  source                    = "../modules/notifications"
+  environment               = local.environment
+  alarm_sns_topic_emails    = ["Group-DLUHCDeltaNotifications@softwire.com"]
+  security_sns_topic_emails = ["Group-DLUHCDeltaNotifications@softwire.com"]
 }

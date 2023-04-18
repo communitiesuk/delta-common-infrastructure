@@ -8,7 +8,7 @@ variable "environment" {
 
 variable "waf_per_ip_rate_limit" {
   type        = number
-  default     = 4000 # DT-65 Reduce this once browser-side caching is in place
+  default     = 2000
   description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes"
 }
 
@@ -134,4 +134,9 @@ variable "alarms_sns_topic_global_arn" {
 
 variable "wait_for_deployment" {
   type = bool
+}
+
+variable "security_sns_topic_global_arn" {
+  description = "SNS topic ARN to send security notifications to"
+  type        = string
 }

@@ -171,3 +171,20 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_p90_high_alarm" {
     "Region" : "Global"
   }
 }
+
+resource "aws_cloudwatch_metric_alarm" "ddos_attack" {
+  provider = aws.us-east-1
+
+  alarm_name          = "${var.prefix}-ddos-attack"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "DDoSDetected"
+  namespace           = "AWS/DDoSProtection"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "0"
+  alarm_description   = "Triggers when AWS Shield Advanced detects a DDoS attack"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = [var.security_sns_topic_global_arn]
+  ok_actions          = [var.security_sns_topic_global_arn]
+}
