@@ -2,7 +2,7 @@
 # https://docs.aws.amazon.com/directoryservice/latest/admin-guide/supportedpolicysettings.html 
 Set-ADFineGrainedPasswordPolicy -Identity CustomerPSO-03 `
   -ComplexityEnabled $False -LockoutDuration 00:30:00 -LockoutObservationWindow 00:30:00 `
-  -ReversibleEncryptionEnabled $False -MinPasswordAge 1.00:00:00 -MaxPasswordAge 365.00:00:00 `
+  -ReversibleEncryptionEnabled $False -MinPasswordAge 0 -MaxPasswordAge 365.00:00:00 `
   -MinPasswordLength 0 -LockoutThreshold 3 -PasswordHistoryCount 1 `
   -Description "Delta User Policy"
 
