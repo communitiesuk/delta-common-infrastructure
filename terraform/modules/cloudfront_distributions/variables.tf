@@ -8,7 +8,7 @@ variable "environment" {
 
 variable "waf_per_ip_rate_limit" {
   type        = number
-  default     = 4000 # DT-65 Reduce this once browser-side caching is in place
+  default     = 2000
   description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes"
 }
 
