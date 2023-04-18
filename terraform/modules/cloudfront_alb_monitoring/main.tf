@@ -8,6 +8,7 @@ module "website_cloudfront_alb_monitoring" {
   alarms_sns_topic_arn          = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn   = var.alarms_sns_topic_global_arn
   security_sns_topic_global_arn = var.security_sns_topic_global_arn
+  enable_aws_shield_alarms      = var.enable_aws_shield_alarms
   prefix                        = "${var.environment}-delta-website"
 
   cloudfront_p90_origin_latency_high_alarm_threshold_ms     = 10000
@@ -22,6 +23,7 @@ module "api_cloudfront_alb_monitoring" {
   alarms_sns_topic_arn          = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn   = var.alarms_sns_topic_global_arn
   security_sns_topic_global_arn = var.security_sns_topic_global_arn
+  enable_aws_shield_alarms      = var.enable_aws_shield_alarms
   prefix                        = "${var.environment}-delta-api"
 
   cloudfront_average_origin_latency_high_alarm_threshold_ms = 60000
@@ -35,6 +37,7 @@ module "keycloak_cloudfront_alb_monitoring" {
   alarms_sns_topic_arn          = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn   = var.alarms_sns_topic_global_arn
   security_sns_topic_global_arn = var.security_sns_topic_global_arn
+  enable_aws_shield_alarms      = var.enable_aws_shield_alarms
   prefix                        = "${var.environment}-keycloak"
 }
 
@@ -46,6 +49,7 @@ module "cpm_cloudfront_alb_monitoring" {
   alarms_sns_topic_arn          = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn   = var.alarms_sns_topic_global_arn
   security_sns_topic_global_arn = var.security_sns_topic_global_arn
+  enable_aws_shield_alarms      = var.enable_aws_shield_alarms
   prefix                        = "${var.environment}-cpm"
 
   cloudfront_average_origin_latency_high_alarm_threshold_ms = 60000
@@ -59,6 +63,7 @@ module "jaspersoft_cloudfront_alb_monitoring" {
   alarms_sns_topic_arn          = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn   = var.alarms_sns_topic_global_arn
   security_sns_topic_global_arn = var.security_sns_topic_global_arn
+  enable_aws_shield_alarms      = var.enable_aws_shield_alarms
   prefix                        = "${var.environment}-jaspersoft"
 }
 

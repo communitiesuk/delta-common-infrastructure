@@ -157,6 +157,7 @@ module "cloudfront_alb_monitoring" {
   alarms_sns_topic_arn          = module.notifications.alarms_sns_topic_arn
   alarms_sns_topic_global_arn   = module.notifications.alarms_sns_topic_global_arn
   security_sns_topic_global_arn = module.notifications.security_sns_topic_global_arn
+  enable_aws_shield_alarms      = local.apply_aws_shield
   environment                   = local.environment
 }
 
