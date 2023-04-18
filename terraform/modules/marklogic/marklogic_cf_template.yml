@@ -534,6 +534,7 @@ Resources:
                 mkdir -p /delta/export
                 chmod 777 /delta
                 chmod 777 /delta/export
+                yum install jq -y
                 exit 0
 
             - MARKLOGIC_CLUSTER_NAME=
@@ -610,7 +611,12 @@ Resources:
       UserData: !Base64
         'Fn::Join':
           - ''
-          - - MARKLOGIC_CLUSTER_NAME=
+          - - |+
+                #!/bin/bash
+                yum install jq -y
+                exit 0
+
+            - MARKLOGIC_CLUSTER_NAME=
             - !Ref MarkLogicDDBTable
             - |+
 
@@ -684,7 +690,12 @@ Resources:
       UserData: !Base64
         'Fn::Join':
           - ''
-          - - MARKLOGIC_CLUSTER_NAME=
+          - - |+
+                #!/bin/bash
+                yum install jq -y
+                exit 0
+
+            - MARKLOGIC_CLUSTER_NAME=
             - !Ref MarkLogicDDBTable
             - |+
 

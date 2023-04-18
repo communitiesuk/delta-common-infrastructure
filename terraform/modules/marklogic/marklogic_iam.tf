@@ -221,23 +221,33 @@ data "aws_iam_policy_document" "ml_cloudwatch" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "ml_asg" {
+resource "aws_iam_role_policy_attachment" "ml_asg_patching" {
   role       = aws_iam_role.ml_iam_role.name
-  policy_arn = aws_iam_policy.ml_asg.arn
+  policy_arn = aws_iam_policy.ml_asg_patching.arn
 }
 
-resource "aws_iam_policy" "ml_asg" {
-  name        = "ml-instance-asg-${var.environment}"
-  description = "Allow MarkLogic instances to manage ASG standby for patching"
+resource "aws_iam_policy" "ml_asg_patching" {
+  name        = "ml-instance-asg-${var.environment}-patching"
+  description = "Allow MarkLogic instances to manage ASG standby and allows retrieval of login details for patching"
 
-  policy = data.aws_iam_policy_document.ml_asg.json
+  policy = data.aws_iam_policy_document.ml_asg_patching.json
 }
 
 # No convenient way to limit, and these policies aren't too dangerous
 # tfsec:ignore:aws-iam-no-policy-wildcards
-data "aws_iam_policy_document" "ml_asg" {
+data "aws_iam_policy_document" "ml_asg_patching" {
   statement {
-    actions   = ["autoscaling:DescribeAutoScalingInstances", "autoscaling:EnterStandby", "autoscaling:ExitStandby"]
+    actions = [
+      "autoscaling:DescribeAutoScalingInstances",
+      "autoscaling:EnterStandby",
+      "autoscaling:ExitStandby"
+    ]
     resources = ["*"]
+  }
+  statement {
+    actions = [
+      "secretsmanager:GetSecretValue"
+    ]
+    resources = [data.aws_secretsmanager_secret_version.ml_admin_user.arn]
   }
 }
