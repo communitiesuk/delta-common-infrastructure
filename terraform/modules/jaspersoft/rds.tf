@@ -64,8 +64,6 @@ resource "aws_db_instance" "jaspersoft" {
   deletion_protection       = true
 }
 
-# TODO: DT-49 Database monitoring
-
 resource "aws_route53_record" "jaspersoft_db" {
   zone_id = var.private_dns.zone_id
   name    = "jaspersoft-db.${var.private_dns.base_domain}"
