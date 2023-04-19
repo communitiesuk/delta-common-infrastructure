@@ -65,7 +65,9 @@ In some cases it may be simpler to move functionality into the authentication se
 ## Phase 4 - Replace AD
 
 Now that the auth service is the only component talking to Active Directory, we can replace it with a different database, migrating existing users across.
-This lets us fully integrate SSO into the registration process without requiring the accounts to exist already.
+
+We'll continue to use Azure AD for SSO, but the on-premises Active Directory will be retired.
+This lets us simplify the authentication process and fully integrate SSO without requiring the accounts to exist already.
 
 Move user and organisation data out of MarkLogic. Put PII deletion/anonymisation processes in place to comply with GDPR.
 
