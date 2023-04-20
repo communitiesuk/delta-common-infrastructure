@@ -199,7 +199,10 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 55
   dap_external_role_arns                  = var.dap_external_role_arns
-  dap_job_notification_emails             = local.all_notifications_email_addresses
+  dap_job_notification_emails = concat(
+    local.all_notifications_email_addresses,
+    ["CDSSupport@levellingup.gov.uk", "deltastatsupport@levellingup.gov.uk"]
+  )
 }
 
 module "gh_runner" {
