@@ -149,15 +149,15 @@ module "active_directory" {
   source  = "../modules/active_directory"
   edition = "Standard"
 
-  vpc                          = module.networking.vpc
-  domain_controller_subnets    = module.networking.ad_private_subnets
-  management_server_subnet     = module.networking.ad_management_server_subnet
-  number_of_domain_controllers = 2
-  ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
-  environment                  = local.environment
-  rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
-  private_dns                  = module.networking.private_dns
-  management_instance_type     = "t3.xlarge"
+  vpc                       = module.networking.vpc
+  domain_controller_subnets = module.networking.ad_private_subnets
+  management_server_subnet  = module.networking.ad_management_server_subnet
+  ldaps_ca_subnet           = module.networking.ldaps_ca_subnet
+  environment               = local.environment
+  rdp_ingress_sg_id         = module.bastion.bastion_security_group_id
+  private_dns               = module.networking.private_dns
+  management_instance_type  = "t3.xlarge"
+  alarms_sns_topic_arn      = module.notifications.alarms_sns_topic_arn
 }
 
 module "marklogic_patch_maintenance_window" {
