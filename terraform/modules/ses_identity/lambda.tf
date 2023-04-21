@@ -65,13 +65,13 @@ resource "aws_iam_policy" "cloudwatch_write_policy" {
 resource "aws_sns_topic_subscription" "email_delivery_problems" {
   topic_arn = aws_sns_topic.email_delivery_problems.arn
   protocol  = "lambda"
-  endpoint  = aws_lambda_function.ses-problems-to-cloudwatch-lambda.arn
+  endpoint  = aws_lambda_function.ses_problems_to_cloudwatch_lambda.arn
 }
 
 resource "aws_lambda_permission" "with_sns_problems" {
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.ses-problems-to-cloudwatch-lambda.function_name
+  function_name = aws_lambda_function.ses_problems_to_cloudwatch_lambda.function_name
   principal     = "sns.amazonaws.com"
   source_arn    = aws_sns_topic.email_delivery_problems.arn
 }
@@ -130,13 +130,13 @@ resource "aws_lambda_function" "ses_deliveries_to_cloudwatch_lambda" {
 resource "aws_sns_topic_subscription" "email_delivery_success" {
   topic_arn = aws_sns_topic.email_delivery_success.arn
   protocol  = "lambda"
-  endpoint  = aws_lambda_function.ses-deliveries-to-cloudwatch-lambda.arn
+  endpoint  = aws_lambda_function.ses_deliveries_to_cloudwatch_lambda.arn
 }
 
 resource "aws_lambda_permission" "with_sns_delivery" {
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.ses-deliveries-to-cloudwatch-lambda.function_name
+  function_name = aws_lambda_function.ses_deliveries_to_cloudwatch_lambda.function_name
   principal     = "sns.amazonaws.com"
   source_arn    = aws_sns_topic.email_delivery_success.arn
 }
