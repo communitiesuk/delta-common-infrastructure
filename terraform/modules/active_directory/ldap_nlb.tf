@@ -52,20 +52,24 @@ resource "aws_lb_target_group" "ldaps" {
 # If performance is an issue, we could investigate whether a separate load balancer for read operations would help 
 locals {
   split_subnet_a_cidr_block = split(".", var.domain_controller_subnets[0].cidr_block)
-  desired_dc_ip_prefix = "${local.split_subnet_a_cidr_block[0]}.${local.split_subnet_a_cidr_block[1]}.${local.split_subnet_a_cidr_block[2]}."
+  desired_dc_ip_prefix      = "${local.split_subnet_a_cidr_block[0]}.${local.split_subnet_a_cidr_block[1]}.${local.split_subnet_a_cidr_block[2]}."
 }
 
 resource "aws_lb_target_group_attachment" "ldap" {
-  for_each =  {for key, val in aws_directory_service_directory.directory_service.dns_ip_addresses: 
-                key => val if startswith(val, local.desired_dc_ip_prefix)}
+  for_each = {
+    for key, val in aws_directory_service_directory.directory_service.dns_ip_addresses :
+    key => val if startswith(val, local.desired_dc_ip_prefix)
+  }
   target_group_arn = aws_lb_target_group.ldap.arn
   port             = 389
   target_id        = each.value
 }
 
 resource "aws_lb_target_group_attachment" "ldaps" {
-  for_each =  {for key, val in aws_directory_service_directory.directory_service.dns_ip_addresses: 
-                key => val if startswith(val, local.desired_dc_ip_prefix)}
+  for_each = {
+    for key, val in aws_directory_service_directory.directory_service.dns_ip_addresses :
+    key => val if startswith(val, local.desired_dc_ip_prefix)
+  }
 
   target_group_arn = aws_lb_target_group.ldaps.arn
   port             = 636
