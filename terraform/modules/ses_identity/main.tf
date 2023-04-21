@@ -46,6 +46,10 @@ resource "aws_sns_topic" "email_delivery_problems" {
   name = "ses-delivery-problems-${replace(var.domain, ".", "-")}"
 }
 
+resource "aws_sns_topic" "email_delivery_success" {
+  name = "ses-delivery-success-${replace(var.domain, ".", "-")}"
+}
+
 resource "aws_sns_topic_subscription" "email_delivery_problems" {
   for_each = toset(var.bounce_complaint_notification_emails)
 
@@ -66,6 +70,13 @@ resource "aws_ses_identity_notification_topic" "bounces" {
 resource "aws_ses_identity_notification_topic" "complaints" {
   topic_arn                = aws_sns_topic.email_delivery_problems.arn
   notification_type        = "Complaint"
+  identity                 = aws_ses_domain_identity.main.domain
+  include_original_headers = true
+}
+
+resource "aws_ses_identity_notification_topic" "deliveries" {
+  topic_arn                = aws_sns_topic.email_delivery_success.arn
+  notification_type        = "Delivery"
   identity                 = aws_ses_domain_identity.main.domain
   include_original_headers = true
 }

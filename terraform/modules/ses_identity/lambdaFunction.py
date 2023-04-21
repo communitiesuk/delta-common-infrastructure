@@ -8,6 +8,7 @@ import logging
 client = boto3.client('logs')
 log_group = os.getenv("group_name")
 event_type = os.getenv("event_type")
+event_types = event_type.split(",")
 def lambda_handler(event, context):
     global log_level
     log_level = str(os.environ.get('LOG_LEVEL')).upper()
@@ -23,7 +24,7 @@ def lambda_handler(event, context):
       logs = record['Sns']['Message']
       logs_data = json.loads(logs)
       notification_type=logs_data['notificationType']
-      if(notification_type==event_type):
+      if(notification_type in event_types):
           LOG_GROUP= log_group
       else:
           sys.exit()
