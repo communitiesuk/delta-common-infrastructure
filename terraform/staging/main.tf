@@ -332,6 +332,8 @@ module "jaspersoft" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
+  environment                          = local.environment
+  email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   domain                               = "datacollection.test.levellingup.gov.uk"
   bounce_complaint_notification_emails = local.all_notifications_email_addresses
 }
