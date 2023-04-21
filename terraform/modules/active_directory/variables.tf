@@ -14,7 +14,7 @@ variable "vpc" {
 
 variable "domain_controller_subnets" {
   description = "Private Subnets for domain controllers (minimum 2)"
-  type        = list(object({ id = string }))
+  type        = list(object({ id = string, cidr_block = string }))
 }
 
 variable "management_server_subnet" {
