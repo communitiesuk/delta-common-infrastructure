@@ -1,18 +1,3 @@
-#resource "aws_lambda_permission" "allow_cloudwatch" {
-#  statement_id  = "AllowExecutionFromCloudWatch"
-#  action        = "lambda:InvokeFunction"
-#  function_name = aws_lambda_function.test_lambda.function_name
-#  principal     = "events.amazonaws.com"
-#  source_arn    = "arn:aws:events:eu-west-1:111122223333:rule/RunDaily"
-#  qualifier     = aws_lambda_alias.test_alias.name
-#}
-#
-#resource "aws_lambda_alias" "test_alias" {
-#  name             = "testalias"
-#  description      = "a sample description"
-#  function_name    = aws_lambda_function.test_lambda.function_name
-#  function_version = "$LATEST"
-#}
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
   role       = aws_iam_role.iam_for_lambda.name
   policy_arn = aws_iam_policy.cloudwatch_write_policy.arn
