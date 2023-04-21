@@ -86,7 +86,7 @@ data "archive_file" "python_lambda_package" {
   output_path = "lambdaFunction.zip"
 }
 
-resource "aws_lambda_function" "ses-problems-to-cloudwatch-lambda" {
+resource "aws_lambda_function" "ses_problems_to_cloudwatch_lambda" {
   function_name = "${var.environment}-ses-problems-to-cloudwatch"
   environment {
     variables = {
@@ -107,7 +107,7 @@ resource "aws_lambda_function" "ses-problems-to-cloudwatch-lambda" {
   role = aws_iam_role.iam_for_lambda.arn
 }
 
-resource "aws_lambda_function" "ses-deliveries-to-cloudwatch-lambda" {
+resource "aws_lambda_function" "ses_deliveries_to_cloudwatch_lambda" {
   function_name = "${var.environment}-ses-deliveries-to-cloudwatch"
   environment {
     variables = {
