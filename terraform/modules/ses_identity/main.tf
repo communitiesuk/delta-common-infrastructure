@@ -50,14 +50,6 @@ resource "aws_sns_topic" "email_delivery_success" {
   name = "ses-delivery-success-${replace(var.domain, ".", "-")}"
 }
 
-resource "aws_sns_topic_subscription" "email_delivery_problems" {
-  for_each = toset(var.bounce_complaint_notification_emails)
-
-  topic_arn = aws_sns_topic.email_delivery_problems.arn
-  protocol  = "email"
-  endpoint  = each.value
-}
-
 # These seem to take a few minutes to set up
 # Expect a AmazonSnsSubscriptionSucceeded notification to the SNS topic once it's active
 resource "aws_ses_identity_notification_topic" "bounces" {

@@ -59,34 +59,34 @@ variable "email_cloudwatch_log_expiration_days" {
 }
 
 module "sent_emails_log_group" {
-  source = "../encrypted_log_groups"
-  retention_days = var.email_cloudwatch_log_expiration_days
-  log_group_names = [local.log_group_name_failure, local.log_group_name_success]
+  source             = "../encrypted_log_groups"
+  retention_days     = var.email_cloudwatch_log_expiration_days
+  log_group_names    = [local.log_group_name_problem, local.log_group_name_delivered]
   kms_key_alias_name = "sent-emails-log"
 }
 
 locals {
-  log_group_name_success = "${var.environment}/ses-cloudwatch-lambda-deliveries"
-  log_group_name_failure = "${var.environment}/ses-cloudwatch-lambda-failures"
+  log_group_name_delivered = "${var.environment}/ses-deliveries-cloudwatch-lambda"
+  log_group_name_problem   = "${var.environment}/ses-problems-cloudwatch-lambda"
 }
 
 resource "aws_iam_policy" "cloudwatch_write_policy" {
   name        = "cloudwatch_write_policy"
   path        = "/"
   description = "IAM policy for writing to cloudwatch"
-  policy = data.aws_iam_policy_document.cloudwatch_write_policy_document.json
+  policy      = data.aws_iam_policy_document.cloudwatch_write_policy_document.json
 }
 
-resource "aws_sns_topic_subscription" "email_deliveries_failure" {
+resource "aws_sns_topic_subscription" "email_delivery_problems" {
   topic_arn = aws_sns_topic.email_delivery_problems.arn
   protocol  = "lambda"
-  endpoint  = aws_lambda_function.test_lambda_failures.arn
+  endpoint  = aws_lambda_function.ses-problems-to-cloudwatch-lambda.arn
 }
 
-resource "aws_lambda_permission" "with_sns_failure" {
+resource "aws_lambda_permission" "with_sns_problems" {
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.test_lambda_failures.function_name
+  function_name = aws_lambda_function.ses-problems-to-cloudwatch-lambda.function_name
   principal     = "sns.amazonaws.com"
   source_arn    = aws_sns_topic.email_delivery_problems.arn
 }
@@ -96,25 +96,25 @@ variable "environment" {
 }
 
 data "archive_file" "python_lambda_package" {
-  type = "zip"
+  type        = "zip"
   source_file = "${path.module}/lambdaFunction.py"
   output_path = "lambdaFunction.zip"
 }
 
-resource "aws_lambda_function" "test_lambda_failures" {
-  function_name = "${var.environment}-ses-to-cloudwatch-failure"
+resource "aws_lambda_function" "ses-problems-to-cloudwatch-lambda" {
+  function_name = "${var.environment}-ses-problems-to-cloudwatch"
   environment {
     variables = {
-      group_name = local.log_group_name_failure,
+      group_name = local.log_group_name_problem,
       event_type = "Bounce,Complaint",
-      log_level = "INFO",
+      log_level  = "INFO",
     }
   }
-  timeout = 60
-  handler = "lambdaFunction.lambda_handler"
-  runtime = "python3.8"
-  memory_size = 128
-  filename = data.archive_file.python_lambda_package.output_path
+  timeout          = 60
+  handler          = "lambdaFunction.lambda_handler"
+  runtime          = "python3.8"
+  memory_size      = 128
+  filename         = data.archive_file.python_lambda_package.output_path
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
   depends_on = [
     aws_iam_role_policy_attachment.lambda_logs,
@@ -122,20 +122,20 @@ resource "aws_lambda_function" "test_lambda_failures" {
   role = aws_iam_role.iam_for_lambda.arn
 }
 
-resource "aws_lambda_function" "test_lambda_successes" {
-  function_name = "${var.environment}-ses-to-cloudwatch-success"
+resource "aws_lambda_function" "ses-deliveries-to-cloudwatch-lambda" {
+  function_name = "${var.environment}-ses-deliveries-to-cloudwatch"
   environment {
     variables = {
-      group_name = local.log_group_name_success,
+      group_name = local.log_group_name_delivered,
       event_type = "Delivery",
-      log_level = "INFO",
+      log_level  = "INFO",
     }
   }
-  timeout = 60
-  handler = "lambdaFunction.lambda_handler"
-  runtime = "python3.8"
-  memory_size = 128
-  filename = data.archive_file.python_lambda_package.output_path
+  timeout          = 60
+  handler          = "lambdaFunction.lambda_handler"
+  runtime          = "python3.8"
+  memory_size      = 128
+  filename         = data.archive_file.python_lambda_package.output_path
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
   depends_on = [
     aws_iam_role_policy_attachment.lambda_logs,
@@ -145,13 +145,13 @@ resource "aws_lambda_function" "test_lambda_successes" {
 resource "aws_sns_topic_subscription" "email_delivery_success" {
   topic_arn = aws_sns_topic.email_delivery_success.arn
   protocol  = "lambda"
-  endpoint  = aws_lambda_function.test_lambda_successes.arn
+  endpoint  = aws_lambda_function.ses-deliveries-to-cloudwatch-lambda.arn
 }
 
-resource "aws_lambda_permission" "with_sns_success" {
+resource "aws_lambda_permission" "with_sns_delivery" {
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.test_lambda_successes.function_name
+  function_name = aws_lambda_function.ses-deliveries-to-cloudwatch-lambda.function_name
   principal     = "sns.amazonaws.com"
   source_arn    = aws_sns_topic.email_delivery_success.arn
 }
