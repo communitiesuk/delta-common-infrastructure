@@ -130,3 +130,49 @@ resource "aws_route53_record" "active_directory_ldap" {
     evaluate_target_health = false
   }
 }
+
+
+resource "aws_cloudwatch_metric_alarm" "ldap_lb_healthy_count_low" {
+  alarm_name          = "ldap-${var.environment}-lb-healthy-host-count-low"
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = 0
+  evaluation_periods  = 1
+
+  alarm_description  = "The Active Directory domain controller in use is unhealthy"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "breaching"
+
+  metric_query {
+    id          = "ldap_or_ldaps_unhealthy_host_count"
+    expression  = "SUM(METRICS())"
+    label       = "AD target groups unhealthy host count"
+    return_data = "true"
+  }
+  metric_query {
+    id = "ldap_tg_unhealthy_host_count"
+    metric {
+      metric_name = "UnHealthyHostCount"
+      namespace   = "AWS/NetworkELB"
+      period      = "300"
+      stat        = "Maximum"
+      dimensions = {
+        "TargetGroup" : aws_lb_target_group.ldap.arn_suffix
+        "LoadBalancer" : aws_lb.ldap.arn_suffix
+      }
+    }
+  }
+  metric_query {
+    id = "ldaps_tg_unhealthy_host_count"
+    metric {
+      metric_name = "UnHealthyHostCount"
+      namespace   = "AWS/NetworkELB"
+      period      = "300"
+      stat        = "Maximum"
+      dimensions = {
+        "TargetGroup" : aws_lb_target_group.ldaps.arn_suffix
+        "LoadBalancer" : aws_lb.ldap.arn_suffix
+      }
+    }
+  }
+}
