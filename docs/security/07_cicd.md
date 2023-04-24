@@ -15,7 +15,7 @@ A dev account (staging and test environments) key with read only access is avail
 A dev account admin key is stored as an environment secret and is only accessible from the main branch.
 Branch protections are in place for the this repository, but not delta or common-payments-module, as they would be incompatible with the current supplier's development process.
 
-Terraform deployments to production are dome manually with named accounts.
+Terraform deployments to production are done manually with named accounts.
 
 ## Application deployments
 
@@ -46,7 +46,7 @@ This user is stored as environment secrets, with access control via branch prote
 | delta-common-infrastructure | Admin      | Admin               | None                |
 | delta                       | Read       | None                | None                |
 | delta                       | Write      | Admin               | Push artefacts\*\*  |
-| delta                       | Admin      | Admin               | Plan + Deploy Delta |
+| delta                       | Admin      | Admin               | Plan + Deploy Delta website |
 | common-payments-module      | Read       | None                | None                |
 | common-payments-module      | Write      | Admin               | Push artefacts\*\*  |
 | common-payments-module      | Admin      | Admin               | Plan                |
