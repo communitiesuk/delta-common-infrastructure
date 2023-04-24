@@ -30,8 +30,4 @@ Managed in this repository, environment specific, see [roles.tf](../../terraform
 
 ## Alarms and monitoring
 
-TODO: Notes for any AWS access alarms we manage
-
-TODO: Notes on monitoring in the AWS organisation to go on Confluence
-
-See <https://digital.dclg.gov.uk/confluence/display/DT/Security+-+DLUHC+responsibilities>
+Documented as part of the Run Book on Confluence, see <https://digital.dclg.gov.uk/confluence/display/DT/Run+Book>.
