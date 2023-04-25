@@ -18,30 +18,12 @@ resource "aws_kms_alias" "ml_backup_from_datamart_encryption" {
 module "datamart_ml_backups" {
   source = "../modules/s3_bucket"
 
-  bucket_name                   = "datamart-ml-backups-staging"
-  access_log_bucket_name        = "datamart-ml-backups-access-logs-staging"
-  force_destroy                 = true
-  restrict_public_buckets       = false
-  policy                        = data.aws_iam_policy_document.allow_access_from_datamart.json
-  access_s3_log_expiration_days = local.s3_log_expiration_days
-}
-
-data "aws_iam_policy_document" "allow_access_from_datamart" {
-  statement {
-    principals {
-      type        = "AWS"
-      identifiers = [local.datamart_account_id]
-    }
-
-    actions = [
-      "s3:*",
-    ]
-
-    resources = [
-      module.datamart_ml_backups.bucket_arn,
-      "${module.datamart_ml_backups.bucket_arn}/*",
-    ]
-  }
+  bucket_name                        = "datamart-ml-backups-staging"
+  access_log_bucket_name             = "datamart-ml-backups-access-logs-staging"
+  force_destroy                      = true
+  restrict_public_buckets            = true
+  access_s3_log_expiration_days      = local.s3_log_expiration_days
+  noncurrent_version_expiration_days = 30
 }
 
 data "aws_caller_identity" "current" {}
@@ -57,32 +39,10 @@ data "aws_iam_policy_document" "kms_ml_export_policy" {
       identifiers = [data.aws_caller_identity.current.account_id]
     }
   }
-
-  statement {
-    sid    = "Allow access from Datamart"
-    effect = "Allow"
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
-    ]
-    resources = ["*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = [local.datamart_account_id]
-    }
-  }
 }
 
 output "datamart_ml_backup_bucket" {
   value = module.datamart_ml_backups.bucket_arn
-}
-
-output "datamart_ml_backup_kms_key" {
-  value = aws_kms_key.ml_backup_from_datamart_encryption.arn
 }
 
 resource "aws_iam_role_policy_attachment" "datamart_backups_read" {
