@@ -88,6 +88,9 @@ data "archive_file" "python_lambda_package" {
 
 resource "aws_lambda_function" "ses_problems_to_cloudwatch_lambda" {
   function_name = "${var.environment}-ses-problems-to-cloudwatch"
+  tracing_config {
+    mode = "Active"
+  }
   environment {
     variables = {
       group_name = local.log_group_name_problem,
@@ -109,6 +112,9 @@ resource "aws_lambda_function" "ses_problems_to_cloudwatch_lambda" {
 
 resource "aws_lambda_function" "ses_deliveries_to_cloudwatch_lambda" {
   function_name = "${var.environment}-ses-deliveries-to-cloudwatch"
+  tracing_config {
+    mode = "Active"
+  }
   environment {
     variables = {
       group_name = local.log_group_name_delivered,
