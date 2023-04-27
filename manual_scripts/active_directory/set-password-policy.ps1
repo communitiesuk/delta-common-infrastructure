@@ -3,7 +3,7 @@
 Set-ADFineGrainedPasswordPolicy -Identity CustomerPSO-03 `
   -ComplexityEnabled $False -LockoutDuration 00:30:00 -LockoutObservationWindow 00:30:00 `
   -ReversibleEncryptionEnabled $False -MinPasswordAge 0 -MaxPasswordAge 365.00:00:00 `
-  -MinPasswordLength 0 -LockoutThreshold 3 -PasswordHistoryCount 0 `
+  -MinPasswordLength 0 -LockoutThreshold 5 -PasswordHistoryCount 0 `
   -Description "Delta User Policy"
 
 Add-ADFineGrainedPasswordPolicySubject -Identity CustomerPSO-03 -Subjects datamart-delta-user
