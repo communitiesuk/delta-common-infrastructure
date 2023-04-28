@@ -1,3 +1,4 @@
+# Sourced from https://github.com/aws-samples/communication-developer-services-reference-architectures/blob/master/cloudformation/ses_bounce_logging_blog.yml
 import boto3
 import time
 import json
@@ -28,11 +29,7 @@ def lambda_handler(event, context):
           LOG_GROUP= log_group
       else:
           sys.exit()
-      LOG_STREAM= '{}{}{}'.format(time.strftime('%Y/%m/%d'),'[$LATEST]',secrets.token_hex(16))
-      try:
-          client.create_log_group(logGroupName=LOG_GROUP)
-      except client.exceptions.ResourceAlreadyExistsException:
-          pass
+      LOG_STREAM= '{}{}'.format(time.strftime('%Y/%m/%d'),secrets.token_hex(16))
       try:
           client.create_log_stream(logGroupName=LOG_GROUP, logStreamName=LOG_STREAM)
       except client.exceptions.ResourceAlreadyExistsException:

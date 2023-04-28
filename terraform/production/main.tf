@@ -53,7 +53,7 @@ module "ses_identity" {
     ["deltaadmin@levellingup.gov.uk"]
   )
   account = "468442790030"
-  region = "eu-west-1"
+  region  = "eu-west-1"
 }
 
 module "delta_ses_user" {

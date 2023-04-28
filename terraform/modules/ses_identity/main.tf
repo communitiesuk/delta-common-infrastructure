@@ -1,10 +1,4 @@
-variable "domain" {
-  type = string
-}
 
-variable "bounce_complaint_notification_emails" {
-  type = list(string)
-}
 
 data "aws_region" "current" {}
 
@@ -46,6 +40,7 @@ resource "aws_sns_topic" "email_delivery_problems" {
   name = "ses-delivery-problems-${replace(var.domain, ".", "-")}"
 }
 
+# Non sensitive
 # tfsec:ignore:aws-sns-enable-topic-encryption
 resource "aws_sns_topic" "email_delivery_success" {
   name = "ses-delivery-success-${replace(var.domain, ".", "-")}"
