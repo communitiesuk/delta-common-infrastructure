@@ -64,8 +64,6 @@ module "ses_identity" {
     local.all_notifications_email_addresses,
     ["deltaadmin@levellingup.gov.uk"]
   )
-  account = "468442790030"
-  region  = "eu-west-1"
 }
 
 module "delta_ses_user" {

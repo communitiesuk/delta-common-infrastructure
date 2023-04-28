@@ -348,8 +348,6 @@ module "ses_identity" {
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   domain                               = "datacollection.test.levellingup.gov.uk"
   bounce_complaint_notification_emails = local.all_notifications_email_addresses
-  account                              = "486283582667"
-  region                               = "eu-west-1"
 }
 
 module "delta_ses_user" {

@@ -1,11 +1,3 @@
-variable "region" {
-  type = string
-}
-
-variable "account" {
-  type = string
-}
-
 variable "email_cloudwatch_log_expiration_days" {
   type = number
 }
