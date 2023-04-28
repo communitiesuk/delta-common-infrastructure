@@ -49,7 +49,22 @@ locals {
     "to_port"           = 8150
     "description"       = "HTTP to Delta XCC port"
     "log_name_fragment" = "xcc"
-  }]
+    }, {
+    "from_port"         = 8250
+    "to_port"           = 8250
+    "description"       = "HTTP to Delta SAML port"
+    "log_name_fragment" = "delta"
+    }, {
+    "from_port"         = 8255
+    "to_port"           = 8255
+    "description"       = "HTTP to Delta testing centre SAML port"
+    "log_name_fragment" = "delta-test"
+    }, {
+    "from_port"         = 8240
+    "to_port"           = 8240
+    "description"       = "HTTP to CPM SAML port"
+    "log_name_fragment" = "cpm"
+  }, ]
   lb_ports = {
     for port in flatten([
       for port_range in local.ml_sg_ingress_port_ranges : range(port_range.from_port, port_range.to_port + 1) if port_range.from_port >= 8000]

@@ -15,9 +15,7 @@ A dev account (staging and test environments) key with read only access is avail
 A dev account admin key is stored as an environment secret and is only accessible from the main branch.
 Branch protections are in place for the this repository, but not delta or common-payments-module, as they would be incompatible with the current supplier's development process.
 
-A production account admin AWS access key is stored as an Environment secret, and requires manual approval before use.
-
-TODO: Alarm on use of terraform admin account (MHCLG org) <https://digital.dclg.gov.uk/confluence/display/DT/Security+-+DLUHC+responsibilities>
+Terraform deployments to production are done manually with named accounts.
 
 ## Application deployments
 
@@ -27,7 +25,7 @@ The same repository is shared by all environments.
 A "CI" user is used to push artifacts to the repositories, and is available as a repository secret.
 Artifacts used by production are immutable, so this account cannot be used to affect production services.
 
-The per-environment terraform users are used for initiating the deployments themselves using an uploaded artefact, with the same restrictions as above.
+Deployments are either managed by Terraform or by workflows within the repositories which have AWS access keys with the required permissions as environment secrets.
 
 ## MarkLogic deployments
 
@@ -42,22 +40,21 @@ This user is stored as environment secrets, with access control via branch prote
 
 | Repository                  | Permission | Dev AWS access      | Prod AWS access     |
 |-----------------------------|------------|---------------------|---------------------|
-| communitiesuk organisation  | Admin      | Admin               | Admin               |
+| communitiesuk organisation  | Admin      | Admin               | All below           |
 | delta-common-infrastructure | Read       | None                | None                |
 | delta-common-infrastructure | Write      | Plan\*              | None                |
-| delta-common-infrastructure | Maintain   | Admin               | None                |
-| delta-common-infrastructure | Admin      | Admin               | Admin               |
+| delta-common-infrastructure | Admin      | Admin               | None                |
 | delta                       | Read       | None                | None                |
 | delta                       | Write      | Admin               | Push artefacts\*\*  |
-| delta                       | Admin      | Admin               | Admin               |
+| delta                       | Admin      | Admin               | Plan + Deploy Delta website |
 | common-payments-module      | Read       | None                | None                |
 | common-payments-module      | Write      | Admin               | Push artefacts\*\*  |
-| common-payments-module      | Admin      | Admin               | Admin               |
+| common-payments-module      | Admin      | Admin               | Plan                |
 | delta-orbeon                | Read       | None                | None                |
 | delta-orbeon                | Write      | None                | Push artefacts\*\*  |
 | delta-orbeon                | Admin      | None                | Push artefacts\*\*  |
 | delta-marklogic-deploy      | Read       | None                | None                |
-| delta-marklogic-deploy      | Write      | Runner†             | Runner†             |
+| delta-marklogic-deploy      | Write      | Runner + ML secrets | Runner†             |
 | delta-marklogic-deploy      | Admin      | Runner + ML secrets | Runner + ML secrets |
 
 \* Plan - read only access to the account, including reading the terraform state and some secrets.

@@ -14,7 +14,7 @@ variable "vpc" {
 
 variable "domain_controller_subnets" {
   description = "Private Subnets for domain controllers (minimum 2)"
-  type        = list(object({ id = string }))
+  type        = list(object({ id = string, cidr_block = string }))
 }
 
 variable "management_server_subnet" {
@@ -71,4 +71,9 @@ variable "ent_ca_validity_years" {
 variable "include_ca" {
   type    = bool
   default = true
+}
+
+variable "alarms_sns_topic_arn" {
+  description = "SNS topic ARN to send alarm notifications to"
+  type        = string
 }

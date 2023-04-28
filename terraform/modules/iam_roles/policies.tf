@@ -268,6 +268,17 @@ data "aws_iam_policy_document" "infra_support" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    sid       = "GetAuthTokenForCodeArtifact"
+    actions   = ["sts:GetServiceBearerToken"]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "sts:AWSServiceName"
+      values   = ["codeartifact.amazonaws.com"]
+    }
+  }
 }
 
 resource "aws_iam_policy" "infra_support" {

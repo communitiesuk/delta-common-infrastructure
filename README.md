@@ -39,14 +39,8 @@ Confirm the host key fingerprint matches the Terraform output `bastion_host_key_
 
 GitHub Actions is the CI/CD platform of choice for minimal maintenance, plus it is used elsewhere in the department.
 
-* A workflow validates all of the terraform config in all pull requests
-* When the main branch is updated, a workflow will
-  * Run `terraform plan` for the test environment
-  * After a reviewer approves the plan, run `terraform apply` for the test environment
-  * After that completes successfully, repeat for the next environment (test -> staging -> production)
-
-The `terraform.yml` workflow could be reused by other Git repositories, but may need to be enhanced with e.g. a continuous
-deployment option.
+* A workflow validates all of the terraform config in all pull requests and merges to main
+* There is also an "apply" workflow which can be dispatched from the Actions tab to deploy to test and staging
 
 ## tfsec
 
@@ -172,7 +166,7 @@ Continue with the setup instructions in the common-payments-module and then delt
 
 ### 9 API Swagger static files
 
-The static files in the \api\docs\src\main\resources\static folder in the delta repository should be uploaded to the
+The static files in the api/docs/static-site folder in the delta repository should be uploaded to the
 relevant S3 bucket (name `dluhc-delta-api-swagger-{environment}`) in each environment to serve the swagger interface
 for the API. This can be done via the AWS console or CLI.
 
