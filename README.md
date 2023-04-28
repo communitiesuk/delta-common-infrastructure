@@ -83,7 +83,7 @@ along with an SES identity if the environment will have one.
 terraform apply -target module.ssl_certs -target module.ses_identity
 ```
 
-For domains, we control create the DNS records to validate the certificates with a dns_records module and apply it now.
+For domains we control create the DNS records to validate the certificates with a `dns_records` module and apply it now.
 For other domains, request that the records from the `required_dns_records` output are created and continue.
 
 ### 3 Network + Bastion
