@@ -1,7 +1,3 @@
-locals {
-  datamart_account_id = "090682378586"
-}
-
 # MarkLogic seems to ignore the bucket level KMS settings, so this isn't used
 resource "aws_kms_key" "ml_backup_from_datamart_encryption" {
   enable_key_rotation = true

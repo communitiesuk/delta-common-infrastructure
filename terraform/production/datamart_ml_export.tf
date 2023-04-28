@@ -1,7 +1,3 @@
-locals {
-  datamart_account_id = "090682378586"
-}
-
 module "datamart_ml_backups" {
   source = "../modules/s3_bucket"
 
