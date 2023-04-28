@@ -2,7 +2,19 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.52"
+      version = "~> 4.65.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5.1"
+    }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "~> 2.3.0"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0.4"
     }
   }
 
@@ -241,19 +253,19 @@ locals {
 module "active_directory" {
   source = "../modules/active_directory"
 
-  edition                      = "Standard"
-  vpc                          = module.networking.vpc
-  domain_controller_subnets    = module.networking.ad_private_subnets
-  management_server_subnet     = module.networking.ad_management_server_subnet
-  number_of_domain_controllers = 2
-  ldaps_ca_subnet              = module.networking.ldaps_ca_subnet
-  environment                  = local.environment
-  rdp_ingress_sg_id            = module.bastion.bastion_security_group_id
-  private_dns                  = module.networking.private_dns
-  ad_domain                    = "dluhctest.local"
-  ad_netbios_name              = "DLUHCTEST"
-  management_instance_type     = "t3.xlarge"
-  include_ca                   = false
+  edition                   = "Standard"
+  vpc                       = module.networking.vpc
+  domain_controller_subnets = module.networking.ad_private_subnets
+  management_server_subnet  = module.networking.ad_management_server_subnet
+  ldaps_ca_subnet           = module.networking.ldaps_ca_subnet
+  environment               = local.environment
+  rdp_ingress_sg_id         = module.bastion.bastion_security_group_id
+  private_dns               = module.networking.private_dns
+  ad_domain                 = "dluhctest.local"
+  ad_netbios_name           = "DLUHCTEST"
+  management_instance_type  = "t3.xlarge"
+  include_ca                = false
+  alarms_sns_topic_arn      = module.notifications.alarms_sns_topic_arn
 }
 
 module "marklogic_patch_maintenance_window" {

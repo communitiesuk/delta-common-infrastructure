@@ -1,0 +1,35 @@
+name: "Terraform checks"
+
+# Quick checks that run on every PR, regardless of whether any Terraform code changed
+# Set as required for PRs to be merged on GitHub
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  tf_fmt:
+    name: Validate Terraform formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.9
+      - name: Check formatting of all Terraform files
+        run: terraform fmt -check -diff -recursive
+  tfsec:
+    name: tfsec check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: terraform/
+          github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -48,16 +48,28 @@ resource "aws_lb_target_group" "ldaps" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "ldap" {
-  for_each = aws_directory_service_directory.directory_service.dns_ip_addresses
+# Certain LDAP updates from Delta only succeed when sent to the "first" domain controller.
+# If performance is an issue, we could investigate whether a separate load balancer for read operations would help 
+locals {
+  split_subnet_a_cidr_block = split(".", var.domain_controller_subnets[0].cidr_block)
+  desired_dc_ip_prefix      = "${local.split_subnet_a_cidr_block[0]}.${local.split_subnet_a_cidr_block[1]}.${local.split_subnet_a_cidr_block[2]}."
+}
 
+resource "aws_lb_target_group_attachment" "ldap" {
+  for_each = {
+    for key, val in aws_directory_service_directory.directory_service.dns_ip_addresses :
+    key => val if startswith(val, local.desired_dc_ip_prefix)
+  }
   target_group_arn = aws_lb_target_group.ldap.arn
   port             = 389
   target_id        = each.value
 }
 
 resource "aws_lb_target_group_attachment" "ldaps" {
-  for_each = aws_directory_service_directory.directory_service.dns_ip_addresses
+  for_each = {
+    for key, val in aws_directory_service_directory.directory_service.dns_ip_addresses :
+    key => val if startswith(val, local.desired_dc_ip_prefix)
+  }
 
   target_group_arn = aws_lb_target_group.ldaps.arn
   port             = 636
@@ -116,5 +128,51 @@ resource "aws_route53_record" "active_directory_ldap" {
     name                   = aws_lb.ldap.dns_name
     zone_id                = aws_lb.ldap.zone_id
     evaluate_target_health = false
+  }
+}
+
+
+resource "aws_cloudwatch_metric_alarm" "ldap_lb_healthy_count_low" {
+  alarm_name          = "ldap-${var.environment}-lb-healthy-host-count-low"
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = 0
+  evaluation_periods  = 1
+
+  alarm_description  = "The Active Directory domain controller in use is unhealthy"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "breaching"
+
+  metric_query {
+    id          = "ldap_or_ldaps_unhealthy_host_count"
+    expression  = "SUM(METRICS())"
+    label       = "AD target groups unhealthy host count"
+    return_data = "true"
+  }
+  metric_query {
+    id = "ldap_tg_unhealthy_host_count"
+    metric {
+      metric_name = "UnHealthyHostCount"
+      namespace   = "AWS/NetworkELB"
+      period      = "300"
+      stat        = "Maximum"
+      dimensions = {
+        "TargetGroup" : aws_lb_target_group.ldap.arn_suffix
+        "LoadBalancer" : aws_lb.ldap.arn_suffix
+      }
+    }
+  }
+  metric_query {
+    id = "ldaps_tg_unhealthy_host_count"
+    metric {
+      metric_name = "UnHealthyHostCount"
+      namespace   = "AWS/NetworkELB"
+      period      = "300"
+      stat        = "Maximum"
+      dimensions = {
+        "TargetGroup" : aws_lb_target_group.ldaps.arn_suffix
+        "LoadBalancer" : aws_lb.ldap.arn_suffix
+      }
+    }
   }
 }
