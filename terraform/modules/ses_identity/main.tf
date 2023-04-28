@@ -56,6 +56,7 @@ data "aws_iam_policy_document" "kms_key_policy" {
 resource "aws_kms_key" "ses_sns_topic_encryption_key" {
   description         = "SES SNS topic encryption key"
   enable_key_rotation = true
+  policy = data.aws_iam_policy_document.kms_key_policy.json
 }
 
 resource "aws_kms_alias" "ses_sns_topic_encryption_key" {
