@@ -58,7 +58,9 @@ module "communities_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
+  environment                          = local.environment
   domain                               = "datacollection.${var.secondary_domain}"
+  email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   bounce_complaint_notification_emails = local.all_notifications_email_addresses
 }
 
