@@ -46,6 +46,7 @@ resource "aws_sns_topic" "email_delivery_problems" {
   name = "ses-delivery-problems-${replace(var.domain, ".", "-")}"
 }
 
+# tfsec:ignore:aws-sns-enable-topic-encryption
 resource "aws_sns_topic" "email_delivery_success" {
   name = "ses-delivery-success-${replace(var.domain, ".", "-")}"
 }

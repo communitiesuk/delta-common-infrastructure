@@ -35,8 +35,16 @@ data "aws_iam_policy_document" "cloudwatch_write_policy_document" {
       "logs:DescribeLogStreams",
     ]
 
-    resources = ["arn:aws:logs:*:*:*"]
+    resources = ["arn:aws:logs:${var.region}:${var.account}:log-group:${local.log_group_name_delivered}", "arn:aws:logs:${var.region}:${var.account}:log-group:${local.log_group_name_problem}"]
   }
+}
+
+variable "region" {
+  type = string
+}
+
+variable "account" {
+  type = string
 }
 
 variable "email_cloudwatch_log_expiration_days" {
