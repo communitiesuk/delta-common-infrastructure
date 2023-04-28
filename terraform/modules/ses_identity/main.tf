@@ -51,6 +51,17 @@ data "aws_iam_policy_document" "kms_key_policy" {
 
     resources = ["*"]
   }
+  statement {
+    sid       = "Enable IAM User Permissions"
+    effect    = "Allow"
+    actions   = ["kms:*"]
+    resources = ["*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_caller_identity.current.account_id]
+    }
+  }
 }
 
 resource "aws_kms_key" "ses_sns_topic_encryption_key" {
