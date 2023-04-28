@@ -37,7 +37,7 @@ resource "aws_ses_domain_mail_from" "main" {
 data "aws_iam_policy_document" "kms_key_policy" {
   version = "2012-10-17"
   statement {
-    sid = "AllowSESToUseKMSKey"
+    sid    = "AllowSESToUseKMSKey"
     effect = "Allow"
     principals {
       identifiers = ["ses.amazonaws.com"]
@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "kms_key_policy" {
 resource "aws_kms_key" "ses_sns_topic_encryption_key" {
   description         = "SES SNS topic encryption key"
   enable_key_rotation = true
-  policy = data.aws_iam_policy_document.kms_key_policy.json
+  policy              = data.aws_iam_policy_document.kms_key_policy.json
 }
 
 resource "aws_kms_alias" "ses_sns_topic_encryption_key" {
@@ -76,12 +76,12 @@ resource "aws_kms_alias" "ses_sns_topic_encryption_key" {
 }
 
 resource "aws_sns_topic" "email_delivery_problems" {
-  name = "ses-delivery-problems-${replace(var.domain, ".", "-")}"
+  name              = "ses-delivery-problems-${replace(var.domain, ".", "-")}"
   kms_master_key_id = aws_kms_alias.ses_sns_topic_encryption_key.target_key_id
 }
 
 resource "aws_sns_topic" "email_delivery_success" {
-  name = "ses-delivery-success-${replace(var.domain, ".", "-")}"
+  name              = "ses-delivery-success-${replace(var.domain, ".", "-")}"
   kms_master_key_id = aws_kms_alias.ses_sns_topic_encryption_key.target_key_id
 }
 
