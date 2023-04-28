@@ -50,7 +50,7 @@ module "sent_emails_log_group" {
   source             = "../encrypted_log_groups"
   retention_days     = var.email_cloudwatch_log_expiration_days
   log_group_names    = [local.log_group_name_problem, local.log_group_name_delivered]
-  kms_key_alias_name = "sent-emails-log"
+  kms_key_alias_name = "${var.environment}-sent-emails-log"
 }
 
 locals {
@@ -103,7 +103,7 @@ data "archive_file" "python_lambda_package" {
 }
 
 resource "aws_lambda_function" "ses_problems_to_cloudwatch_lambda" {
-  function_name = "${local.domain_string}-ses-problems-to-cloudwatch"
+  function_name = "${var.environment}-ses-problems-to-cloudwatch"
   tracing_config {
     mode = "Active"
   }
@@ -127,7 +127,7 @@ resource "aws_lambda_function" "ses_problems_to_cloudwatch_lambda" {
 }
 
 resource "aws_lambda_function" "ses_deliveries_to_cloudwatch_lambda" {
-  function_name = "${local.domain_string}-ses-deliveries-to-cloudwatch"
+  function_name = "${var.environment}-ses-deliveries-to-cloudwatch"
   tracing_config {
     mode = "Active"
   }
