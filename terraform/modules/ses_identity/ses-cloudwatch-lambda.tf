@@ -4,7 +4,7 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name = "${local.domain_string}_iam_for_ses_lambda"
+  name = "${local.domain_string}-iam-for-ses-lambda"
 
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.
@@ -37,12 +37,14 @@ data "aws_iam_policy_document" "cloudwatch_write_policy_document" {
 
     # Sufficiently specific
     # tfsec:ignore:aws-iam-no-policy-wildcards
-    resources = [
-      "arn:aws:logs:${var.region}:${var.account}:log-group:${local.log_group_name_delivered}:*",
-      "arn:aws:logs:${var.region}:${var.account}:log-group:${local.log_group_name_problem}:*"
-    ]
+    resources = concat(
+      [for arn in module.sent_emails_log_group.log_group_arns : "${arn}:*"],
+      ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*"]
+    )
   }
 }
+
+data "aws_caller_identity" "current" {}
 
 module "sent_emails_log_group" {
   source             = "../encrypted_log_groups"
