@@ -34,16 +34,55 @@ resource "aws_ses_domain_mail_from" "main" {
 # despite us using these notifications instead.
 # Once it is we should disable it so Amazon isn't sending bounce notifications to a no reply email.
 
-# Non sensitive
-# tfsec:ignore:aws-sns-enable-topic-encryption
-resource "aws_sns_topic" "email_delivery_problems" {
-  name = "ses-delivery-problems-${replace(var.domain, ".", "-")}"
+data "aws_iam_policy_document" "kms_key_policy" {
+  version = "2012-10-17"
+  statement {
+    sid    = "AllowSESToUseKMSKey"
+    effect = "Allow"
+    principals {
+      identifiers = ["ses.amazonaws.com"]
+      type        = "Service"
+    }
+
+    actions = [
+      "kms:GenerateDataKey",
+      "kms:Decrypt"
+    ]
+
+    resources = ["*"]
+  }
+  statement {
+    sid       = "Enable IAM User Permissions"
+    effect    = "Allow"
+    actions   = ["kms:*"]
+    resources = ["*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_caller_identity.current.account_id]
+    }
+  }
 }
 
-# Non sensitive
-# tfsec:ignore:aws-sns-enable-topic-encryption
+resource "aws_kms_key" "ses_sns_topic_encryption_key" {
+  description         = "SES SNS topic encryption key"
+  enable_key_rotation = true
+  policy              = data.aws_iam_policy_document.kms_key_policy.json
+}
+
+resource "aws_kms_alias" "ses_sns_topic_encryption_key" {
+  name          = "alias/ses-sns-topic-${var.environment}"
+  target_key_id = aws_kms_key.ses_sns_topic_encryption_key.key_id
+}
+
+resource "aws_sns_topic" "email_delivery_problems" {
+  name              = "ses-delivery-problems-${replace(var.domain, ".", "-")}"
+  kms_master_key_id = aws_kms_alias.ses_sns_topic_encryption_key.target_key_id
+}
+
 resource "aws_sns_topic" "email_delivery_success" {
-  name = "ses-delivery-success-${replace(var.domain, ".", "-")}"
+  name              = "ses-delivery-success-${replace(var.domain, ".", "-")}"
+  kms_master_key_id = aws_kms_alias.ses_sns_topic_encryption_key.target_key_id
 }
 
 # These seem to take a few minutes to set up
