@@ -1,12 +1,4 @@
-resource "aws_kms_key" "ml_backup_bucket_key" {
-  enable_key_rotation = true
-  description         = "ml-backups-${var.environment}"
-}
-
-resource "aws_kms_alias" "ml_backup_bucket_key" {
-  name          = "alias/ml-backups-${var.environment}"
-  target_key_id = aws_kms_key.ml_backup_bucket_key.id
-}
+# These are no longer used, but kept until we no longer need the backups
 
 module "cpm_backup_bucket" {
   source = "../s3_bucket"
