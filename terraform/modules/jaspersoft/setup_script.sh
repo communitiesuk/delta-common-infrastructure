@@ -2,7 +2,7 @@
 
 set -exuo pipefail
 
-export TOMCAT_VERSION=9.0.70
+export TOMCAT_VERSION=9.0.73
 export DEBIAN_FRONTEND=noninteractive
 
 # Let the instance finish booting
