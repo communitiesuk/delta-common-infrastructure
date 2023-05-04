@@ -64,6 +64,7 @@ module "ses_identity" {
     local.all_notifications_email_addresses,
     ["deltaadmin@levellingup.gov.uk"]
   )
+  alarms_sns_topic_arn = module.notifications.alarms_sns_topic_arn
 }
 
 module "delta_ses_user" {
