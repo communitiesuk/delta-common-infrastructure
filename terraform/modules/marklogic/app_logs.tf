@@ -2,7 +2,7 @@
 
 locals {
   app_log_group_base_name         = "${var.environment}/marklogic"
-  ssm_log_group_name              = "${var.environment}/marklogic-ssm"
+  ssm_log_group_name              = "${local.app_log_group_base_name}-ssm"
   taskserver_error_log_group_name = "${local.app_log_group_base_name}-taskserver-error"
 }
 
