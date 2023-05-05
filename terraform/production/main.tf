@@ -153,6 +153,8 @@ module "bastion" {
     sed -i 's/#*TCPKeepAlive [A-Za-z]*/TCPKeepAlive no/' /etc/ssh/sshd_config
     sed -i 's/#*Compression [A-Za-z]*/Compression no/' /etc/ssh/sshd_config
     sed -i 's/#*ClientAliveCountMax [0-9]*/ClientAliveCountMax 2/' /etc/ssh/sshd_config
+    sed -i 's/#*GSSAPIAuthentication [A-Za-z]*/#GSSAPIAuthentication no/' /etc/ssh/sshd_config
+    sed -i 's/#*GSSAPICleanupCredentials [A-Za-z]*/#GSSAPICleanupCredentials no/' /etc/ssh/sshd_config
 
     /usr/sbin/sshd -t
     systemctl restart sshd
