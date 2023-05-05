@@ -149,3 +149,55 @@ resource "aws_lambda_function" "ses_deliveries_to_cloudwatch_lambda" {
   ]
   role = aws_iam_role.iam_for_lambda.arn
 }
+
+resource "aws_cloudwatch_metric_alarm" "ses_send_errors" {
+  alarm_name          = "${var.environment}-ses-to-cloudwatch-lambda-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "10"
+  threshold           = "0"
+  alarm_description   = "Error in Lambda sending SES logs to CloudWatch"
+  treat_missing_data  = "ignore"
+
+
+  metric_query {
+    id          = "total-errors"
+    expression  = "e1 + e2"
+    label       = "Any errors"
+    return_data = "true"
+  }
+
+  metric_query {
+    id = "e1"
+
+    metric {
+      metric_name = "Errors"
+      namespace   = "AWS/Lambda"
+      period      = "60"
+      stat        = "Sum"
+
+      dimensions = {
+        FunctionName = "${aws_lambda_function.ses_deliveries_to_cloudwatch_lambda.function_name}"
+        Resource     = "${aws_lambda_function.ses_deliveries_to_cloudwatch_lambda.function_name}"
+      }
+    }
+  }
+
+  metric_query {
+    id = "e2"
+
+    metric {
+      metric_name = "Errors"
+      namespace   = "AWS/Lambda"
+      period      = "60"
+      stat        = "Sum"
+
+      dimensions = {
+        FunctionName = "${aws_lambda_function.ses_problems_to_cloudwatch_lambda.function_name}"
+        Resource     = "${aws_lambda_function.ses_problems_to_cloudwatch_lambda.function_name}"
+      }
+    }
+  }
+
+  alarm_actions = [var.alarms_sns_topic_arn]
+  ok_actions    = [var.alarms_sns_topic_arn]
+}

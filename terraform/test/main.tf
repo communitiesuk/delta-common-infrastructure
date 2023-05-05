@@ -62,6 +62,7 @@ module "ses_identity" {
   domain                               = "datacollection.${var.secondary_domain}"
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   bounce_complaint_notification_emails = local.all_notifications_email_addresses
+  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }
 
 # This dynamically creates resources, so the modules it depends on must be created first
