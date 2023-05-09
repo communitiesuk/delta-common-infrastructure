@@ -208,7 +208,7 @@ data "aws_iam_policy_document" "ml_cloudwatch" {
       "logs:DescribeLogStreams",
       "logs:PutLogEvents",
     ]
-    resources = ["${local.app_log_group_base_name}*"]
+    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${local.app_log_group_base_name}*"]
   }
 
   statement {
