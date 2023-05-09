@@ -88,7 +88,7 @@ resource "aws_ssm_maintenance_window_target" "ml_server" {
 # Non sensitive job output
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "dap_upload" {
-  name              = "${var.environment}/marklogic/dap-upload-task"
+  name              = "${local.app_log_group_base_name}/dap-upload-task"
   retention_in_days = var.patch_cloudwatch_log_expiration_days
 }
 
