@@ -9,7 +9,7 @@ sed -i 's-#Banner none-Banner /etc/ssh/banner-g' /etc/ssh/sshd_config
 sed -i 's/#*LogLevel [A-Za-z]*/LogLevel VERBOSE/' /etc/ssh/sshd_config
 sed -i 's/#*MaxAuthTries [0-9]*/MaxAuthTries 3/' /etc/ssh/sshd_config
 sed -i 's/#*MaxSessions [0-9]*/MaxSessions 2/' /etc/ssh/sshd_config
-sed -i 's/#*AllowAgentForwarding [A-Za-z]*/AllowAgentForwarding no/' /etc/ssh/sshd_config
+sed -i 's/#*AllowAgentForwarding [A-Za-z]*/AllowAgentForwarding yes/' /etc/ssh/sshd_config
 sed -i 's/#*X11Forwarding [A-Za-z]*/X11Forwarding no/' /etc/ssh/sshd_config
 sed -i 's/#*TCPKeepAlive [A-Za-z]*/TCPKeepAlive no/' /etc/ssh/sshd_config
 sed -i 's/#*Compression [A-Za-z]*/Compression no/' /etc/ssh/sshd_config
