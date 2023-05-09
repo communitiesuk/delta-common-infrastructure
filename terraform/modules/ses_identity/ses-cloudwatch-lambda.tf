@@ -158,11 +158,10 @@ resource "aws_cloudwatch_metric_alarm" "ses_send_errors" {
   alarm_description   = "Error in Lambda sending SES logs to CloudWatch"
   treat_missing_data  = "ignore"
 
-
   metric_query {
-    id          = "total-errors"
+    id          = "total_errors"
     expression  = "e1 + e2"
-    label       = "Any errors"
+    label       = "Any errors sending SES logs to CloudWatch"
     return_data = "true"
   }
 
