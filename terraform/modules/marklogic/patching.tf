@@ -24,7 +24,7 @@ resource "aws_ssm_maintenance_window_target" "ml_servers" {
 # Yum update output, non-sensitive
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "ml_patch" {
-  name              = "${var.environment}/marklogic-ssm-patch"
+  name              = "${local.app_log_group_base_name}-ssm-patch"
   retention_in_days = var.patch_cloudwatch_log_expiration_days
 }
 
