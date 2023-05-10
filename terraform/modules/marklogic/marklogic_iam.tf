@@ -208,7 +208,7 @@ data "aws_iam_policy_document" "ml_cloudwatch" {
       "logs:DescribeLogStreams",
       "logs:PutLogEvents",
     ]
-    resources = concat(["${aws_cloudwatch_log_group.ml_patch.arn}:*", "${aws_cloudwatch_log_group.dap_upload.arn}:*"], [for arn in module.marklogic_log_group.log_group_arns : "${arn}:*"])
+    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${local.app_log_group_base_name}*"]
   }
 
   statement {
