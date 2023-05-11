@@ -36,7 +36,7 @@ MarkLogic and other server logs can also available in CloudWatch.
 RDP and terminal sessions can be started from [Fleet Manager](https://eu-west-1.console.aws.amazon.com/systems-manager/managed-instances?region=eu-west-1) in the Systems Manager console.
 
 Find the `ad-management-server-<environment>` instance and go to Node Actions -> Connect with Remote Desktop.
-Login with your Windows domain username and password.
+Login with your Windows domain username and password (the Staging - Directory Admin username and password can be found in Keeper).
 From there you can use Active Directory Users and Computers etc. to manage user accounts.
 
 ## AWS CLI Setup
