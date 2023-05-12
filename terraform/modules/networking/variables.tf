@@ -33,6 +33,12 @@ variable "open_ingress_cidrs" {
   default     = []
 }
 
+variable "cidr_blocklist" {
+  description = "CIDRs to specifically prohibit access though the VPC ACL"
+  type        = list(string)
+  default     = []
+}
+
 variable "ecr_repo_account_id" {
   type = string
 }
