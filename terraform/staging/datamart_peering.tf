@@ -6,10 +6,6 @@ locals {
   datamart_server_ip           = "192.168.148.6"
 }
 
-data "aws_route_table" "ad_management_server" {
-  subnet_id = module.networking.ad_management_server_subnet.id
-}
-
 resource "aws_vpc_peering_connection" "to_datamart_staging" {
   peer_owner_id = local.datamart_peering_vpc_account
   peer_vpc_id   = local.datamart_peering_vpc_id
