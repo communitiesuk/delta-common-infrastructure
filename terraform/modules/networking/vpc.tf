@@ -47,6 +47,19 @@ resource "aws_default_network_acl" "main" {
     }
   }
 
+  # Block ingress from blocklisted CIDRs
+  dynamic "ingress" {
+    for_each = var.cidr_blocklist
+    content {
+      protocol   = "-1"
+      rule_no    = ingress.key + 110
+      action     = "deny"
+      cidr_block = ingress.value
+      from_port  = 0
+      to_port    = 0
+    }
+  }
+
   # Allow HTTPS
   ingress {
     protocol   = "tcp"
