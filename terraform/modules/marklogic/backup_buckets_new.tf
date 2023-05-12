@@ -32,11 +32,15 @@ module "weekly_backup_bucket" {
   access_s3_log_expiration_days      = var.backup_s3_log_expiration_days
 }
 
+locals {
+  backup_directories = ["delta-content", "security", "payments-content", "delta-testing-centre-content"]
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
   bucket = module.weekly_backup_bucket.bucket
 
   rule {
-    id = "transition-and-expire"
+    id = "noncurrent-version-expiration"
 
     filter {}
 
@@ -50,57 +54,46 @@ resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
       noncurrent_days = 180
     }
 
-    transition {
-      days          = 7
-      storage_class = "GLACIER_IR"
-    }
-
-    expiration {
-      days = 90
-    }
-
     status = "Enabled"
+  }
+
+  dynamic "rule" {
+    for_each = toset(local.backup_directories)
+    content {
+      id = "expire-${rule.value}"
+
+      filter {
+        # MarkLogic starts its backup folder names with the date in a yyyyMMdd format
+        # This lets us target those without deleting the folder markers we create below
+        prefix = "${rule.value}/20"
+      }
+
+      transition {
+        days          = 7
+        storage_class = "GLACIER_IR"
+      }
+
+      expiration {
+        days = 90
+      }
+
+      status = "Enabled"
+    }
   }
 }
 
 # MarkLogic seems to need the "folders" to exist in S3
 # If you update these make sure to update the backups in delta-marklogic-deploy too
-resource "aws_s3_object" "daily_delta_content_folder" {
+resource "aws_s3_object" "daily_folders" {
+  for_each = toset(local.backup_directories)
+
   bucket = module.daily_backup_bucket.bucket
-  key    = "delta-content/"
+  key    = "${each.value}/"
 }
 
-resource "aws_s3_object" "daily_security_folder" {
-  bucket = module.daily_backup_bucket.bucket
-  key    = "security/"
-}
+resource "aws_s3_object" "weekly_folders" {
+  for_each = toset(local.backup_directories)
 
-resource "aws_s3_object" "daily_delta_testing_centre_content_folder" {
-  bucket = module.daily_backup_bucket.bucket
-  key    = "delta-testing-centre-content/"
-}
-
-resource "aws_s3_object" "daily_payments_content" {
-  bucket = module.daily_backup_bucket.bucket
-  key    = "payments-content/"
-}
-
-resource "aws_s3_object" "weekly_delta_content_folder" {
   bucket = module.weekly_backup_bucket.bucket
-  key    = "delta-content/"
-}
-
-resource "aws_s3_object" "weekly_security_folder" {
-  bucket = module.weekly_backup_bucket.bucket
-  key    = "security/"
-}
-
-resource "aws_s3_object" "weekly_delta_testing_centre_content_folder" {
-  bucket = module.weekly_backup_bucket.bucket
-  key    = "delta-testing-centre-content/"
-}
-
-resource "aws_s3_object" "weekly_payments_content" {
-  bucket = module.weekly_backup_bucket.bucket
-  key    = "payments-content/"
+  key    = "${each.value}/"
 }
