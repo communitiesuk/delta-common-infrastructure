@@ -40,29 +40,18 @@ data "aws_secretsmanager_secret" "ldap_bind_password" {
   name = "jasperserver-ldap-bind-password-${var.environment}"
 }
 
-data "aws_ami" "ubuntu" {
+data "aws_ami" "amazon_linux" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  owners = ["099720109477"] # Canonical
+  owners = ["amazon"]
 }
 
 resource "aws_instance" "jaspersoft_server" {
-  ami           = data.aws_ami.ubuntu.id
+  ami           = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
   tags          = { Name = "${var.prefix}jaspersoft-server" }
 

@@ -51,7 +51,7 @@ It can be run using Docker
 docker run --pull=always --rm -it -v "$(pwd):/src" aquasec/tfsec /src
 ```
 
-It's also available via Chocolately + other package managers, but the Docker image seems to be more up to date.
+It's also available via Chocolatey + other package managers, but the Docker image seems to be more up to date.
 
 Individual rules can be ignored with a comment on the line above with the form `tfsec:ignore:<rule-name>`
 e.g. `tfsec:ignore:aws-dynamodb-enable-at-rest-encryption`.
