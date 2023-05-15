@@ -8,7 +8,7 @@ Type=forking
 User=tomcat
 Group=tomcat
 
-Environment="JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64"
+Environment="JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto.x86_64"
 
 Environment="CATALINA_BASE=/opt/tomcat/base"
 Environment="CATALINA_HOME=/opt/tomcat/latest"

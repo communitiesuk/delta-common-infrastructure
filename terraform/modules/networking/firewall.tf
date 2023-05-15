@@ -301,7 +301,7 @@ locals {
   subnet_firewall_rules = [
     for name, config in local.firewall_config : join("\n", ["# ${name}",
       config.http_allowed_domains == [] && config.tls_allowed_domains == [] ?
-      "drop ip ${config.cidr} any <> any any (msg:\"Drop all traffic from ${name}\" ;sid:${config.sid_offset}; rev:1;)"
+      "drop ip ${config.cidr} any <> any any (msg:\"Drop all traffic from ${name}\"; sid:${config.sid_offset}; rev:1;)"
       : join("\n", concat(
         [
           for idx, http_domain in config.http_allowed_domains : startswith(http_domain, ".")

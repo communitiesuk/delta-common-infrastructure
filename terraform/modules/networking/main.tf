@@ -10,15 +10,10 @@ locals {
       sid_offset           = 100
     }
     jaspersoft = {
-      cidr = local.jaspersoft_cidr_10
-      http_allowed_domains = [
-        ".ubuntu.com", ".launchpad.net", # Apt updates
-        ".postgresql.org",               # Postgres
-      ]
+      cidr                 = local.jaspersoft_cidr_10
+      http_allowed_domains = []
       tls_allowed_domains = [
-        ".ubuntu.com", ".launchpad.net",             # Apt updates
-        "archive.apache.org", ".postgresql.org",     # Tomcat + Postgres
-        "api.snapcraft.io", ".snapcraftcontent.com", # Snap updates
+        "archive.apache.org", # to download Tomcat
       ]
       sid_offset = 200
     }

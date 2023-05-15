@@ -2,34 +2,28 @@
 
 set -exuo pipefail
 
-export TOMCAT_VERSION=9.0.73
-export DEBIAN_FRONTEND=noninteractive
+export TOMCAT_VERSION=9.0.75
 
 # Let the instance finish booting
-
 sleep 5
 
-# Based on the JasperReports Server CP Install Guide for 7.8
-
-# Setup
-
-apt-get update && apt-get upgrade -y
-apt-get install wget awscli lsb-release gnupg unzip -y
-
-# Otherwise systemd-resolve blocks .local domains
-ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+yum upgrade -y
+yum install iptables-services -y
+systemctl enable iptables
+systemctl start iptables
 
 # Block non-root users from accessing the instance metadata service
 iptables -A OUTPUT -m owner ! --uid-owner root -d 169.254.169.254 -j DROP
-echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
-apt-get install iptables-persistent -y
+# Open port 8080
+iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
+service iptables save
+
+# Based on the JasperReports Server CP Install Guide for 7.8
 
 # Install Java
-
-apt-get install openjdk-11-jdk -y
+yum install java-11-amazon-corretto-headless -y
 
 # Install Tomcat
-
 rm -rf /opt/tomcat/base
 rm -rf /opt/tomcat/apache-tomcat-$${TOMCAT_VERSION}
 id -u tomcat &>/dev/null || useradd -m -U -d /opt/tomcat tomcat
@@ -40,7 +34,7 @@ rm -f /tmp/apache-tomcat-$${TOMCAT_VERSION}.tar.gz
 rm -f /opt/tomcat/latest
 sudo -u tomcat ln -s /opt/tomcat/apache-tomcat-$${TOMCAT_VERSION} /opt/tomcat/latest
 
-echo "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" > /etc/profile.d/java-tomcat-vars.sh
+echo "export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto.x86_64" > /etc/profile.d/java-tomcat-vars.sh
 echo "export CATALINA_BASE=/opt/tomcat/base" >> /etc/profile.d/java-tomcat-vars.sh
 echo "export CATALINA_HOME=/opt/tomcat/latest" >> /etc/profile.d/java-tomcat-vars.sh
 source /etc/profile.d/java-tomcat-vars.sh
@@ -64,7 +58,6 @@ systemctl daemon-reload
 systemctl enable tomcat
 
 # Download JasperSoft files
-
 aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_INSTALL_S3_BUCKET}/js-7.8.1_hotfixed_2022-04-15.zip /tmp
 aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_CONFIG_S3_BUCKET}/default_master.properties /tmp
 
@@ -90,7 +83,7 @@ sed -i "s/RDS_DATABASE_PASSWORD/$${DATABASE_PASSWORD}/" /tmp/default_master.prop
 set -x
 cp /tmp/default_master.properties ./default_master.properties
 chown tomcat:tomcat ./default_master.properties
-rm /tmp/default_master.properties
+rm -f /tmp/default_master.properties
 
 # Run install
 if [ -f /opt/tomcat/.jrsks ]; then
