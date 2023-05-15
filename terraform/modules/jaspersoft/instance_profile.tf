@@ -47,12 +47,12 @@ data "aws_iam_policy_document" "read_secrets" {
 data "aws_iam_policy_document" "access_buckets" {
   statement {
     sid       = "InstallBucket"
-    actions   = ["s3:GetObject"]
+    actions   = ["s3:GetObject", "s3:ListBucket"]
     resources = ["${data.aws_s3_bucket.jaspersoft_binaries.arn}/*"]
   }
   statement {
     sid       = "ConfigBucket"
-    actions   = ["s3:GetObject", "s3:PutObject"]
+    actions   = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"]
     resources = ["${module.config_bucket.bucket_arn}/*"]
   }
 }
