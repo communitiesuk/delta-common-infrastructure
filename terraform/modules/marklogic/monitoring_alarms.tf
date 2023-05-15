@@ -5,7 +5,7 @@ locals {
 resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_high" {
   alarm_name          = "marklogic-${var.environment}-cpu-high"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
+  evaluation_periods  = 3
   metric_name         = "cpu_usage_active"
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
@@ -108,7 +108,7 @@ resource "aws_cloudwatch_metric_alarm" "data_disk_utilisation_high_sustained" {
   statistic           = "Maximum"
   threshold           = var.data_disk_usage_alarm_threshold_percent
 
-  alarm_description         = format(local.alarm_description_template, "Disk Usage", "High", 60)
+  alarm_description         = format(local.alarm_description_template, "Disk Usage", "High", var.data_disk_usage_alarm_threshold_percent)
   alarm_actions             = [var.alarms_sns_topic_arn]
   ok_actions                = [var.alarms_sns_topic_arn]
   insufficient_data_actions = [var.alarms_sns_topic_arn]
@@ -164,7 +164,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_low" {
 resource "aws_cloudwatch_metric_alarm" "queue_length_high" {
   alarm_name          = "marklogic-${var.environment}-ebs-queue-length-high"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 2
   threshold           = 5
 
   alarm_description  = "Queue length is higher than expected"
