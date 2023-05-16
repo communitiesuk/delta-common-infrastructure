@@ -174,8 +174,7 @@ module "marklogic_patch_maintenance_window" {
   schedule          = "cron(00 06 ? * WED *)"
   subscribed_emails = local.all_notifications_email_addresses
 
-  # TODO DT-276: Re-enable
-  enabled = false
+  enabled = true
 }
 
 module "marklogic" {
