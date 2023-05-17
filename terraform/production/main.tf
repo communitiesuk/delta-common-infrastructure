@@ -106,7 +106,6 @@ module "networking" {
   vpc_cidr_block                          = "10.30.0.0/16"
   environment                             = "prod"
   ssh_cidr_allowlist                      = var.allowed_ssh_cidrs
-  cidr_blocklist                          = [local.datamart_peering_vpc_cidr]
   ecr_repo_account_id                     = var.ecr_repo_account_id
   apply_aws_shield_to_nat_gateway         = local.apply_aws_shield
   auth_server_domains                     = ["auth.delta.${var.primary_domain}"]
