@@ -31,6 +31,11 @@ data "aws_secretsmanager_secret" "ml_admin_user" {
       condition     = lookup(self.tags, "delta-marklogic-deploy-read", null) == var.environment
       error_message = "The 'delta-marklogic-deploy-read' tag must be set equal to the environment name, so that this secret can be read by the MarkLogic deploy jobs"
     }
+
+    postcondition {
+      condition     = self.kms_key_id == "" || self.kms_key_id == aws_kms_key.ml_deploy_secrets.arn
+      error_message = "This secret must use the delta-marklogic-deploy-secrets KMS key (or the AWS managed one)"
+    }
   }
 }
 
