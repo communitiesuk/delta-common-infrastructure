@@ -4,7 +4,7 @@ set -euo pipefail
 
 echo "Script starting at $(date --iso-8601=seconds)"
 
-yum update
+yum update -y
 
 echo "Yum updates complete"
 
