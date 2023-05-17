@@ -52,7 +52,7 @@ resource "aws_default_network_acl" "main" {
     for_each = var.cidr_blocklist
     content {
       protocol   = "-1"
-      rule_no    = ingress.key + 110
+      rule_no    = ingress.key + 400
       action     = "deny"
       cidr_block = ingress.value
       from_port  = 0
