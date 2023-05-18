@@ -18,7 +18,7 @@ if [ "READY_FOR_RESTART" != "$FOREST_STATUS" ]; then
   echo "Waiting for all forests to be in 'open'/'sync replicating' state"
   SECONDS=0
   until [[ "READY_FOR_RESTART" == "$FOREST_STATUS" ]]; do
-      if (( SECONDS > 20 )); then
+      if (( SECONDS > 40 )); then
           echo "Error: giving up waiting for forests to enter 'open'/'sync replicating' state at $(date --iso-8601=seconds)"
           exit 1
       fi
