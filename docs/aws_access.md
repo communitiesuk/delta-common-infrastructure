@@ -16,7 +16,7 @@ By "AWS console" we mean the website <https://console.aws.amazon.com/>.
     3. For "Account" input the account id
         * 486283582667 for dev (test and staging)
         * 468442790030 for prod
-    4. For "Role" input the role you're able to assume in that account (e.g. developer, assume-infra-support-staging)
+    4. For "Role" input the role you're able to assume in that account (e.g. developer, assume-infra-support-staging). See [security docs](./security/02_aws_access.md) for a list of available roles.
     5. Display Name and colour is up to you, fill them in and press "Switch Role"
     6. Switch to Ireland (eu-west-1) in the region dropdown (top bar, second from the right)
 
@@ -29,14 +29,14 @@ To search logs, find the Log Group, press "Search log group" then select a time 
 
 [Link to Delta website catalina logs in production](https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#logsV2:log-groups/log-group/production$252Fdelta-website/log-events)
 
-MarkLogic and other server logs can also available in CloudWatch.
+MarkLogic and other server logs are also available in CloudWatch.
 
 ## Access to Active Directory
 
 RDP and terminal sessions can be started from [Fleet Manager](https://eu-west-1.console.aws.amazon.com/systems-manager/managed-instances?region=eu-west-1) in the Systems Manager console.
 
 Find the `ad-management-server-<environment>` instance and go to Node Actions -> Connect with Remote Desktop.
-Login with your Windows domain username and password (the Staging - Directory Admin username and password can be found in Keeper).
+Login with your credentials for that environment's Windows domain (the test and staging directory admin username and password can be found in Keeper, the production one is only in Secrets Manager).
 From there you can use Active Directory Users and Computers etc. to manage user accounts.
 
 ## AWS CLI Setup
@@ -47,17 +47,19 @@ We use the AWS CLI for running Terraform commands locally and connecting to inst
 
 To use the CLI you will need an AWS Access Key and Secret.
 
-1. Log in to your account in the web console and navigate to IAM
-2. On the right hand side use the 'Quick links' section to quickly get to the tab 'My security credentials'
-3. Scroll down to the 'Access keys' section and select 'Create access key'
+1. Log into your account in the console, or switch back to the organisation account if you've just switched role
+2. Click on your name in the top right and go to "Security credentials"
+3. Scroll down to the "Access keys" section and select "Create access key"
 4. Skip through the "best practices & alternatives" (select any option and press next) and "description" steps
-5. Ensure you save your access key somewhere secure - such as in a password manager (e.g. private folder in Keeper)
+5. Ensure you save your access key and secret somewhere secure - such as in a password manager (e.g. private folder in Keeper)
 
 ### Install
 
 Install the AWS Command Line Interface: <https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html>
 
 Install the Session Manager plugin for the AWS CLI: <https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html>
+
+A bash-like terminal, if you're on Windows use WSL or install [Git Bash for Windows](https://gitforwindows.org/).
 
 Restart your terminal after installing.
 
