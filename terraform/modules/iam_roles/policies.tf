@@ -279,6 +279,35 @@ data "aws_iam_policy_document" "infra_support" {
       values   = ["codeartifact.amazonaws.com"]
     }
   }
+
+  statement {
+    sid = "CreateEBSSnapshot"
+    actions = [
+      "ec2:CreateSnapshot",
+      "ec2:CreateTags"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "UpdateLBRules"
+    actions = [
+      "elasticloadbalancing:CreateRule",
+      "elasticloadbalancing:DeleteRule",
+      "elasticloadbalancing:ModifyRule",
+      "elasticloadbalancing:SetRulePriorities",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "EnterExitStandby"
+    actions = [
+      "autoscaling:EnterStandby",
+      "autoscaling:ExitStandby",
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "infra_support" {
