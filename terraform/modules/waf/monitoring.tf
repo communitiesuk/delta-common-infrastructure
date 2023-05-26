@@ -119,7 +119,7 @@ resource "aws_cloudwatch_metric_alarm" "blocked_requests" {
   namespace           = "AWS/WAFV2"
   period              = "300"
   statistic           = "Sum"
-  threshold           = "1000"
+  threshold           = "100"
   alarm_description   = "WAF ${aws_wafv2_web_acl.waf_acl.name} blocking large number of requests"
   treat_missing_data  = "notBreaching"
   dimensions = {
