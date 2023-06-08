@@ -161,7 +161,7 @@ module "active_directory" {
   environment               = local.environment
   rdp_ingress_sg_id         = module.bastion.bastion_security_group_id
   private_dns               = module.networking.private_dns
-  management_instance_type  = "t3.xlarge"
+  management_instance_type  = "t3a.medium"
   alarms_sns_topic_arn      = module.notifications.alarms_sns_topic_arn
 }
 
@@ -364,7 +364,7 @@ module "jaspersoft" {
   private_dns                          = module.networking.private_dns
   environment                          = local.environment
   patch_maintenance_window             = module.jaspersoft_patch_maintenance_window
-  instance_type                        = "m6a.xlarge"
+  instance_type                        = "m6a.large"
   java_max_heap                        = "12G"
   extra_instance_policy_arn            = module.session_manager_config.policy_arn
   patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days

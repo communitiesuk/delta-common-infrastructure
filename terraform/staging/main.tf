@@ -234,7 +234,7 @@ module "active_directory" {
   environment               = local.environment
   rdp_ingress_sg_id         = module.bastion.bastion_security_group_id
   private_dns               = module.networking.private_dns
-  management_instance_type  = "t3.xlarge"
+  management_instance_type  = "t3a.medium"
   alarms_sns_topic_arn      = module.notifications.alarms_sns_topic_arn
 }
 

@@ -56,6 +56,20 @@ It's also available via Chocolatey + other package managers, but the Docker imag
 Individual rules can be ignored with a comment on the line above with the form `tfsec:ignore:<rule-name>`
 e.g. `tfsec:ignore:aws-dynamodb-enable-at-rest-encryption`.
 
+## Reserved instances
+
+Reserved instances are a billing construct, and not configured in code like the infrastructure itself. But here is a record of the current reserved instances:
+
+| Instance Type | Count | Used by |
+|-----|:-----:|-----|
+| c6a.xlarge | 3 | Production Delta website |
+| r5a.8xlarge | 3 | Production ML |
+| m6a.large | 1 | Production JasperSoft |
+| t3a.2xlarge | 3 | Staging ML |
+| t3a.large | 6 | Test ML, Test/Staging Delta website |
+| t3a.medium (2 Linux, 3 Windows) | 5 | Test/Staging JasperSoft + Test/Staging/Prod AD management server |
+| t3.medium (Windows) | 3 | Test/Staging/Prod LDAP CA |
+
 ## Creating an environment
 
 ### 1 AWS Shield Advanced

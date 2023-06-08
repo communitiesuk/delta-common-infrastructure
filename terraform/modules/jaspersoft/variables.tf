@@ -47,7 +47,7 @@ variable "jaspersoft_binaries_s3_bucket" {
 }
 
 variable "instance_type" {
-  default = "t3.medium"
+  default = "t3a.medium"
   type    = string
 }
 
