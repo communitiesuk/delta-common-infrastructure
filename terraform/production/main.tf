@@ -205,7 +205,7 @@ module "marklogic" {
   dap_external_role_arns                  = var.dap_external_role_arns
   dap_job_notification_emails = concat(
     local.all_notifications_email_addresses,
-    ["CDSSupport@levellingup.gov.uk", "deltastatsupport@levellingup.gov.uk"]
+    ["deltastatsupport@levellingup.gov.uk"]
   )
 }
 

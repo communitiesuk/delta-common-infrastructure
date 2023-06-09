@@ -68,7 +68,7 @@ Reserved instances are a billing construct, and not configured in code like the 
 | t3a.2xlarge | 3 | Staging ML |
 | t3a.large | 6 | Test ML, Test/Staging Delta website |
 | t3a.medium (2 Linux, 3 Windows) | 5 | Test/Staging JasperSoft + Test/Staging/Prod AD management server |
-| t3.medium (Windows) | 3 | Test/Staging/Prod LDAP CA |
+| t3.medium (Windows) | 2 | Staging/Prod LDAP CA |
 
 ## Creating an environment
 

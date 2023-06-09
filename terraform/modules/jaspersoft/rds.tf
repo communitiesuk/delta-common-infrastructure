@@ -45,7 +45,7 @@ resource "aws_db_instance" "jaspersoft" {
   db_name                   = "postgres" # JasperReports likes to create its own database anyway so leave this as the default
   instance_class            = "db.t3.micro"
   engine                    = "postgres"
-  engine_version            = "14.4"
+  engine_version            = "14.7"
   allocated_storage         = 10 # GB
   storage_encrypted         = true
   username                  = "jaspersoft"
@@ -62,6 +62,11 @@ resource "aws_db_instance" "jaspersoft" {
   backup_window             = "01:00-02:00"
   backup_retention_period   = 14
   deletion_protection       = true
+
+  lifecycle {
+    # The DB automatically upgrades to new minor versions
+    ignore_changes = [engine_version]
+  }
 }
 
 resource "aws_route53_record" "jaspersoft_db" {
