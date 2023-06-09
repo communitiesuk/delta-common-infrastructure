@@ -262,7 +262,7 @@ module "active_directory" {
   private_dns               = module.networking.private_dns
   ad_domain                 = "dluhctest.local"
   ad_netbios_name           = "DLUHCTEST"
-  management_instance_type  = "t3.xlarge"
+  management_instance_type  = "t3a.medium"
   include_ca                = false
   alarms_sns_topic_arn      = module.notifications.alarms_sns_topic_arn
 }
