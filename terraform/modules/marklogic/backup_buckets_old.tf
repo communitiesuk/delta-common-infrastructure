@@ -6,7 +6,7 @@ module "cpm_backup_bucket" {
   bucket_name                        = "dluhc-cpm-ml-backup-${var.environment}"
   access_log_bucket_name             = "dluhc-cpm-ml-backup-access-logs-${var.environment}"
   kms_key_arn                        = aws_kms_key.ml_backup_bucket_key.arn
-  noncurrent_version_expiration_days = 60
+  noncurrent_version_expiration_days = 5
   access_s3_log_expiration_days      = var.backup_s3_log_expiration_days
 }
 
@@ -16,7 +16,7 @@ module "delta_backup_bucket" {
   bucket_name                        = "dluhc-delta-ml-backup-${var.environment}"
   access_log_bucket_name             = "dluhc-delta-ml-backup-access-logs-${var.environment}"
   kms_key_arn                        = aws_kms_key.ml_backup_bucket_key.arn
-  noncurrent_version_expiration_days = 60
+  noncurrent_version_expiration_days = 5
   access_s3_log_expiration_days      = var.backup_s3_log_expiration_days
 }
 
