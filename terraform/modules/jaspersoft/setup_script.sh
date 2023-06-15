@@ -97,14 +97,6 @@ else
     aws s3 cp --region ${AWS_REGION} /opt/tomcat/.jrsksp s3://${JASPERSOFT_CONFIG_S3_BUCKET}/.jrsksp
 fi
 
-# LDAP setup
-aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_CONFIG_S3_BUCKET}/applicationContext-externalAuth-LDAP.xml $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
-set +x
-LDAP_BIND_PASSWORD=`aws secretsmanager get-secret-value --region ${AWS_REGION} --secret-id ${LDAP_BIND_PASSWORD_SECRET_ID} --query SecretString --output text`
-sed -i "s/JASPERSOFT_BIND_USER_PASSWORD/$${LDAP_BIND_PASSWORD}/" $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
-set -x
-chown tomcat:tomcat $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
-
 # Fix for invalid CSRF header name, ALB will drop headers with underscores in
 sed -i 's/^org.owasp.csrfguard.TokenName=OWASP_CSRFTOKEN/org.owasp.csrfguard.TokenName=OWASPCSRFTOKEN/' $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/csrf/jrs.csrfguard.properties
 

@@ -36,10 +36,6 @@ resource "aws_security_group_rule" "jaspersoft_server_http_ingress" {
 
 data "aws_region" "current" {}
 
-data "aws_secretsmanager_secret" "ldap_bind_password" {
-  name = "jasperserver-ldap-bind-password-${var.environment}"
-}
-
 data "aws_ami" "amazon_linux" {
   most_recent = true
 
@@ -65,7 +61,6 @@ resource "aws_instance" "jaspersoft_server" {
       JASPERSOFT_INSTALL_S3_BUCKET = data.aws_s3_bucket.jaspersoft_binaries.bucket
       JASPERSOFT_CONFIG_S3_BUCKET  = module.config_bucket.bucket
       AWS_REGION                   = data.aws_region.current.name
-      LDAP_BIND_PASSWORD_SECRET_ID = data.aws_secretsmanager_secret.ldap_bind_password.id
       DATABASE_PASSWORD_SECRET_ID  = aws_secretsmanager_secret.jaspersoft_db_password.id
     }
   )
