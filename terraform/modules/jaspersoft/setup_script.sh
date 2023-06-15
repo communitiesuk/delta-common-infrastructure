@@ -34,6 +34,8 @@ rm -f /tmp/apache-tomcat-$${TOMCAT_VERSION}.tar.gz
 rm -f /opt/tomcat/latest
 sudo -u tomcat ln -s /opt/tomcat/apache-tomcat-$${TOMCAT_VERSION} /opt/tomcat/latest
 
+echo "export TZ=Europe/London" >> /opt/tomcat/latest/bin/setenv.sh
+
 echo "export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto.x86_64" > /etc/profile.d/java-tomcat-vars.sh
 echo "export CATALINA_BASE=/opt/tomcat/base" >> /etc/profile.d/java-tomcat-vars.sh
 echo "export CATALINA_HOME=/opt/tomcat/latest" >> /etc/profile.d/java-tomcat-vars.sh
