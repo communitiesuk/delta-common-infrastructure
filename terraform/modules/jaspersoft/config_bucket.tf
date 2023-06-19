@@ -38,17 +38,3 @@ resource "aws_s3_object" "jaspersoft_root_web_xml" {
   source = "${path.module}/install_files/root_web.xml"
   etag   = filemd5("${path.module}/install_files/root_web.xml")
 }
-
-locals {
-  ldap_config_file_templated = templatefile(
-    "${path.module}/install_files/applicationContext-externalAuth-LDAP.xml",
-    { AD_DOMAIN = var.ad_domain }
-  )
-}
-
-resource "aws_s3_object" "jaspersoft_ldap_config" {
-  bucket  = module.config_bucket.bucket
-  key     = "applicationContext-externalAuth-LDAP.xml"
-  content = local.ldap_config_file_templated
-  etag    = md5(local.ldap_config_file_templated)
-}

@@ -36,8 +36,7 @@ data "aws_iam_policy_document" "read_secrets" {
     actions = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
     effect  = "Allow"
     resources = [
-      data.aws_secretsmanager_secret.ldap_bind_password.arn,
-      aws_secretsmanager_secret.jaspersoft_db_password.arn,
+      aws_secretsmanager_secret.jaspersoft_db_password.arn
     ]
   }
 }

@@ -11,7 +11,30 @@ aws s3api put-bucket-versioning --bucket $bucket_name --versioning-configuration
 aws s3api put-bucket-encryption --bucket $bucket_name --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
 ```
 
-Once you've created the instance login to Jaspersoft and change the password for the default users (e.g. jasperadmin/jasperadmin).
+Once you've created the instance log in to Jaspersoft and change the password for the default admin user (jasperadmin/jasperadmin). Save its new password in AWS Secrets Manager. 
+
+We need two service users to be used by the Delta website, and new roles for them:
+* Regular reports user (username = deltaapp_regular, role = ROLE_DELTA_USER)
+* DLUHC reports user (username = deltaapp_dluhc, roles = ROLE_DELTA_USER and ROLE_DELTA_DLUHC_USER)
+
+Also store these details in AWS Secrets Manager. Once the Delta website's terraform config has been applied, you can set the encryption key to the Delta server's dedicated one. They must be in a secret called "jaspersoft-credentials-delta-app-$ENVIRONMENT", containing JSON of this format:
+
+```
+{
+  "regularUser": {
+    "username": "...",
+    "password": "..."
+  },
+  "dluhcUser": {
+    "username": "...",
+    "password": "..."
+  },
+}
+```
+
+Update folder permissions:
+* Give ROLE_DELTA_USER "read only" access to the DELTA folder and "no access" to the Delta/Reports/MHCLG folder.
+* Give ROLE_DELTA_DLUHC_USER "read + write" access to the DELTA folder. 
 
 ## Creating the WAR file
 

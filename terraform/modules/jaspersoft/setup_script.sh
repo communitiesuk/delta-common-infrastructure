@@ -34,6 +34,8 @@ rm -f /tmp/apache-tomcat-$${TOMCAT_VERSION}.tar.gz
 rm -f /opt/tomcat/latest
 sudo -u tomcat ln -s /opt/tomcat/apache-tomcat-$${TOMCAT_VERSION} /opt/tomcat/latest
 
+echo "export TZ=Europe/London" >> /opt/tomcat/latest/bin/setenv.sh
+
 echo "export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto.x86_64" > /etc/profile.d/java-tomcat-vars.sh
 echo "export CATALINA_BASE=/opt/tomcat/base" >> /etc/profile.d/java-tomcat-vars.sh
 echo "export CATALINA_HOME=/opt/tomcat/latest" >> /etc/profile.d/java-tomcat-vars.sh
@@ -96,14 +98,6 @@ else
     aws s3 cp --region ${AWS_REGION} /opt/tomcat/.jrsks s3://${JASPERSOFT_CONFIG_S3_BUCKET}/.jrsks
     aws s3 cp --region ${AWS_REGION} /opt/tomcat/.jrsksp s3://${JASPERSOFT_CONFIG_S3_BUCKET}/.jrsksp
 fi
-
-# LDAP setup
-aws s3 cp --region ${AWS_REGION} s3://${JASPERSOFT_CONFIG_S3_BUCKET}/applicationContext-externalAuth-LDAP.xml $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
-set +x
-LDAP_BIND_PASSWORD=`aws secretsmanager get-secret-value --region ${AWS_REGION} --secret-id ${LDAP_BIND_PASSWORD_SECRET_ID} --query SecretString --output text`
-sed -i "s/JASPERSOFT_BIND_USER_PASSWORD/$${LDAP_BIND_PASSWORD}/" $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
-set -x
-chown tomcat:tomcat $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/applicationContext-externalAuth-LDAP.xml
 
 # Fix for invalid CSRF header name, ALB will drop headers with underscores in
 sed -i 's/^org.owasp.csrfguard.TokenName=OWASP_CSRFTOKEN/org.owasp.csrfguard.TokenName=OWASPCSRFTOKEN/' $${CATALINA_BASE}/webapps/jasperserver/WEB-INF/csrf/jrs.csrfguard.properties
