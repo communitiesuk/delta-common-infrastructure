@@ -1,5 +1,5 @@
 resource "aws_eip" "nat_gateway" {
-  vpc = true
+  domain = "vpc"
 }
 
 resource "aws_shield_protection" "nat_gateway" {
