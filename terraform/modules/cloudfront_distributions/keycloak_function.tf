@@ -7,7 +7,8 @@ resource "aws_cloudfront_function" "keycloak_request" {
   function handler(event) {
     var request = event.request;
 
-    request.uri = request.uri.replace(/^\/auth\//,'/');
+    request.uri = request.uri.replace(/^\/auth\//,'/keycloak/');
+    request.uri = request.uri.replace(/^\/realms\/delta\//,'/keycloak/realms/delta/')
 
     return request;
   }
