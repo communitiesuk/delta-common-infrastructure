@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.65.0"
+      version = "~> 5.2.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -10,7 +10,7 @@ terraform {
     }
     archive = {
       source  = "hashicorp/archive"
-      version = "~> 2.3.0"
+      version = "~> 2.4.0"
     }
     tls = {
       source  = "hashicorp/tls"
@@ -28,7 +28,7 @@ terraform {
     region         = "eu-west-1"
   }
 
-  required_version = "~> 1.3.0"
+  required_version = "~> 1.5.0"
 }
 
 provider "aws" {
