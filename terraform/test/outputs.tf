@@ -162,3 +162,7 @@ output "security_sns_topic_global_arn" {
 output "deploy_user_kms_key_arn" {
   value = module.marklogic.deploy_user_kms_key_arn
 }
+
+output "auth_listener_arn" {
+  value = aws_lb_listener.auth.arn
+}
