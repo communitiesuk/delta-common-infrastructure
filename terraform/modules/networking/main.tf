@@ -107,6 +107,13 @@ locals {
       tls_allowed_domains  = []
       sid_offset           = 1200
     }
+    auth_service = {
+      subnets              = aws_subnet.auth_service
+      cidr                 = local.auth_service_cidr_10
+      http_allowed_domains = []
+      tls_allowed_domains  = []
+      sid_offset           = 1300
+    }
     marklogic = {
       cidr                 = local.ml_subnet_cidr_10
       http_allowed_domains = concat(["repo.ius.io", "mirrors.fedoraproject.org"])
@@ -134,6 +141,7 @@ locals {
     aws_subnet.keycloak_private,
     aws_subnet.mailhog,
     aws_subnet.jaspersoft,
+    aws_subnet.auth_service,
     [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server, aws_subnet.github_runner]
   )
 

@@ -78,6 +78,10 @@ output "redis_private_subnet_ids" {
   value = module.networking.redis_private_subnets[*].id
 }
 
+output "auth_service_private_subnet_ids" {
+  value = module.networking.auth_service_private_subnets[*].id
+}
+
 output "gh_runner_private_key" {
   value     = module.gh_runner.private_key
   sensitive = true

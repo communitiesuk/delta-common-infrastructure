@@ -26,6 +26,10 @@ output "redis_private_subnet_ids" {
   value = module.networking.redis_private_subnets[*].id
 }
 
+output "auth_service_private_subnet_ids" {
+  value = module.networking.auth_service_private_subnets[*].id
+}
+
 output "vpc_id" {
   value = module.networking.vpc.id
 }
