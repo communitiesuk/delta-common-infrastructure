@@ -83,7 +83,7 @@ output "delta_api" {
   }
 }
 
-module "keycloak_alb" {
+module "auth_alb" {
   source = "../public_alb"
 
   vpc                    = var.vpc
@@ -92,12 +92,17 @@ module "keycloak_alb" {
   s3_log_expiration_days = var.alb_s3_log_expiration_days
 }
 
+moved {
+  from = module.keycloak_alb
+  to   = module.auth_alb
+}
+
 output "keycloak" {
   value = {
-    arn               = module.keycloak_alb.arn
-    arn_suffix        = module.keycloak_alb.arn_suffix
-    dns_name          = module.keycloak_alb.dns_name
-    security_group_id = module.keycloak_alb.security_group_id
+    arn               = module.auth_alb.arn
+    arn_suffix        = module.auth_alb.arn_suffix
+    dns_name          = module.auth_alb.dns_name
+    security_group_id = module.auth_alb.security_group_id
     cloudfront_key    = random_password.cloudfront_keys["keycloak"].result
     certificate_arn   = var.certificates["keycloak"].arn
     primary_hostname  = var.certificates["keycloak"].primary_domain
