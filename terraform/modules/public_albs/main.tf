@@ -35,9 +35,14 @@ variable "alb_s3_log_expiration_days" {
 
 # These are sent by CloudFront in the X-Cloudfront-Key header and verified by the ALB listeners
 resource "random_password" "cloudfront_keys" {
-  for_each = toset(["delta", "api", "keycloak", "cpm", "jaspersoft"])
+  for_each = toset(["delta", "api", "auth", "cpm", "jaspersoft"])
   length   = 24
   special  = false
+}
+
+moved {
+  from = random_password.cloudfront_keys["keycloak"]
+  to   = random_password.cloudfront_keys["auth"]
 }
 
 module "delta_alb" {
@@ -97,13 +102,13 @@ moved {
   to   = module.auth_alb
 }
 
-output "keycloak" {
+output "auth" {
   value = {
     arn               = module.auth_alb.arn
     arn_suffix        = module.auth_alb.arn_suffix
     dns_name          = module.auth_alb.dns_name
     security_group_id = module.auth_alb.security_group_id
-    cloudfront_key    = random_password.cloudfront_keys["keycloak"].result
+    cloudfront_key    = random_password.cloudfront_keys["auth"].result
     certificate_arn   = var.certificates["keycloak"].arn
     primary_hostname  = var.certificates["keycloak"].primary_domain
   }
