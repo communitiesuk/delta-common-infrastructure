@@ -18,6 +18,7 @@ locals {
   delta_website_cidr_10    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 11)  # 44.0/22
   mailhog_cidr_10          = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 12)  # 48.0/22
   redis_cidr_10            = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 13)  # 52.0/22
+  auth_service_cidr_10     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 14)  # 56.0/22
   public_cidr_10           = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/22
   firewall_cidr_8          = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 254) # 254.0/24
   nat_gateway_cidr_8       = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/24
@@ -176,5 +177,14 @@ resource "aws_subnet" "redis" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
-  tags                    = { Name = "redis-private-subnet-${var.environment}" }
+  tags                    = { Name = "redis-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+}
+
+resource "aws_subnet" "auth_service" {
+  count                   = 3
+  cidr_block              = cidrsubnet(local.auth_service_cidr_10, 2, count.index)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = false
+  tags                    = { Name = "auth-service-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }

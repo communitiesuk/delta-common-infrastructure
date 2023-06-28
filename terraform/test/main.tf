@@ -156,7 +156,7 @@ module "cloudfront_alb_monitoring" {
   }
   keycloak = {
     cloudfront_distribution_id = module.cloudfront_distributions.keycloak_cloudfront_distribution_id
-    alb_arn_suffix             = module.public_albs.keycloak.arn_suffix
+    alb_arn_suffix             = module.public_albs.auth.arn_suffix
     instance_metric_namespace  = null
   }
   cpm = {
@@ -216,7 +216,7 @@ module "cloudfront_distributions" {
     geo_restriction_countries = ["GB", "IE"]
   }
   keycloak = {
-    alb = module.public_albs.keycloak
+    alb = module.public_albs.auth
     domain = {
       aliases             = ["auth.delta.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["keycloak"].arn
@@ -412,4 +412,22 @@ module "notifications" {
   environment               = local.environment
   alarm_sns_topic_emails    = local.all_notifications_email_addresses
   security_sns_topic_emails = local.all_notifications_email_addresses
+}
+
+#The auth alb is shared by keycloak and the auth service so we define the listener here and the rules in each repository
+resource "aws_lb_listener" "auth" {
+  load_balancer_arn = module.public_albs.auth.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-FS-1-2-Res-2019-08"
+  certificate_arn   = module.public_albs.auth.certificate_arn
+
+  default_action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Unknown route"
+      status_code  = "404"
+    }
+  }
 }

@@ -22,6 +22,15 @@ resource "aws_iam_user" "delta_ci" {
   }
 }
 
+# tfsec:ignore:aws-iam-no-user-attached-policies
+resource "aws_iam_user" "delta_auth_ci" {
+  name = "delta-auth-ci"
+
+  lifecycle {
+    ignore_changes = [tags, tags_all] # AWS uses tags for access key descriptions
+  }
+}
+
 locals {
   repositories = {
     "cpm" = {
@@ -43,6 +52,10 @@ locals {
     "keycloak" = {
       repo_name = "keycloak",
       push_user = aws_iam_user.delta_ci.name
+    },
+    "auth_service" = {
+      repo_name = "delta-auth-service",
+      push_user = aws_iam_user.delta_auth_ci.name
     },
   }
 }

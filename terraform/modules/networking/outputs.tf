@@ -80,6 +80,11 @@ output "redis_private_subnets" {
   description = "Private /24 subnets for redis"
 }
 
+output "auth_service_private_subnets" {
+  value       = aws_subnet.auth_service
+  description = "Private /24 subnets for auth service"
+}
+
 output "private_dns" {
   value = {
     zone_id     = aws_route53_zone.private.zone_id

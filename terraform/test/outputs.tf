@@ -98,6 +98,10 @@ output "redis_private_subnet_ids" {
   value = module.networking.redis_private_subnets[*].id
 }
 
+output "auth_service_private_subnet_ids" {
+  value = module.networking.auth_service_private_subnets[*].id
+}
+
 output "vpc_id" {
   value = module.networking.vpc.id
 }
@@ -119,7 +123,7 @@ output "public_albs" {
   value = {
     delta      = module.public_albs.delta
     api        = module.public_albs.delta_api
-    keycloak   = module.public_albs.keycloak
+    auth       = module.public_albs.auth
     cpm        = module.public_albs.cpm
     jaspersoft = module.public_albs.jaspersoft
   }
@@ -157,4 +161,8 @@ output "security_sns_topic_global_arn" {
 
 output "deploy_user_kms_key_arn" {
   value = module.marklogic.deploy_user_kms_key_arn
+}
+
+output "auth_listener_arn" {
+  value = aws_lb_listener.auth.arn
 }
