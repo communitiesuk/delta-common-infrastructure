@@ -2,37 +2,6 @@
 # We need to give DLUHC the CloudFront distributions to create DNS records, and CloudFront distributions need an origin,
 # so we have these as a separate module and then each app can define its own listeners and targets.
 
-variable "vpc" {
-  type = object({
-    id         = string
-    cidr_block = string
-  })
-}
-
-variable "environment" {
-  type = string
-}
-
-variable "subnet_ids" {
-  type = list(string)
-}
-
-variable "certificates" {
-  description = "Unvalidated certificates, not used by this module, just re-exported as an output"
-  type = map(object({
-    arn            = string
-    primary_domain = string
-  }))
-}
-
-variable "apply_aws_shield_to_delta_alb" {
-  type = bool
-}
-
-variable "alb_s3_log_expiration_days" {
-  type = number
-}
-
 # These are sent by CloudFront in the X-Cloudfront-Key header and verified by the ALB listeners
 resource "random_password" "cloudfront_keys" {
   for_each = toset(["delta", "api", "auth", "cpm", "jaspersoft"])
