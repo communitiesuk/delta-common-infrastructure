@@ -80,6 +80,7 @@ output "auth" {
     cloudfront_key    = random_password.cloudfront_keys["auth"].result
     certificate_arn   = var.certificates["keycloak"].arn
     primary_hostname  = var.certificates["keycloak"].primary_domain
+    listener_arn      = aws_lb_listener.auth.arn
   }
 }
 

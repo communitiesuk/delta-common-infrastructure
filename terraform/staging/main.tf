@@ -403,3 +403,13 @@ moved {
   from = aws_lb_listener.auth
   to   = module.public_albs.aws_lb_listener.auth
 }
+
+module "auth_internal_alb" {
+  source = "../modules/auth_internal_alb"
+
+  auth_domain     = "auth.delta.${var.primary_domain}"
+  certificate_arn = module.communities_only_ssl_certs.alb_certs["keycloak"].arn
+  environment     = local.environment
+  subnet_ids      = module.networking.auth_service_private_subnets.*.id
+  vpc             = module.networking.vpc
+}
