@@ -103,9 +103,9 @@ aws s3 cp js-7.8.1_hotfixed_2022-04-15.zip s3://dluhc-jaspersoft-bin
 
 ## Updating Tomcat
 
-Change `TOMCAT_VERSION` to the updated version.
+Change `TOMCAT_VERSION` in `terraform/modules/jaspersoft/setup_script.sh` to the new version. Deployment will cause downtime as there is only one jaspersoft server per environment, but only for reports and only for a short time. 
 
-Run as root (`sudo su`)
+Alternatively, you can update the tomcat version manually. Run the following as root (`sudo su` to switch) with the desired value for TOMCAT_VERSION.
 
 ```sh
 # cd into the Tomcat folder
