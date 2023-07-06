@@ -1,0 +1,19 @@
+---
+schemaVersion: "2.2"
+description: Configure metrics cron job
+parameters:
+  ShellScriptLocation:
+    type: String
+  XQueryScriptLocation:
+    type: String
+mainSteps:
+  - action: aws:runShellScript
+    name: startCloudwatchAgent
+    inputs:
+      timeoutSeconds: '120'
+      runCommand:
+        - "mkdir -p /metrics-cron"
+        - "aws s3 cp --region eu-west-1 {{ShellScriptLocation}} /metrics-cron/metrics-cron.sh"
+        - "chmod +x /metrics-cron/metrics-cron.sh"
+        - "aws s3 cp --region eu-west-1 {{XQueryScriptLocation}} /metrics-cron/metrics-json.xqy"
+        - "echo '*/5 * * * * root OUTPUT=`/metrics-cron/metrics-cron.sh 2>&1` || echo $OUTPUT' > /etc/cron.d/ml-metrics"
