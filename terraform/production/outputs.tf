@@ -135,6 +135,11 @@ output "deploy_user_kms_key_arn" {
   value = module.marklogic.deploy_user_kms_key_arn
 }
 
+# TODO: Remove once no longer used
 output "auth_listener_arn" {
-  value = aws_lb_listener.auth.arn
+  value = module.public_albs.auth_alb_listener_arn
+}
+
+output "auth_internal_alb" {
+  value = module.auth_internal_alb.alb
 }
