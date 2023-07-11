@@ -3,6 +3,7 @@
 set -euo pipefail
 
 echo "Starting metrics run at $(date --iso-8601=seconds)"
+START_TIME=$(date +%s)
 
 TOKEN=$(curl -sS -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 INSTANCE_ID=$(curl -sS -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
@@ -30,7 +31,9 @@ if [ -z "$json" ]; then
   exit 1
 fi
 
-log_message=$(echo "$json" | jq -c '.[]' | jq -cR '[.,inputs] | map({"timestamp": (now * 1000 | floor), "message": .})')
+log_lines=$(echo "$json" | jq -c '.[]')
+timing_line=$(echo "$START_TIME" | jq -c '{"metric": "script-duration-seconds", "value": (now - . | floor)}')
+log_message=$(echo -e "$timing_line\n$log_lines" | jq -cR '[.,inputs] | map({"timestamp": (now * 1000 | floor), "message": .})')
 
 echo "Putting log event to ${LOG_GROUP_NAME}:$${INSTANCE_ID} $${log_message}"
 
