@@ -3,6 +3,11 @@ data "aws_region" "current" {}
 
 variable "kms_key_alias_name" {
   type = string
+
+  validation {
+    condition     = !startswith(var.kms_key_alias_name, "alias/")
+    error_message = "Only include the name after alias/"
+  }
 }
 
 variable "log_group_names" {
@@ -19,6 +24,10 @@ output "log_group_names" {
 
 output "log_group_arns" {
   value = [for lg in aws_cloudwatch_log_group.logs : lg.arn]
+}
+
+output "kms_key_arn" {
+  value = aws_kms_key.logs.arn
 }
 
 resource "aws_kms_key" "logs" {
