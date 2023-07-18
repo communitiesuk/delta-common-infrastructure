@@ -67,10 +67,13 @@ locals {
     delta_website_subnets = {
       cidr                 = local.delta_website_cidr_10
       http_allowed_domains = []
-      tls_allowed_domains = [
-        "archive.apache.org", # to download Tomcat
-        ".clamav.net"         # to download virus definitions for ClamAV
-      ]
+      tls_allowed_domains = concat(
+        [
+          "archive.apache.org", # to download Tomcat
+          ".clamav.net"         # to download virus definitions for ClamAV
+        ],
+        var.attack_iq_testing_domains
+      )
       sid_offset = 700
     }
     delta_api_subnets = {
@@ -123,8 +126,9 @@ locals {
           ".marklogic.com",
           "repo.ius.io", "mirrors.fedoraproject.org",                        # Yum repos
           "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com", # The instances make some requests to us-east-1 services on startup
-          "d2lzkl7pfhq30w.cloudfront.net",                                   # Used by MarkLogic's AMI yum updates, unclear why
+          "d2lzkl7pfhq30w.cloudfront.net"                                    # Used by MarkLogic's AMI yum updates, unclear why
         ],
+        var.attack_iq_testing_domains,
         var.auth_server_domains # Used to fetch access tokens to communicate with Orbeon through the API, those connections are internal
       )
       sid_offset = 4000
