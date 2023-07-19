@@ -14,8 +14,11 @@ ML_USER_PASS=$(aws secretsmanager get-secret-value --secret-id ml-admin-user-${E
 ML_USER=$(echo "$ML_USER_PASS" | jq -r '.username')
 ML_PASS=$(echo "$ML_USER_PASS" | jq -r '.password')
 
-echo "Creating log stream"
-aws logs create-log-stream --region ${AWS_REGION} --log-group-name ${LOG_GROUP_NAME} --log-stream-name $${INSTANCE_ID} || echo "Ignoring error, assuming log stream already exists"
+if [ "$#" -eq 1 ] && [ "$1" = "create-log-stream" ]; then
+  echo "Creating log stream ${LOG_GROUP_NAME}:$${INSTANCE_ID}"
+  aws logs create-log-stream --region ${AWS_REGION} --log-group-name ${LOG_GROUP_NAME} --log-stream-name $${INSTANCE_ID} || echo "Ignoring error, assuming log stream already exists"
+  exit 0
+fi
 
 response=$(cat <(echo "xquery=") /metrics-cron/metrics-json.xqy | curl -sS --fail --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @- \
                 -H "Content-type: application/x-www-form-urlencoded" \

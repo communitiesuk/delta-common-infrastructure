@@ -16,4 +16,5 @@ mainSteps:
         - "aws s3 cp --region eu-west-1 {{ShellScriptLocation}} /metrics-cron/metrics-cron.sh"
         - "chmod +x /metrics-cron/metrics-cron.sh"
         - "aws s3 cp --region eu-west-1 {{XQueryScriptLocation}} /metrics-cron/metrics-json.xqy"
+        - "/metrics-cron/metrics-cron.sh create-log-stream"
         - "echo '*/5 * * * * root OUTPUT=`/metrics-cron/metrics-cron.sh 2>&1` || echo $OUTPUT' > /etc/cron.d/ml-metrics"
