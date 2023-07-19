@@ -399,6 +399,14 @@ module "guardduty" {
   aws_security_topic_arn = module.notifications.security_sns_topic_arn
 }
 
+module "cloudtrail" {
+  source                               = "../modules/cloudtrail"
+  environment                          = local.environment
+  include_data_events_for_bucket_names = ["data-collection-service-tfstate-dev"]
+  cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
+  s3_log_expiration_days               = local.s3_log_expiration_days
+}
+
 moved {
   from = aws_lb_listener.auth
   to   = module.public_albs.aws_lb_listener.auth
