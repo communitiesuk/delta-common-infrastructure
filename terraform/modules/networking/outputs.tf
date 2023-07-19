@@ -75,9 +75,9 @@ output "mailhog_private_subnet" {
   description = "Private /24 subnet for MailHog, if enabled"
 }
 
-output "redis_private_subnets" {
-  value       = aws_subnet.redis
-  description = "Private /24 subnets for redis"
+output "delta_website_db_private_subnets" {
+  value       = aws_subnet.delta_website_db
+  description = "Private /24 subnets for Delta website SQL database and Redis"
 }
 
 output "auth_service_private_subnets" {
