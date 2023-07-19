@@ -25,7 +25,8 @@ module "marklogic_log_group" {
       "${local.app_log_group_base_name}-crash",
       "${local.app_log_group_base_name}-error",
       local.taskserver_error_log_group_name,
-      "${local.app_log_group_base_name}-taskserver-request"
+      "${local.app_log_group_base_name}-taskserver-request",
+      local.metrics_log_group_name,
     ]
   )
 }
