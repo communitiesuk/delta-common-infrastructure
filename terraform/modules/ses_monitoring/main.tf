@@ -237,7 +237,7 @@ resource "aws_cloudwatch_dashboard" "ses" {
 resource "aws_cloudwatch_metric_alarm" "ses_send_errors" {
   alarm_name          = "ses-email-errors"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "2"
+  evaluation_periods  = "3"
   threshold           = "10"
   alarm_description   = "Problem sending emails, see SES dashboard"
   treat_missing_data  = "notBreaching"
