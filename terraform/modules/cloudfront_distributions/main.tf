@@ -45,14 +45,33 @@ module "cpm_waf" {
   security_sns_topic_global_arn  = var.security_sns_topic_global_arn
 }
 
-module "api_auth_waf" {
+module "api_waf" {
   source            = "../waf"
   prefix            = "${var.environment}-delta-api-"
   log_group_suffix  = "delta-api-${var.environment}"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # XSS not issue for API
-  excluded_rules                 = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
+  excluded_rules = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
   ip_allowlist                   = var.api.ip_allowlist
+  cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
+  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
+  security_sns_topic_global_arn  = var.security_sns_topic_global_arn
+}
+
+moved {
+  //noinspection HILUnresolvedReference
+  from = module.api_auth_waf
+  to   = module.api_waf
+}
+
+module "auth_waf" {
+  source                         = "../waf"
+  prefix                         = "${var.environment}-auth-"
+  log_group_suffix               = "auth-${var.environment}"
+  per_ip_rate_limit              = var.auth_waf_per_ip_rate_limit
+  excluded_rules                 = ["CrossSiteScripting_BODY"]
+  ip_allowlist                   = var.api.ip_allowlist
+  ip_allowlist_uri_path_regex    = "^/keycloak/"
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
   security_sns_topic_global_arn  = var.security_sns_topic_global_arn
@@ -79,7 +98,7 @@ module "api_cloudfront" {
   prefix                         = "delta-api-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta-api"
-  waf_acl_arn                    = module.api_auth_waf.acl_arn
+  waf_acl_arn                    = module.api_waf.acl_arn
   cloudfront_key                 = var.api.alb.cloudfront_key
   origin_domain                  = var.api.alb.dns_name
   cloudfront_domain              = var.api.domain
@@ -92,12 +111,12 @@ module "api_cloudfront" {
 
 }
 
-module "keycloak_cloudfront" {
+module "auth_cloudfront" {
   source                         = "../cloudfront_distribution"
   prefix                         = "keycloak-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "keycloak"
-  waf_acl_arn                    = module.api_auth_waf.acl_arn
+  waf_acl_arn                    = module.auth_waf.acl_arn
   cloudfront_key                 = var.keycloak.alb.cloudfront_key
   origin_domain                  = var.keycloak.alb.dns_name
   cloudfront_domain              = var.keycloak.domain
@@ -106,9 +125,13 @@ module "keycloak_cloudfront" {
   apply_aws_shield               = var.apply_aws_shield
   function_associations          = [{ event_type = "viewer-request", function_arn = aws_cloudfront_function.keycloak_request.arn }]
   wait_for_deployment            = var.wait_for_deployment
-
 }
 
+moved {
+  //noinspection HILUnresolvedReference
+  from = module.keycloak_cloudfront
+  to   = module.auth_cloudfront
+}
 
 module "cpm_cloudfront" {
   source                         = "../cloudfront_distribution"
