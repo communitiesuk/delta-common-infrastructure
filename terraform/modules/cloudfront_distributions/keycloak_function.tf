@@ -7,7 +7,8 @@ resource "aws_cloudfront_function" "keycloak_request" {
   function handler(event) {
     var request = event.request;
 
-    request.uri = request.uri.replace(/^\/auth\//,'/keycloak/');
+    // Note that this runs after the WAF so the IP restriction there should apply to all paths this affects
+    request.uri = request.uri.replace(/^\/auth\/realms\/delta\//,'/keycloak/realms/delta/');
     request.uri = request.uri.replace(/^\/realms\/delta\//,'/keycloak/realms/delta/')
 
     return request;

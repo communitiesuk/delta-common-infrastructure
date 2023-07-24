@@ -51,7 +51,7 @@ module "api_waf" {
   log_group_suffix  = "delta-api-${var.environment}"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # XSS not issue for API
-  excluded_rules = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
+  excluded_rules                 = ["CrossSiteScripting_BODY", "CrossSiteScripting_COOKIE", "CrossSiteScripting_QUERYARGUMENTS", "CrossSiteScripting_URIPATH"]
   ip_allowlist                   = var.api.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
@@ -71,7 +71,7 @@ module "auth_waf" {
   per_ip_rate_limit              = var.auth_waf_per_ip_rate_limit
   excluded_rules                 = ["CrossSiteScripting_BODY"]
   ip_allowlist                   = var.api.ip_allowlist
-  ip_allowlist_uri_path_regex    = "^/keycloak/"
+  ip_allowlist_uri_path_regex    = ["^/keycloak/", "/realms/delta/"]
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
   security_sns_topic_global_arn  = var.security_sns_topic_global_arn

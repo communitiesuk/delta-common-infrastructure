@@ -14,7 +14,7 @@ variable "ip_allowlist" {
 }
 
 variable "ip_allowlist_uri_path_regex" {
-  type    = string
+  type    = list(string)
   default = null
 }
 

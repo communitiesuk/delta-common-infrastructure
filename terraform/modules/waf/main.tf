@@ -230,8 +230,8 @@ resource "aws_wafv2_web_acl" "waf_acl" {
             }
           }
           statement {
-            regex_match_statement {
-              regex_string = var.ip_allowlist_uri_path_regex
+            regex_pattern_set_reference_statement {
+              arn = aws_wafv2_regex_pattern_set.ip_restricted_paths[0].arn
               field_to_match {
                 uri_path {}
               }
@@ -293,6 +293,20 @@ resource "aws_wafv2_web_acl" "waf_acl" {
         metric_name                = local.metric_names.login_ip_rate_limit
         sampled_requests_enabled   = true
       }
+    }
+  }
+}
+
+resource "aws_wafv2_regex_pattern_set" "ip_restricted_paths" {
+  provider = aws.us-east-1
+  count    = var.ip_allowlist_uri_path_regex == null ? 0 : 1
+  name     = "${var.prefix}cloudfront-waf-ip-restrict-patterns"
+  scope    = "CLOUDFRONT"
+
+  dynamic "regular_expression" {
+    for_each = var.ip_allowlist_uri_path_regex
+    content {
+      regex_string = regular_expression.value
     }
   }
 }
