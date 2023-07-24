@@ -26,6 +26,7 @@ locals {
   all_routes_ip_allowlist_enabled    = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex == null
   path_specific_ip_allowlist_enabled = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex != null
   ip_reputation_enabled              = !local.all_routes_ip_allowlist_enabled
+  // For the "for_each" argument of dynamic blocks, a list of one item "[{}]" means on, empty list "[]" is off
   all_routes_ip_allowlist_foreach    = local.all_routes_ip_allowlist_enabled ? [{}] : []
   path_specific_ip_allowlist_foreach = local.path_specific_ip_allowlist_enabled ? [{}] : []
   ip_reputation_foreach              = local.ip_reputation_enabled ? [{}] : []
@@ -207,6 +208,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
   dynamic "rule" {
     for_each = local.path_specific_ip_allowlist_foreach
     content {
+      // Should never be on at the same time as the "ip-allowlist" rule above
       name     = "ip-allowlist-path"
       priority = 50 + local.priority_base
       action {
@@ -218,6 +220,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
         }
       }
 
+      // Block requests that match ip_restricted_paths unless they are on the IP allowlist
       statement {
         and_statement {
           statement {
