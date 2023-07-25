@@ -1,7 +1,8 @@
 
 resource "aws_s3_bucket" "main" {
-  bucket        = var.bucket_name
-  force_destroy = var.force_destroy
+  bucket              = var.bucket_name
+  force_destroy       = var.force_destroy
+  object_lock_enabled = var.object_lock_enabled
 }
 
 resource "aws_s3_bucket_policy" "main" {
