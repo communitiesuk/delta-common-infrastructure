@@ -164,8 +164,8 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_low" {
 resource "aws_cloudwatch_metric_alarm" "queue_length_high" {
   alarm_name          = "marklogic-${var.environment}-ebs-queue-length-high"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
-  threshold           = 5
+  evaluation_periods  = 3
+  threshold           = 6
 
   alarm_description  = "Queue length is higher than expected"
   alarm_actions      = [var.alarms_sns_topic_arn]
