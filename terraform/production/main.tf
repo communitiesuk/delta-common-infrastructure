@@ -247,7 +247,7 @@ module "cloudfront_alb_monitoring" {
     instance_metric_namespace  = null
   }
   keycloak = {
-    cloudfront_distribution_id = module.cloudfront_distributions.keycloak_cloudfront_distribution_id
+    cloudfront_distribution_id = module.cloudfront_distributions.auth_cloudfront_distribution_id
     alb_arn_suffix             = module.public_albs.auth.arn_suffix
     instance_metric_namespace  = null
   }

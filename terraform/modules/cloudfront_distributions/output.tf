@@ -14,7 +14,7 @@ output "required_dns_records" {
       {
         record_name  = "auth.delta.${base_domain}."
         record_type  = "CNAME"
-        record_value = "${module.keycloak_cloudfront.cloudfront_domain_name}."
+        record_value = "${module.auth_cloudfront.cloudfront_domain_name}."
       },
       {
         record_name  = "cpm.${base_domain}."
@@ -46,12 +46,12 @@ output "api_cloudfront_distribution_id" {
   value = module.api_cloudfront.cloudfront_distribution_id
 }
 
-output "keycloak_cloudfront_domain" {
-  value = module.keycloak_cloudfront.cloudfront_domain_name
+output "auth_cloudfront_domain" {
+  value = module.auth_cloudfront.cloudfront_domain_name
 }
 
-output "keycloak_cloudfront_distribution_id" {
-  value = module.keycloak_cloudfront.cloudfront_distribution_id
+output "auth_cloudfront_distribution_id" {
+  value = module.auth_cloudfront.cloudfront_distribution_id
 }
 
 output "cpm_cloudfront_domain" {

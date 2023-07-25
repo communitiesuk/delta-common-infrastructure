@@ -10,8 +10,8 @@ resource "aws_lb_listener" "auth" {
     type = "fixed-response"
     fixed_response {
       content_type = "text/plain"
-      message_body = "Unknown route"
-      status_code  = "404"
+      message_body = "Invalid CloudFront key"
+      status_code  = "403"
     }
   }
 }

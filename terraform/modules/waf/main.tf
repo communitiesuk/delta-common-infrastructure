@@ -23,8 +23,14 @@ locals {
     ip_reputation       = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
     ip_allowlist        = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
   }
-  ip_reputation_enabled       = var.ip_allowlist == null ? [{}] : []
-  login_ip_rate_limit_enabled = var.login_ip_rate_limit_enabled ? [{}] : []
+  all_routes_ip_allowlist_enabled    = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex == null
+  path_specific_ip_allowlist_enabled = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex != null
+  ip_reputation_enabled              = !local.all_routes_ip_allowlist_enabled
+  // For the "for_each" argument of dynamic blocks, a list of one item "[{}]" means on, empty list "[]" is off
+  all_routes_ip_allowlist_foreach    = local.all_routes_ip_allowlist_enabled ? [{}] : []
+  path_specific_ip_allowlist_foreach = local.path_specific_ip_allowlist_enabled ? [{}] : []
+  ip_reputation_foreach              = local.ip_reputation_enabled ? [{}] : []
+  login_ip_rate_limit_foreach        = var.login_ip_rate_limit_enabled ? [{}] : []
 }
 
 output "acl_arn" {
@@ -143,7 +149,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
   # Either use the AWS managed IP reputation list, or an explicit allowlist
   dynamic "rule" {
-    for_each = local.ip_reputation_enabled
+    for_each = local.ip_reputation_foreach
     content {
       name     = "aws-ip-reputation"
       priority = 40 + local.priority_base
@@ -168,10 +174,10 @@ resource "aws_wafv2_web_acl" "waf_acl" {
   }
 
   dynamic "rule" {
-    for_each = aws_wafv2_ip_set.main
+    for_each = local.all_routes_ip_allowlist_foreach
     content {
       name     = "ip-allowlist"
-      priority = 40 + local.priority_base
+      priority = 50 + local.priority_base
       action {
         block {
           custom_response {
@@ -185,7 +191,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
         not_statement {
           statement {
             ip_set_reference_statement {
-              arn = rule.value.arn
+              arn = aws_wafv2_ip_set.main[0].arn
             }
           }
         }
@@ -200,10 +206,68 @@ resource "aws_wafv2_web_acl" "waf_acl" {
   }
 
   dynamic "rule" {
-    for_each = local.login_ip_rate_limit_enabled
+    for_each = local.path_specific_ip_allowlist_foreach
+    content {
+      // Should never be on at the same time as the "ip-allowlist" rule above
+      name     = "ip-allowlist-path"
+      priority = 50 + local.priority_base
+      action {
+        block {
+          custom_response {
+            custom_response_body_key = "ip_error"
+            response_code            = 403
+          }
+        }
+      }
+
+      // Block requests that match ip_restricted_paths unless they are on the IP allowlist
+      statement {
+        and_statement {
+          statement {
+            not_statement {
+              statement {
+                ip_set_reference_statement {
+                  arn = aws_wafv2_ip_set.main[0].arn
+                }
+              }
+            }
+          }
+          statement {
+            regex_pattern_set_reference_statement {
+              arn = aws_wafv2_regex_pattern_set.ip_restricted_paths[0].arn
+              field_to_match {
+                uri_path {}
+              }
+              text_transformation {
+                priority = 0
+                type     = "URL_DECODE"
+              }
+              text_transformation {
+                priority = 1
+                type     = "NORMALIZE_PATH"
+              }
+              text_transformation {
+                priority = 2
+                type     = "LOWERCASE"
+              }
+            }
+          }
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = local.metric_names.ip_allowlist
+        sampled_requests_enabled   = true
+      }
+    }
+  }
+
+  dynamic "rule" {
+    for_each = local.login_ip_rate_limit_foreach
     content {
       name     = "login-ip-rate-limit"
-      priority = 50 + local.priority_base
+      priority = 70 + local.priority_base
 
       action {
         block {}
@@ -232,6 +296,20 @@ resource "aws_wafv2_web_acl" "waf_acl" {
         metric_name                = local.metric_names.login_ip_rate_limit
         sampled_requests_enabled   = true
       }
+    }
+  }
+}
+
+resource "aws_wafv2_regex_pattern_set" "ip_restricted_paths" {
+  provider = aws.us-east-1
+  count    = var.ip_allowlist_uri_path_regex == null ? 0 : 1
+  name     = "${var.prefix}cloudfront-waf-ip-restrict-patterns"
+  scope    = "CLOUDFRONT"
+
+  dynamic "regular_expression" {
+    for_each = var.ip_allowlist_uri_path_regex
+    content {
+      regex_string = regular_expression.value
     }
   }
 }

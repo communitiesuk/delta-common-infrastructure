@@ -156,7 +156,7 @@ module "cloudfront_alb_monitoring" {
     instance_metric_namespace  = null
   }
   keycloak = {
-    cloudfront_distribution_id = module.cloudfront_distributions.keycloak_cloudfront_distribution_id
+    cloudfront_distribution_id = module.cloudfront_distributions.auth_cloudfront_distribution_id
     alb_arn_suffix             = module.public_albs.auth.arn_suffix
     instance_metric_namespace  = null
   }
@@ -188,6 +188,7 @@ module "cloudfront_distributions" {
   environment                              = local.environment
   base_domains                             = [var.primary_domain]
   waf_per_ip_rate_limit                    = 100000
+  auth_waf_per_ip_rate_limit               = 1000
   login_ip_rate_limit                      = 500
   apply_aws_shield                         = local.apply_aws_shield
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days

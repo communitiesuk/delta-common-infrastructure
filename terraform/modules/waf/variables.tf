@@ -13,6 +13,11 @@ variable "ip_allowlist" {
   default = null
 }
 
+variable "ip_allowlist_uri_path_regex" {
+  type    = list(string)
+  default = null
+}
+
 variable "per_ip_rate_limit" {
   type        = number
   description = "Requests per five minutes"
