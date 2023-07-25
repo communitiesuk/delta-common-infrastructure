@@ -61,9 +61,24 @@ declare %private function dluhc:task-server-summary() as map:map* {
   )
 };
 
+declare %private function dluhc:database-last-backup-summary($database-name as xs:string) as map:map* {
+  let $forest-statuses := xdmp:forest-status(xdmp:database-forests(xdmp:database($database-name)))
+  let $last-backup := fn:min($forest-statuses//forest:last-backup)
+  let $last-incr-backup := fn:min($forest-statuses//forest:last-incr-backup)
+  let $minutes-since-last-backup := fn:floor((fn:current-dateTime() - $last-backup) div xs:dayTimeDuration('PT1M'))
+  let $minutes-since-last-incremental-backup := fn:floor((fn:current-dateTime() - $last-incr-backup) div xs:dayTimeDuration('PT1M'))
+  return (
+    dluhc:metric($database-name || "-minutes-since-backup", $minutes-since-last-backup),
+    dluhc:metric($database-name || "-minutes-since-incr-backup", $minutes-since-last-incremental-backup)
+  )
+};
+
 "OUTPUT_JSON:" || xdmp:to-json((
   for $d in ("delta-content", "payments-content", "Security")
-    return dluhc:metric($d || "-doc-count", dluhc:database-document-count($d)),
+    return (
+      dluhc:metric($d || "-doc-count", dluhc:database-document-count($d)),
+      dluhc:database-last-backup-summary($d)
+    ),
   dluhc:security-summary(),
   dluhc:payments-summary(),
   dluhc:task-server-summary()
