@@ -67,6 +67,13 @@ module "networking" {
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
+  attack_iq_testing_domains = [
+    ".attackiq.eu",
+    ".attackiq.com",
+    "email.scenarios.attackiq-ntm.com",
+    "send-email-attackiq-ntm.com",
+    "validation-attackiq-ntm.com"
+  ]
 }
 
 resource "tls_private_key" "bastion_ssh_key" {
