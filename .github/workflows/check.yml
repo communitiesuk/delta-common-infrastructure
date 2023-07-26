@@ -19,7 +19,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.0
+          terraform_version: 1.5.3
       - name: Check formatting of all Terraform files
         run: terraform fmt -check -diff -recursive
   tfsec:
