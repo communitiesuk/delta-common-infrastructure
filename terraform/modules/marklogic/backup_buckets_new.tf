@@ -1,3 +1,5 @@
+# MarkLogic ignores the default KMS settings, so we no longer use this,
+# but are keeping it for now just in case anything has ended up encrypted
 resource "aws_kms_key" "ml_backup_bucket_key" {
   enable_key_rotation = true
   description         = "ml-backups-${var.environment}"
@@ -15,7 +17,6 @@ module "daily_backup_bucket" {
 
   bucket_name                        = "dluhc-daily-ml-backup-${var.environment}"
   access_log_bucket_name             = "dluhc-daily-backup-access-logs-${var.environment}"
-  kms_key_arn                        = aws_kms_key.ml_backup_bucket_key.arn
   noncurrent_version_expiration_days = 5
   access_s3_log_expiration_days      = var.backup_s3_log_expiration_days
 }
@@ -27,7 +28,6 @@ module "weekly_backup_bucket" {
 
   bucket_name                        = "dluhc-weekly-ml-backup-${var.environment}"
   access_log_bucket_name             = "dluhc-weekly-ml-backup-access-logs-${var.environment}"
-  kms_key_arn                        = aws_kms_key.ml_backup_bucket_key.arn
   noncurrent_version_expiration_days = null # Specify our own lifecycle policy
   access_s3_log_expiration_days      = var.backup_s3_log_expiration_days
 }
