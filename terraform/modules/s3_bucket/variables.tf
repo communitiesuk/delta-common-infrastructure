@@ -37,3 +37,8 @@ variable "policy" {
   type        = string
   default     = null
 }
+
+variable "object_lock_enabled" {
+  description = "Whether the bucket is configured to allow AWS Object Lock"
+  default     = false
+}
