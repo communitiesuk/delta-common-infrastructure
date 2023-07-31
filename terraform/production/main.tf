@@ -299,8 +299,8 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["api"].arn
     }
     ip_allowlist = local.cloudfront_ip_allowlists.delta_api
-    # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
-    geo_restriction_countries = null
+    # Home Connections claim their servers are in the UK, but they currently get geo-located to US
+    geo_restriction_countries = ["GB", "IE", "US"]
   }
   keycloak = {
     alb = module.public_albs.auth
@@ -308,9 +308,9 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.delta_api
-    # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
-    geo_restriction_countries = null
+    keycloak_path_ip_allowlist = local.cloudfront_ip_allowlists.delta_api
+    # Home Connections claim their servers are in the UK, but they currently get geo-located to US
+    geo_restriction_countries = ["GB", "IE", "US"]
   }
   cpm = {
     alb = module.public_albs.cpm
