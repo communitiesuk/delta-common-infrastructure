@@ -308,7 +308,7 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
-    ip_allowlist = local.cloudfront_ip_allowlists.delta_api
+    keycloak_path_ip_allowlist = local.cloudfront_ip_allowlists.delta_api
     # Home Connections claim their servers are in the UK but their supplier is international so can be geolocated incorrectly
     geo_restriction_countries = null
   }

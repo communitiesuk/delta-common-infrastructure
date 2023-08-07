@@ -120,7 +120,7 @@ module "auth_cloudfront" {
   cloudfront_key                 = var.keycloak.alb.cloudfront_key
   origin_domain                  = var.keycloak.alb.dns_name
   cloudfront_domain              = var.keycloak.domain
-  is_ipv6_enabled                = var.keycloak.ip_allowlist == null
+  is_ipv6_enabled                = false
   geo_restriction_countries      = var.keycloak.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
   function_associations          = [{ event_type = "viewer-request", function_arn = aws_cloudfront_function.keycloak_request.arn }]

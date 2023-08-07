@@ -88,8 +88,8 @@ variable "keycloak" {
       aliases             = list(string)
       acm_certificate_arn = string
     }))
-    geo_restriction_countries = optional(list(string))
-    ip_allowlist              = optional(list(string))
+    geo_restriction_countries  = optional(list(string))
+    keycloak_path_ip_allowlist = optional(list(string))
 
     server_error_rate_alarm_threshold_percent = optional(number)
     client_error_rate_alarm_threshold_percent = optional(number)
