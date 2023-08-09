@@ -114,7 +114,7 @@ locals {
       subnets              = aws_subnet.auth_service
       cidr                 = local.auth_service_cidr_10
       http_allowed_domains = []
-      tls_allowed_domains  = []
+      tls_allowed_domains  = ["graph.microsoft.com"] // Microsoft Graph for Azure AD user info
       sid_offset           = 1300
     }
     marklogic = {
