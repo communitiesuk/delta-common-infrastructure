@@ -212,6 +212,7 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
     geo_restriction_countries = ["GB", "IE"]
+    origin_read_timeout       = 180 # Required quota increase
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
