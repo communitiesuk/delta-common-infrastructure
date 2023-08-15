@@ -111,8 +111,8 @@ module "api_cloudfront" {
 
 }
 
-module "auth_cloudfront" {
-  source                         = "../cloudfront_distribution"
+module "keycloak_cloudfront" {
+  source                         = "../cloudfront_auth"
   prefix                         = "keycloak-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "keycloak"
