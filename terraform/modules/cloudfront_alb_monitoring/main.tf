@@ -13,6 +13,7 @@ module "website_cloudfront_alb_monitoring" {
 
   cloudfront_p90_origin_latency_high_alarm_threshold_ms     = 10000
   cloudfront_average_origin_latency_high_alarm_threshold_ms = 6000
+  alb_target_client_error_rate_alarm_threshold_percent      = 10
 }
 
 module "api_cloudfront_alb_monitoring" {
