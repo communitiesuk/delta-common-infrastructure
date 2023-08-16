@@ -215,3 +215,98 @@ resource "aws_cloudwatch_metric_alarm" "swap_usage_high" {
 
   dimensions = {}
 }
+
+resource "aws_cloudwatch_metric_alarm" "time_since_payments_content_backup_high" {
+  alarm_name          = "marklogic-${var.environment}-time-since-payments-content-backup-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "scripted-metrics"
+  namespace           = "${var.environment}/MarkLogic"
+  period              = 300
+  statistic           = "Maximum"
+  threshold           = 1800 //30 hours in minutes
+
+  alarm_description  = "Longer than expected since payments-content was backed up"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "missing"
+  dimensions = {
+    "metric" = "payments-content-minutes-since-backup"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "time_since_delta_content_backup_high" {
+  alarm_name          = "marklogic-${var.environment}-time-since-delta-content-backup-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "scripted-metrics"
+  namespace           = "${var.environment}/MarkLogic"
+  period              = 300
+  statistic           = "Maximum"
+  threshold           = 1800 //30 hours in minutes
+
+  alarm_description  = "Longer than expected since delta-content was backed up"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "missing"
+  dimensions = {
+    "metric" = "delta-content-minutes-since-backup"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "time_since_payments_content_incremental_backup_high" {
+  alarm_name          = "marklogic-${var.environment}-time-since-payments-content-incremental-backup-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "scripted-metrics"
+  namespace           = "${var.environment}/MarkLogic"
+  period              = 300
+  statistic           = "Maximum"
+  threshold           = 900 //15 hours in minutes
+
+  alarm_description  = "Longer than expected since payments-content was incrementally backed up"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "missing"
+  dimensions = {
+    "metric" = "payments-content-minutes-since-incr-backup"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "time_since_delta_content_incremental_backup_high" {
+  alarm_name          = "marklogic-${var.environment}-time-since-delta-content-incremental-backup-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "scripted-metrics"
+  namespace           = "${var.environment}/MarkLogic"
+  period              = 300
+  statistic           = "Maximum"
+  threshold           = 900 //15 hours in minutes
+
+  alarm_description  = "Longer than expected since delta-content was incrementally backed up"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "missing"
+  dimensions = {
+    "metric" = "delta-content-minutes-since-incr-backup"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "task_server_queue_size_high" {
+  alarm_name          = "marklogic-${var.environment}-task-server-queue-size-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 18
+  metric_name         = "scripted-metrics"
+  namespace           = "${var.environment}/MarkLogic"
+  period              = 300
+  statistic           = "Minimum"
+  threshold           = 1000
+
+  alarm_description  = "Task server queue size is larger than expected"
+  alarm_actions      = [var.alarms_sns_topic_arn]
+  ok_actions         = [var.alarms_sns_topic_arn]
+  treat_missing_data = "missing"
+  dimensions = {
+    "metric" = "task-server-total-queue-size"
+  }
+}
