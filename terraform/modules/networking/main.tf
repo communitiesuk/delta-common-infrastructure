@@ -114,7 +114,7 @@ locals {
       subnets              = aws_subnet.auth_service
       cidr                 = local.auth_service_cidr_10
       http_allowed_domains = []
-      tls_allowed_domains  = ["graph.microsoft.com"] // Microsoft Graph for Azure AD user info
+      tls_allowed_domains  = ["login.microsoftonline.com", "graph.microsoft.com"] // Microsoft domains for OAuth token endpoint and fetching user info
       sid_offset           = 1300
     }
     marklogic = {
