@@ -76,7 +76,7 @@ resource "aws_cloudfront_distribution" "main" {
     default_ttl                = 0
     max_ttl                    = 86400
     response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
-    compress = true
+    compress                   = true
 
     dynamic "function_association" {
       for_each = var.function_associations
@@ -88,27 +88,27 @@ resource "aws_cloudfront_distribution" "main" {
   }
 
   ordered_cache_behavior {
-      allowed_methods            = ["HEAD", "GET", "OPTIONS"]
-      cached_methods             = ["GET", "HEAD", "OPTIONS"]
-      target_origin_id           = "primary"
-      path_pattern               = "/static/*"
-      viewer_protocol_policy     = "redirect-to-https"
-      min_ttl                    = 0
-      default_ttl                = 0
-      max_ttl                    = 86400
-      response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
-      compress = true
+    allowed_methods            = ["HEAD", "GET", "OPTIONS"]
+    cached_methods             = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id           = "primary"
+    path_pattern               = "/static/*"
+    viewer_protocol_policy     = "redirect-to-https"
+    min_ttl                    = 0
+    default_ttl                = 0
+    max_ttl                    = 86400
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+    compress                   = true
 
-      forwarded_values {
-        query_string = true
+    forwarded_values {
+      query_string = true
 
-        cookies {
-          forward = "none"
-        }
-
-        headers = ["Host"]
+      cookies {
+        forward = "none"
       }
+
+      headers = ["Host"]
     }
+  }
 
   price_class = "PriceClass_100"
   web_acl_id  = var.waf_acl_arn

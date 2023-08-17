@@ -78,7 +78,7 @@ module "auth_waf" {
 }
 
 module "delta_cloudfront" {
-  source                         = "../website_cloudfront"
+  source                         = "../cloudfront_website"
   prefix                         = "delta-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta"
@@ -94,7 +94,7 @@ module "delta_cloudfront" {
 }
 
 module "api_cloudfront" {
-  source                         = "../api_cloudfront"
+  source                         = "../cloudfront_api"
   prefix                         = "delta-api-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "delta-api"
@@ -112,7 +112,7 @@ module "api_cloudfront" {
 }
 
 module "auth_cloudfront" {
-  source                         = "../cloudfront_auth"
+  source                         = "../cloudfront_auth_service"
   prefix                         = "keycloak-${var.environment}-"
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "keycloak"
