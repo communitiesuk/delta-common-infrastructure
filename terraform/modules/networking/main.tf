@@ -70,7 +70,8 @@ locals {
       tls_allowed_domains = concat(
         [
           "archive.apache.org", # to download Tomcat
-          ".clamav.net"         # to download virus definitions for ClamAV
+          ".clamav.net",        # to download virus definitions for ClamAV
+          "download.redis.io",  # to download redis-cli
         ],
         var.attack_iq_testing_domains
       )
