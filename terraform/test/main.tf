@@ -223,7 +223,8 @@ module "cloudfront_distributions" {
       aliases             = ["auth.delta.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
-    geo_restriction_countries = ["GB", "IE"]
+    # So GitHub Actions can access for end to end tests
+    geo_restriction_countries = null
   }
   cpm = {
     alb = module.public_albs.cpm
