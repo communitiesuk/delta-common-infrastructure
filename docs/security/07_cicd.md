@@ -56,6 +56,7 @@ This user is stored as environment secrets, with access control via branch prote
 | delta-marklogic-deploy      | Read       | None                | None                |
 | delta-marklogic-deploy      | Write      | Runner + ML secrets | Runner†             |
 | delta-marklogic-deploy      | Admin      | Runner + ML secrets | Runner + ML secrets |
+| delta-auth-service          | Write      | None                | Push artefacts\*\*  |
 
 \* Plan - read only access to the account, including reading the terraform state and some secrets.
 
