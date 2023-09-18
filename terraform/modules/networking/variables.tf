@@ -75,6 +75,11 @@ variable "alarms_sns_topic_arn" {
   type        = string
 }
 
+variable "security_alarms_sns_topic_arn" {
+  description = "SNS topic ARN to send security alarm notifications to"
+  type        = string
+}
+
 variable "attack_iq_testing_domains" {
   description = "List of domains to allow through the Network Firewall for AttackIQ security testing purposes. See DT-527"
   type        = list(string)
