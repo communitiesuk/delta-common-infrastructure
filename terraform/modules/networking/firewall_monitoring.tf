@@ -156,6 +156,6 @@ resource "aws_cloudwatch_metric_alarm" "nat_bytes_out" {
     NatGatewayId = aws_nat_gateway.nat_gateway.id
   }
 
-  alarm_actions = [var.alarms_sns_topic_arn]
-  ok_actions    = [var.alarms_sns_topic_arn]
+  alarm_actions = [var.security_alarms_sns_topic_arn]
+  ok_actions    = [var.security_alarms_sns_topic_arn]
 }
