@@ -74,6 +74,7 @@ module "networking" {
     "send-email-attackiq-ntm.com",
     "validation-attackiq-ntm.com"
   ]
+  security_alarms_sns_topic_arn = module.notifications.security_sns_topic_arn
 }
 
 resource "tls_private_key" "bastion_ssh_key" {

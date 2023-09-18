@@ -112,6 +112,7 @@ module "networking" {
   firewall_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   vpc_flow_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
+  security_alarms_sns_topic_arn           = module.notifications.security_sns_topic_arn
 }
 
 module "bastion_log_group" {
