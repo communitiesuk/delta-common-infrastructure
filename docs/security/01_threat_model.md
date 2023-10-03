@@ -18,7 +18,7 @@ Adversaries assumed to be capable and persistent, for example, a low to moderate
 
 ## Assumed knowledge
 
-This repository is assumed to be public, including CI/CD output.
+This repository is public, including CI/CD output.
 We assume an attacker could have significant knowledge of the ecosystem and department, up to and including access to the source code from the other, private, repositories.
 
 ## Exclusions
