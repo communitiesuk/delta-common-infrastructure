@@ -150,7 +150,10 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_low" {
   statistic           = "Minimum"
   threshold           = 3
 
-  alarm_description  = "There are less healthy hosts than expected"
+  alarm_description  = <<EOT
+  There are fewer healthy MarkLogic hosts than expected.
+  This is expected during weekly patching, but outside of that requires attention as MarkLogic often struggles to recover from node failure without manual intervention.
+  EOT
   alarm_actions      = [var.alarms_sns_topic_arn]
   ok_actions         = [var.alarms_sns_topic_arn]
   treat_missing_data = "breaching"
@@ -165,9 +168,13 @@ resource "aws_cloudwatch_metric_alarm" "queue_length_high" {
   alarm_name          = "marklogic-${var.environment}-ebs-queue-length-high"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 3
-  threshold           = 6
+  threshold           = 10
 
-  alarm_description  = "Queue length is higher than expected"
+  alarm_description  = <<EOT
+  EBS Queue length is higher than expected for at least one node in the MarkLogic cluster.
+  This means disk throughput is struggling to keep up.
+  This usually resolves itself, but if not check that the cluster healthy and not overloaded with too many tasks.
+  EOT
   alarm_actions      = [var.alarms_sns_topic_arn]
   ok_actions         = [var.alarms_sns_topic_arn]
   treat_missing_data = "notBreaching"
