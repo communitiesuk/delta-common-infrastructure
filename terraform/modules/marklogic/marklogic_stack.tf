@@ -13,8 +13,8 @@ locals {
   stack_name = "marklogic-stack-${var.environment}"
   amis = {
     # https://aws.amazon.com/marketplace/server/configuration?productId=52ce1567-c738-4208-be90-08b575f2c41d
-    "10.0-9.2" = "ami-09a93a64cd7176e6e"
-    "10.0-9.5" = "ami-07701d367691e0220"
+    "10.0-9.5"  = "ami-07701d367691e0220"
+    "10.0-10.2" = "ami-072f9d963cd827efb"
   }
 }
 
