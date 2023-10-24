@@ -1,5 +1,5 @@
 data "aws_iam_policy" "cloudwatch_full_access" {
-  arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+  arn = "arn:aws:iam::aws:policy/CloudWatchFullAccessV2"
 }
 
 data "aws_iam_policy" "cloudwatch_read_only_access" {
