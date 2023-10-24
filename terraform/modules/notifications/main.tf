@@ -10,6 +10,10 @@ resource "aws_sns_topic" "alarm_sns_topic" {
   display_name = "Notifications for change in metric alarm status"
 }
 
+resource "aws_sns_sms_preferences" "update_sms_prefs" {
+  default_sender_id = "Delta"
+}
+
 resource "aws_sns_topic_subscription" "alarm_sns_topic" {
   for_each = toset(var.alarm_sns_topic_emails)
 
