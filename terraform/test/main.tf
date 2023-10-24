@@ -272,7 +272,7 @@ module "active_directory" {
   // A CA server is only necessary to replace the domain controllers' certificates
   // but trying to recreate it conflicts with the traces of old configuration.
   // So we have left the test environment without a CA server for now.
-  include_ca = false
+  include_ca = true
 }
 
 module "marklogic_patch_maintenance_window" {
