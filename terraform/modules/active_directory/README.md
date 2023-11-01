@@ -68,7 +68,14 @@ Terraform is unaware of an aws_ssm_association failing to run.
 
 ### CA Server setup
 
-* The logs from the CA server "QuickStart" SSM document run go to CloudWatch
+* To track progress of the new server being provisioned, see logs from the CA server "QuickStart" SSM document in CloudWatch
+* If replacing the CA server, delete all traces of the old one:
+  * Before destroying the old CA server, revoke its certificates by connecting with Remote Desktop, open the Certification Authority app, go to issued certificates, right click and revoke. Then publish the CRL.
+  * Delete the "computer" named CSRV{env} from Active Directory via the "Users and Computers" app
+  * Delete all the AD objects named CSRV{env} inside Services -> Public Key Services, via the "Sites and Services" app (you need to enable the services folder from the View menu)
+  * Delete the `LdapOverSSL-QS` certificate template from: Services -> Public Key Services -> Certificate Templates
+  * Delete the certificate from inside the NtAuthCertificates object via this command (set DC correctly): `certutil -viewdelstore "ldap:///CN=NtAuthCertificates,CN=Public Key Services,CN=Services,CN=Configuration,DC=dluhcdata,DC=local?cACertificate?base?objectclass=certificationAuthority"`
+  * Now you can delete and recreate the cloudformation template
 
 ### Update DNS servers
 
