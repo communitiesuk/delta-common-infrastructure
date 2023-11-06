@@ -184,7 +184,9 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["delta"].arn
     }
-    geo_restriction_countries = ["GB", "IE"]
+    # Home Connections claim their servers are in the UK, but they currently get geo-located to US
+    # Home Connections developer environments are in India
+    geo_restriction_countries = ["GB", "IE", "US", "IN"]
     # We don't want to IP restrict staging until we are able to confirm who needs access
     client_error_rate_alarm_threshold_percent = 15
   }
@@ -195,7 +197,8 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["api"].arn
     }
     # Home Connections claim their servers are in the UK, but they currently get geo-located to US
-    geo_restriction_countries = ["GB", "IE", "US"]
+    # Home Connections developer environments are in India
+    geo_restriction_countries = ["GB", "IE", "US", "IN"]
   }
   keycloak = {
     alb = module.public_albs.auth
@@ -204,7 +207,8 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["keycloak"].arn
     }
     # Home Connections claim their servers are in the UK, but they currently get geo-located to US
-    geo_restriction_countries = ["GB", "IE", "US"]
+    # Home Connections developer environments are in India
+    geo_restriction_countries = ["GB", "IE", "US", "IN"]
   }
   cpm = {
     alb = module.public_albs.cpm
