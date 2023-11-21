@@ -76,6 +76,7 @@ Terraform is unaware of an aws_ssm_association failing to run.
   * Delete the `LdapOverSSL-QS` certificate template from: Services -> Public Key Services -> Certificate Templates
   * Delete the certificate from inside the NtAuthCertificates object via this command (set DC correctly): `certutil -viewdelstore "ldap:///CN=NtAuthCertificates,CN=Public Key Services,CN=Services,CN=Configuration,DC=dluhcdata,DC=local?cACertificate?base?objectclass=certificationAuthority"`
   * Now you can delete and recreate the cloudformation template
+  * If that fails, try setting a new EntCaServerNetBIOSName
 
 ### Update DNS servers
 
