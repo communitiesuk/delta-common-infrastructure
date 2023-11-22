@@ -1,0 +1,755 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Deploy a MarkLogic Cluster on AWS in existing VPC (Virtual Private Cloud).
+Metadata:
+  version: 10.0-9.2
+  binary: MarkLogic-10.0-9.2.x86_64.rpm
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Resource Configuration"
+        Parameters:
+          - IAMRole
+          - VolumeSize
+          - VolumeType
+          - VolumeEncryption
+          - VolumeEncryptionKey
+          - InstanceType
+          - KeyName
+          - NumberOfZones
+          - NodesPerZone
+          - AZ
+          - DataVolume1
+          - DataVolume2
+          - DataVolume3
+          - LogSNS
+          - AMI
+      - Label:
+          default: "Network Configuration"
+        Parameters:
+          - VPC
+          - TargetGroupARNs
+          - PrivateSubnet1
+          - PrivateSubnet2
+          - PrivateSubnet3
+      - Label:
+          default: "MarkLogic Configuration"
+        Parameters:
+          - AdminUser
+          - AdminPass
+          - Licensee
+          - LicenseKey
+    ParameterLabels:
+      AdminUser:
+        default: Admin User
+      AdminPass:
+        default: Admin password
+      Licensee:
+        default: Licensee
+      LicenseKey:
+        default: License Key
+      IAMRole:
+        default: IAM Role
+      LogSNS:
+        default: Logging SNS ARN
+      AMI:
+        default: AMI Id
+      VolumeSize:
+        default: Volume Size
+      VolumeType:
+        default: Volume Type
+      VolumeEncryption:
+        default: Volume Encryption
+      VolumeEncryptionKey:
+        default: Volume Encryption Key ARN
+      InstanceType:
+        default: Instance Type
+      KeyName:
+        default: SSH Key Name
+      NumberOfZones:
+        default: Number of Zones
+      NodesPerZone:
+        default: Nodes per Zone
+      AZ:
+        default: Availability Zone
+      VPC:
+        default: VPC
+      PrivateSubnet1:
+        default: Private Subnet 1
+      PrivateSubnet2:
+        default: Private Subnet 2
+      PrivateSubnet3:
+        default: Private Subnet 3
+      DataVolume1:
+        default: EBS Volume Id for MarkLogic data in AZ 1
+      DataVolume2:
+        default: EBS Volume Id for MarkLogic data in AZ 2
+      DataVolume3:
+        default: EBS Volume Id for MarkLogic data in AZ 3
+Parameters:
+  # resource configuration
+  TargetGroupARNs:
+    Description: Target Group ARNs for the ML instances
+    Type: CommaDelimitedList
+  IAMRole:
+    Description: IAM Role
+    Type: String
+  VolumeSize:
+    Description: The EBS Data volume size (GB) for all nodes
+    Type: Number
+    MinValue: '10'
+    Default: '10'
+  VolumeType:
+    Description: The EBS Data volume Type
+    Type: String
+    AllowedValues:
+      - standard
+      - gp2
+      - gp3
+    Default: gp2
+  VolumeEncryption:
+    Description: Whether to enable volume encryption
+    Type: String
+    AllowedValues:
+      - enable
+      - disable
+    Default: enable
+  VolumeEncryptionKey:
+    Description: The key ID of AWS KMS key to encrypt volumes - Optional
+    Type: String
+    Default: ""
+  InstanceType:
+    Description: Type of EC2 instance to launch
+    Type: String
+    Default: r5.4xlarge
+    AllowedValues:
+      - ---- Essential Enterprise and Bring-Your-Own-License ----
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - m4.16xlarge
+      - m5.xlarge
+      - m5.2xlarge
+      - m5.4xlarge
+      - m5.8xlarge
+      - m5.12xlarge
+      - m5.16xlarge
+      - m5.24xlarge
+      - m5a.xlarge
+      - m5a.2xlarge
+      - m5a.4xlarge
+      - m5a.8xlarge
+      - m5a.12xlarge
+      - m5a.16xlarge
+      - m5a.24xlarge
+      - c3.xlarge
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - c5.xlarge
+      - c5.2xlarge
+      - c5.4xlarge
+      - c5.9xlarge
+      - c5.18xlarge
+      - x1.16xlarge
+      - x1e.xlarge
+      - x1e.2xlarge
+      - x1e.4xlarge
+      - x1e.8xlarge
+      - x1e.16xlarge
+      - r3.xlarge
+      - r3.2xlarge
+      - r3.4xlarge
+      - r3.8xlarge
+      - r4.xlarge
+      - r4.2xlarge
+      - r4.4xlarge
+      - r4.8xlarge
+      - r4.16xlarge
+      - r5.xlarge
+      - r5.2xlarge
+      - r5.4xlarge
+      - r5.8xlarge
+      - r5.12xlarge
+      - r5.16xlarge
+      - r5.24xlarge
+      - r5a.xlarge
+      - r5a.2xlarge
+      - r5a.4xlarge
+      - r5a.8xlarge
+      - r5a.12xlarge
+      - r5a.16xlarge
+      - r5a.24xlarge
+      - p3.2xlarge
+      - p3.8xlarge
+      - p3.16xlarge
+      - i3.xlarge
+      - i3.2xlarge
+      - i3.4xlarge
+      - i3.8xlarge
+      - i3.16xlarge
+      - -------------- Bring-Your-Own-License Only --------------
+      - t3a.2xlarge
+      - t2.small
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m5.large
+      - c3.large
+      - c3.2xlarge
+      - c3.4xlarge
+      - c3.8xlarge
+      - c4.large
+      - c5.large
+      - x1.32xlarge
+      - r3.large
+      - r4.large
+      - p2.xlarge
+      - p2.8xlarge
+      - p2.16xlarge
+      - g2.2xlarge
+      - g2.8xlarge
+      - g3s.xlarge
+      - g3.4xlarge
+      - g3.8xlarge
+      - g3.16xlarge
+      - f1.2xlarge
+      - f1.16xlarge
+      - h1.2xlarge
+      - h1.4xlarge
+      - h1.8xlarge
+      - h1.16xlarge
+      - hs1.8xlarge
+      - i2.xlarge
+      - i2.2xlarge
+      - i2.4xlarge
+      - i2.8xlarge
+      - i3.large
+      - d2.xlarge
+      - d2.2xlarge
+      - d2.4xlarge
+      - d2.8xlarge
+      - t3.nano
+      - t3.large
+      - t3.xlarge
+      - t3.small
+      - t3.micro
+      - t3.2xlarge
+      - t3.medium
+      - t3a.large
+  KeyName:
+    Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
+    Type: String
+  NumberOfZones:
+    Description: Total number of Availability Zones, which can be 1 or 3. Load balancer type depends on the number of zones selected. Select 3 zones for Application Load Balancer (OR) Select 1 zone for Classic Load Balancer.
+    Type: Number
+    AllowedValues:
+      - 1
+      - 3
+    Default: 3
+  NodesPerZone:
+    Description: Total number of nodes per Zone. Set to 0 to shutdown/hibernate
+    Type: Number
+    MinValue: '0'
+    MaxValue: '20'
+    Default: '1'
+  AZ:
+    Description: The Availability Zones for VPC subnets. Accept either 1 zone or 3 zones. In the order of Subnet 1, Subnet 2 and Subnet 3 (if applicable).
+    Type: 'List<AWS::EC2::AvailabilityZone::Name>'
+  LogSNS:
+    Description: SNS Topic for logging - optional/advanced.
+    Type: String
+    Default: none
+  AMI:
+    Description: AMI Id, must match region, see https://aws.amazon.com/marketplace/server/configuration?productId=52ce1567-c738-4208-be90-08b575f2c41d
+    Type: String
+  DataVolume1:
+    Description: EBS Volume Id for MarkLogic data in AZ 1
+    Type: 'AWS::EC2::Volume::Id'
+  DataVolume2:
+    Description: EBS Volume Id for MarkLogic data in AZ 2
+    Type: 'AWS::EC2::Volume::Id'
+  DataVolume3:
+    Description: EBS Volume Id for MarkLogic data in AZ 3
+    Type: 'AWS::EC2::Volume::Id'
+  # network configuration
+  VPC:
+    Description: ID of an existing Virtual Private Cloud (VPC)
+    Type: 'AWS::EC2::VPC::Id'
+  PrivateSubnet1:
+    Description: The private subnet 1 in the VPC. This subnet must reside within the first selected Availability Zone (AZ). You must provide values for all three private subnets. If you only select one AZ, the second and third subnets will be ignored.
+    Type: 'AWS::EC2::Subnet::Id'
+  PrivateSubnet2:
+    Description: The private subnet 2 in the VPC. This subnet must reside within the second selected Availability Zone (AZ). You must provide values for all three private subnets. If you only select one AZ, the second and third subnets will be ignored.
+    Type: 'AWS::EC2::Subnet::Id'
+  PrivateSubnet3:
+    Description: The private subnet 3 in the VPC. This subnet must reside within the third selected Availability Zone (AZ). You must provide values for all three private subnets. If you only select one AZ, the second and third subnets will be ignored.
+    Type: 'AWS::EC2::Subnet::Id'
+  InstanceSecurityGroup:
+    Description: Security Group id for the ML instances
+    Type: String
+  # marklogic configuration
+  AdminUser:
+    Description: The MarkLogic administrator username
+    Type: String
+  AdminPass:
+    Description: The MarkLogic administrator password
+    Type: String
+    NoEcho: 'true'
+  Licensee:
+    Description: The MarkLogic Licensee or 'none'. Provide none/none to choose "Pay as you Go"/Enterprise version. Provide valid Licensee/Licensekey to choose BYOL/developer version.
+    Type: String
+    Default: none
+  LicenseKey:
+    Description: The MarkLogic License Key or 'none'. Provide none/none to choose "Pay as you Go"/Enterprise version. Provide valid Licensee/Licensekey to choose BYOL/developer version.
+    Type: String
+    Default: none
+    NoEcho: 'true'
+Conditions:
+  UseLogSNS: !Not [!Equals [!Ref LogSNS, "none"]]
+  EssentialEnterprise:
+    !Or [ !And [!Equals [!Ref LicenseKey, ''], !Equals [!Ref Licensee, '']], !And [!Equals [!Ref LicenseKey, 'none'], !Equals [!Ref Licensee, 'none']] ]
+  UseVolumeEncryption: !Equals [!Ref VolumeEncryption, 'enable']
+  HasCustomEBSKey: !Not [!Equals [!Ref VolumeEncryptionKey, '']]
+Mappings:
+  Variable:
+    LambdaPackageBucket:
+      base: 'ml-db-lambda-'
+    TemplateUrl:
+      base: 'https://marklogic-db-template-releases.s3.amazonaws.com'
+    S3Directory:
+      base: '10.0-9.2'
+Resources:
+  ManagedEniStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      NotificationARNs:
+        - !If
+          - UseLogSNS
+          - !Ref LogSNS
+          - !Ref 'AWS::NoValue'
+      Parameters:
+        S3Bucket: !Join [ "", [!FindInMap [Variable,"LambdaPackageBucket","base"], !Ref 'AWS::Region']]
+        S3Directory: !FindInMap [Variable,"S3Directory","base"]
+        NodesPerZone: !Ref NodesPerZone
+        NumberOfZones: !Ref NumberOfZones
+        Subnets: !Join [',', [!Ref PrivateSubnet1, !Ref PrivateSubnet2, !Ref PrivateSubnet3]]
+        ParentStackName: !Ref 'AWS::StackName'
+        ParentStackId: !Ref 'AWS::StackId'
+        SecurityGroup: !Ref InstanceSecurityGroup
+      TemplateURL: !Join ['/', [!FindInMap [Variable,"TemplateUrl","base"],!FindInMap [Variable,"S3Directory","base"],'ml-managedeni.template']]
+      TimeoutInMinutes: 5
+  NodeMgrLambdaStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: ManagedEniStack
+    Properties:
+      NotificationARNs:
+        - !If
+          - UseLogSNS
+          - !Ref LogSNS
+          - !Ref 'AWS::NoValue'
+      Parameters:
+        S3Bucket: !Join [ "", [!FindInMap [Variable,"LambdaPackageBucket","base"], !Ref 'AWS::Region']]
+        S3Directory: !FindInMap [Variable,"S3Directory","base"]
+      TemplateURL: !Join ['/', [!FindInMap [Variable,"TemplateUrl","base"],!FindInMap [Variable,"S3Directory","base"],'ml-nodemanager.template']]
+      TimeoutInMinutes: 5
+  MarkLogicDDBTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: node
+          AttributeType: S
+      KeySchema:
+        - KeyType: HASH
+          AttributeName: node
+      ProvisionedThroughput:
+        WriteCapacityUnits: '10'
+        ReadCapacityUnits: '10'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: e7190602-c2de-47ab-81e7-1315f8c01e2d
+  #AutoScalingGroup used for MultiZone deployments (3 zones) that is connected to Application Load Balancer via 9 TargetGroups.
+  #All of the instances in this AutoScalingGroup will be registered to all 9 TargetGroups.
+  MarkLogicServerGroup1:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    DependsOn:
+      - ManagedEniStack
+      - NodeMgrLambdaStack
+    Properties:
+      VPCZoneIdentifier:
+        - !Ref PrivateSubnet1
+      LaunchConfigurationName: !Ref LaunchConfig1
+      MinSize: '0'
+      MaxSize: !Ref NodesPerZone
+      DesiredCapacity: !Ref NodesPerZone
+      Cooldown: '300'
+      HealthCheckType: EC2
+      HealthCheckGracePeriod: '300'
+      NotificationConfiguration: !If
+        - UseLogSNS
+        - TopicARN: !Ref LogSNS
+          NotificationTypes:
+            - 'autoscaling:EC2_INSTANCE_LAUNCH'
+            - 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR'
+            - 'autoscaling:EC2_INSTANCE_TERMINATE'
+            - 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
+        - !Ref 'AWS::NoValue'
+      Tags:
+        - Key: marklogic:stack:name
+          Value: !Ref 'AWS::StackName'
+          PropagateAtLaunch: 'true'
+        - Key: marklogic:stack:id
+          Value: !Ref 'AWS::StackId'
+          PropagateAtLaunch: 'true'
+        - Key: Name
+          Value: MarkLogic-ASG-1
+          PropagateAtLaunch: 'true'
+      LifecycleHookSpecificationList:
+        - LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING'
+          LifecycleHookName: NodeManager
+          HeartbeatTimeout: 4800
+          NotificationTargetARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrSnsArn]
+          RoleARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrIamArn]
+      TargetGroupARNs: !Ref TargetGroupARNs
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 31621dd0-4b18-4dcd-b443-db9cef64ebb1
+  #AutoScalingGroup used for MultiZone deployments (3 zones) that is connected to Application Load Balancer via 9 TargetGroups.
+  #All of the instances in this AutoScalingGroup will be registered to all 9 TargetGroups.
+  MarkLogicServerGroup2:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    DependsOn:
+      - ManagedEniStack
+      - NodeMgrLambdaStack
+    Properties:
+      VPCZoneIdentifier:
+        - !Ref PrivateSubnet2
+      LaunchConfigurationName: !Ref LaunchConfig2
+      MinSize: '0'
+      MaxSize: !Ref NodesPerZone
+      DesiredCapacity: !Ref NodesPerZone
+      Cooldown: '300'
+      HealthCheckType: EC2
+      HealthCheckGracePeriod: '300'
+      NotificationConfiguration: !If
+        - UseLogSNS
+        - TopicARN: !Ref LogSNS
+          NotificationTypes:
+            - 'autoscaling:EC2_INSTANCE_LAUNCH'
+            - 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR'
+            - 'autoscaling:EC2_INSTANCE_TERMINATE'
+            - 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
+        - !Ref 'AWS::NoValue'
+      Tags:
+        - Key: marklogic:stack:name
+          Value: !Ref 'AWS::StackName'
+          PropagateAtLaunch: 'true'
+        - Key: marklogic:stack:id
+          Value: !Ref 'AWS::StackId'
+          PropagateAtLaunch: 'true'
+        - Key: Name
+          Value: MarkLogic-ASG-2
+          PropagateAtLaunch: 'true'
+      LifecycleHookSpecificationList:
+        - LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING'
+          LifecycleHookName: NodeManager
+          HeartbeatTimeout: 4800
+          NotificationTargetARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrSnsArn]
+          RoleARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrIamArn]
+      TargetGroupARNs: !Ref TargetGroupARNs
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 87d75478-787a-41d5-bb21-9de6fe4b662e
+  #AutoScalingGroup used for MultiZone deployments (3 zones) that is connected to Application Load Balancer via 9 TargetGroups.
+  #All of the instances in this AutoScalingGroup will be registered to all 9 TargetGroups.
+  MarkLogicServerGroup3:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    DependsOn:
+      - ManagedEniStack
+      - NodeMgrLambdaStack
+    Properties:
+      VPCZoneIdentifier:
+        - !Ref PrivateSubnet3
+      LaunchConfigurationName: !Ref LaunchConfig3
+      MinSize: '0'
+      MaxSize: !Ref NodesPerZone
+      DesiredCapacity: !Ref NodesPerZone
+      Cooldown: '300'
+      HealthCheckType: EC2
+      HealthCheckGracePeriod: '300'
+      NotificationConfiguration: !If
+        - UseLogSNS
+        - TopicARN: !Ref LogSNS
+          NotificationTypes:
+            - 'autoscaling:EC2_INSTANCE_LAUNCH'
+            - 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR'
+            - 'autoscaling:EC2_INSTANCE_TERMINATE'
+            - 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
+        - !Ref 'AWS::NoValue'
+      Tags:
+        - Key: marklogic:stack:name
+          Value: !Ref 'AWS::StackName'
+          PropagateAtLaunch: 'true'
+        - Key: marklogic:stack:id
+          Value: !Ref 'AWS::StackId'
+          PropagateAtLaunch: 'true'
+        - Key: Name
+          Value: MarkLogic-ASG-3
+          PropagateAtLaunch: 'true'
+      LifecycleHookSpecificationList:
+        - LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING'
+          LifecycleHookName: NodeManager
+          HeartbeatTimeout: 4800
+          NotificationTargetARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrSnsArn]
+          RoleARN: !GetAtt [NodeMgrLambdaStack, Outputs.NodeMgrIamArn]
+      TargetGroupARNs: !Ref TargetGroupARNs
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: bbd8314a-6e59-4102-9ed5-232739dd0dfa
+  LaunchConfig1:
+    Type: 'AWS::AutoScaling::LaunchConfiguration'
+    Properties:
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 100
+            VolumeType: gp3
+        - DeviceName: /dev/sdf
+          NoDevice: true
+          Ebs: {}
+      KeyName: !Ref KeyName
+      ImageId: !Ref AMI
+      UserData: !Base64
+        'Fn::Join':
+          - ''
+          - - |+
+                #!/bin/bash
+                mkdir -p /delta/export
+                chmod 777 /delta
+                chmod 777 /delta/export
+                yum install jq -y
+                exit 0
+
+            - MARKLOGIC_CLUSTER_NAME=
+            - !Ref MarkLogicDDBTable
+            - |+
+
+            - MARKLOGIC_EBS_VOLUME=
+            - !Ref DataVolume1
+            - ',:'
+            - !Ref VolumeSize
+            - '::'
+            - !Ref VolumeType
+            - |
+              ::,*
+            - |
+              MARKLOGIC_NODE_NAME=NodeA#
+            - MARKLOGIC_ADMIN_USERNAME=
+            - !Ref AdminUser
+            - |+
+
+            - MARKLOGIC_ADMIN_PASSWORD=
+            - !Ref AdminPass
+            - |+
+
+            - |
+              MARKLOGIC_CLUSTER_MASTER=1
+            - MARKLOGIC_LICENSEE=
+            - !Ref Licensee
+            - |+
+
+            - MARKLOGIC_LICENSE_KEY=
+            - !Ref LicenseKey
+            - |+
+
+            - MARKLOGIC_LOG_SNS=
+            - !Ref LogSNS
+            - |+
+
+            - MARKLOGIC_AWS_SWAP_SIZE=
+            - 32
+            - |+
+
+            - !If
+              - UseVolumeEncryption
+              - !Join
+                - ''
+                - - 'MARKLOGIC_EBS_KEY='
+                  - !If
+                    - HasCustomEBSKey
+                    - !Ref VolumeEncryptionKey
+                    - 'default'
+              - ''
+
+      SecurityGroups:
+        - !Ref InstanceSecurityGroup
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref IAMRole
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 2efb8cfb-df53-401d-8ff2-34af0dd25993
+  LaunchConfig2:
+    Type: 'AWS::AutoScaling::LaunchConfiguration'
+    Properties:
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 100
+            VolumeType: gp3
+        - DeviceName: /dev/sdf
+          NoDevice: true
+          Ebs: {}
+      KeyName: !Ref KeyName
+      ImageId: !Ref AMI
+      UserData: !Base64
+        'Fn::Join':
+          - ''
+          - - |+
+                #!/bin/bash
+                yum install jq -y
+                exit 0
+
+            - MARKLOGIC_CLUSTER_NAME=
+            - !Ref MarkLogicDDBTable
+            - |+
+
+            - MARKLOGIC_EBS_VOLUME=
+            - !Ref DataVolume2
+            - ',:'
+            - !Ref VolumeSize
+            - '::'
+            - !Ref VolumeType
+            - |
+              ::,*
+            - |
+              MARKLOGIC_NODE_NAME=NodeB#
+            - MARKLOGIC_ADMIN_USERNAME=
+            - !Ref AdminUser
+            - |+
+
+            - MARKLOGIC_ADMIN_PASSWORD=
+            - !Ref AdminPass
+            - |+
+
+            - |
+              MARKLOGIC_CLUSTER_MASTER=0
+            - MARKLOGIC_LICENSEE=
+            - !Ref Licensee
+            - |+
+
+            - MARKLOGIC_LICENSE_KEY=
+            - !Ref LicenseKey
+            - |+
+
+            - MARKLOGIC_LOG_SNS=
+            - !Ref LogSNS
+            - |+
+
+            - MARKLOGIC_AWS_SWAP_SIZE=
+            - 32
+            - |+
+
+            - !If
+              - UseVolumeEncryption
+              - !Join
+                - ''
+                - - 'MARKLOGIC_EBS_KEY='
+                  - !If
+                    - HasCustomEBSKey
+                    - !Ref VolumeEncryptionKey
+                    - 'default'
+              - ''
+
+      SecurityGroups:
+        - !Ref InstanceSecurityGroup
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref IAMRole
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: c8296a50-a29e-4646-aa74-8f1b735a9a3f
+  LaunchConfig3:
+    Type: 'AWS::AutoScaling::LaunchConfiguration'
+    Properties:
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 100
+            VolumeType: gp3
+        - DeviceName: /dev/sdf
+          NoDevice: true
+          Ebs: {}
+      KeyName: !Ref KeyName
+      ImageId: !Ref AMI
+      UserData: !Base64
+        'Fn::Join':
+          - ''
+          - - |+
+                #!/bin/bash
+                yum install jq -y
+                exit 0
+
+            - MARKLOGIC_CLUSTER_NAME=
+            - !Ref MarkLogicDDBTable
+            - |+
+
+            - MARKLOGIC_EBS_VOLUME=
+            - !Ref DataVolume3
+            - ',:'
+            - !Ref VolumeSize
+            - '::'
+            - !Ref VolumeType
+            - |
+              ::,*
+            - |
+              MARKLOGIC_NODE_NAME=NodeC#
+            - MARKLOGIC_ADMIN_USERNAME=
+            - !Ref AdminUser
+            - |+
+
+            - MARKLOGIC_ADMIN_PASSWORD=
+            - !Ref AdminPass
+            - |+
+
+            - |
+              MARKLOGIC_CLUSTER_MASTER=0
+            - MARKLOGIC_LICENSEE=
+            - !Ref Licensee
+            - |+
+
+            - MARKLOGIC_LICENSE_KEY=
+            - !Ref LicenseKey
+            - |+
+
+            - MARKLOGIC_LOG_SNS=
+            - !Ref LogSNS
+            - |+
+
+            - MARKLOGIC_AWS_SWAP_SIZE=
+            - 32
+            - |+
+
+            - !If
+              - UseVolumeEncryption
+              - !Join
+                - ''
+                - - 'MARKLOGIC_EBS_KEY='
+                  - !If
+                    - HasCustomEBSKey
+                    - !Ref VolumeEncryptionKey
+                    - 'default'
+              - ''
+
+      SecurityGroups:
+        - !Ref InstanceSecurityGroup
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref IAMRole
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 7fa68c90-39bc-4874-ad20-8cd8c974ed52

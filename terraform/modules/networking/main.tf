@@ -134,6 +134,22 @@ locals {
       )
       sid_offset = 4000
     }
+    marklogic_rehearsal = {
+      cidr                 = local.ml_min_subnet_cidr_10
+      http_allowed_domains = concat(["repo.ius.io", "mirrors.fedoraproject.org"])
+      tls_allowed_domains = concat(
+        local.marklogic_repo_mirror_tls_domains,
+        [
+          ".marklogic.com",
+          "repo.ius.io", "mirrors.fedoraproject.org",                        # Yum repos
+          "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com", # The instances make some requests to us-east-1 services on startup
+          "d2lzkl7pfhq30w.cloudfront.net"                                    # Used by MarkLogic's AMI yum updates, unclear why
+        ],
+        var.attack_iq_testing_domains,
+        var.auth_server_domains # Used to fetch access tokens to communicate with Orbeon through the API, those connections are internal
+      )
+      sid_offset = 4000
+    }
   }
   firewalled_subnets = concat(
     aws_subnet.bastion_private_subnets,
@@ -143,6 +159,7 @@ locals {
     aws_subnet.delta_website,
     aws_subnet.cpm_private,
     aws_subnet.ml_private_subnets,
+    aws_subnet.ml_min_private_subnets,
     aws_subnet.keycloak_private,
     aws_subnet.mailhog,
     aws_subnet.jaspersoft,

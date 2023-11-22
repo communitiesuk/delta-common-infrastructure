@@ -22,3 +22,15 @@ output "instance_iam_role" {
 output "ml_http_target_group_arn" {
   value = aws_lb_target_group.ml_http.arn
 }
+
+output "backup_key" {
+  value = aws_kms_key.ml_backup_bucket_key.arn
+}
+
+output "daily_backup_bucket_arn" {
+  value = module.daily_backup_bucket.bucket_arn
+}
+
+output "weekly_backup_bucket_arn" {
+  value = module.weekly_backup_bucket.bucket_arn
+}
