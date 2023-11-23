@@ -135,7 +135,7 @@ locals {
       sid_offset = 4000
     }
     marklogic_rehearsal = {
-      cidr                 = local.ml_min_subnet_cidr_10
+      cidr                 = local.ml_restore_rehearsal_subnet_cidr_10
       http_allowed_domains = concat(["repo.ius.io", "mirrors.fedoraproject.org"])
       tls_allowed_domains = concat(
         local.marklogic_repo_mirror_tls_domains,
@@ -159,7 +159,7 @@ locals {
     aws_subnet.delta_website,
     aws_subnet.cpm_private,
     aws_subnet.ml_private_subnets,
-    aws_subnet.ml_min_private_subnets,
+    aws_subnet.ml_restore_rehearsal_private_subnets,
     aws_subnet.keycloak_private,
     aws_subnet.mailhog,
     aws_subnet.jaspersoft,

@@ -17,6 +17,6 @@ resource "aws_ebs_volume" "marklogic_data_volumes" {
   }
 
   lifecycle {
-    ignore_changes  = [tags, tags_all] # Updated by MarkLogic managed cluster
+    ignore_changes = [tags, tags_all] # Updated by MarkLogic managed cluster
   }
 }

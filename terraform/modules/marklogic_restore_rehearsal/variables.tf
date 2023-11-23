@@ -43,17 +43,17 @@ variable "marklogic_ami_version" {
   }
 }
 
-variable daily_backup_bucket_arn {
-  type = string
+variable "daily_backup_bucket_arn" {
+  type        = string
   description = "From the main ML module"
 }
 
-variable weekly_backup_bucket_arn {
-  type = string
+variable "weekly_backup_bucket_arn" {
+  type        = string
   description = "From the main ML module"
 }
 
 variable "backup_key" {
-  type = string
+  type        = string
   description = "From the main ML module, aws_kms_key.ml_backup_bucket_key.arn"
 }

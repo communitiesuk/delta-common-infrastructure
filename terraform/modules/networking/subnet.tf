@@ -19,7 +19,7 @@ locals {
   mailhog_cidr_10          = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 12)  # 48.0/22
   website_db_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 13)  # 52.0/22
   auth_service_cidr_10     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 14)  # 56.0/22
-  ml_min_subnet_cidr_10    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 15)  # 60.0/22
+  ml_restore_rehearsal_subnet_cidr_10    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 15)  # 60.0/22
   public_cidr_10           = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/22
   firewall_cidr_8          = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 254) # 254.0/24
   nat_gateway_cidr_8       = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/24
@@ -78,9 +78,9 @@ resource "aws_subnet" "ml_private_subnets" {
   tags                    = { Name = "marklogic-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
-resource "aws_subnet" "ml_min_private_subnets" {
+resource "aws_subnet" "ml_restore_rehearsal_private_subnets" {
   count                   = 3
-  cidr_block              = cidrsubnet(local.ml_min_subnet_cidr_10, 2, count.index)
+  cidr_block              = cidrsubnet(local.ml_restore_rehearsal_subnet_cidr_10, 2, count.index)
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false

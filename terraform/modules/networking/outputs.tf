@@ -35,8 +35,8 @@ output "ml_private_subnets" {
   description = "Three private /24 subnets for MarkLogic"
 }
 
-output "ml_min_private_subnets" {
-  value       = aws_subnet.ml_min_private_subnets
+output "ml_restore_rehearsal_private_subnets" {
+  value       = aws_subnet.ml_restore_rehearsal_private_subnets
   description = "Three private /24 subnets for MarkLogic restore from backup rehearsal"
 }
 

@@ -51,7 +51,7 @@ resource "aws_cloudformation_stack" "marklogic" {
     LicenseKey = jsondecode(data.aws_secretsmanager_secret_version.ml_license.secret_string)["license_key"]
   }
 
-  template_body      = file("${path.module}/marklogic_cf_template.yml")
+  template_body      = file("${path.module}/../marklogic/marklogic_cf_template.yml")
   timeout_in_minutes = 30
   capabilities       = ["CAPABILITY_IAM"]
   lifecycle {
