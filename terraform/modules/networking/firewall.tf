@@ -333,7 +333,7 @@ drop ip   any any <> any any (msg:"Drop non-TCP traffic"; ip_proto:!TCP;sid:5005
 }
 
 locals {
-  stateful_firewall_group_capacity = 120
+  stateful_firewall_group_capacity = 300
 }
 
 resource "aws_networkfirewall_rule_group" "stateful_main" {

@@ -84,7 +84,7 @@ resource "aws_subnet" "ml_restore_rehearsal_private_subnets" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
-  tags                    = { Name = "ml-min-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+  tags                    = { Name = "ml-restore-test-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
 resource "aws_subnet" "delta_internal" {
