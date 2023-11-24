@@ -148,7 +148,8 @@ locals {
         var.attack_iq_testing_domains,
         var.auth_server_domains # Used to fetch access tokens to communicate with Orbeon through the API, those connections are internal
       )
-      sid_offset = 4000
+      sid_offset = 4100
+      // Note that base rules use sid 5000+ 
     }
   }
   firewalled_subnets = concat(
