@@ -3,26 +3,26 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  all_private_subnets_cidr = cidrsubnet(aws_vpc.vpc.cidr_block, 1, 0)   # 0.0/17
-  bastion_subnet_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 0)   # 0.0/22
-  ad_dc_subnet_cidr_10     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 1)   # 4.0/22
-  ad_other_cidr_10         = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 2)   # 8.0/22
-  ml_subnet_cidr_10        = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 3)   # 12.0/22
-  jaspersoft_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4)   # 16.0/22
-  delta_internal_cidr_10   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 20.0/22
-  github_runner_cidr_10    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 6)   # 24.0/22
-  delta_api_cidr_10        = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 7)   # 28.0/22
-  cpm_private_cidr_10      = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 8)   # 32.0/22
-  vpc_endpoints_cidr_10    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 9)   # 36.0/22
-  keycloak_cidr_10         = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 10)  # 40.0/22
-  delta_website_cidr_10    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 11)  # 44.0/22
-  mailhog_cidr_10          = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 12)  # 48.0/22
-  website_db_cidr_10       = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 13)  # 52.0/22
-  auth_service_cidr_10     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 14)  # 56.0/22
-  ml_restore_rehearsal_subnet_cidr_10    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 15)  # 60.0/22
-  public_cidr_10           = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/22
-  firewall_cidr_8          = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 254) # 254.0/24
-  nat_gateway_cidr_8       = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/24
+  all_private_subnets_cidr            = cidrsubnet(aws_vpc.vpc.cidr_block, 1, 0)   # 0.0/17
+  bastion_subnet_cidr_10              = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 0)   # 0.0/22
+  ad_dc_subnet_cidr_10                = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 1)   # 4.0/22
+  ad_other_cidr_10                    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 2)   # 8.0/22
+  ml_subnet_cidr_10                   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 3)   # 12.0/22
+  jaspersoft_cidr_10                  = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4)   # 16.0/22
+  delta_internal_cidr_10              = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 20.0/22
+  github_runner_cidr_10               = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 6)   # 24.0/22
+  delta_api_cidr_10                   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 7)   # 28.0/22
+  cpm_private_cidr_10                 = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 8)   # 32.0/22
+  vpc_endpoints_cidr_10               = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 9)   # 36.0/22
+  keycloak_cidr_10                    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 10)  # 40.0/22
+  delta_website_cidr_10               = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 11)  # 44.0/22
+  mailhog_cidr_10                     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 12)  # 48.0/22
+  website_db_cidr_10                  = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 13)  # 52.0/22
+  auth_service_cidr_10                = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 14)  # 56.0/22
+  ml_restore_rehearsal_subnet_cidr_10 = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 15)  # 60.0/22
+  public_cidr_10                      = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/22
+  firewall_cidr_8                     = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 254) # 254.0/24
+  nat_gateway_cidr_8                  = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/24
 }
 
 # tfsec:ignore:aws-ec2-no-public-ip-subnet
