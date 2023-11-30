@@ -233,7 +233,8 @@ module "cloudfront_distributions" {
       aliases             = ["cpm.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
-    geo_restriction_countries = ["GB", "IE"]
+    # So GitHub Actions can access for end to end tests
+    geo_restriction_countries = null
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
