@@ -156,11 +156,6 @@ data "aws_iam_policy_document" "ml_s3_backups" {
       "${module.daily_backup_bucket.bucket_arn}/*",
       module.weekly_backup_bucket.bucket_arn,
       "${module.weekly_backup_bucket.bucket_arn}/*",
-      # TODO DT-153 Remove access to old buckets
-      module.cpm_backup_bucket.bucket_arn,
-      "${module.cpm_backup_bucket.bucket_arn}/*",
-      module.delta_backup_bucket.bucket_arn,
-      "${module.delta_backup_bucket.bucket_arn}/*",
     ]
   }
   statement {
