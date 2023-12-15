@@ -6,10 +6,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-locals {
-  alarm_description_template = "Average distribution %v %v last %d minutes"
-}
-
 # We need to enable enhanced monitoring to get 4xx, 5xx, OriginLatency & CacheHitRate (+ other metrics)
 resource "aws_cloudfront_monitoring_subscription" "main" {
   distribution_id = var.cloudfront_distribution_id
@@ -33,7 +29,11 @@ resource "aws_cloudwatch_metric_alarm" "client_error_rate_alarm" {
   threshold          = var.cloudfront_client_error_rate_alarm_threshold_percent
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
-  alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.cloudfront_metric_period_seconds * 2 / 60)
+  alarm_description = <<EOF
+The ${var.prefix} CloudFront distribution is returning a large number of 4xx errors to users.
+This usually indicates the application itself is returning 4xx errors, but could be due to CloudFront rejecting the requests for another reason.
+Look at the application/ALB metrics first, then investigate the application itself or the WAF logs in CloudWatch/CloudFront logs in S3 as appropriate.
+  EOF
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
@@ -83,7 +83,11 @@ resource "aws_cloudwatch_metric_alarm" "server_error_rate_alarm" {
   threshold          = var.cloudfront_server_error_rate_alarm_threshold_percent
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
-  alarm_description = format(local.alarm_description_template, "Error Rate", "High", var.cloudfront_metric_period_seconds * 2 / 60)
+  alarm_description = <<EOF
+The ${var.prefix} CloudFront distribution is returning a large number of 5xx errors to users.
+This usually indicates the application itself is returning 5xx errors, but could be due to CloudFront rejecting the requests for another reason, or not being able to reach the load balancer.
+Look at the application/ALB metrics first to determine whether the issue is with the application or CloudFront, then investigate the application itself or the CloudFront logs in S3 as appropriate.
+  EOF
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
@@ -137,7 +141,10 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_high_alarm" {
   threshold          = var.cloudfront_average_origin_latency_high_alarm_threshold_ms
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
-  alarm_description = format(local.alarm_description_template, "Origin Latency", "High", var.cloudfront_metric_period_seconds * 2 / 60)
+  alarm_description = <<EOF
+The ${var.prefix} CloudFront distribution is reporting that requests to its origin (the ALB behind it) are taking longer than expected on average.
+This can be a false alarm if only a small number of users are using the service, so it can be ignored outside of business hours.
+  EOF
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
@@ -162,7 +169,10 @@ resource "aws_cloudwatch_metric_alarm" "origin_latency_p90_high_alarm" {
   threshold          = var.cloudfront_p90_origin_latency_high_alarm_threshold_ms
   treat_missing_data = "notBreaching" # Data is missing if there are no requests
 
-  alarm_description = format(local.alarm_description_template, "Origin Latency P90", "High", var.cloudfront_metric_period_seconds * 2 / 60)
+  alarm_description = <<EOF
+The ${var.prefix} CloudFront distribution is reporting that requests to its origin (the ALB behind it) are taking longer than expected (90th percentile > ${var.cloudfront_p90_origin_latency_high_alarm_threshold_ms}ms).
+This can be a false alarm if only a small number of users are using the service, so it can be ignored outside of business hours.
+  EOF
   alarm_actions     = [var.alarms_sns_topic_global_arn]
   ok_actions        = [var.alarms_sns_topic_global_arn]
 
@@ -184,7 +194,7 @@ resource "aws_cloudwatch_metric_alarm" "ddos_attack" {
   period              = "60"
   statistic           = "Average"
   threshold           = "0"
-  alarm_description   = "Triggers when AWS Shield Advanced detects a DDoS attack"
+  alarm_description   = "Triggers when AWS Shield Advanced detects a DDoS attack. Escalate immediately."
   treat_missing_data  = "notBreaching"
   alarm_actions       = [var.security_sns_topic_global_arn]
   ok_actions          = [var.security_sns_topic_global_arn]

@@ -5,7 +5,11 @@ resource "aws_cloudwatch_metric_alarm" "alb_target_server_error_rate_alarm" {
 
   threshold = var.alb_target_server_error_rate_alarm_threshold_percent
 
-  alarm_description         = "High ALB target 5xx error rate"
+  alarm_description         = <<EOF
+High ALB target 5xx error rate for the ${var.prefix} app.
+This means the load balancer is receiving a large number of 5xx responses from the application servers and may indicate a problem with the application.
+Investigate the application's logs.
+  EOF
   alarm_actions             = [var.alarms_sns_topic_arn]
   ok_actions                = [var.alarms_sns_topic_arn]
   insufficient_data_actions = [var.alarms_sns_topic_arn]
@@ -47,7 +51,11 @@ resource "aws_cloudwatch_metric_alarm" "alb_target_client_error_rate_alarm" {
 
   threshold = var.alb_target_client_error_rate_alarm_threshold_percent
 
-  alarm_description         = "High ALB target 4xx error rate"
+  alarm_description         = <<EOF
+High ALB target 4xx error rate for the ${var.prefix} app.
+This means the load balancer is receiving a large number of 4xx responses from the application servers and may indicate a problem with the application.
+Investigate the application's logs.
+  EOF
   alarm_actions             = [var.alarms_sns_topic_arn]
   ok_actions                = [var.alarms_sns_topic_arn]
   insufficient_data_actions = [var.alarms_sns_topic_arn]

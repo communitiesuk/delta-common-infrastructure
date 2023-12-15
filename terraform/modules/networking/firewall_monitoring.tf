@@ -120,10 +120,10 @@ resource "aws_cloudwatch_metric_alarm" "dropped_packets" {
   statistic           = "Sum"
   threshold           = "1000"
   alarm_description   = <<EOF
-  Network Firewall dropping large number of packets.
-  Likely cause: Firewall misconfiguration.
-  Possible security issue: Could indicate a noisy network intrusion, e.g. outbound port scan.
-  Review the Network Firewall blocked requests log group "${aws_cloudwatch_log_group.firewall_alert.name}".
+Network Firewall dropping large number of packets.
+Likely cause: Firewall misconfiguration.
+Possible security issue: Could indicate a noisy network intrusion, e.g. outbound port scan.
+Review the Network Firewall blocked requests log group "${aws_cloudwatch_log_group.firewall_alert.name}" and escalate if unsure.
   EOF
   treat_missing_data  = "notBreaching"
   dimensions = {
@@ -146,10 +146,10 @@ resource "aws_cloudwatch_metric_alarm" "nat_bytes_out" {
   statistic           = "Sum"
   threshold           = "10000000" # 10MB. Edit the description if you increase this significantly.
   alarm_description   = <<EOF
-  Spike in outgoing network traffic through the NAT Gateway.
-  Likely cause: The threshold for this alarm is set low and probably needs increasing.
-  Possible security issue: Could indicate a data exfiltration attempt.
-  Review the Network Firewall allowed requests log group "${aws_cloudwatch_log_group.firewall_flow.name}".
+Spike in outgoing network traffic through the NAT Gateway.
+Likely cause: The threshold for this alarm is set low and probably needs increasing.
+Possible security issue: Could indicate a data exfiltration attempt.
+Review the Network Firewall allowed requests log group "${aws_cloudwatch_log_group.firewall_flow.name}" and escalate if unsure.
   EOF
   treat_missing_data  = "notBreaching"
   dimensions = {

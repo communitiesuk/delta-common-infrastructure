@@ -120,7 +120,12 @@ resource "aws_cloudwatch_metric_alarm" "blocked_requests" {
   period              = "300"
   statistic           = "Sum"
   threshold           = "100"
-  alarm_description   = "WAF ${aws_wafv2_web_acl.waf_acl.name} blocking large number of requests"
+  alarm_description   = <<EOF
+WAF ${aws_wafv2_web_acl.waf_acl.name} blocking large number of requests.
+Check the WAF logs in CloudWatch, us-east-1 region.
+This is usually a harmless bot scanning the site and getting lots of requests blocked, but could indicate an attack,
+look for any suspicious activity (e.g. lots of login attempts) and escalate if unsure.
+  EOF
   treat_missing_data  = "notBreaching"
   dimensions = {
     Rule   = "ALL"
@@ -143,7 +148,9 @@ resource "aws_cloudwatch_metric_alarm" "blocked_login_requests" {
   period              = "300"
   statistic           = "Sum"
   threshold           = "1"
-  alarm_description   = "WAF ${aws_wafv2_web_acl.waf_acl.name} blocking large number of login requests"
+  alarm_description   = <<EOF
+TODO: Replaced by application-level rate limiting in the auth service and should be removed.
+  EOF
   treat_missing_data  = "notBreaching"
   dimensions = {
     Rule   = local.metric_names.login_ip_rate_limit

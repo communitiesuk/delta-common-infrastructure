@@ -155,7 +155,10 @@ resource "aws_cloudwatch_metric_alarm" "ses_send_errors" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "10"
   threshold           = "0"
-  alarm_description   = "Error in Lambda sending SES logs to CloudWatch"
+  alarm_description   = <<EOF
+Error in Lambda sending SES logs to CloudWatch.
+This is not urgent, but will mean we will be missing some emails in the ${local.log_group_name_delivered} and ${local.log_group_name_problem} log groups.
+  EOF
   treat_missing_data  = "ignore"
 
   metric_query {

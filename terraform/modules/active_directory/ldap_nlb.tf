@@ -138,7 +138,12 @@ resource "aws_cloudwatch_metric_alarm" "ldap_lb_healthy_count_low" {
   threshold           = 0
   evaluation_periods  = 1
 
-  alarm_description  = "The Active Directory domain controller in use is unhealthy"
+  alarm_description  = <<EOF
+The Active Directory Domain Controller in use is unhealthy.
+This can prevent logins and severely affect Delta + CPM.
+We can swap to using the other DC by updating the ${aws_lb_target_group.ldap.name} and ${aws_lb_target_group.ldaps.name} target groups (we do not leave both in the target group long term as it can cause errors updating users).
+The Domain Controllers are managed by AWS Directory Service, we have very limited visibility so if this does not resolve itself we will likely need to raise a ticket with AWS support.
+  EOF
   alarm_actions      = [var.alarms_sns_topic_arn]
   ok_actions         = [var.alarms_sns_topic_arn]
   treat_missing_data = "breaching"
