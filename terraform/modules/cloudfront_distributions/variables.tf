@@ -18,12 +18,6 @@ variable "waf_per_ip_rate_limit" {
   description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes"
 }
 
-variable "login_ip_rate_limit" {
-  type        = number
-  default     = 100
-  description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes to the login page"
-}
-
 variable "apply_aws_shield" {
   type = bool
 }

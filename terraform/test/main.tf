@@ -190,7 +190,6 @@ module "cloudfront_distributions" {
   base_domains                             = [var.primary_domain]
   waf_per_ip_rate_limit                    = 100000
   auth_waf_per_ip_rate_limit               = 1000
-  login_ip_rate_limit                      = 500
   apply_aws_shield                         = local.apply_aws_shield
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days

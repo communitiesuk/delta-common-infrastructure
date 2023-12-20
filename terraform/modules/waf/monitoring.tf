@@ -44,10 +44,6 @@ resource "aws_cloudwatch_dashboard" "waf_dashboard" {
               ["AWS/WAFV2", "CountedRequests", "Rule", local.metric_names.bad_inputs, "WebACL", aws_wafv2_web_acl.waf_acl.name],
               ["AWS/WAFV2", "BlockedRequests", "Rule", local.metric_names.ip_reputation, "WebACL", aws_wafv2_web_acl.waf_acl.name],
               ["AWS/WAFV2", "CountedRequests", "Rule", local.metric_names.ip_reputation, "WebACL", aws_wafv2_web_acl.waf_acl.name],
-              ],
-              !var.login_ip_rate_limit_enabled ? [] : [
-                ["AWS/WAFV2", "BlockedRequests", "Rule", local.metric_names.login_ip_rate_limit, "WebACL", aws_wafv2_web_acl.waf_acl.name],
-                ["AWS/WAFV2", "CountedRequests", "Rule", local.metric_names.login_ip_rate_limit, "WebACL", aws_wafv2_web_acl.waf_acl.name],
             ]),
             "region" : "us-east-1",
             "title" : "Blocked and counted requests by rule group",
@@ -83,27 +79,6 @@ resource "aws_cloudwatch_dashboard" "waf_dashboard" {
           x      = 12
           y      = 0
         },
-        ],
-        !var.login_ip_rate_limit_enabled ? [] : [
-          {
-            type = "metric",
-            properties = {
-              "title" : "Blocked login requests alarm",
-              "annotations" : {
-                "alarms" : [aws_cloudwatch_metric_alarm.blocked_login_requests[0].arn]
-              },
-              "liveData" : false,
-              "start" : "-PT3H",
-              "end" : "PT0H",
-              "region" : "us-east-1",
-              "view" : "timeSeries",
-              "stacked" : false
-            }
-            height = 8
-            width  = 8
-            x      = 12
-            y      = 0
-          }
       ])
     }
   )
@@ -129,31 +104,6 @@ look for any suspicious activity (e.g. lots of login attempts) and escalate if u
   treat_missing_data  = "notBreaching"
   dimensions = {
     Rule   = "ALL"
-    WebACL = aws_wafv2_web_acl.waf_acl.name
-  }
-
-  alarm_actions = [var.security_sns_topic_global_arn]
-  ok_actions    = [var.security_sns_topic_global_arn]
-}
-
-resource "aws_cloudwatch_metric_alarm" "blocked_login_requests" {
-  provider = aws.us-east-1
-  count    = var.login_ip_rate_limit_enabled ? 1 : 0
-
-  alarm_name          = "${var.prefix}cloudfront-waf-blocked-login-requests"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "1"
-  metric_name         = "BlockedRequests"
-  namespace           = "AWS/WAFV2"
-  period              = "300"
-  statistic           = "Sum"
-  threshold           = "1"
-  alarm_description   = <<EOF
-TODO: Replaced by application-level rate limiting in the auth service and should be removed.
-  EOF
-  treat_missing_data  = "notBreaching"
-  dimensions = {
-    Rule   = local.metric_names.login_ip_rate_limit
     WebACL = aws_wafv2_web_acl.waf_acl.name
   }
 
