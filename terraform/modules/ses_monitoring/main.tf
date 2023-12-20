@@ -239,7 +239,11 @@ resource "aws_cloudwatch_metric_alarm" "ses_send_errors" {
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "3"
   threshold           = "10"
-  alarm_description   = "Problem sending emails, see SES dashboard"
+  alarm_description   = <<EOF
+Problem sending emails.
+See the SES CloudWatch dashboard for a breakdown.
+This is usually triggered by an overnight job getting bounces from sending to invalid addresses, but other errors or lots of bounces could indicate a problem.
+  EOF
   treat_missing_data  = "notBreaching"
 
   metric_query {
