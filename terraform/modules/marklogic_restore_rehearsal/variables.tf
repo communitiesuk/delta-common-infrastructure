@@ -53,6 +53,11 @@ variable "weekly_backup_bucket_arn" {
   description = "From the main ML module"
 }
 
+variable "locked_backup_replication_bucket_arn" {
+  type        = string
+  description = "ARN of bucket storing replicated Object Locked backups"
+}
+
 variable "backup_key" {
   type        = string
   description = "From the main ML module, aws_kms_key.ml_backup_bucket_key.arn"

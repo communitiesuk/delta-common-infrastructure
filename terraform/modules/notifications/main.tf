@@ -12,6 +12,30 @@ resource "aws_sns_topic" "alarm_sns_topic" {
   display_name = "Notifications for change in metric alarm status"
 }
 
+resource "aws_sns_topic_policy" "alarm_sns_topic_allow_s3_events" {
+  arn    = aws_sns_topic.alarm_sns_topic.arn
+  policy = data.aws_iam_policy_document.alarm_sns_topic_allow_s3_events.json
+}
+
+data "aws_iam_policy_document" "alarm_sns_topic_allow_s3_events" {
+  statement {
+    effect  = "Allow"
+    actions = ["SNS:Publish"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
+    }
+
+    resources = [aws_sns_topic.alarm_sns_topic.arn]
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+  }
+}
+
 resource "aws_sns_sms_preferences" "update_sms_prefs" {
   default_sender_id = "Delta"
 }
