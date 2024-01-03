@@ -3,6 +3,8 @@ provider "aws" {
   region = "us-east-1"
 }
 
+data "aws_caller_identity" "current" {}
+
 # Non sensitive
 # tfsec:ignore:aws-sns-enable-topic-encryption
 resource "aws_sns_topic" "alarm_sns_topic" {
@@ -96,5 +98,10 @@ data "aws_iam_policy_document" "allow_guard_duty_events" {
     }
 
     resources = [aws_sns_topic.security_sns_topic.arn]
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
   }
 }
