@@ -177,6 +177,15 @@ module "marklogic_patch_maintenance_window" {
   enabled = true
 }
 
+module "backup_replication_bucket" {
+  source = "../modules/backup_replication_bucket"
+
+  environment                   = local.environment
+  s3_access_log_expiration_days = local.s3_log_expiration_days
+  compliance_retention_days     = 14 # TODO DT-742 Increase once happy with replication
+  object_expiration_days        = 90
+}
+
 module "marklogic" {
   source = "../modules/marklogic"
 
@@ -208,6 +217,7 @@ module "marklogic" {
     local.all_notifications_email_addresses,
     ["deltastatsupport@levellingup.gov.uk"]
   )
+  backup_replication_bucket_arn = module.backup_replication_bucket.bucket_arn
 }
 
 module "gh_runner" {
