@@ -105,6 +105,9 @@ variable "marklogic_ami_version" {
   }
 }
 
-variable "backup_replication_bucket_arn" {
-  type = string
+variable "backup_replication_bucket" {
+  type = object({
+    arn  = string
+    name = string
+  })
 }

@@ -317,7 +317,7 @@ module "marklogic" {
   data_disk_usage_alarm_threshold_percent = 70
   dap_external_role_arns                  = var.dap_external_role_arns
   dap_job_notification_emails             = local.all_notifications_email_addresses
-  backup_replication_bucket_arn           = module.backup_replication_bucket.bucket_arn
+  backup_replication_bucket               = module.backup_replication_bucket.bucket
 }
 
 moved {

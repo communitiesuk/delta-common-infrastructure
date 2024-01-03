@@ -164,8 +164,8 @@ data "aws_iam_policy_document" "ml_s3_backups" {
     ]
     effect = "Allow"
     resources = [
-      var.backup_replication_bucket_arn,
-      "${var.backup_replication_bucket_arn}/*",
+      var.backup_replication_bucket.arn,
+      "${var.backup_replication_bucket.arn}/*",
     ]
   }
   statement {

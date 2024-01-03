@@ -396,6 +396,57 @@ resource "aws_cloudwatch_dashboard" "main" {
           }
         },
         {
+          "height" : 6,
+          "width" : 6,
+          "y" : 15,
+          "x" : 6,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : [
+              ["AWS/S3", "BucketSizeBytes", "BucketName", module.daily_backup_bucket.bucket, "StorageType", "StandardStorage", { "color" : "#17becf" }],
+              [{ "expression" : "weekly_standard+weekly_glacier", "label" : "Weekly backups", "color" : "#9467bd" }],
+              ["AWS/S3", "BucketSizeBytes", "BucketName", module.weekly_backup_bucket.bucket, "StorageType", "StandardStorage", { "visible" : false, "id" : "weekly_standard" }],
+              ["AWS/S3", "BucketSizeBytes", "BucketName", module.weekly_backup_bucket.bucket, "StorageType", "GlacierInstantRetrievalStorage", { "visible" : false, "id" : "weekly_glacier" }],
+              ["AWS/S3", "BucketSizeBytes", "BucketName", var.backup_replication_bucket.name, "StorageType", "GlacierInstantRetrievalStorage", { "color" : "#c5b0d5" }]
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : data.aws_region.current.name,
+            "stat" : "Average",
+            "period" : 86400,
+            "title" : "Backup size"
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 21,
+          "x" : 6,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : [
+              ["AWS/S3", "OperationsPendingReplication", "SourceBucket", module.weekly_backup_bucket.bucket, "DestinationBucket", var.backup_replication_bucket.name, "RuleId", local.replication_rule_id, { "color" : "#17becf" }],
+              [".", "OperationsFailedReplication", ".", ".", ".", ".", ".", ".", { "color" : "#d62728" }]
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : data.aws_region.current.name,
+            "stat" : "Average",
+            "period" : 300,
+            "title" : "Backup replication"
+            "yAxis" : {
+              "left" : {
+                "min" : 0
+              }
+            }
+          }
+        },
+        {
           "height" : 5,
           "width" : 24,
           "y" : 27,

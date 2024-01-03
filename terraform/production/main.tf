@@ -217,7 +217,7 @@ module "marklogic" {
     local.all_notifications_email_addresses,
     ["deltastatsupport@levellingup.gov.uk"]
   )
-  backup_replication_bucket_arn = module.backup_replication_bucket.bucket_arn
+  backup_replication_bucket = module.backup_replication_bucket.bucket
 }
 
 module "gh_runner" {

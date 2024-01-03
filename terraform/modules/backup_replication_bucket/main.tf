@@ -14,8 +14,11 @@ variable "object_expiration_days" {
   type = number
 }
 
-output "bucket_arn" {
-  value = module.bucket.bucket_arn
+output "bucket" {
+  value = {
+    arn  = module.bucket.bucket_arn
+    name = module.bucket.bucket
+  }
 }
 
 # S3 bucket with Object Lock enabled for replicating backups into

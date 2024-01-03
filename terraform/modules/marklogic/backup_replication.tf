@@ -55,7 +55,7 @@ data "aws_iam_policy_document" "backup_replication" {
       "s3:ReplicateTags",
     ]
 
-    resources = ["${var.backup_replication_bucket_arn}/*"]
+    resources = ["${var.backup_replication_bucket.arn}/*"]
   }
 }
 
@@ -69,19 +69,23 @@ resource "aws_iam_role_policy_attachment" "backup_replication" {
   policy_arn = aws_iam_policy.backup_replication.arn
 }
 
+locals {
+  replication_rule_id = "replicate-to-locked-bucket"
+}
+
 resource "aws_s3_bucket_replication_configuration" "backup_replication" {
   role   = aws_iam_role.backup_replication.arn
   bucket = module.weekly_backup_bucket.bucket
 
   rule {
-    id = "replicate-to-locked-bucket"
+    id = local.replication_rule_id
 
     filter {}
 
     status = "Enabled"
 
     destination {
-      bucket        = var.backup_replication_bucket_arn
+      bucket        = var.backup_replication_bucket.arn
       storage_class = "GLACIER_IR"
 
       metrics {
