@@ -8,7 +8,7 @@ variable "environment" {
 
 variable "auth_waf_per_ip_rate_limit" {
   type        = number
-  default     = 500
+  default     = 200
   description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes for the auth service"
 }
 
@@ -16,12 +16,6 @@ variable "waf_per_ip_rate_limit" {
   type        = number
   default     = 1000
   description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes"
-}
-
-variable "login_ip_rate_limit" {
-  type        = number
-  default     = 100
-  description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes to the login page"
 }
 
 variable "apply_aws_shield" {

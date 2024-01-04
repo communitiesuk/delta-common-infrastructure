@@ -15,13 +15,12 @@ locals {
   excluded_rules = concat(var.excluded_rules, ["SizeRestrictions_BODY"])
 
   metric_names = {
-    main                = replace("${var.prefix}cloudfront-waf-acl", "-", "")
-    rate_limit          = replace("${var.prefix}cloudfront-waf-rate-limit", "-", "")
-    login_ip_rate_limit = replace("${var.prefix}cloudfront-waf-login-rate-limit", "-", "")
-    common              = replace("${var.prefix}cloudfront-waf-common-rules", "-", "")
-    bad_inputs          = replace("${var.prefix}cloudfront-waf-bad-inputs", "-", "")
-    ip_reputation       = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
-    ip_allowlist        = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
+    main          = replace("${var.prefix}cloudfront-waf-acl", "-", "")
+    rate_limit    = replace("${var.prefix}cloudfront-waf-rate-limit", "-", "")
+    common        = replace("${var.prefix}cloudfront-waf-common-rules", "-", "")
+    bad_inputs    = replace("${var.prefix}cloudfront-waf-bad-inputs", "-", "")
+    ip_reputation = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
+    ip_allowlist  = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
   }
   all_routes_ip_allowlist_enabled    = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex == null
   path_specific_ip_allowlist_enabled = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex != null
@@ -30,7 +29,6 @@ locals {
   all_routes_ip_allowlist_foreach    = local.all_routes_ip_allowlist_enabled ? [{}] : []
   path_specific_ip_allowlist_foreach = local.path_specific_ip_allowlist_enabled ? [{}] : []
   ip_reputation_foreach              = local.ip_reputation_enabled ? [{}] : []
-  login_ip_rate_limit_foreach        = var.login_ip_rate_limit_enabled ? [{}] : []
 }
 
 output "acl_arn" {
@@ -262,42 +260,6 @@ resource "aws_wafv2_web_acl" "waf_acl" {
       }
     }
   }
-
-  dynamic "rule" {
-    for_each = local.login_ip_rate_limit_foreach
-    content {
-      name     = "login-ip-rate-limit"
-      priority = 70 + local.priority_base
-
-      action {
-        block {}
-      }
-
-      statement {
-        rate_based_statement {
-          limit              = var.login_ip_rate_limit
-          aggregate_key_type = "IP"
-          scope_down_statement {
-            regex_pattern_set_reference_statement {
-              arn = aws_wafv2_regex_pattern_set.waf_rate_limit_urls[0].arn
-              field_to_match {
-                uri_path {}
-              }
-              text_transformation {
-                priority = 0
-                type     = "URL_DECODE"
-              }
-            }
-          }
-        }
-      }
-      visibility_config {
-        cloudwatch_metrics_enabled = true
-        metric_name                = local.metric_names.login_ip_rate_limit
-        sampled_requests_enabled   = true
-      }
-    }
-  }
 }
 
 resource "aws_wafv2_regex_pattern_set" "ip_restricted_paths" {
@@ -311,24 +273,5 @@ resource "aws_wafv2_regex_pattern_set" "ip_restricted_paths" {
     content {
       regex_string = regular_expression.value
     }
-  }
-}
-
-resource "aws_wafv2_regex_pattern_set" "waf_rate_limit_urls" {
-  provider = aws.us-east-1
-  count    = var.login_ip_rate_limit_enabled ? 1 : 0
-  name     = "${var.prefix}cloudfront-waf-regex-patterns"
-  scope    = "CLOUDFRONT"
-
-  regular_expression {
-    regex_string = "/login"
-  }
-
-  regular_expression {
-    regex_string = "/forgot-password"
-  }
-
-  regular_expression {
-    regex_string = "/reset-password"
   }
 }
