@@ -8,7 +8,7 @@ variable "environment" {
 
 variable "auth_waf_per_ip_rate_limit" {
   type        = number
-  default     = 500
+  default     = 200
   description = "The per-IP rate limit enforced by AWS WAF in requests per five minutes for the auth service"
 }
 
