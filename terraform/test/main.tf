@@ -279,7 +279,6 @@ module "marklogic_patch_maintenance_window" {
   subscribed_emails = local.all_notifications_email_addresses
 }
 
-# TODO DT-742 Do we want this in another region, maybe London?
 module "backup_replication_bucket" {
   source = "../modules/backup_replication_bucket"
 
