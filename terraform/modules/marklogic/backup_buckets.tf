@@ -48,10 +48,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
       days_after_initiation = 14
     }
 
-    # There shouldn't be many noncurrent objects since the expiration rule will delete them directly,
-    # so no harm in having this as a longer duration
     noncurrent_version_expiration {
-      noncurrent_days = 180
+      noncurrent_days = 20
     }
 
     status = "Enabled"
@@ -74,7 +72,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
       }
 
       expiration {
-        days = 90
+        days = 80
       }
 
       status = "Enabled"
