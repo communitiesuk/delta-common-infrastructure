@@ -3,11 +3,37 @@ provider "aws" {
   region = "us-east-1"
 }
 
+data "aws_caller_identity" "current" {}
+
 # Non sensitive
 # tfsec:ignore:aws-sns-enable-topic-encryption
 resource "aws_sns_topic" "alarm_sns_topic" {
   name         = "metric-alarms-${var.environment}"
   display_name = "Notifications for change in metric alarm status"
+}
+
+resource "aws_sns_topic_policy" "alarm_sns_topic_allow_s3_events" {
+  arn    = aws_sns_topic.alarm_sns_topic.arn
+  policy = data.aws_iam_policy_document.alarm_sns_topic_allow_s3_events.json
+}
+
+data "aws_iam_policy_document" "alarm_sns_topic_allow_s3_events" {
+  statement {
+    effect  = "Allow"
+    actions = ["SNS:Publish"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
+    }
+
+    resources = [aws_sns_topic.alarm_sns_topic.arn]
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+  }
 }
 
 resource "aws_sns_sms_preferences" "update_sms_prefs" {
@@ -96,5 +122,10 @@ data "aws_iam_policy_document" "allow_guard_duty_events" {
     }
 
     resources = [aws_sns_topic.security_sns_topic.arn]
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
   }
 }

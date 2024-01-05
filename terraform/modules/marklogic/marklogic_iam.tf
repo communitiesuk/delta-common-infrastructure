@@ -159,6 +159,16 @@ data "aws_iam_policy_document" "ml_s3_backups" {
     ]
   }
   statement {
+    actions = [
+      "s3:GetEncryptionConfiguration", "s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket"
+    ]
+    effect = "Allow"
+    resources = [
+      var.backup_replication_bucket.arn,
+      "${var.backup_replication_bucket.arn}/*",
+    ]
+  }
+  statement {
     actions   = ["kms:GenerateDataKey", "kms:DescribeKey", "kms:Decrypt"]
     effect    = "Allow"
     resources = [aws_kms_key.ml_backup_bucket_key.arn]

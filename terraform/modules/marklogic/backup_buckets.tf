@@ -23,6 +23,7 @@ module "daily_backup_bucket" {
 
 # We manage the weekly one with lifecycle rules
 # Transitioning objects to Glacier IR then eventually expiring them
+# This bucket is replicated to another bucket with Object Lock enabled
 module "weekly_backup_bucket" {
   source = "../s3_bucket"
 
@@ -66,6 +67,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
         prefix = "${rule.value}/20"
       }
 
+      # TODO DT-742 Remove transition and reduce expiration once we're confident in replication
       transition {
         days          = 7
         storage_class = "GLACIER_IR"

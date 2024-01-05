@@ -279,6 +279,15 @@ module "marklogic_patch_maintenance_window" {
   subscribed_emails = local.all_notifications_email_addresses
 }
 
+module "backup_replication_bucket" {
+  source = "../modules/backup_replication_bucket"
+
+  environment                   = local.environment
+  s3_access_log_expiration_days = local.s3_log_expiration_days
+  compliance_retention_days     = 1
+  object_expiration_days        = 30
+}
+
 module "marklogic" {
   source = "../modules/marklogic"
 
@@ -307,6 +316,7 @@ module "marklogic" {
   data_disk_usage_alarm_threshold_percent = 70
   dap_external_role_arns                  = var.dap_external_role_arns
   dap_job_notification_emails             = local.all_notifications_email_addresses
+  backup_replication_bucket               = module.backup_replication_bucket.bucket
 }
 
 module "gh_runner" {

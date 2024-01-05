@@ -104,3 +104,10 @@ variable "marklogic_ami_version" {
     error_message = "Only specific versions allowed, configure AMIs for others"
   }
 }
+
+variable "backup_replication_bucket" {
+  type = object({
+    arn  = string
+    name = string
+  })
+}

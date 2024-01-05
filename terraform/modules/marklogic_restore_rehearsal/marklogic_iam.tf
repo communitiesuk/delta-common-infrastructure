@@ -108,7 +108,9 @@ data "aws_iam_policy_document" "ml_s3_backups" {
       var.daily_backup_bucket_arn,
       "${var.daily_backup_bucket_arn}/*",
       var.weekly_backup_bucket_arn,
-      "${var.weekly_backup_bucket_arn}/*"
+      "${var.weekly_backup_bucket_arn}/*",
+      var.locked_backup_replication_bucket_arn,
+      "${var.locked_backup_replication_bucket_arn}/*"
     ]
   }
   statement {
