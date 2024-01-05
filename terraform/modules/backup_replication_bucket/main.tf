@@ -7,11 +7,13 @@ variable "s3_access_log_expiration_days" {
 }
 
 variable "compliance_retention_days" {
-  type = number
+  type        = number
+  description = "Default compliance retention period for objects in this bucket, during which the object version cannot be deleted."
 }
 
 variable "object_expiration_days" {
-  type = number
+  type        = number
+  description = "Expire objects after this many days. They will then become noncurrent and eventually be permanently deleted."
 }
 
 output "bucket" {
@@ -56,10 +58,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "object_locked_backup_bucket" {
       days_after_initiation = 7
     }
 
-    # There shouldn't be many noncurrent objects since the expiration rule will delete them directly,
-    # so no harm in having this as a longer duration
     noncurrent_version_expiration {
-      noncurrent_days = 180
+      noncurrent_days = max(14, var.compliance_retention_days)
     }
 
     status = "Enabled"
@@ -75,12 +75,5 @@ resource "aws_s3_bucket_lifecycle_configuration" "object_locked_backup_bucket" {
     }
 
     status = "Enabled"
-  }
-
-  lifecycle {
-    precondition {
-      condition     = var.object_expiration_days > var.compliance_retention_days
-      error_message = "The value for object_expiration_days must be larger than compliance_retention_days."
-    }
   }
 }

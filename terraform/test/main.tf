@@ -320,11 +320,6 @@ module "marklogic" {
   backup_replication_bucket               = module.backup_replication_bucket.bucket
 }
 
-moved {
-  from = module.marklogic.module.object_locked_backup_replication_bucket
-  to   = module.backup_replication_bucket.module.bucket
-}
-
 module "gh_runner" {
   source = "../modules/github_runner"
 
