@@ -18,7 +18,9 @@ module "daily_backup_bucket" {
   bucket_name                        = "dluhc-daily-ml-backup-${var.environment}"
   access_log_bucket_name             = "dluhc-daily-backup-access-logs-${var.environment}"
   noncurrent_version_expiration_days = 3
-  access_s3_log_expiration_days      = var.backup_s3_log_expiration_days
+  # We configure MarkLogic to keep at most 3 weeks of daily backups, which are then deleted 3 days later,
+  # so no reason to keep access logs for much longer than that
+  access_s3_log_expiration_days = min(var.backup_s3_log_expiration_days, 90)
 }
 
 # We manage the weekly one with lifecycle rules
