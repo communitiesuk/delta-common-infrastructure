@@ -17,7 +17,7 @@ module "daily_backup_bucket" {
 
   bucket_name                        = "dluhc-daily-ml-backup-${var.environment}"
   access_log_bucket_name             = "dluhc-daily-backup-access-logs-${var.environment}"
-  noncurrent_version_expiration_days = 5
+  noncurrent_version_expiration_days = 3
   access_s3_log_expiration_days      = var.backup_s3_log_expiration_days
 }
 
