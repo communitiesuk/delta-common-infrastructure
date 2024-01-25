@@ -24,7 +24,7 @@ jobs:
       AWS_REGION: "eu-west-1"
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Terraform
         # Exposes stdout, stderr and exitcode as outputs for any steps that run terraform
@@ -68,7 +68,7 @@ jobs:
       AWS_REGION: "eu-west-1"
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
