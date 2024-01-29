@@ -19,12 +19,31 @@ resource "aws_sns_topic_policy" "alarm_sns_topic_allow_s3_events" {
 
 data "aws_iam_policy_document" "alarm_sns_topic_allow_s3_events" {
   statement {
+    sid     = "allow-s3"
     effect  = "Allow"
     actions = ["SNS:Publish"]
 
     principals {
       type        = "Service"
       identifiers = ["s3.amazonaws.com"]
+    }
+
+    resources = [aws_sns_topic.alarm_sns_topic.arn]
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+  }
+
+  statement {
+    sid     = "allow-cloudwatch"
+    effect  = "Allow"
+    actions = ["SNS:Publish"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudwatch.amazonaws.com"]
     }
 
     resources = [aws_sns_topic.alarm_sns_topic.arn]
@@ -113,12 +132,31 @@ resource "aws_sns_topic_policy" "allow_guard_duty_events" {
 
 data "aws_iam_policy_document" "allow_guard_duty_events" {
   statement {
+    sid     = "allow-guardduty"
     effect  = "Allow"
     actions = ["SNS:Publish"]
 
     principals {
       type        = "Service"
       identifiers = ["events.amazonaws.com"]
+    }
+
+    resources = [aws_sns_topic.security_sns_topic.arn]
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+  }
+
+  statement {
+    sid     = "allow-cloudwatch"
+    effect  = "Allow"
+    actions = ["SNS:Publish"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudwatch.amazonaws.com"]
     }
 
     resources = [aws_sns_topic.security_sns_topic.arn]
