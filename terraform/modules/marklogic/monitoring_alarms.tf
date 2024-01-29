@@ -271,9 +271,11 @@ resource "aws_cloudwatch_metric_alarm" "time_since_payments_content_backup_high"
   statistic           = "Maximum"
   threshold           = 1800 //30 hours in minutes
 
-  alarm_description  = "Longer than expected since payments-content was backed up"
-  alarm_actions      = [var.alarms_sns_topic_arn]
-  ok_actions         = [var.alarms_sns_topic_arn]
+  alarm_description         = "Longer than expected since payments-content was backed up"
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
+
   treat_missing_data = "missing"
   dimensions = {
     "metric" = "payments-content-minutes-since-backup"
@@ -290,9 +292,11 @@ resource "aws_cloudwatch_metric_alarm" "time_since_delta_content_backup_high" {
   statistic           = "Maximum"
   threshold           = 1800 //30 hours in minutes
 
-  alarm_description  = "Longer than expected since delta-content was backed up"
-  alarm_actions      = [var.alarms_sns_topic_arn]
-  ok_actions         = [var.alarms_sns_topic_arn]
+  alarm_description         = "Longer than expected since delta-content was backed up"
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
+
   treat_missing_data = "missing"
   dimensions = {
     "metric" = "delta-content-minutes-since-backup"
@@ -309,9 +313,11 @@ resource "aws_cloudwatch_metric_alarm" "time_since_payments_content_incremental_
   statistic           = "Maximum"
   threshold           = 900 //15 hours in minutes
 
-  alarm_description  = "Longer than expected since payments-content was incrementally backed up"
-  alarm_actions      = [var.alarms_sns_topic_arn]
-  ok_actions         = [var.alarms_sns_topic_arn]
+  alarm_description         = "Longer than expected since payments-content was incrementally backed up"
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
+
   treat_missing_data = "missing"
   dimensions = {
     "metric" = "payments-content-minutes-since-incr-backup"
@@ -328,9 +334,11 @@ resource "aws_cloudwatch_metric_alarm" "time_since_delta_content_incremental_bac
   statistic           = "Maximum"
   threshold           = 900 // 15 hours in minutes
 
-  alarm_description  = "Longer than expected since delta-content was incrementally backed up"
-  alarm_actions      = [var.alarms_sns_topic_arn]
-  ok_actions         = [var.alarms_sns_topic_arn]
+  alarm_description         = "Longer than expected since delta-content was incrementally backed up"
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
+
   treat_missing_data = "missing"
   dimensions = {
     "metric" = "delta-content-minutes-since-incr-backup"
@@ -347,12 +355,14 @@ resource "aws_cloudwatch_metric_alarm" "task_server_queue_size_high" {
   statistic           = "Minimum"
   threshold           = 1000
 
-  alarm_description  = <<EOF
+  alarm_description         = <<EOF
 Task server queue size is larger than expected.
 Consider clearing the task queue.
   EOF
-  alarm_actions      = [var.alarms_sns_topic_arn]
-  ok_actions         = [var.alarms_sns_topic_arn]
+  alarm_actions             = [var.alarms_sns_topic_arn]
+  ok_actions                = [var.alarms_sns_topic_arn]
+  insufficient_data_actions = [var.alarms_sns_topic_arn]
+
   treat_missing_data = "missing"
   dimensions = {
     "metric" = "task-server-total-queue-size"
