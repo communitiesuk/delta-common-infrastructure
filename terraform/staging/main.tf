@@ -269,7 +269,7 @@ module "backup_replication_bucket" {
   environment                   = local.environment
   s3_access_log_expiration_days = local.s3_log_expiration_days
   compliance_retention_days     = 1
-  object_expiration_days        = 90
+  object_expiration_days        = 30
 }
 
 module "marklogic" {
