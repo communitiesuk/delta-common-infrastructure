@@ -19,7 +19,7 @@ These are the roles used by humans to access the account.
 Managed by DLUHC:
 
 * `developer` - managed by DLUHC, effectively admin access
-  * We plan to add an alarm on use of this role and phase it out for day-to-day use, see <https://digital.dclg.gov.uk/confluence/display/DT/Security+-+DLUHC+responsibilities>
+  * We plan to add an alarm on use of this role and phase it out for day-to-day use, see <https://dluhcdigital.atlassian.net/wiki/spaces/DT/pages/3375167/Security+-+DLUHC+responsibilities>
 * `auditor` and `security-auditor` - read only access
 
 Managed in this repository and environment specific. These are defined in [roles.tf](../../terraform/modules/iam_roles/roles.tf).
@@ -32,4 +32,4 @@ The full names of the roles start with `assume-` and end with `-<environment>`, 
 
 ## Alarms and monitoring
 
-Documented as part of the Run Book on Confluence, see <https://digital.dclg.gov.uk/confluence/display/DT/Run+Book>.
+Documented as part of the Run Book on Confluence, see <https://dluhcdigital.atlassian.net/wiki/spaces/DT/pages/3375129/Run+Book>.
