@@ -12,7 +12,7 @@ ML_PASS=$(echo $ML_USER_PASS | jq -r '.password')
 aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/final_forest_state.xqy /patching/final_forest_state.xqy
 
 set +e
-response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/final_forest_state.xqy \
+response=$(curl -sS --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/final_forest_state.xqy \
                -H "Content-type: application/x-www-form-urlencoded" \
                -H "Accept: text/plain" \
                http://localhost:8002/v1/eval || echo "output:Failed connecting to Marklogic")
@@ -29,7 +29,7 @@ if [ "ALL_FORESTS_IN_CORRECT_STATE" != "$STATUS" ]; then
     fi
 
     sleep 10
-    response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/final_forest_state.xqy \
+    response=$(curl -sS --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/final_forest_state.xqy \
                    -H "Content-type: application/x-www-form-urlencoded" \
                    -H "Accept: text/plain" \
                    http://localhost:8002/v1/eval || echo "output:Failed connecting to Marklogic")
