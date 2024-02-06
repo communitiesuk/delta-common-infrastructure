@@ -174,7 +174,7 @@ module "marklogic_patch_maintenance_window" {
   schedule          = "cron(00 06 ? * WED *)"
   subscribed_emails = local.all_notifications_email_addresses
 
-  enabled = true
+  enabled = false # TODO DT-857 Re-enable
 }
 
 module "backup_replication_bucket" {
