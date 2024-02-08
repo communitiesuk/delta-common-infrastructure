@@ -17,7 +17,7 @@ printf 'xquery=
 
 echo "Restarting Marklogic server"
 
-curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/restart_server.xqy \
+curl -sS --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/restart_server.xqy \
                -H "Content-type: application/x-www-form-urlencoded" \
                -H "Accept: text/plain" \
                http://localhost:8002/v1/eval
