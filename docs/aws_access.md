@@ -24,10 +24,10 @@ By "AWS console" we mean the website <https://console.aws.amazon.com/>.
 
 Logs can be viewed in [CloudWatch](https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1).
 
-The delta server catalina logs are under the `<environment>/delta-website` Log Group.
+The delta server structured logs are under the `<environment>/delta-website-structured` Log Group.
 To search logs, find the Log Group, press "Search log group" then select a time period and put your search query in quotes in the "Filter events" box.
 
-[Link to Delta website catalina logs in production](https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#logsV2:log-groups/log-group/production$252Fdelta-website/log-events)
+[Link to Delta website catalina logs in production](https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#logsV2:log-groups/log-group/production$252Fdelta-website-structured/log-events)
 
 MarkLogic and other server logs are also available in CloudWatch.
 
