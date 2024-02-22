@@ -9,7 +9,7 @@ APP=cpm
 ACCOUNT_ID=486283582667
 PREFIX="ECFDSITRIBUTIONIDHERE.2024-02-16-1"
 
-FOLDER="${APP}-${DLUHC_ENV}-cf-logs"
+FOLDER="logs/${APP}-${DLUHC_ENV}-cf-logs"
 
 mkdir -p "${FOLDER}"
 
@@ -18,5 +18,5 @@ aws s3 cp --recursive "s3://dluhc-cloudfront-access-logs-${DLUHC_ENV}/${APP}/" "
 find "${FOLDER}/" -type f -name '*.gz' | xargs gunzip
 
 # Optionally combine them
-rm -f "${APP}-${DLUHC_ENV}-cf-combined.log"
-find "${FOLDER}/" -type f -not -name '*.gz' -exec cat {} \; > "${APP}-${DLUHC_ENV}-cf-combined.log"
+rm -f "logs/${APP}-${DLUHC_ENV}-cf-combined.log"
+find "${FOLDER}/" -type f -not -name '*.gz' -exec cat {} \; > "logs/${APP}-${DLUHC_ENV}-cf-combined.log"
