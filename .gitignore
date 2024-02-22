@@ -39,3 +39,5 @@ terraform.rc
 .vscode
 
 lambdaFunction.zip
+
+manual_scripts/logs/logs
