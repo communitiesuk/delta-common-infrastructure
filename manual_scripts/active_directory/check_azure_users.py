@@ -20,14 +20,14 @@ def user_exists(user: str) -> bool:
     elif (response.status_code == 404):
         return False
     else:
-        raise Exception("Unexpected response " + response.status_code + " for user " + user)
+        raise Exception("Unexpected response " + str(response.status_code) + " for user " + user)
 
 def find_user_from_proxy_address(email: str) -> dict:
     headers = {'Authorization': 'Bearer ' + jwt}
     response = requests.get(f"https://graph.microsoft.com/v1.0/users?$count=true&$filter=proxyAddresses/any(a:a eq 'smtp:{email}')&$select=id,displayName,userPrincipalName,mail,proxyAddresses,jobTitle", headers=headers)
 
     if (response.status_code != 200):
-        raise Exception("Unexpected response " + response.status_code + " for proxy email " + email)
+        raise Exception("Unexpected response " + str(response.status_code) + " for proxy email " + email)
 
     users = response.json()["value"]
     if (len(users) > 1):

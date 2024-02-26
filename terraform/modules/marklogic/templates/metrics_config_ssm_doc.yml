@@ -12,6 +12,7 @@ mainSteps:
     inputs:
       timeoutSeconds: '120'
       runCommand:
+        - "cloud-init status --wait"
         - "mkdir -p /metrics-cron"
         - "aws s3 cp --region eu-west-1 {{ShellScriptLocation}} /metrics-cron/metrics-cron.sh"
         - "chmod +x /metrics-cron/metrics-cron.sh"

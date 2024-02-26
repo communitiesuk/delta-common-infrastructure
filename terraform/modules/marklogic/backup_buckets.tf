@@ -17,8 +17,10 @@ module "daily_backup_bucket" {
 
   bucket_name                        = "dluhc-daily-ml-backup-${var.environment}"
   access_log_bucket_name             = "dluhc-daily-backup-access-logs-${var.environment}"
-  noncurrent_version_expiration_days = 5
-  access_s3_log_expiration_days      = var.backup_s3_log_expiration_days
+  noncurrent_version_expiration_days = 3
+  # We configure MarkLogic to keep at most 3 weeks of daily backups, which are then deleted 3 days later,
+  # so no reason to keep access logs for much longer than that
+  access_s3_log_expiration_days = min(var.backup_s3_log_expiration_days, 90)
 }
 
 # We manage the weekly one with lifecycle rules
@@ -50,7 +52,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
     }
 
     noncurrent_version_expiration {
-      noncurrent_days = 20
+      noncurrent_days = 20 # TODO DT-803 Reduce expiration once we have a full set of backups replicated
     }
 
     status = "Enabled"
@@ -67,7 +69,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
         prefix = "${rule.value}/20"
       }
 
-      # TODO DT-742 Remove transition and reduce expiration once we're confident in replication
+      # TODO DT-803 Remove transition and reduce expiration once we have a full set of backups replicated
       transition {
         days          = 7
         storage_class = "GLACIER_IR"

@@ -6,7 +6,7 @@ echo "Starting to check forest state at $(date --iso-8601=seconds)"
 set +e
 ML_USER=$1
 ML_PASS=$2
-response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/check_forest_state.xqy \
+response=$(curl -sS --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/check_forest_state.xqy \
                 -H "Content-type: application/x-www-form-urlencoded" \
                 -H "Accept: text/plain" \
                 http://localhost:8002/v1/eval || echo "output:Connection failed")
@@ -24,7 +24,7 @@ if [ "READY_FOR_RESTART" != "$FOREST_STATUS" ]; then
       fi
 
       sleep 10
-      response=$(curl --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/check_forest_state.xqy \
+      response=$(curl -sS --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/check_forest_state.xqy \
                       -H "Content-type: application/x-www-form-urlencoded" \
                       -H "Accept: text/plain" \
                       http://localhost:8002/v1/eval || echo "output:Connection failed")
