@@ -164,6 +164,26 @@ resource "aws_cloudwatch_dashboard" "main" {
           "type" : "metric",
           "properties" : {
             "metrics" : [
+              ["${var.environment}/MarkLogic", "scripted-metrics", "metric", "task-server-currently-processing", { "color" : "#e377c2", "label" : "Currently processing" }],
+              ["...", "task-server-host-max-queue-size", { "color" : "#9467bd", "label" : "Queue size (max of hosts)" }],
+              ["...", "task-server-total-queue-size", { "color" : "#1f77b4", "label" : "Queue size (total)" }]
+            ],
+            "view" : "timeSeries",
+            "stacked" : false,
+            "region" : data.aws_region.current.name,
+            "stat" : "Maximum",
+            "period" : 300,
+            "title" : "Task Server queue"
+          }
+        },
+        {
+          "height" : 6,
+          "width" : 6,
+          "y" : 9,
+          "x" : 18,
+          "type" : "metric",
+          "properties" : {
+            "metrics" : [
               [aws_cloudwatch_log_metric_filter.taskserver_errorlog_all.metric_transformation[0].namespace,
               aws_cloudwatch_log_metric_filter.taskserver_errorlog_all.metric_transformation[0].name]
             ],
@@ -177,7 +197,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 9,
+          "y" : 15,
           "x" : 18,
           "type" : "metric",
           "properties" : {
@@ -195,7 +215,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         {
           "height" : 6,
           "width" : 6,
-          "y" : 15,
+          "y" : 21,
           "x" : 18,
           "type" : "metric",
           "properties" : {
