@@ -189,6 +189,7 @@ module "cloudfront_distributions" {
     geo_restriction_countries = ["GB", "IE", "US", "IN"]
     # We don't want to IP restrict staging until we are able to confirm who needs access
     client_error_rate_alarm_threshold_percent = 15
+    origin_read_timeout                       = 180 # Required quota increase
   }
   api = {
     alb = module.public_albs.delta_api
