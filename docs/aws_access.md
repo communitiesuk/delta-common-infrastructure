@@ -41,7 +41,9 @@ From there you can use Active Directory Users and Computers etc. to manage user 
 If you don't have an account on that environment's Windows domain you can create one:
 
 * Connect using the "Admin" account
-  * The test and staging directory admin password is in Keeper, the production one is only in Secrets Manager
+  * The test admin password can be located in Secrets Manager under `test-active-directory-admin-password`
+  * The staging admin password can be located in Secrets Manager under `staging-active-directory-admin-password`
+  * The production admin password can be located in Secrets Manager under `production-active-directory-admin-password`
 * Open Active Directory Users and Computers
 * Navigate to dluhcdata.local -> dluhcdata -> Users
 * Right click -> New -> User
