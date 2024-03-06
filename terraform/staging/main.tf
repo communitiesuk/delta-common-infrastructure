@@ -217,7 +217,8 @@ module "cloudfront_distributions" {
       aliases             = ["cpm.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
-    geo_restriction_countries = ["GB", "IE"]
+    # SAP BTP to CPM testing IP addresses appear to be located in Germany
+    geo_restriction_countries = ["GB", "IE", "DE"]
     origin_read_timeout       = 180 # Required quota increase
   }
   jaspersoft = {
