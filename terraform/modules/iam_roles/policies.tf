@@ -58,6 +58,7 @@ data "aws_iam_policy_document" "cloudwatch_monitor" {
     actions = [
       "ses:ListSuppressedDestinations",
       "ses:GetSuppressedDestination",
+      "ses:DeleteSuppressedDestination",
     ]
     resources = ["*"]
   }

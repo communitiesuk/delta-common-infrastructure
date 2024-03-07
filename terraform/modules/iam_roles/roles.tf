@@ -14,6 +14,9 @@ locals {
   })
 }
 
+# In practice this is used by the Delta admin/internal support team,
+# and includes permissions to manage the SES suppression list.
+# We haven't renamed the role as it requires coordination with Organization account.
 resource "aws_iam_role" "cloudwatch_monitor" {
   name                 = "assume-cloudwatch-monitor-${var.environment}"
   assume_role_policy   = local.trust_organisation_account_policy
