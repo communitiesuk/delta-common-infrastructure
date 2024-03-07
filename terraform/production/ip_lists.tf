@@ -26,6 +26,8 @@ locals {
         "54.76.240.9/32",    # Datamart NAT
         "34.250.225.227/32", # Datamart NAT
         "62.32.120.112/29",  # Home Connections
+        "20.68.16.31/32",    # Locata/SectorUK
+        "51.11.52.109/32",   # Locata/SectorUK
       ]
     )
     # This is only used if we're IP restricting for testing
