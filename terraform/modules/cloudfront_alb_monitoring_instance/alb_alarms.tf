@@ -47,7 +47,7 @@ Investigate the application's logs.
 resource "aws_cloudwatch_metric_alarm" "alb_target_client_error_rate_alarm" {
   alarm_name          = "${var.prefix}-target-client-error-rate"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
+  evaluation_periods  = 3
 
   threshold = var.alb_target_client_error_rate_alarm_threshold_percent
 
