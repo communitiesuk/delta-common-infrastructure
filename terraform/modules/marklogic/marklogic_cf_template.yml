@@ -385,7 +385,9 @@ Resources:
     Properties:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet1
-      LaunchConfigurationName: !Ref LaunchConfig1
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref LaunchTemp1
+        Version: !GetAtt LaunchTemp1.LatestVersionNumber
       MinSize: '0'
       MaxSize: !Ref NodesPerZone
       DesiredCapacity: !Ref NodesPerZone
@@ -431,7 +433,9 @@ Resources:
     Properties:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet2
-      LaunchConfigurationName: !Ref LaunchConfig2
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref LaunchTemp2
+        Version: !GetAtt LaunchTemp2.LatestVersionNumber
       MinSize: '0'
       MaxSize: !Ref NodesPerZone
       DesiredCapacity: !Ref NodesPerZone
@@ -477,7 +481,9 @@ Resources:
     Properties:
       VPCZoneIdentifier:
         - !Ref PrivateSubnet3
-      LaunchConfigurationName: !Ref LaunchConfig3
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref LaunchTemp3
+        Version: !GetAtt LaunchTemp3.LatestVersionNumber
       MinSize: '0'
       MaxSize: !Ref NodesPerZone
       DesiredCapacity: !Ref NodesPerZone
@@ -513,243 +519,252 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: bbd8314a-6e59-4102-9ed5-232739dd0dfa
-  LaunchConfig1:
-    Type: 'AWS::AutoScaling::LaunchConfiguration'
+  LaunchTemp1:
+    Type: 'AWS::EC2::LaunchTemplate'
     Properties:
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
+      LaunchTemplateData:
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
             VolumeSize: 100
             VolumeType: gp3
-        - DeviceName: /dev/sdf
-          NoDevice: true
-          Ebs: {}
-      KeyName: !Ref KeyName
-      ImageId: !Ref AMI
-      UserData: !Base64
-        'Fn::Join':
-          - ''
-          - - |+
-                #!/bin/bash
-                mkdir -p /delta/export
-                chmod 777 /delta
-                chmod 777 /delta/export
-                yum install jq -y
-                exit 0
+          - DeviceName: /dev/sdf
+            NoDevice: true
+            Ebs: {}
+        KeyName: !Ref KeyName
+        ImageId: !Ref AMI
+        UserData: !Base64
+          'Fn::Join':
+            - ''
+            - - |+
+                  #!/bin/bash
+                  mkdir -p /delta/export
+                  chmod 777 /delta
+                  chmod 777 /delta/export
+                  yum install jq -y
+                  exit 0
 
-            - MARKLOGIC_CLUSTER_NAME=
-            - !Ref MarkLogicDDBTable
-            - |+
+              - MARKLOGIC_CLUSTER_NAME=
+              - !Ref MarkLogicDDBTable
+              - |+
 
-            - MARKLOGIC_EBS_VOLUME=
-            - !Ref DataVolume1
-            - ',:'
-            - !Ref VolumeSize
-            - '::'
-            - !Ref VolumeType
-            - |
-              ::,*
-            - |
-              MARKLOGIC_NODE_NAME=NodeA#
-            - MARKLOGIC_ADMIN_USERNAME=
-            - !Ref AdminUser
-            - |+
+              - MARKLOGIC_EBS_VOLUME=
+              - !Ref DataVolume1
+              - ',:'
+              - !Ref VolumeSize
+              - '::'
+              - !Ref VolumeType
+              - |
+                ::,*
+              - |
+                MARKLOGIC_NODE_NAME=NodeA#
+              - MARKLOGIC_ADMIN_USERNAME=
+              - !Ref AdminUser
+              - |+
 
-            - MARKLOGIC_ADMIN_PASSWORD=
-            - !Ref AdminPass
-            - |+
+              - MARKLOGIC_ADMIN_PASSWORD=
+              - !Ref AdminPass
+              - |+
 
-            - |
-              MARKLOGIC_CLUSTER_MASTER=1
-            - MARKLOGIC_LICENSEE=
-            - !Ref Licensee
-            - |+
+              - |
+                MARKLOGIC_CLUSTER_MASTER=1
+              - MARKLOGIC_LICENSEE=
+              - !Ref Licensee
+              - |+
 
-            - MARKLOGIC_LICENSE_KEY=
-            - !Ref LicenseKey
-            - |+
+              - MARKLOGIC_LICENSE_KEY=
+              - !Ref LicenseKey
+              - |+
 
-            - MARKLOGIC_LOG_SNS=
-            - !Ref LogSNS
-            - |+
+              - MARKLOGIC_LOG_SNS=
+              - !Ref LogSNS
+              - |+
 
-            - MARKLOGIC_AWS_SWAP_SIZE=
-            - 32
-            - |+
+              - MARKLOGIC_AWS_SWAP_SIZE=
+              - 32
+              - |+
 
-            - !If
-              - UseVolumeEncryption
-              - !Join
+              - !If
+                - UseVolumeEncryption
+                - !Join
+                  - ''
+                  - - 'MARKLOGIC_EBS_KEY='
+                    - !If
+                      - HasCustomEBSKey
+                      - !Ref VolumeEncryptionKey
+                      - 'default'
                 - ''
-                - - 'MARKLOGIC_EBS_KEY='
-                  - !If
-                    - HasCustomEBSKey
-                    - !Ref VolumeEncryptionKey
-                    - 'default'
-              - ''
 
-      SecurityGroups:
-        - !Ref InstanceSecurityGroup
-      InstanceType: !Ref InstanceType
-      IamInstanceProfile: !Ref IAMRole
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: 2efb8cfb-df53-401d-8ff2-34af0dd25993
-  LaunchConfig2:
-    Type: 'AWS::AutoScaling::LaunchConfiguration'
+        SecurityGroups:
+          - !Ref InstanceSecurityGroup
+        InstanceType: !Ref InstanceType
+        IamInstanceProfile:
+          Name: !Ref IAMRole
+        MetadataOptions:
+          HttpTokens: required
+  LaunchTemp2:
+    Type: 'AWS::EC2::LaunchTemplate'
     Properties:
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
+      LaunchTemplateData:
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
             VolumeSize: 100
             VolumeType: gp3
-        - DeviceName: /dev/sdf
-          NoDevice: true
-          Ebs: {}
-      KeyName: !Ref KeyName
-      ImageId: !Ref AMI
-      UserData: !Base64
-        'Fn::Join':
-          - ''
-          - - |+
-                #!/bin/bash
-                yum install jq -y
-                exit 0
+          - DeviceName: /dev/sdf
+            NoDevice: true
+            Ebs: {}
+        KeyName: !Ref KeyName
+        ImageId: !Ref AMI
+        UserData: !Base64
+          'Fn::Join':
+            - ''
+            - - |+
+                  #!/bin/bash
+                  mkdir -p /delta/export
+                  chmod 777 /delta
+                  chmod 777 /delta/export
+                  yum install jq -y
+                  exit 0
 
-            - MARKLOGIC_CLUSTER_NAME=
-            - !Ref MarkLogicDDBTable
-            - |+
+              - MARKLOGIC_CLUSTER_NAME=
+              - !Ref MarkLogicDDBTable
+              - |+
 
-            - MARKLOGIC_EBS_VOLUME=
-            - !Ref DataVolume2
-            - ',:'
-            - !Ref VolumeSize
-            - '::'
-            - !Ref VolumeType
-            - |
-              ::,*
-            - |
-              MARKLOGIC_NODE_NAME=NodeB#
-            - MARKLOGIC_ADMIN_USERNAME=
-            - !Ref AdminUser
-            - |+
+              - MARKLOGIC_EBS_VOLUME=
+              - !Ref DataVolume1
+              - ',:'
+              - !Ref VolumeSize
+              - '::'
+              - !Ref VolumeType
+              - |
+                ::,*
+              - |
+                MARKLOGIC_NODE_NAME=NodeB#
+              - MARKLOGIC_ADMIN_USERNAME=
+              - !Ref AdminUser
+              - |+
 
-            - MARKLOGIC_ADMIN_PASSWORD=
-            - !Ref AdminPass
-            - |+
+              - MARKLOGIC_ADMIN_PASSWORD=
+              - !Ref AdminPass
+              - |+
 
-            - |
-              MARKLOGIC_CLUSTER_MASTER=0
-            - MARKLOGIC_LICENSEE=
-            - !Ref Licensee
-            - |+
+              - |
+                MARKLOGIC_CLUSTER_MASTER=0
+              - MARKLOGIC_LICENSEE=
+              - !Ref Licensee
+              - |+
 
-            - MARKLOGIC_LICENSE_KEY=
-            - !Ref LicenseKey
-            - |+
+              - MARKLOGIC_LICENSE_KEY=
+              - !Ref LicenseKey
+              - |+
 
-            - MARKLOGIC_LOG_SNS=
-            - !Ref LogSNS
-            - |+
+              - MARKLOGIC_LOG_SNS=
+              - !Ref LogSNS
+              - |+
 
-            - MARKLOGIC_AWS_SWAP_SIZE=
-            - 32
-            - |+
+              - MARKLOGIC_AWS_SWAP_SIZE=
+              - 32
+              - |+
 
-            - !If
-              - UseVolumeEncryption
-              - !Join
+              - !If
+                - UseVolumeEncryption
+                - !Join
+                  - ''
+                  - - 'MARKLOGIC_EBS_KEY='
+                    - !If
+                      - HasCustomEBSKey
+                      - !Ref VolumeEncryptionKey
+                      - 'default'
                 - ''
-                - - 'MARKLOGIC_EBS_KEY='
-                  - !If
-                    - HasCustomEBSKey
-                    - !Ref VolumeEncryptionKey
-                    - 'default'
-              - ''
 
-      SecurityGroups:
-        - !Ref InstanceSecurityGroup
-      InstanceType: !Ref InstanceType
-      IamInstanceProfile: !Ref IAMRole
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: c8296a50-a29e-4646-aa74-8f1b735a9a3f
-  LaunchConfig3:
-    Type: 'AWS::AutoScaling::LaunchConfiguration'
+        SecurityGroups:
+          - !Ref InstanceSecurityGroup
+        InstanceType: !Ref InstanceType
+        IamInstanceProfile:
+          Name: !Ref IAMRole
+        MetadataOptions:
+          HttpTokens: required
+LaunchTemp3:
+    Type: 'AWS::EC2::LaunchTemplate'
     Properties:
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
+      LaunchTemplateData:
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
             VolumeSize: 100
             VolumeType: gp3
-        - DeviceName: /dev/sdf
-          NoDevice: true
-          Ebs: {}
-      KeyName: !Ref KeyName
-      ImageId: !Ref AMI
-      UserData: !Base64
-        'Fn::Join':
-          - ''
-          - - |+
-                #!/bin/bash
-                yum install jq -y
-                exit 0
+          - DeviceName: /dev/sdf
+            NoDevice: true
+            Ebs: {}
+        KeyName: !Ref KeyName
+        ImageId: !Ref AMI
+        UserData: !Base64
+          'Fn::Join':
+            - ''
+            - - |+
+                  #!/bin/bash
+                  mkdir -p /delta/export
+                  chmod 777 /delta
+                  chmod 777 /delta/export
+                  yum install jq -y
+                  exit 0
 
-            - MARKLOGIC_CLUSTER_NAME=
-            - !Ref MarkLogicDDBTable
-            - |+
+              - MARKLOGIC_CLUSTER_NAME=
+              - !Ref MarkLogicDDBTable
+              - |+
 
-            - MARKLOGIC_EBS_VOLUME=
-            - !Ref DataVolume3
-            - ',:'
-            - !Ref VolumeSize
-            - '::'
-            - !Ref VolumeType
-            - |
-              ::,*
-            - |
-              MARKLOGIC_NODE_NAME=NodeC#
-            - MARKLOGIC_ADMIN_USERNAME=
-            - !Ref AdminUser
-            - |+
+              - MARKLOGIC_EBS_VOLUME=
+              - !Ref DataVolume1
+              - ',:'
+              - !Ref VolumeSize
+              - '::'
+              - !Ref VolumeType
+              - |
+                ::,*
+              - |
+                MARKLOGIC_NODE_NAME=NodeC#
+              - MARKLOGIC_ADMIN_USERNAME=
+              - !Ref AdminUser
+              - |+
 
-            - MARKLOGIC_ADMIN_PASSWORD=
-            - !Ref AdminPass
-            - |+
+              - MARKLOGIC_ADMIN_PASSWORD=
+              - !Ref AdminPass
+              - |+
 
-            - |
-              MARKLOGIC_CLUSTER_MASTER=0
-            - MARKLOGIC_LICENSEE=
-            - !Ref Licensee
-            - |+
+              - |
+                MARKLOGIC_CLUSTER_MASTER=0
+              - MARKLOGIC_LICENSEE=
+              - !Ref Licensee
+              - |+
 
-            - MARKLOGIC_LICENSE_KEY=
-            - !Ref LicenseKey
-            - |+
+              - MARKLOGIC_LICENSE_KEY=
+              - !Ref LicenseKey
+              - |+
 
-            - MARKLOGIC_LOG_SNS=
-            - !Ref LogSNS
-            - |+
+              - MARKLOGIC_LOG_SNS=
+              - !Ref LogSNS
+              - |+
 
-            - MARKLOGIC_AWS_SWAP_SIZE=
-            - 32
-            - |+
+              - MARKLOGIC_AWS_SWAP_SIZE=
+              - 32
+              - |+
 
-            - !If
-              - UseVolumeEncryption
-              - !Join
+              - !If
+                - UseVolumeEncryption
+                - !Join
+                  - ''
+                  - - 'MARKLOGIC_EBS_KEY='
+                    - !If
+                      - HasCustomEBSKey
+                      - !Ref VolumeEncryptionKey
+                      - 'default'
                 - ''
-                - - 'MARKLOGIC_EBS_KEY='
-                  - !If
-                    - HasCustomEBSKey
-                    - !Ref VolumeEncryptionKey
-                    - 'default'
-              - ''
 
-      SecurityGroups:
-        - !Ref InstanceSecurityGroup
-      InstanceType: !Ref InstanceType
-      IamInstanceProfile: !Ref IAMRole
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: 7fa68c90-39bc-4874-ad20-8cd8c974ed52
+        SecurityGroups:
+          - !Ref InstanceSecurityGroup
+        InstanceType: !Ref InstanceType
+        IamInstanceProfile:
+          Name: !Ref IAMRole
+        MetadataOptions:
+          HttpTokens: required
