@@ -96,7 +96,7 @@ module "bastion_log_group" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=228faf05bb2dcaa1b85d429c982f9f3257952903"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=bc9595185a8d805397a9622388f26b1246fafb04"
 
   region                  = "eu-west-1"
   name_prefix             = "stg"
