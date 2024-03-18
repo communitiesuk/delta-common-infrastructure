@@ -526,8 +526,8 @@ Resources:
         BlockDeviceMappings:
           - DeviceName: /dev/xvda
             Ebs:
-            VolumeSize: 100
-            VolumeType: gp3
+              VolumeSize: 100
+              VolumeType: gp3
           - DeviceName: /dev/sdf
             NoDevice: true
             Ebs: {}
@@ -595,7 +595,7 @@ Resources:
                       - 'default'
                 - ''
 
-        SecurityGroups:
+        SecurityGroupIds:
           - !Ref InstanceSecurityGroup
         InstanceType: !Ref InstanceType
         IamInstanceProfile:
@@ -609,8 +609,8 @@ Resources:
         BlockDeviceMappings:
           - DeviceName: /dev/xvda
             Ebs:
-            VolumeSize: 100
-            VolumeType: gp3
+              VolumeSize: 100
+              VolumeType: gp3
           - DeviceName: /dev/sdf
             NoDevice: true
             Ebs: {}
@@ -678,22 +678,22 @@ Resources:
                       - 'default'
                 - ''
 
-        SecurityGroups:
+        SecurityGroupIds:
           - !Ref InstanceSecurityGroup
         InstanceType: !Ref InstanceType
         IamInstanceProfile:
           Name: !Ref IAMRole
         MetadataOptions:
           HttpTokens: required
-LaunchTemp3:
+  LaunchTemp3:
     Type: 'AWS::EC2::LaunchTemplate'
     Properties:
       LaunchTemplateData:
         BlockDeviceMappings:
           - DeviceName: /dev/xvda
             Ebs:
-            VolumeSize: 100
-            VolumeType: gp3
+              VolumeSize: 100
+              VolumeType: gp3
           - DeviceName: /dev/sdf
             NoDevice: true
             Ebs: {}
@@ -761,7 +761,7 @@ LaunchTemp3:
                       - 'default'
                 - ''
 
-        SecurityGroups:
+        SecurityGroupIds:
           - !Ref InstanceSecurityGroup
         InstanceType: !Ref InstanceType
         IamInstanceProfile:
