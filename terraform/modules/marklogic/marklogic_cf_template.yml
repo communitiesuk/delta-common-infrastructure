@@ -601,7 +601,7 @@ Resources:
         IamInstanceProfile:
           Name: !Ref IAMRole
         MetadataOptions:
-          HttpTokens: required
+          HttpTokens: optional
   LaunchTemp2:
     Type: 'AWS::EC2::LaunchTemplate'
     Properties:
@@ -684,7 +684,7 @@ Resources:
         IamInstanceProfile:
           Name: !Ref IAMRole
         MetadataOptions:
-          HttpTokens: required
+          HttpTokens: optional
   LaunchTemp3:
     Type: 'AWS::EC2::LaunchTemplate'
     Properties:
@@ -767,4 +767,4 @@ Resources:
         IamInstanceProfile:
           Name: !Ref IAMRole
         MetadataOptions:
-          HttpTokens: required
+          HttpTokens: optional
