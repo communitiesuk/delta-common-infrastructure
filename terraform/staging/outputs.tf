@@ -161,3 +161,7 @@ output "auth_listener_arn" {
 output "auth_internal_alb" {
   value = module.auth_internal_alb.alb
 }
+
+output "infra_support_iam_role_name" {
+  value = module.iam_roles.infra_support_role_name
+}
