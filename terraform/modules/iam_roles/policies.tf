@@ -244,6 +244,13 @@ data "aws_iam_policy_document" "infra_support" {
   }
 
   statement {
+    sid       = "PreventCodeArtifactPackageDeletion"
+    effect    = "Deny"
+    actions   = ["codeartifact:Delete*"]
+    resources = ["*"]
+  }
+
+  statement {
     sid = "UseSessionManagerKey"
     actions = [
       "kms:GenerateDataKey"
