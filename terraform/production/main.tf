@@ -44,7 +44,7 @@ locals {
   cloudwatch_log_expiration_days       = 731
   patch_cloudwatch_log_expiration_days = 90
   s3_log_expiration_days               = 731
-  all_notifications_email_addresses    = ["Group-DLUHCDeltaNotifications@softwire.com", "Yousuf.Desai@levellingup.gov.uk"]
+  all_notifications_email_addresses    = ["Group-DLUHCDeltaNotifications@softwire.com", "Yousuf.Desai@levellingup.gov.uk", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
 }
 
 module "communities_only_ssl_certs" {
