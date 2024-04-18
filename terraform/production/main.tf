@@ -135,8 +135,8 @@ module "bastion" {
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
 
-  dns_config = {
-    zone_id = var.hosted_zone_id
+  dns_config = var.secondary_domain == null ? null : {
+    zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
 }
