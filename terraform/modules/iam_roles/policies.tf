@@ -59,6 +59,7 @@ data "aws_iam_policy_document" "cloudwatch_monitor" {
       "ses:ListSuppressedDestinations",
       "ses:GetSuppressedDestination",
       "ses:DeleteSuppressedDestination",
+      "ses:GetAccount",
     ]
     resources = ["*"]
   }
@@ -210,6 +211,7 @@ data "aws_iam_policy_document" "application_support" {
       "ses:GetSuppressedDestination",
       "ses:DeleteSuppressedDestination",
       "ses:PutSuppressedDestination",
+      "ses:GetAccount",
     ]
     resources = ["*"]
   }
@@ -238,6 +240,13 @@ data "aws_iam_policy_document" "infra_support" {
       "logs:DeleteLogGroup",
       "logs:DeleteLogStream",
     ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid       = "PreventCodeArtifactPackageDeletion"
+    effect    = "Deny"
+    actions   = ["codeartifact:Delete*"]
     resources = ["*"]
   }
 

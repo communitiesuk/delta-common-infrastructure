@@ -41,8 +41,12 @@ variable "data_volume" {
   })
 }
 
-variable "ebs_backup_error_notification_emails" {
-  type = list(string)
+variable "ebs_backup_role_arn" {
+  type = string
+}
+
+variable "ebs_backup_completed_sns_topic_arn" {
+  type = string
 }
 
 variable "dap_job_notification_emails" {

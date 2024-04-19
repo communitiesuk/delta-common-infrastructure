@@ -44,7 +44,7 @@ locals {
   cloudwatch_log_expiration_days       = 731
   patch_cloudwatch_log_expiration_days = 90
   s3_log_expiration_days               = 731
-  all_notifications_email_addresses    = ["Group-DLUHCDeltaNotifications@softwire.com", "Yousuf.Desai@levellingup.gov.uk"]
+  all_notifications_email_addresses    = ["Group-DLUHCDeltaNotifications@softwire.com", "Yousuf.Desai@levellingup.gov.uk", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
 }
 
 module "communities_only_ssl_certs" {
@@ -124,7 +124,7 @@ module "bastion_log_group" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=228faf05bb2dcaa1b85d429c982f9f3257952903"
+  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=bc9595185a8d805397a9622388f26b1246fafb04"
 
   region                  = "eu-west-1"
   name_prefix             = "prd"
@@ -186,6 +186,28 @@ module "backup_replication_bucket" {
   object_expiration_days        = 90
 }
 
+module "ebs_backup" {
+  source = "../modules/ebs_backup"
+
+  environment                          = local.environment
+  ebs_backup_error_notification_emails = local.all_notifications_email_addresses
+}
+
+moved {
+  from = module.marklogic.aws_iam_role.ebs_backup
+  to   = module.ebs_backup.aws_iam_role.ebs_backup
+}
+
+moved {
+  from = module.marklogic.aws_iam_role_policy_attachment.service_backup
+  to   = module.ebs_backup.aws_iam_role_policy_attachment.service_backup
+}
+
+moved {
+  from = module.marklogic.aws_iam_role_policy_attachment.service_restore
+  to   = module.ebs_backup.aws_iam_role_policy_attachment.service_restore
+}
+
 module "marklogic" {
   source = "../modules/marklogic"
 
@@ -203,7 +225,6 @@ module "marklogic" {
     throughput_MiB_per_sec = 1000
   }
 
-  ebs_backup_error_notification_emails    = local.all_notifications_email_addresses
   extra_instance_policy_arn               = module.session_manager_config.policy_arn
   app_cloudwatch_log_expiration_days      = local.cloudwatch_log_expiration_days
   patch_cloudwatch_log_expiration_days    = local.patch_cloudwatch_log_expiration_days
@@ -217,7 +238,9 @@ module "marklogic" {
     local.all_notifications_email_addresses,
     ["deltastatsupport@levellingup.gov.uk"]
   )
-  backup_replication_bucket = module.backup_replication_bucket.bucket
+  backup_replication_bucket          = module.backup_replication_bucket.bucket
+  ebs_backup_role_arn                = module.ebs_backup.role_arn
+  ebs_backup_completed_sns_topic_arn = module.ebs_backup.sns_topic_arn
 }
 
 module "gh_runner" {

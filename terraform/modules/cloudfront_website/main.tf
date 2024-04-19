@@ -140,7 +140,7 @@ resource "aws_cloudfront_distribution" "main" {
   }
 
   dynamic "ordered_cache_behavior" {
-    for_each = ["/resources/*", "/public/*", "/govuk/assets/*"]
+    for_each = ["/resources/*", "/public/*", "/govuk/assets/*", "/delta_assets/*"]
     iterator = pattern
 
     content {
