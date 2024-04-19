@@ -354,7 +354,7 @@ module "cloudfront_distributions" {
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.cpm
     geo_restriction_countries = ["GB", "IE", "DE"] # SAP middleware operates from AWS located in Germany
-    origin_read_timeout       = 180 # Required quota increase
+    origin_read_timeout       = 180                # Required quota increase
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft
