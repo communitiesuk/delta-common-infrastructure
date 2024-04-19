@@ -18,6 +18,15 @@ locals {
         "62.60.23.222/32",   # DLUHC Outbound
         "35.176.187.166/32", # DLUHC ITMP Prod
         "52.56.253.115/32",  # DLUHC ITMP Test
+        "18.198.196.89/32",  # SAP - CPM middleware production
+        "18.193.21.232/32",  # SAP - CPM middleware production
+        "3.65.9.91/32",      # SAP - CPM middleware production
+        "52.29.190.137/32",  # SAP - CPM middleware production
+        "18.197.134.65/32",  # SAP - CPM middleware production
+        "3.67.182.154/32",   # SAP - CPM middleware production
+        "3.67.255.232/32",   # SAP - CPM middleware production
+        "3.66.249.150/32",   # SAP - CPM middleware production
+        "3.68.44.236/32"     # SAP - CPM middleware production
       ]
     )
     delta_api = concat(
