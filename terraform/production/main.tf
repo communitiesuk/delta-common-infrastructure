@@ -60,11 +60,7 @@ module "ses_identity" {
   domain                               = "datacollection.levellingup.gov.uk"
   environment                          = local.environment
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
-  bounce_complaint_notification_emails = concat(
-    local.all_notifications_email_addresses,
-    ["deltaadmin@levellingup.gov.uk"]
-  )
-  alarms_sns_topic_arn = module.notifications.alarms_sns_topic_arn
+  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }
 
 module "delta_ses_user" {
