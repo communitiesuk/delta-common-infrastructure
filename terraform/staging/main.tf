@@ -110,7 +110,7 @@ module "bastion" {
   extra_userdata          = file("${path.module}/../bastion_config.sh")
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
-  dns_config = {
+  dns_config = var.secondary_domain == null ? null : {
     zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
