@@ -26,7 +26,7 @@ locals {
         "3.67.182.154/32",   # SAP - CPM middleware production
         "3.67.255.232/32",   # SAP - CPM middleware production
         "3.66.249.150/32",   # SAP - CPM middleware production
-        "3.68.44.236/32"     # SAP - CPM middleware production
+        "3.68.44.236/32",    # SAP - CPM middleware production
       ]
     )
     delta_api = concat(

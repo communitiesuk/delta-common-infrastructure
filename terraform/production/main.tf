@@ -353,8 +353,7 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.cpm
-    # SAP middleware operates from AWS located in Germany
-    geo_restriction_countries = ["GB", "IE", "DE"]
+    geo_restriction_countries = ["GB", "IE", "DE"] # SAP middleware operates from AWS located in Germany
     origin_read_timeout       = 180 # Required quota increase
   }
   jaspersoft = {
