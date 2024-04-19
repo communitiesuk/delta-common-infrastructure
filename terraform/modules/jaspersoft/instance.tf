@@ -68,6 +68,9 @@ resource "aws_instance" "jaspersoft_server" {
   root_block_device {
     encrypted   = true
     volume_size = 40
+    tags = {
+      "system-drive-backup" = var.environment
+    }
   }
 
   metadata_options {
