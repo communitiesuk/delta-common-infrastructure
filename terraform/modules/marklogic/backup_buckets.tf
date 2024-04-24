@@ -70,7 +70,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
       }
 
       expiration {
-        days = 10
+        days = var.weekly_backup_bucket_retention_days
       }
 
       status = "Enabled"

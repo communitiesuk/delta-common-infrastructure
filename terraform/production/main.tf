@@ -237,6 +237,8 @@ module "marklogic" {
   backup_replication_bucket          = module.backup_replication_bucket.bucket
   ebs_backup_role_arn                = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn = module.ebs_backup.sns_topic_arn
+  # TODO DT-803 Reduce/remove this once we are happy with our testing on staging
+  weekly_backup_bucket_retention_days = 60
 }
 
 module "gh_runner" {
