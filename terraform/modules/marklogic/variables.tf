@@ -115,3 +115,9 @@ variable "backup_replication_bucket" {
     name = string
   })
 }
+
+variable "weekly_backup_bucket_retention_days" {
+  type        = number
+  default     = 10
+  description = "Number of days to keep weekly backups in their original bucket before adding a delete marker. The weekly backup bucket is replicated, so this shouldn't need to be very long."
+}
