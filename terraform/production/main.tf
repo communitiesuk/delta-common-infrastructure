@@ -44,7 +44,7 @@ locals {
   cloudwatch_log_expiration_days       = 731
   patch_cloudwatch_log_expiration_days = 90
   s3_log_expiration_days               = 731
-  all_notifications_email_addresses    = ["Group-DLUHCDeltaNotifications@softwire.com", "Yousuf.Desai@levellingup.gov.uk", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
+  all_notifications_email_addresses    = ["delta-notifications@levellingup.gov.uk", "Group-DLUHCDeltaNotifications@softwire.com", "Yousuf.Desai@levellingup.gov.uk", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
 }
 
 module "communities_only_ssl_certs" {
@@ -135,8 +135,8 @@ module "bastion" {
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
 
-  dns_config = {
-    zone_id = var.hosted_zone_id
+  dns_config = var.secondary_domain == null ? null : {
+    zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
 }
@@ -178,7 +178,7 @@ module "backup_replication_bucket" {
 
   environment                   = local.environment
   s3_access_log_expiration_days = local.s3_log_expiration_days
-  compliance_retention_days     = 14 # TODO DT-742 Increase once happy with replication
+  compliance_retention_days     = 28
   object_expiration_days        = 90
 }
 

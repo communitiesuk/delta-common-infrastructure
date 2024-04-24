@@ -16,7 +16,12 @@ variable "primary_domain" {
 
 variable "secondary_domain" {
   type    = string
-  default = "dluhc-preprod.uk"
+  default = null
+}
+
+variable "secondary_domain_zone_id" {
+  type    = string
+  default = null
 }
 
 variable "allowed_ssh_cidrs" {
@@ -41,11 +46,6 @@ variable "github_actions_runner_token" {
 variable "jasper_s3_bucket" {
   type    = string
   default = "dluhc-jaspersoft-bin-prod"
-}
-
-variable "hosted_zone_id" {
-  type    = string
-  default = "Z05291902D4B4GXLXJDZQ"
 }
 
 variable "dap_external_role_arns" {
