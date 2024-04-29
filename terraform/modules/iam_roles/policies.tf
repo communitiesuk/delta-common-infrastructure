@@ -225,8 +225,13 @@ resource "aws_iam_policy" "application_support" {
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "infra_support" {
   statement {
-    sid       = "UpdateAutoscalingGroups"
-    actions   = ["autoscaling:UpdateAutoScalingGroup"]
+    sid = "UpdateAutoscalingGroups"
+    actions = [
+      "autoscaling:UpdateAutoScalingGroup",
+      "autoscaling:CancelInstanceRefresh",
+      "autoscaling:RollbackInstanceRefresh",
+      "autoscaling:StartInstanceRefresh",
+    ]
     resources = ["*"]
   }
 
