@@ -21,7 +21,7 @@ locals {
     bad_inputs    = replace("${var.prefix}cloudfront-waf-bad-inputs", "-", "")
     ip_reputation = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
     ip_allowlist  = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
-    ip_blocklist  = replace("${var.prefix}cloudfront-waf-ip-blacklist", "-", "")
+    ip_blocklist  = replace("${var.prefix}cloudfront-waf-ip-blocklist", "-", "")
   }
   all_routes_ip_allowlist_enabled    = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex == null
   path_specific_ip_allowlist_enabled = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex != null
