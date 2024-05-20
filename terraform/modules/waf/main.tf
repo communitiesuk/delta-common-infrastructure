@@ -21,7 +21,7 @@ locals {
     bad_inputs    = replace("${var.prefix}cloudfront-waf-bad-inputs", "-", "")
     ip_reputation = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
     ip_allowlist  = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
-    ip_blocklist  = replace("${var.prefix}cloudfront-waf-ip-blacklist", "-", "")
+    ip_blocklist  = replace("${var.prefix}cloudfront-waf-ip-blocklist", "-", "")
   }
   all_routes_ip_allowlist_enabled    = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex == null
   path_specific_ip_allowlist_enabled = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex != null
@@ -77,7 +77,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
     }
     statement {
       ip_set_reference_statement {
-        arn = aws_wafv2_ip_set.blocklist[0].arn
+        arn = aws_wafv2_ip_set.blocklist.arn
       }
     }
     visibility_config {
@@ -301,9 +301,7 @@ resource "aws_wafv2_regex_pattern_set" "ip_restricted_paths" {
 }
 
 resource "aws_wafv2_ip_set" "blocklist" {
-  provider = aws.us-east-1
-  count    = length(var.blocked_ip_addresses) > 0 ? 1 : 0
-
+  provider           = aws.us-east-1
   name               = "${var.prefix}cloudfront-waf-blocklist"
   description        = "${var.prefix}cloudfront-waf-blocklist"
   scope              = "CLOUDFRONT"
