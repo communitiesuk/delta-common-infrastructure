@@ -110,7 +110,7 @@ look for any suspicious activity (e.g. lots of login attempts) and escalate if u
       metric_name = "BlockedRequests"
       dimensions = {
         WebACL = aws_wafv2_web_acl.waf_acl.name
-        Rule = "ALL"
+        Rule   = "ALL"
       }
       period = 300
       stat   = "Sum"
