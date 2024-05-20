@@ -90,10 +90,6 @@ resource "aws_cloudwatch_metric_alarm" "blocked_requests" {
   alarm_name          = "${var.prefix}cloudfront-waf-blocked-requests"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
-  metric_name         = "BlockedRequests"
-  namespace           = "AWS/WAFV2"
-  period              = "300"
-  statistic           = "Sum"
   threshold           = "100"
   alarm_description   = <<EOF
 WAF ${aws_wafv2_web_acl.waf_acl.name} blocking large number of requests.
@@ -102,11 +98,45 @@ This is usually a harmless bot scanning the site and getting lots of requests bl
 look for any suspicious activity (e.g. lots of login attempts) and escalate if unsure.
   EOF
   treat_missing_data  = "notBreaching"
-  dimensions = {
-    Rule   = "ALL"
-    WebACL = aws_wafv2_web_acl.waf_acl.name
-  }
+  datapoints_to_alarm = "1"
 
   alarm_actions = [var.security_sns_topic_global_arn]
   ok_actions    = [var.security_sns_topic_global_arn]
+
+  metric_query {
+    id = "blockedRequests"
+    metric {
+      namespace   = "AWS/WAFV2"
+      metric_name = "BlockedRequests"
+      dimensions = {
+        WebACL = aws_wafv2_web_acl.waf_acl.name
+        Rule = "ALL"
+      }
+      period = 300
+      stat   = "Sum"
+    }
+    return_data = false
+  }
+
+  metric_query {
+    id = "ipBlocklist"
+    metric {
+      namespace   = "AWS/WAFV2"
+      metric_name = "BlockedRequests"
+      dimensions = {
+        WebACL = aws_wafv2_web_acl.waf_acl.name
+        Rule   = local.metric_names.ip_blocklist
+      }
+      period = 300
+      stat   = "Sum"
+    }
+    return_data = false
+  }
+
+  metric_query {
+    id          = "totalBlockedRequests"
+    expression  = "blockedRequests - ipBlocklist"
+    label       = "TotalBlockedRequestsExcludingIpBlocklist"
+    return_data = true
+  }
 }

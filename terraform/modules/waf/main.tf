@@ -21,6 +21,7 @@ locals {
     bad_inputs    = replace("${var.prefix}cloudfront-waf-bad-inputs", "-", "")
     ip_reputation = replace("${var.prefix}cloudfront-waf-ip-reputation", "-", "")
     ip_allowlist  = replace("${var.prefix}cloudfront-waf-ip-allowlist", "-", "")
+    ip_blocklist  = replace("${var.prefix}cloudfront-waf-ip-blacklist", "-", "")
   }
   all_routes_ip_allowlist_enabled    = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex == null
   path_specific_ip_allowlist_enabled = var.ip_allowlist != null && var.ip_allowlist_uri_path_regex != null
@@ -64,8 +65,63 @@ resource "aws_wafv2_web_acl" "waf_acl" {
   }
 
   rule {
-    name     = "overall-rate-limit"
+    name     = "ip-blocklist"
     priority = 10 + local.priority_base
+    action {
+      block {
+        custom_response {
+          custom_response_body_key = "ip_error"
+          response_code            = 403
+        }
+      }
+    }
+    statement {
+      ip_set_reference_statement {
+        arn = aws_wafv2_ip_set.blocklist[0].arn
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = local.metric_names.ip_blocklist
+      sampled_requests_enabled   = true
+    }
+  }
+
+  dynamic "rule" {
+    for_each = local.all_routes_ip_allowlist_foreach
+    content {
+      name     = "ip-allowlist"
+      priority = 20 + local.priority_base
+      action {
+        block {
+          custom_response {
+            custom_response_body_key = "ip_error"
+            response_code            = 403
+          }
+        }
+      }
+
+      statement {
+        not_statement {
+          statement {
+            ip_set_reference_statement {
+              arn = aws_wafv2_ip_set.main[0].arn
+            }
+          }
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = local.metric_names.ip_allowlist
+        sampled_requests_enabled   = true
+      }
+    }
+  }
+
+  rule {
+    name     = "overall-rate-limit"
+    priority = 30 + local.priority_base
 
     action {
       block {}
@@ -87,7 +143,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
   rule {
     name     = "aws-managed-common-rules"
-    priority = 20 + local.priority_base
+    priority = 40 + local.priority_base
 
     override_action {
       none {}
@@ -119,7 +175,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
   rule {
     name     = "aws-managed-bad-inputs"
-    priority = 30 + local.priority_base
+    priority = 50 + local.priority_base
 
     override_action {
       none {}
@@ -150,7 +206,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
     for_each = local.ip_reputation_foreach
     content {
       name     = "aws-ip-reputation"
-      priority = 40 + local.priority_base
+      priority = 60 + local.priority_base
 
       override_action {
         none {}
@@ -172,43 +228,11 @@ resource "aws_wafv2_web_acl" "waf_acl" {
   }
 
   dynamic "rule" {
-    for_each = local.all_routes_ip_allowlist_foreach
-    content {
-      name     = "ip-allowlist"
-      priority = 50 + local.priority_base
-      action {
-        block {
-          custom_response {
-            custom_response_body_key = "ip_error"
-            response_code            = 403
-          }
-        }
-      }
-
-      statement {
-        not_statement {
-          statement {
-            ip_set_reference_statement {
-              arn = aws_wafv2_ip_set.main[0].arn
-            }
-          }
-        }
-      }
-
-      visibility_config {
-        cloudwatch_metrics_enabled = true
-        metric_name                = local.metric_names.ip_allowlist
-        sampled_requests_enabled   = true
-      }
-    }
-  }
-
-  dynamic "rule" {
     for_each = local.path_specific_ip_allowlist_foreach
     content {
       // Should never be on at the same time as the "ip-allowlist" rule above
       name     = "ip-allowlist-path"
-      priority = 50 + local.priority_base
+      priority = 70 + local.priority_base
       action {
         block {
           custom_response {
@@ -275,3 +299,15 @@ resource "aws_wafv2_regex_pattern_set" "ip_restricted_paths" {
     }
   }
 }
+
+resource "aws_wafv2_ip_set" "blocklist" {
+  provider = aws.us-east-1
+  count    = length(var.blocked_ip_addresses) > 0 ? 1 : 0
+
+  name               = "${var.prefix}cloudfront-waf-blocklist"
+  description        = "${var.prefix}cloudfront-waf-blocklist"
+  scope              = "CLOUDFRONT"
+  ip_address_version = "IPV4"
+  addresses          = var.blocked_ip_addresses
+}
+
