@@ -44,7 +44,7 @@ locals {
   cloudwatch_log_expiration_days       = 731
   patch_cloudwatch_log_expiration_days = 90
   s3_log_expiration_days               = 731
-  all_notifications_email_addresses    = ["Group-DLUHCDeltaNotifications@softwire.com", "Yousuf.Desai@levellingup.gov.uk"]
+  all_notifications_email_addresses    = ["delta-notifications@levellingup.gov.uk", "Group-DLUHCDeltaNotifications@softwire.com", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
 }
 
 module "communities_only_ssl_certs" {
@@ -60,11 +60,7 @@ module "ses_identity" {
   domain                               = "datacollection.levellingup.gov.uk"
   environment                          = local.environment
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
-  bounce_complaint_notification_emails = concat(
-    local.all_notifications_email_addresses,
-    ["deltaadmin@levellingup.gov.uk"]
-  )
-  alarms_sns_topic_arn = module.notifications.alarms_sns_topic_arn
+  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }
 
 module "delta_ses_user" {
@@ -139,8 +135,8 @@ module "bastion" {
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
 
-  dns_config = {
-    zone_id = var.hosted_zone_id
+  dns_config = var.secondary_domain == null ? null : {
+    zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
 }
@@ -182,8 +178,30 @@ module "backup_replication_bucket" {
 
   environment                   = local.environment
   s3_access_log_expiration_days = local.s3_log_expiration_days
-  compliance_retention_days     = 14 # TODO DT-742 Increase once happy with replication
+  compliance_retention_days     = 28
   object_expiration_days        = 90
+}
+
+module "ebs_backup" {
+  source = "../modules/ebs_backup"
+
+  environment                          = local.environment
+  ebs_backup_error_notification_emails = local.all_notifications_email_addresses
+}
+
+moved {
+  from = module.marklogic.aws_iam_role.ebs_backup
+  to   = module.ebs_backup.aws_iam_role.ebs_backup
+}
+
+moved {
+  from = module.marklogic.aws_iam_role_policy_attachment.service_backup
+  to   = module.ebs_backup.aws_iam_role_policy_attachment.service_backup
+}
+
+moved {
+  from = module.marklogic.aws_iam_role_policy_attachment.service_restore
+  to   = module.ebs_backup.aws_iam_role_policy_attachment.service_restore
 }
 
 module "marklogic" {
@@ -203,7 +221,6 @@ module "marklogic" {
     throughput_MiB_per_sec = 1000
   }
 
-  ebs_backup_error_notification_emails    = local.all_notifications_email_addresses
   extra_instance_policy_arn               = module.session_manager_config.policy_arn
   app_cloudwatch_log_expiration_days      = local.cloudwatch_log_expiration_days
   patch_cloudwatch_log_expiration_days    = local.patch_cloudwatch_log_expiration_days
@@ -217,7 +234,11 @@ module "marklogic" {
     local.all_notifications_email_addresses,
     ["deltastatsupport@levellingup.gov.uk"]
   )
-  backup_replication_bucket = module.backup_replication_bucket.bucket
+  backup_replication_bucket          = module.backup_replication_bucket.bucket
+  ebs_backup_role_arn                = module.ebs_backup.role_arn
+  ebs_backup_completed_sns_topic_arn = module.ebs_backup.sns_topic_arn
+  # TODO DT-803 Reduce/remove this once we are happy with our testing on staging
+  weekly_backup_bucket_retention_days = 60
 }
 
 module "gh_runner" {
@@ -330,8 +351,8 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["cpm"].arn
     }
     ip_allowlist              = local.cloudfront_ip_allowlists.cpm
-    geo_restriction_countries = ["GB", "IE"]
-    origin_read_timeout       = 180 # Required quota increase
+    geo_restriction_countries = ["GB", "IE", "DE"] # SAP middleware operates from AWS located in Germany
+    origin_read_timeout       = 180                # Required quota increase
   }
   jaspersoft = {
     alb = module.public_albs.jaspersoft

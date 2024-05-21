@@ -52,7 +52,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
     }
 
     noncurrent_version_expiration {
-      noncurrent_days = 20 # TODO DT-803 Reduce expiration once we have a full set of backups replicated
+      noncurrent_days = 7
     }
 
     status = "Enabled"
@@ -69,14 +69,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
         prefix = "${rule.value}/20"
       }
 
-      # TODO DT-803 Remove transition and reduce expiration once we have a full set of backups replicated
-      transition {
-        days          = 7
-        storage_class = "GLACIER_IR"
-      }
-
       expiration {
-        days = 80
+        days = var.weekly_backup_bucket_retention_days
       }
 
       status = "Enabled"

@@ -46,7 +46,7 @@ locals {
   cloudwatch_log_expiration_days       = 60
   patch_cloudwatch_log_expiration_days = 60
   s3_log_expiration_days               = 60
-  all_notifications_email_addresses    = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com"]
+  all_notifications_email_addresses    = ["Group-DLUHCDeltaDevNotifications+staging@softwire.com", "dluhc-delta-dev-cloud-aaaamwf6vajqjepih2xfrp2dqe@communities-govuk.slack.com"]
 }
 
 module "communities_only_ssl_certs" {
@@ -110,7 +110,7 @@ module "bastion" {
   extra_userdata          = file("${path.module}/../bastion_config.sh")
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
-  dns_config = {
+  dns_config = var.secondary_domain == null ? null : {
     zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
@@ -270,8 +270,30 @@ module "backup_replication_bucket" {
 
   environment                   = local.environment
   s3_access_log_expiration_days = local.s3_log_expiration_days
-  compliance_retention_days     = 1
+  compliance_retention_days     = 28
   object_expiration_days        = 30
+}
+
+module "ebs_backup" {
+  source = "../modules/ebs_backup"
+
+  environment                          = local.environment
+  ebs_backup_error_notification_emails = local.all_notifications_email_addresses
+}
+
+moved {
+  from = module.marklogic.aws_iam_role.ebs_backup
+  to   = module.ebs_backup.aws_iam_role.ebs_backup
+}
+
+moved {
+  from = module.marklogic.aws_iam_role_policy_attachment.service_backup
+  to   = module.ebs_backup.aws_iam_role_policy_attachment.service_backup
+}
+
+moved {
+  from = module.marklogic.aws_iam_role_policy_attachment.service_restore
+  to   = module.ebs_backup.aws_iam_role_policy_attachment.service_restore
 }
 
 module "marklogic" {
@@ -291,7 +313,6 @@ module "marklogic" {
     throughput_MiB_per_sec = 250
   }
 
-  ebs_backup_error_notification_emails    = local.all_notifications_email_addresses
   extra_instance_policy_arn               = module.session_manager_config.policy_arn
   app_cloudwatch_log_expiration_days      = local.cloudwatch_log_expiration_days
   patch_cloudwatch_log_expiration_days    = local.patch_cloudwatch_log_expiration_days
@@ -303,6 +324,8 @@ module "marklogic" {
   dap_external_role_arns                  = var.dap_external_role_arns
   dap_job_notification_emails             = local.all_notifications_email_addresses
   backup_replication_bucket               = module.backup_replication_bucket.bucket
+  ebs_backup_role_arn                     = module.ebs_backup.role_arn
+  ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
 }
 
 module "gh_runner" {
@@ -363,7 +386,6 @@ module "ses_identity" {
   environment                          = local.environment
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   domain                               = "datacollection.test.levellingup.gov.uk"
-  bounce_complaint_notification_emails = local.all_notifications_email_addresses
   alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }
 
