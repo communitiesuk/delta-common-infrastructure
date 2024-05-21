@@ -36,3 +36,8 @@ variable "security_sns_topic_global_arn" {
   description = "SNS topic ARN to send security notifications to"
   type        = string
 }
+
+variable "blocked_ip_addresses" {
+  type    = list(string)
+  default = ["13.41.22.180/32", "13.42.130.170/32"]
+}
