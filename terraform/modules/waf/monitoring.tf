@@ -44,6 +44,8 @@ resource "aws_cloudwatch_dashboard" "waf_dashboard" {
               ["AWS/WAFV2", "CountedRequests", "Rule", local.metric_names.bad_inputs, "WebACL", aws_wafv2_web_acl.waf_acl.name],
               ["AWS/WAFV2", "BlockedRequests", "Rule", local.metric_names.ip_reputation, "WebACL", aws_wafv2_web_acl.waf_acl.name],
               ["AWS/WAFV2", "CountedRequests", "Rule", local.metric_names.ip_reputation, "WebACL", aws_wafv2_web_acl.waf_acl.name],
+              ["AWS/WAFV2", "BlockedRequests", "Rule", local.metric_names.ip_allowlist, "WebACL", aws_wafv2_web_acl.waf_acl.name],
+              ["AWS/WAFV2", "BlockedRequests", "Rule", local.metric_names.ip_blocklist, "WebACL", aws_wafv2_web_acl.waf_acl.name],
             ]),
             "region" : "us-east-1",
             "title" : "Blocked and counted requests by rule group",
