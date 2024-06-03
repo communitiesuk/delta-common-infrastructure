@@ -4843,9 +4843,7 @@ AD Management Server</xhtml:div>
    style="font-size: 10px;" />
 Delta, CPM, MarkLogic,<xhtml:br
    style="font-size: 10px;" />
-internal, Keycloak<xhtml:br
-   style="font-size: 10px;" />
-and auth service<xhtml:br
+Keycloak and auth service<xhtml:br
    style="font-size: 10px;" />
 all connect over LDAP(S)</xhtml:div>
             </xhtml:div>
