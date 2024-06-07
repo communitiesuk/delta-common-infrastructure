@@ -339,6 +339,7 @@ module "marklogic" {
   backup_replication_bucket               = module.backup_replication_bucket.bucket
   ebs_backup_role_arn                     = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
+  iam_github_openid_connect_provider_arn  = module.github_actions_openid_connect_provider.github_oidc_provider_arn
 }
 
 module "gh_runner" {
@@ -458,4 +459,15 @@ module "auth_internal_alb" {
   environment     = local.environment
   subnet_ids      = module.networking.auth_service_private_subnets.*.id
   vpc             = module.networking.vpc
+}
+
+module "github_actions_openid_connect_provider" {
+  source = "../modules/github_actions_openid_connect_provider"
+}
+
+module "github_actions_dev_terraform_roles" {
+  source = "../modules/github_actions_dev_terraform_roles"
+
+  environment     = local.environment
+  github_oidc_arn = module.github_actions_openid_connect_provider.github_oidc_provider_arn
 }

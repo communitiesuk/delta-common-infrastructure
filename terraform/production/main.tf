@@ -238,7 +238,8 @@ module "marklogic" {
   ebs_backup_role_arn                = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn = module.ebs_backup.sns_topic_arn
   # TODO DT-803 Reduce/remove this once we are happy with our testing on staging
-  weekly_backup_bucket_retention_days = 60
+  weekly_backup_bucket_retention_days    = 60
+  iam_github_openid_connect_provider_arn = module.github_actions_openid_connect_provider.github_oidc_provider_arn
 }
 
 module "gh_runner" {
@@ -460,3 +461,9 @@ module "auth_internal_alb" {
   subnet_ids      = module.networking.auth_service_private_subnets.*.id
   vpc             = module.networking.vpc
 }
+
+module "github_actions_openid_connect_provider" {
+  source = "../modules/github_actions_openid_connect_provider"
+}
+
+
