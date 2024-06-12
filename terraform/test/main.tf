@@ -459,3 +459,9 @@ module "auth_internal_alb" {
   subnet_ids      = module.networking.auth_service_private_subnets.*.id
   vpc             = module.networking.vpc
 }
+
+module "open_id_connect" {
+  source = "../modules/open_id_connect"
+
+  environment = local.environment
+}
