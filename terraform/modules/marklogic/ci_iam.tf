@@ -1,5 +1,5 @@
 resource "aws_iam_role" "github_actions_delta_marklogic_deploy_secret_reader" {
-  name = "github-actions-delta-marklogic-deploy-secret-reader-${var.environment}"
+  name               = "github-actions-delta-marklogic-deploy-secret-reader-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.github_actions_delta_marklogic_deploy_secret_reader_assume_role.json
 }
 
@@ -23,8 +23,8 @@ data "aws_iam_policy_document" "github_actions_delta_marklogic_deploy_secret_rea
     }
 
     condition {
-      test     = "StringLike"
-      values   = [
+      test = "StringLike"
+      values = [
         "repo:communitiesuk/delta-marklogic-deploy:environment:${var.environment}"
       ]
       variable = "token.actions.githubusercontent.com:sub"

@@ -14,8 +14,8 @@ data "aws_iam_policy_document" "github_actions_terraform_plan_assume_role" {
     }
 
     condition {
-      test     = "StringLike"
-      values   = [
+      test = "StringLike"
+      values = [
         "repo:communitiesuk/delta-common-infrastructure:*"
       ]
       variable = "token.actions.githubusercontent.com:sub"
@@ -66,8 +66,8 @@ data "aws_iam_policy_document" "github_actions_terraform_admin_assume_role" {
     }
 
     condition {
-      test     = "StringLike"
-      values   = [
+      test = "StringLike"
+      values = [
         "repo:communitiesuk/delta-common-infrastructure:environment:${var.environment}"
       ]
       variable = "token.actions.githubusercontent.com:sub"
