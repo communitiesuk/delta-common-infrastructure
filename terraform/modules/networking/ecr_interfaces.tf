@@ -53,11 +53,17 @@ data "aws_iam_policy_document" "ecr_dkr_endpoint" {
       "ecr:BatchCheckLayerAvailability",
       "ecr:GetDownloadUrlForLayer",
       "ecr:BatchGetImage",
+      # For ECR Public pull through cache
+      "ecr:BatchImportUpstreamImage",
+      "ecr:CreateRepository",
     ]
     principals {
       type        = "AWS"
       identifiers = [data.aws_caller_identity.current.account_id]
     }
-    resources = ["arn:aws:ecr:${data.aws_region.current.name}:${var.ecr_repo_account_id}:*"]
+    resources = distinct([
+      "arn:aws:ecr:${data.aws_region.current.name}:${var.ecr_repo_account_id}:*",
+      "arn:aws:ecr:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+    ])
   }
 }
