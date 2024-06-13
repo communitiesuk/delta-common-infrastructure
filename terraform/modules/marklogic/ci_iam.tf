@@ -28,11 +28,7 @@ data "aws_iam_policy_document" "github_actions_delta_marklogic_deploy_secret_rea
   }
 }
 
-data "aws_iam_policy" "delta-marklogic-deploy-secret-reader" {
-  arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/read-marklogic-admin-password-${var.environment}"
-}
-
 resource "aws_iam_role_policy_attachment" "github_actions_delta_marklogic_deploy_secret_reader" {
   role       = aws_iam_role.github_actions_delta_marklogic_deploy_secret_reader.name
-  policy_arn = data.aws_iam_policy.delta-marklogic-deploy-secret-reader.arn
+  policy_arn = aws_iam_policy.read_marklogic_deploy_secrets.arn
 }
