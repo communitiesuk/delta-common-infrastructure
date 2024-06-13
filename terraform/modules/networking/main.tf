@@ -115,8 +115,11 @@ locals {
       subnets              = aws_subnet.auth_service
       cidr                 = local.auth_service_cidr_10
       http_allowed_domains = []
-      tls_allowed_domains  = ["login.microsoftonline.com", "graph.microsoft.com"] // Microsoft domains for OAuth token endpoint and fetching user info
-      sid_offset           = 1300
+      tls_allowed_domains = [
+        "login.microsoftonline.com", "graph.microsoft.com", # Microsoft domains for OAuth token endpoint and fetching user info
+        "xray.${data.aws_region.current.name}.amazonaws.com",
+      ]
+      sid_offset = 1300
     }
     marklogic = {
       cidr                 = local.ml_subnet_cidr_10
