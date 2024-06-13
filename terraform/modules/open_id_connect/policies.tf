@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "github_actions_terraform_admin_assume_role" {
     }
 
     condition {
-      test = "StringLike"
+      test = "StringEquals"
       values = [
         "repo:communitiesuk/delta-common-infrastructure:environment:${var.environment}"
       ]
