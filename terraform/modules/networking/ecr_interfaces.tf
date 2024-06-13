@@ -53,9 +53,8 @@ data "aws_iam_policy_document" "ecr_dkr_endpoint" {
       "ecr:BatchCheckLayerAvailability",
       "ecr:GetDownloadUrlForLayer",
       "ecr:BatchGetImage",
-      # For ECR Public pull through cache
-      "ecr:BatchImportUpstreamImage",
-      "ecr:CreateRepository",
+      "ecr:BatchImportUpstreamImage", # For ECR Public pull through cache
+      "ecr:CreateRepository",         # For ECR Public pull through cache
     ]
     principals {
       type        = "AWS"
