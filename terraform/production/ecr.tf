@@ -41,10 +41,6 @@ locals {
       repo_name = "delta-api",
       push_user = aws_iam_user.delta_ci.name
     },
-    "delta_internal" = {
-      repo_name = "delta-internal",
-      push_user = aws_iam_user.delta_ci.name
-    },
     "delta_fo_to_pdf" = {
       repo_name = "delta-fo-to-pdf",
       push_user = aws_iam_user.delta_ci.name
