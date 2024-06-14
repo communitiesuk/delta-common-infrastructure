@@ -1,5 +1,7 @@
 locals {
-  is_development = var.environment == "test"
+  is_development                      = var.environment == "test"
+  github_actions_terraform_plan_name  = count.index == 1 ? aws_iam_role.github_actions_terraform_plan[0].name : null
+  github_actions_terraform_admin_name = count.index == 1 ? aws_iam_role.github_actions_terraform_admin[0].name : null
 }
 
 resource "aws_iam_role" "github_actions_terraform_plan" {
