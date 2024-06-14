@@ -37,7 +37,7 @@ data "aws_iam_policy" "read_only_access" {
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_terraform_plan_read_only_access" {
-  role       = aws_iam_role.github_actions_terraform_plan.name
+  role       = aws_iam_role.github_actions_terraform_plan[count.index].name
   policy_arn = data.aws_iam_policy.read_only_access.arn
 }
 
@@ -46,7 +46,7 @@ data "aws_iam_policy" "administrator_access" {
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_terraform_admin_access" {
-  role       = aws_iam_role.github_actions_terraform_admin.name
+  role       = aws_iam_role.github_actions_terraform_admin[count.index].name
   policy_arn = data.aws_iam_policy.administrator_access.arn
 }
 
