@@ -28,7 +28,8 @@ data "aws_iam_policy" "terraform_state_read_only" {
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_terraform_plan_state_read" {
-  role       = aws_iam_role.github_actions_terraform_plan.name
+  count      = local.is_development ? 1 : 0
+  role       = aws_iam_role.github_actions_terraform_plan[0].name
   policy_arn = data.aws_iam_policy.terraform_state_read_only.arn
 }
 

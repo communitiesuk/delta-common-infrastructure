@@ -1,5 +1,5 @@
 locals {
-  is_development                      = var.environment == "test"
+  is_development = var.environment == "test"
 }
 
 resource "aws_iam_role" "github_actions_terraform_plan" {
