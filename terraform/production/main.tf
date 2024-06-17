@@ -462,8 +462,8 @@ module "auth_internal_alb" {
   vpc             = module.networking.vpc
 }
 
-module "open_id_connect" {
-  source = "../modules/open_id_connect"
-
-  environment = local.environment
+module "github_actions_openid_connect_provider" {
+  source = "../modules/github_actions_openid_connect_provider"
 }
+
+

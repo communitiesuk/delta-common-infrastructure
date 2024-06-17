@@ -1,10 +1,18 @@
+data "aws_region" "current" {}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_openid_connect_provider" "github" {
+  arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"
+}
+
 data "aws_iam_policy_document" "github_actions_terraform_plan_assume_role" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github.arn]
+      identifiers = [data.aws_iam_openid_connect_provider.github.arn]
     }
 
     condition {
@@ -28,8 +36,7 @@ data "aws_iam_policy" "terraform_state_read_only" {
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_terraform_plan_state_read" {
-  count      = local.is_development ? 1 : 0
-  role       = aws_iam_role.github_actions_terraform_plan[0].name
+  role       = aws_iam_role.github_actions_terraform_plan.name
   policy_arn = data.aws_iam_policy.terraform_state_read_only.arn
 }
 
@@ -38,8 +45,7 @@ data "aws_iam_policy" "read_only_access" {
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_terraform_plan_read_only_access" {
-  count      = local.is_development ? 1 : 0
-  role       = aws_iam_role.github_actions_terraform_plan[0].name
+  role       = aws_iam_role.github_actions_terraform_plan.name
   policy_arn = data.aws_iam_policy.read_only_access.arn
 }
 
@@ -48,8 +54,7 @@ data "aws_iam_policy" "administrator_access" {
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_terraform_admin_access" {
-  count      = local.is_development ? 1 : 0
-  role       = aws_iam_role.github_actions_terraform_admin[0].name
+  role       = aws_iam_role.github_actions_terraform_admin.name
   policy_arn = data.aws_iam_policy.administrator_access.arn
 }
 
@@ -59,7 +64,7 @@ data "aws_iam_policy_document" "github_actions_terraform_admin_assume_role" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github.arn]
+      identifiers = [data.aws_iam_openid_connect_provider.github.arn]
     }
 
     condition {
