@@ -239,7 +239,7 @@ module "marklogic" {
   ebs_backup_completed_sns_topic_arn = module.ebs_backup.sns_topic_arn
   # TODO DT-803 Reduce/remove this once we are happy with our testing on staging
   weekly_backup_bucket_retention_days    = 60
-  iam_github_openid_connect_provider_arn = module.open_id_connect.github_oidc_provider_arn
+  iam_github_openid_connect_provider_arn = module.github_actions_openid_connect_provider.github_oidc_provider_arn
 }
 
 module "gh_runner" {
