@@ -52,6 +52,7 @@ locals {
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
+# Defined in test/main.tf for the dev AWS account
 data "aws_iam_openid_connect_provider" "github" {
   arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"
 }
