@@ -469,4 +469,5 @@ module "github_actions_dev_terraform_roles" {
   source = "../modules/github_actions_dev_terraform_roles"
 
   environment = local.environment
+  github_oidc_arn = module.github_actions_openid_connect_provider.github_oidc_provider_arn
 }
