@@ -53,8 +53,3 @@ variable "dap_external_role_arns" {
   type    = list(string)
   default = ["arn:aws:iam::062321884391:role/DSQSS"]
 }
-
-variable "github_oidc_arn" {
-  type        = string
-  description = "the ARN of the OIDC provider used for GitHub Actions"
-}
