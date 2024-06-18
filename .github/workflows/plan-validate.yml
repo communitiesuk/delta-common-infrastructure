@@ -45,11 +45,19 @@ jobs:
   plan_staging:
     name: Staging Terraform plan
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     env:
       AWS_REGION: "eu-west-1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::486283582667:role/github-actions-terraform-ci-plan-read-only
+          aws-region: ${{ env.AWS_REGION }}
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
