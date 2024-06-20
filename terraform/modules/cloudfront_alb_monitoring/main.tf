@@ -55,16 +55,3 @@ module "cpm_cloudfront_alb_monitoring" {
 
   cloudfront_average_origin_latency_high_alarm_threshold_ms = 60000
 }
-
-module "jaspersoft_cloudfront_alb_monitoring" {
-  source                        = "../cloudfront_alb_monitoring_instance"
-  alb_arn_suffix                = var.jaspersoft.alb_arn_suffix
-  cloudfront_distribution_id    = var.jaspersoft.cloudfront_distribution_id
-  instance_metric_namespace     = var.jaspersoft.instance_metric_namespace
-  alarms_sns_topic_arn          = var.alarms_sns_topic_arn
-  alarms_sns_topic_global_arn   = var.alarms_sns_topic_global_arn
-  security_sns_topic_global_arn = var.security_sns_topic_global_arn
-  enable_aws_shield_alarms      = var.enable_aws_shield_alarms
-  prefix                        = "${var.environment}-jaspersoft"
-}
-

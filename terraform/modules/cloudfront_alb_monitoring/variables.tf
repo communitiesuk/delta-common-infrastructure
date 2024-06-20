@@ -30,14 +30,6 @@ variable "cpm" {
   })
 }
 
-variable "jaspersoft" {
-  type = object({
-    cloudfront_distribution_id = string
-    alb_arn_suffix             = string
-    instance_metric_namespace  = string
-  })
-}
-
 variable "environment" {
   type = string
 }
