@@ -21,7 +21,7 @@ For how we set up AWS accounts and the CLI, including Session Manager see [docs/
 ## Bastion
 
 There's an SSH bastion server for each environment.
-If you have AWS access you can create an account by uploading your SSH public key to the relevant bucket (your username will be all lowercase):
+If you have AWS access you can create an account by uploading your SSH public key to the relevant bucket (see buckets with `ssh` in their name) (your username will be all lowercase):
 
 ```sh
 aws s3 cp ~/.ssh/id_rsa.pub s3://$(terraform output -raw bastion_ssh_keys_bucket)/<username>.pub
