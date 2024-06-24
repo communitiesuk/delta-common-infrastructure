@@ -59,8 +59,8 @@ locals {
       ]
       sid_offset = 500
     }
-    delta_internal_subnets = {
-      cidr                 = local.delta_internal_cidr_10
+    delta_fo_to_pdf_subnets = {
+      cidr                 = local.delta_fo_to_pdf_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = []
       sid_offset           = 600
@@ -159,7 +159,7 @@ locals {
   firewalled_subnets = concat(
     aws_subnet.bastion_private_subnets,
     aws_subnet.ad_dc_private_subnets,
-    aws_subnet.delta_internal,
+    aws_subnet.delta_fo_to_pdf,
     aws_subnet.delta_api,
     aws_subnet.delta_website,
     aws_subnet.cpm_private,
