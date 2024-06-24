@@ -25,6 +25,7 @@ module "delta_website_waf" {
   # Orbeon triggers this rule
   excluded_rules = ["CrossSiteScripting_BODY",
     "GenericLFI_BODY",
+    # To allow long query strings - fix for MSD-80376
   "SizeRestrictions_QUERYSTRING"]
   ip_allowlist                   = var.delta.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
