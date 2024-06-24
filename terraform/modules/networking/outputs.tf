@@ -40,9 +40,9 @@ output "ml_restore_rehearsal_private_subnets" {
   description = "Three private /24 subnets for MarkLogic restore from backup rehearsal"
 }
 
-output "delta_internal_subnets" {
-  value       = aws_subnet.delta_internal
-  description = "Three private /24 subnets for internal Delta apps"
+output "delta_fo_to_pdf_subnets" {
+  value       = aws_subnet.delta_fo_to_pdf
+  description = "Three private /24 subnets for the fo-to-pdf Delta app"
 }
 
 output "delta_api_subnets" {
