@@ -368,7 +368,6 @@ module "jaspersoft" {
   vpc                                  = module.networking.vpc
   prefix                               = "dluhc-${local.environment}-"
   ssh_key_name                         = aws_key_pair.jaspersoft_ssh_key.key_name
-  public_alb                           = module.public_albs.jaspersoft
   allow_ssh_from_sg_id                 = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket        = var.jasper_s3_bucket
   private_dns                          = module.networking.private_dns
