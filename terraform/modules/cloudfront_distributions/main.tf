@@ -23,7 +23,9 @@ module "delta_website_waf" {
   log_group_suffix  = "delta-website-${var.environment}"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Orbeon triggers this rule
-  excluded_rules                 = ["CrossSiteScripting_BODY", "GenericLFI_BODY", "SizeRestrictions_QUERYSTRING"]
+  excluded_rules = ["CrossSiteScripting_BODY",
+    "GenericLFI_BODY",
+  "SizeRestrictions_QUERYSTRING"]
   ip_allowlist                   = var.delta.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
