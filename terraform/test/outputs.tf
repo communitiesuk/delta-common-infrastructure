@@ -31,10 +31,6 @@ output "ml_ssh_private_key" {
   sensitive = true
 }
 
-output "jaspersoft_alb_domain" {
-  value = module.public_albs.jaspersoft.dns_name
-}
-
 output "jaspersoft_private_ip" {
   value = module.jaspersoft.instance_private_ip
 }
@@ -130,11 +126,10 @@ output "required_dns_records" {
 
 output "public_albs" {
   value = {
-    delta      = module.public_albs.delta
-    api        = module.public_albs.delta_api
-    auth       = module.public_albs.auth
-    cpm        = module.public_albs.cpm
-    jaspersoft = module.public_albs.jaspersoft
+    delta = module.public_albs.delta
+    api   = module.public_albs.delta_api
+    auth  = module.public_albs.auth
+    cpm   = module.public_albs.cpm
   }
   # Includes CloudFront keys
   sensitive = true

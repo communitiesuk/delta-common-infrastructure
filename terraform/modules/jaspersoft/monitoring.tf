@@ -89,9 +89,9 @@ Non-critical, only affects Delta reports.
 resource "aws_cloudwatch_metric_alarm" "healthy_host_low" {
   alarm_name          = "jaspersoft-${var.environment}-healthy-host-count-low"
   comparison_operator = "LessThanThreshold"
-  evaluation_periods  = 1
-  metric_name         = "HealthyHostCount"
-  namespace           = "AWS/ApplicationELB"
+  evaluation_periods  = 2
+  metric_name         = "StatusCheckFailed"
+  namespace           = "AWS/EC2"
   period              = 300
   statistic           = "Minimum"
   threshold           = 1
@@ -106,7 +106,8 @@ Connect to the instance using Systems Manager Session Manager to investigate or 
   treat_missing_data = "breaching"
 
   dimensions = {
-    "TargetGroup" : aws_lb_target_group.main.arn_suffix
-    "LoadBalancer" : var.public_alb.arn_suffix
+    "InstanceId" : aws_instance.jaspersoft_server.id
   }
 }
+
+

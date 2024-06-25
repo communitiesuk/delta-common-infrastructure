@@ -104,24 +104,3 @@ output "cpm" {
     primary_hostname  = var.certificates["cpm"].primary_domain
   }
 }
-
-module "jaspersoft_alb" {
-  source = "../public_alb"
-
-  vpc                    = var.vpc
-  subnet_ids             = var.subnet_ids
-  prefix                 = "${var.environment}-jaspersoft-"
-  s3_log_expiration_days = var.alb_s3_log_expiration_days
-}
-
-output "jaspersoft" {
-  value = {
-    arn               = module.jaspersoft_alb.arn
-    arn_suffix        = module.jaspersoft_alb.arn_suffix
-    dns_name          = module.jaspersoft_alb.dns_name
-    security_group_id = module.jaspersoft_alb.security_group_id
-    cloudfront_key    = random_password.cloudfront_keys["jaspersoft"].result
-    certificate_arn   = var.certificates["jaspersoft_delta"].arn
-    primary_hostname  = var.certificates["jaspersoft_delta"].primary_domain
-  }
-}
