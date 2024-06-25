@@ -24,10 +24,10 @@ module "delta_website_waf" {
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Orbeon triggers this rule
   excluded_rules = [
-    "CrossSiteScripting_BODY",     # Sometimes blocks File uploads
-    "GenericLFI_BODY",             # Sometimes blocks Excel uploads
-   "SizeRestrictions_QUERYSTRING", # To allow long query strings - fix for MSD-80376
- ]
+    "CrossSiteScripting_BODY",      # Sometimes blocks File uploads
+    "GenericLFI_BODY",              # Sometimes blocks Excel uploads
+    "SizeRestrictions_QUERYSTRING", # To allow long query strings - fix for MSD-80376
+  ]
   ip_allowlist                   = var.delta.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
