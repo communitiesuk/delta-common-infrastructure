@@ -40,6 +40,8 @@ module "keycloak_cloudfront_alb_monitoring" {
   security_sns_topic_global_arn = var.security_sns_topic_global_arn
   enable_aws_shield_alarms      = var.enable_aws_shield_alarms
   prefix                        = "${var.environment}-keycloak"
+
+  alb_target_client_error_rate_alarm_threshold_count   = 15
 }
 
 module "cpm_cloudfront_alb_monitoring" {
