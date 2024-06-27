@@ -125,6 +125,10 @@ output "public_albs" {
   sensitive = true
 }
 
+output "delta_cloudfront_distribution_id" {
+  value = module.cloudfront_distributions.delta_cloudfront_distribution_id
+}
+
 output "session_manager_policy_arn" {
   value = module.session_manager_config.policy_arn
 }

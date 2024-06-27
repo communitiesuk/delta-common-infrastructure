@@ -116,6 +116,10 @@ output "public_albs" {
   sensitive = true
 }
 
+output "delta_cloudfront_distribution_id" {
+  value = module.cloudfront_distributions.delta_cloudfront_distribution_id
+}
+
 output "ml_http_target_group_arn" {
   value = module.marklogic.ml_http_target_group_arn
 }
