@@ -85,16 +85,16 @@ Non-critical, only affects Delta reports.
   dimensions = { "DBInstanceIdentifier" = aws_db_instance.jaspersoft.identifier }
 }
 
-# There's only one Jaspersoft instance, so no need to check unhealthy too
+# There's only one Jaspersoft instance
 resource "aws_cloudwatch_metric_alarm" "healthy_host_low" {
-  alarm_name          = "jaspersoft-${var.environment}-healthy-host-count-low"
-  comparison_operator = "LessThanThreshold"
+  alarm_name          = "jaspersoft-${var.environment}-unhealthy-host"
+  comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
   metric_name         = "StatusCheckFailed"
   namespace           = "AWS/EC2"
   period              = 300
   statistic           = "Minimum"
-  threshold           = 1
+  threshold           = 0
 
   alarm_description  = <<EOF
 The JasperReports server is unhealthy.
