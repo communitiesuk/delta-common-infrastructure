@@ -11,8 +11,8 @@ The GitHub actions runner requires a short lived token to register with GitHub, 
 * Delete any existing runner for the environment
 * Go to the create new runner page for the repo on GitHub: <https://github.com/communitiesuk/delta-marklogic-deploy/settings/actions/runners/new?arch=x64&os=linux>
 * Copy the token from the setup steps
-* Pass it as a variable to Terraform apply
+* Pass it as a variable to Terraform apply (github_actions_runner_token)
 * Check the runner appears online in GitHub
   * It will take a couple of minutes for the runner to initialise, you can check the logs in CloudWatch or on the instance
 
-The instance is set to ignore_changes to its user data (which includes the runner token), so updates will need to be forced with e.g. `terraform taint`.
+The instance is set to ignore_changes to its user data (which includes the runner token) or AMI, so updates will need to be forced - either use `terraform taint` or temporarily remove the `ignore_changes` block.
