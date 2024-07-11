@@ -29,6 +29,10 @@ locals {
         "actions-results-receiver-production.githubapp.com",
         "sts.eu-west-1.amazonaws.com", # For getting AWS credentials via OIDC
         # Custom rule for productionresultssa*.blob.core.windows.net in firewall.tf to support the wildcard
+        ".amazonlinux.com",
+        "index.rubygems.org",
+        "rubygems.org",
+        "cache.ruby-lang.org"
       ]
       sid_offset = 300
     }

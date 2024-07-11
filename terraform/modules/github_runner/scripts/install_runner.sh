@@ -19,7 +19,7 @@ tar xzf ./$file_name
 echo "Delete tar file"
 rm -rf $file_name
 
-yum install -y libicu60
+yum install -y libicu
 
 echo "Set file ownership of action runner"
 chown -R "$user_name":"$user_name" .

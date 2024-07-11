@@ -28,6 +28,7 @@ data "aws_iam_policy_document" "s3_gateway" {
     }
     resources = [
       "arn:aws:s3:::amazonlinux.${data.aws_region.current.name}.amazonaws.com/*",
+      "arn:aws:s3:::al2023-repos-${data.aws_region.current.name}-de612dc2/*",
       "arn:aws:s3:::amazonlinux-2-repos-${data.aws_region.current.name}/*",
     ]
   }
