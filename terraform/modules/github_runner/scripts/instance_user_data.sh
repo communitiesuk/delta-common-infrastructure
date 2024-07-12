@@ -20,7 +20,7 @@ yum install -y docker
 service docker start
 usermod -a -G docker ec2-user
 
-yum install -y amazon-cloudwatch-agent jq git ruby rubygems
+yum install -y amazon-cloudwatch-agent jq git gcc ruby ruby-devel rubygems
 
 gem install rexml
 
