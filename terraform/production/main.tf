@@ -289,11 +289,6 @@ module "cloudfront_alb_monitoring" {
     alb_arn_suffix             = module.public_albs.cpm.arn_suffix
     instance_metric_namespace  = null
   }
-  jaspersoft = {
-    cloudfront_distribution_id = module.cloudfront_distributions.jaspersoft_cloudfront_distribution_id
-    alb_arn_suffix             = module.public_albs.jaspersoft.arn_suffix
-    instance_metric_namespace  = "${local.environment}/Jaspersoft"
-  }
   alarms_sns_topic_arn          = module.notifications.alarms_sns_topic_arn
   alarms_sns_topic_global_arn   = module.notifications.alarms_sns_topic_global_arn
   security_sns_topic_global_arn = module.notifications.security_sns_topic_global_arn
@@ -355,15 +350,6 @@ module "cloudfront_distributions" {
     geo_restriction_countries = ["GB", "IE", "DE"] # SAP middleware operates from AWS located in Germany
     origin_read_timeout       = 180                # Required quota increase
   }
-  jaspersoft = {
-    alb = module.public_albs.jaspersoft
-    domain = {
-      aliases             = ["reporting.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
-    }
-    ip_allowlist              = local.cloudfront_ip_allowlists.jaspersoft
-    geo_restriction_countries = ["GB", "IE"]
-  }
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
@@ -392,7 +378,6 @@ module "jaspersoft" {
   vpc                                  = module.networking.vpc
   prefix                               = "dluhc-prd-"
   ssh_key_name                         = aws_key_pair.jaspersoft_ssh_key.key_name
-  public_alb                           = module.public_albs.jaspersoft
   allow_ssh_from_sg_id                 = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket        = var.jasper_s3_bucket
   private_dns                          = module.networking.private_dns

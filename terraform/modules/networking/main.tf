@@ -27,7 +27,12 @@ locals {
         "objects.githubusercontent.com", "objects-origin.githubusercontent.com", "github-releases.githubusercontent.com", "github-registry-files.githubusercontent.com",
         ".actions.githubusercontent.com",
         "actions-results-receiver-production.githubapp.com",
+        "sts.eu-west-1.amazonaws.com", # For getting AWS credentials via OIDC
         # Custom rule for productionresultssa*.blob.core.windows.net in firewall.tf to support the wildcard
+        ".amazonlinux.com",
+        "index.rubygems.org",
+        "rubygems.org",
+        "cache.ruby-lang.org"
       ]
       sid_offset = 300
     }
@@ -58,8 +63,8 @@ locals {
       ]
       sid_offset = 500
     }
-    delta_internal_subnets = {
-      cidr                 = local.delta_internal_cidr_10
+    delta_fo_to_pdf_subnets = {
+      cidr                 = local.delta_fo_to_pdf_cidr_10
       http_allowed_domains = []
       tls_allowed_domains  = []
       sid_offset           = 600
@@ -158,7 +163,7 @@ locals {
   firewalled_subnets = concat(
     aws_subnet.bastion_private_subnets,
     aws_subnet.ad_dc_private_subnets,
-    aws_subnet.delta_internal,
+    aws_subnet.delta_fo_to_pdf,
     aws_subnet.delta_api,
     aws_subnet.delta_website,
     aws_subnet.cpm_private,

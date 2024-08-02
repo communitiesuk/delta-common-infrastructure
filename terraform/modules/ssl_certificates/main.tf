@@ -17,11 +17,10 @@ variable "validate_and_check_renewal" {
 locals {
   all_domains = concat([var.primary_domain], var.secondary_domains)
   subdomains = {
-    delta            = "delta"
-    api              = "api.delta"
-    keycloak         = "auth.delta"
-    cpm              = "cpm"
-    jaspersoft_delta = "reporting.delta"
+    delta    = "delta"
+    api      = "api.delta"
+    keycloak = "auth.delta"
+    cpm      = "cpm"
   }
 }
 

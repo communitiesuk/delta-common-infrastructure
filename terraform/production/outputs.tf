@@ -1,5 +1,10 @@
+# TODO Remove once no longer referenced by delta repo
 output "delta_internal_subnet_ids" {
-  value = module.networking.delta_internal_subnets[*].id
+  value = module.networking.delta_fo_to_pdf_subnets[*].id
+}
+
+output "delta_fo_to_pdf_subnet_ids" {
+  value = module.networking.delta_fo_to_pdf_subnets[*].id
 }
 
 output "delta_api_subnet_ids" {
@@ -102,14 +107,17 @@ output "ad_management_server_password" {
 
 output "public_albs" {
   value = {
-    delta      = module.public_albs.delta
-    api        = module.public_albs.delta_api
-    auth       = module.public_albs.auth
-    cpm        = module.public_albs.cpm
-    jaspersoft = module.public_albs.jaspersoft
+    delta = module.public_albs.delta
+    api   = module.public_albs.delta_api
+    auth  = module.public_albs.auth
+    cpm   = module.public_albs.cpm
   }
   # Includes CloudFront keys
   sensitive = true
+}
+
+output "delta_cloudfront_distribution_id" {
+  value = module.cloudfront_distributions.delta_cloudfront_distribution_id
 }
 
 output "ml_http_target_group_arn" {
@@ -138,11 +146,6 @@ output "security_sns_topic_global_arn" {
 
 output "deploy_user_kms_key_arn" {
   value = module.marklogic.deploy_user_kms_key_arn
-}
-
-# TODO: Remove once no longer used
-output "auth_listener_arn" {
-  value = module.public_albs.auth_alb_listener_arn
 }
 
 output "auth_internal_alb" {

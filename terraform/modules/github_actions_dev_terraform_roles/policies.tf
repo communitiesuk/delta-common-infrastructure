@@ -72,7 +72,10 @@ data "aws_iam_policy_document" "github_actions_terraform_admin_assume_role" {
     condition {
       test = "StringEquals"
       values = [
-        "repo:communitiesuk/delta-common-infrastructure:environment:${var.environment}"
+        "repo:communitiesuk/delta-common-infrastructure:environment:${var.environment}",
+        "repo:communitiesuk/delta:environment:${var.environment}",
+        "repo:communitiesuk/delta-auth-service:environment:${var.environment}",
+        "repo:communitiesuk/common-payments-module:environment:${var.environment}"
       ]
       variable = "token.actions.githubusercontent.com:sub"
     }

@@ -1,7 +1,6 @@
 SamAccountName,Password,UserPrincipalName,DisplayName,GivenName,Surname,Email,Name,Path
 joebloggs,put password here,joe.bloggs@dluhcdata.local,Joe Bloggs,Joe,Bloggs,Group-DLUHCDeltaNotifications+joebloggs@softwire.com,joe.bloggs,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 deltaapp,put password here,delta.app@dluhcdata.local,Delta App,,,,delta.app,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
-deltainternal,put password here,delta.internal@dluhcdata.local,Delta Internal App,,,,delta.internal,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 deltaadmin,put password here,delta.admin@dluhcdata.local,Delta Admin,Delta,Admin,delta.admin,delta.admin,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 deltauser,put password here,delta.user@dluhcdata.local,Delta User,Delta,User,delta.user,delta.user,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 reportuser,put password here,report.user@dluhcdata.local,Report User,,,,report.user,"CN=Datamart,OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
