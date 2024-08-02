@@ -41,10 +41,6 @@ locals {
       repo_name = "delta-api",
       push_user = aws_iam_user.delta_ci.name
     },
-    "delta_internal" = {
-      repo_name = "delta-internal",
-      push_user = aws_iam_user.delta_ci.name
-    },
     "delta_fo_to_pdf" = {
       repo_name = "delta-fo-to-pdf",
       push_user = aws_iam_user.delta_ci.name
@@ -66,4 +62,10 @@ module "ecr" {
   kms_alias = "alias/${each.key}-ecr"
   repo_name = each.value["repo_name"]
   push_user = each.value["push_user"]
+}
+
+# Currently used by auth service for pulling AWS telemetry sidecar
+resource "aws_ecr_pull_through_cache_rule" "ecr_public" {
+  ecr_repository_prefix = "ecr-public"
+  upstream_registry_url = "public.ecr.aws"
 }

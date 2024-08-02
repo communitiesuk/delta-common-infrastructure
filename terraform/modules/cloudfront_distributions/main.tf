@@ -4,26 +4,17 @@ module "access_logs_bucket" {
   expiration_days = var.cloudfront_access_s3_log_expiration_days
 }
 
-module "jaspersoft_waf" {
-  source            = "../waf"
-  log_group_suffix  = "jaspersoft-${var.environment}"
-  prefix            = "${var.environment}-jaspersoft-"
-  per_ip_rate_limit = var.waf_per_ip_rate_limit
-  # Editing queries triggers these rules
-  excluded_rules                 = ["CrossSiteScripting_BODY", "GenericLFI_BODY"]
-  ip_allowlist                   = var.jaspersoft.ip_allowlist
-  cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
-  alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
-  security_sns_topic_global_arn  = var.security_sns_topic_global_arn
-}
-
 module "delta_website_waf" {
   source            = "../waf"
   prefix            = "${var.environment}-delta-website-"
   log_group_suffix  = "delta-website-${var.environment}"
   per_ip_rate_limit = var.waf_per_ip_rate_limit
   # Orbeon triggers this rule
-  excluded_rules                 = ["CrossSiteScripting_BODY", "GenericLFI_BODY"]
+  excluded_rules = [
+    "CrossSiteScripting_BODY",      # Sometimes blocks File uploads
+    "GenericLFI_BODY",              # Sometimes blocks Excel uploads
+    "SizeRestrictions_QUERYSTRING", # To allow long query strings - fix for MSD-80376
+  ]
   ip_allowlist                   = var.delta.ip_allowlist
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
@@ -69,7 +60,7 @@ module "auth_waf" {
   per_ip_rate_limit              = var.auth_waf_per_ip_rate_limit
   excluded_rules                 = ["CrossSiteScripting_BODY"]
   ip_allowlist                   = var.api.ip_allowlist
-  ip_allowlist_uri_path_regex    = ["^/keycloak/", "/realms/delta/"]
+  ip_allowlist_uri_path_regex    = ["^/keycloak/", "/realms/delta/", "^/delta-api/"]
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
   security_sns_topic_global_arn  = var.security_sns_topic_global_arn
@@ -144,20 +135,5 @@ module "cpm_cloudfront" {
   geo_restriction_countries      = var.cpm.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
   origin_read_timeout            = var.cpm.origin_read_timeout == null ? 60 : var.cpm.origin_read_timeout
-  wait_for_deployment            = var.wait_for_deployment
-}
-
-module "jaspersoft_cloudfront" {
-  source                         = "../cloudfront_distribution"
-  prefix                         = "jaspersoft-${var.environment}-"
-  access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
-  access_logs_prefix             = "jaspersoft"
-  waf_acl_arn                    = module.jaspersoft_waf.acl_arn
-  cloudfront_key                 = var.jaspersoft.alb.cloudfront_key
-  origin_domain                  = var.jaspersoft.alb.dns_name
-  cloudfront_domain              = var.jaspersoft.domain
-  is_ipv6_enabled                = var.jaspersoft.ip_allowlist == null
-  geo_restriction_countries      = var.jaspersoft.geo_restriction_countries
-  apply_aws_shield               = var.apply_aws_shield
   wait_for_deployment            = var.wait_for_deployment
 }

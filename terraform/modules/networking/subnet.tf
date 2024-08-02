@@ -9,7 +9,7 @@ locals {
   ad_other_cidr_10                    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 2)   # 8.0/22
   ml_subnet_cidr_10                   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 3)   # 12.0/22
   jaspersoft_cidr_10                  = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 4)   # 16.0/22
-  delta_internal_cidr_10              = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 20.0/22
+  delta_fo_to_pdf_cidr_10             = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 5)   # 20.0/22
   github_runner_cidr_10               = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 6)   # 24.0/22
   delta_api_cidr_10                   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 7)   # 28.0/22
   cpm_private_cidr_10                 = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 8)   # 32.0/22
@@ -87,13 +87,18 @@ resource "aws_subnet" "ml_restore_rehearsal_private_subnets" {
   tags                    = { Name = "ml-restore-test-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
-resource "aws_subnet" "delta_internal" {
+resource "aws_subnet" "delta_fo_to_pdf" {
   count                   = 3
-  cidr_block              = cidrsubnet(local.delta_internal_cidr_10, 2, count.index)
+  cidr_block              = cidrsubnet(local.delta_fo_to_pdf_cidr_10, 2, count.index)
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
-  tags                    = { Name = "delta-internal-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+  tags                    = { Name = "delta-fo-to-pdf-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+}
+
+moved {
+  from = aws_subnet.delta_internal
+  to   = aws_subnet.delta_fo_to_pdf
 }
 
 resource "aws_subnet" "delta_api" {

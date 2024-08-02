@@ -116,7 +116,7 @@ resource "aws_lambda_function" "ses_problems_to_cloudwatch_lambda" {
   }
   timeout          = 60
   handler          = "lambdaFunction.lambda_handler"
-  runtime          = "python3.8"
+  runtime          = "python3.12"
   memory_size      = 128
   filename         = data.archive_file.python_lambda_package.output_path
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
@@ -140,7 +140,7 @@ resource "aws_lambda_function" "ses_deliveries_to_cloudwatch_lambda" {
   }
   timeout          = 60
   handler          = "lambdaFunction.lambda_handler"
-  runtime          = "python3.8"
+  runtime          = "python3.12"
   memory_size      = 128
   filename         = data.archive_file.python_lambda_package.output_path
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256

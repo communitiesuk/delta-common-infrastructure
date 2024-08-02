@@ -13,17 +13,6 @@ variable "vpc" {
     cidr_block = string
   })
 }
-
-variable "public_alb" {
-  type = object({
-    arn               = string
-    arn_suffix        = string
-    security_group_id = string
-    certificate_arn   = string
-    cloudfront_key    = string
-  })
-}
-
 variable "ssh_key_name" {
   type = string
 }

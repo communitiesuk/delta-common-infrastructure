@@ -6,7 +6,6 @@ datamart-delta-admin-dclg,deltaapp
 datamart-delta-user-dclg,deltaapp
 datamart-delta-marklogic-admin,deltaapp
 datamart-delta-marklogic-admin,jasperreports
-AWS Delegated Administrators,deltainternal
 datamart-delta-admin,deltaadmin
 datamart-delta-admin-dclg,deltaadmin
 datamart-delta-user,deltaadmin
@@ -22,6 +21,5 @@ dluhc-service-users,keycloak
 dluhc-service-users,cpmapp
 dluhc-service-users,sap
 dluhc-service-users,jasperreports
-dluhc-service-users,deltainternal
 dluhc-service-users,deltaapp
 dluhc-service-users,deltaorbeon

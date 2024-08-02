@@ -21,11 +21,6 @@ output "required_dns_records" {
         record_type  = "CNAME"
         record_value = "${module.cpm_cloudfront.cloudfront_domain_name}."
       },
-      {
-        record_name  = "reporting.delta.${base_domain}."
-        record_type  = "CNAME"
-        record_value = "${module.jaspersoft_cloudfront.cloudfront_domain_name}."
-      },
     ]
   ])
 }
@@ -60,12 +55,4 @@ output "cpm_cloudfront_domain" {
 
 output "cpm_cloudfront_distribution_id" {
   value = module.cpm_cloudfront.cloudfront_distribution_id
-}
-
-output "jaspersoft_cloudfront_domain" {
-  value = module.jaspersoft_cloudfront.cloudfront_domain_name
-}
-
-output "jaspersoft_cloudfront_distribution_id" {
-  value = module.jaspersoft_cloudfront.cloudfront_distribution_id
 }

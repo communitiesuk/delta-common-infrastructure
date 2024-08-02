@@ -21,11 +21,13 @@ For how we set up AWS accounts and the CLI, including Session Manager see [docs/
 ## Bastion
 
 There's an SSH bastion server for each environment.
-If you have AWS access you can create an account by uploading your SSH public key to the relevant bucket (your username will be all lowercase):
+If you have AWS access you can create an account by uploading your SSH public key to the relevant bucket (see buckets with `ssh` in their name) (your username will be all lowercase):
 
 ```sh
 aws s3 cp ~/.ssh/id_rsa.pub s3://$(terraform output -raw bastion_ssh_keys_bucket)/<username>.pub
 ```
+
+For information on creating an SSH key please [see here](https://docs.github.com/en/enterprise-cloud@latest/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#about-ssh-key-passphrases).
 
 After five minutes you should be able to SSH in to the bastion server. Currently, the Softwire London and Cambridge office IPs are allowlisted.
 
@@ -129,7 +131,11 @@ Follow the instructions in the module README to set up the required secrets then
 terraform apply -target module.marklogic
 ```
 
-### 5 MarkLogic configuration - GitHub Runner
+### 5 OIDC configuration - GitHub Actions
+
+Add and apply an open_id_connect module if there isn't already one for the AWS account - this is used by GitHub Actions to authenticate to AWS
+
+### 6 MarkLogic configuration - GitHub Runner
 
 Follow the instructions in the GitHub Runner module README to get the runner creation token, bring the module up.
 
@@ -143,7 +149,7 @@ Now run the MarkLogic setup jobs from GitHub. See the [delta-marklogic-deploy](h
 
 Set up replicas for the built in databases (Security, Meters, App-Services etc.), do NOT use Roxy's `--replicate-internals`, it will mess up the configuration.
 
-### 6 Public ALBs and CloudFront
+### 7 Public ALBs and CloudFront
 
 CloudFront distributions with HTTPS aliases require valid SSL certificates to create successfully.
 If you're creating the distributions without valid SSL certificates (for example, so that you can give DLUHC all the records in one go)
@@ -161,7 +167,7 @@ are created. Do this with the dns_records module.
 
 We use an origin timeout of 180 for the Delta website. This is above the normal limit of 60 and requires requesting a quota increase for the account from AWS support, which can be done [through the AWS console](https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&limitType=service-code-cloudfront-distributions).
 
-### 7 JasperReports server
+### 8 JasperReports server
 
 Follow the setup instructions in the module readme.
 Make sure the `jasper_s3_bucket` variable is set correctly.
@@ -172,19 +178,19 @@ terraform apply -target module.jaspersoft
 
 Once the server has initialised JasperReports should be available at `https://reporting.delta.<domain>`.
 
-### 8 Applications
+### 9 Applications
 
 Run a full `terraform apply` to create any remaining resources.
 
 Continue with the setup instructions in the common-payments-module and then delta repositories.
 
-### 9 API Swagger static files
+### 10 API Swagger static files
 
 The static files in the api/docs/static-site folder in the delta repository should be uploaded to the
 relevant S3 bucket (name `dluhc-delta-api-swagger-{environment}`) in each environment to serve the swagger interface
 for the API. This can be done via the AWS console or CLI.
 
-### 10 AWS Shield Advanced manual config
+### 11 AWS Shield Advanced manual config
 
 NOTE: This is only relevant if you have enabled AWS Shield Advanced protection.
 Navigate to the [AWS Shield page](https://us-east-1.console.aws.amazon.com/wafv2/shieldv2?region=us-east-1#/overview)

@@ -4,23 +4,13 @@ data "aws_region" "current" {}
 locals {
   runner_log_files = [
     {
-      "log_group_name" : "messages",
-      "file_path" : "/var/log/messages",
-      "log_stream_name" : "{instance_id}"
-    },
-    {
       "log_group_name" : "user_data",
       "file_path" : "/var/log/user-data.log",
       "log_stream_name" : "{instance_id}"
     },
     {
       "log_group_name" : "runner",
-      "file_path" : "/opt/actions-runner/_diag/Runner_**.log",
-      "log_stream_name" : "{instance_id}"
-    },
-    {
-      "log_group_name" : "runner-startup",
-      "file_path" : "/var/log/runner-startup.log",
+      "file_path" : "/opt/actions-runner/_diag/**.log",
       "log_stream_name" : "{instance_id}"
     },
     {
