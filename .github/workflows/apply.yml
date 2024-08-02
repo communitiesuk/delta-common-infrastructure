@@ -39,7 +39,7 @@ jobs:
         # Exposes stdout, stderr and exitcode as outputs for any steps that run terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.7.0
+          terraform_version: 1.9.3
 
       - name: Terraform init
         id: init
@@ -85,7 +85,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.7.0
+          terraform_version: 1.9.3
 
       - name: Terraform init
         id: init
