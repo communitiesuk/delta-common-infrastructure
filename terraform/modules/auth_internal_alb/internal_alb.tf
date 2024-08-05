@@ -34,7 +34,7 @@ resource "aws_security_group_rule" "alb_https_ingress" {
   description       = "HTTPS Ingress"
 }
 
-# The auth albs are shared by keycloak and the auth service so we define the listener here and the rules in each repository
+# The auth albs were shared by keycloak and the auth service so we defined the listener here and the rules in each repository
 resource "aws_lb_listener" "main" {
   load_balancer_arn = aws_lb.main.arn
   port              = 443

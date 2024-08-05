@@ -1,4 +1,4 @@
-#The auth alb is shared by keycloak and the auth service so we define the listener here and the rules in each repository
+#The auth alb was shared by keycloak and the auth service so we defined the listener here and the rules in each repository
 resource "aws_lb_listener" "auth" {
   load_balancer_arn = module.auth_alb.arn
   port              = 443
