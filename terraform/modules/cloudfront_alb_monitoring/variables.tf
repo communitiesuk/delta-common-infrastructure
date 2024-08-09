@@ -14,7 +14,7 @@ variable "delta_api" {
   })
 }
 
-variable "keycloak" {
+variable "auth" {
   type = object({
     cloudfront_distribution_id = string
     alb_arn_suffix             = string
