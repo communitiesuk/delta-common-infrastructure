@@ -14,7 +14,6 @@ locals {
   delta_api_cidr_10                   = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 7)   # 28.0/22
   cpm_private_cidr_10                 = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 8)   # 32.0/22
   vpc_endpoints_cidr_10               = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 9)   # 36.0/22
-  keycloak_cidr_10                    = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 10)  # 40.0/22
   delta_website_cidr_10               = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 11)  # 44.0/22
   mailhog_cidr_10                     = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 12)  # 48.0/22
   website_db_cidr_10                  = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 13)  # 52.0/22
@@ -166,15 +165,6 @@ resource "aws_subnet" "nat_gateway" {
   cidr_block        = local.nat_gateway_cidr_8
   vpc_id            = aws_vpc.vpc.id
   tags              = { Name = "nat-gateway-${var.environment}" }
-}
-
-resource "aws_subnet" "keycloak_private" {
-  count                   = 3
-  cidr_block              = cidrsubnet(local.keycloak_cidr_10, 2, count.index)
-  vpc_id                  = aws_vpc.vpc.id
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
-  map_public_ip_on_launch = false
-  tags                    = { Name = "keycloak-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
 }
 
 resource "aws_subnet" "mailhog" {

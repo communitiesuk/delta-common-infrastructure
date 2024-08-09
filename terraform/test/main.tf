@@ -155,7 +155,7 @@ module "cloudfront_alb_monitoring" {
     alb_arn_suffix             = module.public_albs.delta_api.arn_suffix
     instance_metric_namespace  = null
   }
-  keycloak = {
+  auth = {
     cloudfront_distribution_id = module.cloudfront_distributions.auth_cloudfront_distribution_id
     alb_arn_suffix             = module.public_albs.auth.arn_suffix
     instance_metric_namespace  = null
@@ -211,7 +211,7 @@ module "cloudfront_distributions" {
     }
     geo_restriction_countries = ["GB", "IE"]
   }
-  keycloak = {
+  auth = {
     alb = module.public_albs.auth
     domain = {
       aliases             = ["auth.delta.${var.primary_domain}"]

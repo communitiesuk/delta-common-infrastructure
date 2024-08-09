@@ -90,10 +90,6 @@ output "cpm_private_subnet_ids" {
   value = module.networking.cpm_private_subnets[*].id
 }
 
-output "keycloak_private_subnet_ids" {
-  value = module.networking.keycloak_private_subnets[*].id
-}
-
 // TODO Remove once no longer referenced by Delta
 output "redis_private_subnet_ids" {
   value = module.networking.delta_website_db_private_subnets[*].id

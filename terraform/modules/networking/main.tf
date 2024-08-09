@@ -85,7 +85,7 @@ locals {
     delta_api_subnets = {
       cidr                 = local.delta_api_cidr_10
       http_allowed_domains = []
-      tls_allowed_domains  = var.auth_server_domains # So that requests from the API to Keycloak can be allowed through the Network Firewall
+      tls_allowed_domains  = []
       sid_offset           = 800
     }
     cpm_subnets = {
@@ -93,13 +93,6 @@ locals {
       http_allowed_domains = []
       tls_allowed_domains  = []
       sid_offset           = 900
-    }
-    keycloak = {
-      subnets              = aws_subnet.keycloak_private
-      cidr                 = local.keycloak_cidr_10
-      http_allowed_domains = []
-      tls_allowed_domains  = []
-      sid_offset           = 1000
     }
     # Test environment only
     mailhog = var.mailhog_subnet ? {
@@ -169,7 +162,6 @@ locals {
     aws_subnet.cpm_private,
     aws_subnet.ml_private_subnets,
     aws_subnet.ml_restore_rehearsal_private_subnets,
-    aws_subnet.keycloak_private,
     aws_subnet.mailhog,
     aws_subnet.jaspersoft,
     aws_subnet.auth_service,

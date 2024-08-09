@@ -30,11 +30,11 @@ module "api_cloudfront_alb_monitoring" {
   cloudfront_average_origin_latency_high_alarm_threshold_ms = 60000
 }
 
-module "keycloak_cloudfront_alb_monitoring" {
+module "auth_cloudfront_alb_monitoring" {
   source                        = "../cloudfront_alb_monitoring_instance"
-  alb_arn_suffix                = var.keycloak.alb_arn_suffix
-  cloudfront_distribution_id    = var.keycloak.cloudfront_distribution_id
-  instance_metric_namespace     = var.keycloak.instance_metric_namespace
+  alb_arn_suffix                = var.auth.alb_arn_suffix
+  cloudfront_distribution_id    = var.auth.cloudfront_distribution_id
+  instance_metric_namespace     = var.auth.instance_metric_namespace
   alarms_sns_topic_arn          = var.alarms_sns_topic_arn
   alarms_sns_topic_global_arn   = var.alarms_sns_topic_global_arn
   security_sns_topic_global_arn = var.security_sns_topic_global_arn
@@ -56,4 +56,10 @@ module "cpm_cloudfront_alb_monitoring" {
   prefix                        = "${var.environment}-cpm"
 
   cloudfront_average_origin_latency_high_alarm_threshold_ms = 60000
+}
+
+moved {
+  //noinspection HILUnresolvedReference
+  from = module.keycloak_cloudfront_alb_monitoring
+  to   = module.auth_cloudfront_alb_monitoring
 }
