@@ -60,7 +60,7 @@ module "auth_waf" {
   per_ip_rate_limit              = var.auth_waf_per_ip_rate_limit
   excluded_rules                 = ["CrossSiteScripting_BODY"]
   ip_allowlist                   = var.api.ip_allowlist
-  ip_allowlist_uri_path_regex    = ["/realms/delta/", "^/delta-api/"]
+  ip_allowlist_uri_path_regex    = ["^/keycloak/", "/realms/delta/", "^/delta-api/"]
   cloudwatch_log_expiration_days = var.waf_cloudwatch_log_expiration_days
   alarms_sns_topic_global_arn    = var.alarms_sns_topic_global_arn
   security_sns_topic_global_arn  = var.security_sns_topic_global_arn
