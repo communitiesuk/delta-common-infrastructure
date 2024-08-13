@@ -106,11 +106,11 @@ module "auth_cloudfront" {
   access_logs_bucket_domain_name = module.access_logs_bucket.bucket_domain_name
   access_logs_prefix             = "keycloak"
   waf_acl_arn                    = module.auth_waf.acl_arn
-  cloudfront_key                 = var.keycloak.alb.cloudfront_key
-  origin_domain                  = var.keycloak.alb.dns_name
-  cloudfront_domain              = var.keycloak.domain
+  cloudfront_key                 = var.auth.alb.cloudfront_key
+  origin_domain                  = var.auth.alb.dns_name
+  cloudfront_domain              = var.auth.domain
   is_ipv6_enabled                = false
-  geo_restriction_countries      = var.keycloak.geo_restriction_countries
+  geo_restriction_countries      = var.auth.geo_restriction_countries
   apply_aws_shield               = var.apply_aws_shield
   function_associations          = [{ event_type = "viewer-request", function_arn = aws_cloudfront_function.keycloak_request.arn }]
   wait_for_deployment            = var.wait_for_deployment
