@@ -30,7 +30,7 @@ jobs:
           role-to-assume: arn:aws:iam::486283582667:role/github-actions-terraform-ci-plan-read-only
           aws-region: ${{ env.AWS_REGION }}
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.3
       - name: Terraform init
@@ -59,7 +59,7 @@ jobs:
           role-to-assume: arn:aws:iam::486283582667:role/github-actions-terraform-ci-plan-read-only
           aws-region: ${{ env.AWS_REGION }}
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.3
       - name: Terraform init
@@ -78,7 +78,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.3
       - name: Terraform init
