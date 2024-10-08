@@ -28,7 +28,7 @@ terraform {
     region         = "eu-west-1"
   }
 
-  required_version = "~> 1.7.0"
+  required_version = "~> 1.9.0"
 }
 
 provider "aws" {
@@ -279,7 +279,7 @@ module "cloudfront_alb_monitoring" {
     alb_arn_suffix             = module.public_albs.delta_api.arn_suffix
     instance_metric_namespace  = null
   }
-  keycloak = {
+  auth = {
     cloudfront_distribution_id = module.cloudfront_distributions.auth_cloudfront_distribution_id
     alb_arn_suffix             = module.public_albs.auth.arn_suffix
     instance_metric_namespace  = null
@@ -330,7 +330,7 @@ module "cloudfront_distributions" {
     # Home Connections claim their servers are in the UK, but they currently get geo-located to US
     geo_restriction_countries = ["GB", "IE", "US"]
   }
-  keycloak = {
+  auth = {
     alb = module.public_albs.auth
     domain = {
       aliases             = ["auth.delta.${var.primary_domain}"]

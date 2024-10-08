@@ -72,7 +72,7 @@ variable "api" {
   })
 }
 
-variable "keycloak" {
+variable "auth" {
   type = object({
     alb = object({
       cloudfront_key = string
