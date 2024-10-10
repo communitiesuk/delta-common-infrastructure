@@ -6,6 +6,9 @@ set -exuo pipefail
 # Will still use the AWS local one (169.254.169.123)
 rm -f /etc/chrony.d/ntp-pool.sources
 
+# Daily job to delete stored emails older than 7 days
+echo "0 2 * * * find /mailhog/mail/ -type f -mtime +7 -execdir rm -- '{}' \;" | crontab -
+
 yum update
 yum install golang -y
 
@@ -43,12 +46,13 @@ ExecStart=/mailhog/go/bin/MailHog
 WantedBy=multi-user.target
 EOF
 
+# Port 465 wasn't working so using 25, even though EC2 may block that in future
 cat <<'EOF' | tee /mailhog/smtp >/dev/null
 {
     "ses_test": {
         "name": "ses_test",
         "host": "email-smtp.eu-west-1.amazonaws.com",
-        "port": "465",
+        "port": "25",
         "email": "mailhog@datacollection.dluhc-dev.uk",
         "username": "${smtp_username}",
         "password": "${smtp_password}",
