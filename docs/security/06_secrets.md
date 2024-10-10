@@ -17,4 +17,4 @@ Shared secrets for staging and test may be stored in a shared password vault.
 
 ## Rotation
 
-Our rotation policy is documented on Confluence: <https://dluhcdigital.atlassian.net/wiki/spaces/DT/pages/3375105/Secret+Rotation>
+Our rotation policy is documented on Confluence: <https://mhclgdigital.atlassian.net/wiki/spaces/DT/pages/3375105/Secret+Rotation>
