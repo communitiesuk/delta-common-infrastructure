@@ -396,7 +396,7 @@ module "ses_identity_communities" {
 module "delta_ses_user" {
   source                = "../modules/ses_user"
   username              = "ses-user-delta-app-${local.environment}"
-  ses_identity_arns      = [module.ses_identity.arn, module.ses_identity_communities.arn]
+  ses_identity_arns     = [module.ses_identity.arn, module.ses_identity_communities.arn]
   from_address_patterns = ["delta-staging@datacollection.test.levellingup.gov.uk", "delta-staging@datacollection.test.communities.gov.uk"]
   environment           = local.environment
   kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
@@ -406,7 +406,7 @@ module "delta_ses_user" {
 module "cpm_ses_user" {
   source                = "../modules/ses_user"
   username              = "ses-user-cpm-app-${local.environment}"
-  ses_identity_arns      = [module.ses_identity.arn, module.ses_identity_communities.arn]
+  ses_identity_arns     = [module.ses_identity.arn, module.ses_identity_communities.arn]
   from_address_patterns = ["cpm-staging@datacollection.test.levellingup.gov.uk", "cpm-staging@datacollection.test.communities.gov.uk"]
   environment           = local.environment
   kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
