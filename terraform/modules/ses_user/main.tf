@@ -6,8 +6,8 @@ variable "username" {
   type = string
 }
 
-variable "ses_identity_arn" {
-  type = string
+variable "ses_identity_arns" {
+  type = list(string)
 }
 
 variable "kms_key_arn" {
@@ -40,7 +40,7 @@ resource "aws_iam_access_key" "smtp_user" {
 data "aws_iam_policy_document" "ses_sender" {
   statement {
     actions   = ["ses:SendRawEmail"]
-    resources = [var.ses_identity_arn]
+    resources = var.ses_identity_arns
     condition {
       test     = "StringLike"
       variable = "ses:FromAddress"
