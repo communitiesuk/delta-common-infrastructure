@@ -6,8 +6,8 @@ set -exuo pipefail
 # Will still use the AWS local one (169.254.169.123)
 rm -f /etc/chrony.d/ntp-pool.sources
 
-# Daily job to delete stored emails older than 7 days
-echo "0 2 * * * find /mailhog/mail/ -type f -mtime +7 -execdir rm -- '{}' \;" | crontab -
+# Daily job to delete stored emails older than 3 days
+echo "0 2 * * * find /mailhog/mail/ -type f -mtime +3 -execdir rm -- '{}' \;" | crontab -
 
 yum update
 yum install golang -y
