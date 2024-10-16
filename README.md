@@ -72,6 +72,16 @@ Reserved instances are a billing construct, and not configured in code like the 
 | t3a.medium (2 Linux, 3 Windows) | 5 | Test/Staging JasperSoft + Test/Staging/Prod AD management server |
 | t3.medium (Windows) | 2 | Staging/Prod LDAP CA |
 
+## Pull Request Formatting issues
+
+If you run into a formatting issue with a PR, then run:
+
+```sh
+terraform fmt --recursive
+```
+
+In the affected file to fix the formatting issues.
+
 ## Creating an environment
 
 ### 1 AWS Shield Advanced
