@@ -2,7 +2,7 @@
 
 set -exuo pipefail
 
-export TOMCAT_VERSION=9.0.75
+export TOMCAT_VERSION=9.0.96
 
 # Let the instance finish booting
 sleep 5
