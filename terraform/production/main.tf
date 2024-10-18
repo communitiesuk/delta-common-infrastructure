@@ -68,6 +68,7 @@ module "ses_identity_communities" {
 
   domain                               = "datacollection.communities.gov.uk"
   environment                          = local.environment
+  cloudwatch_suffix                    = "-communities"
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }

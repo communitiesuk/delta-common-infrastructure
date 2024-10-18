@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_query_definition" "ses-deliveries" {
-  name = "${var.environment}/email-deliveries-ses-tf"
+  name = "${var.environment}/email-deliveries-ses-tf${var.cloudwatch_suffix}"
 
   log_group_names = [local.log_group_name_delivered]
 
@@ -10,7 +10,7 @@ EOF
 }
 
 resource "aws_cloudwatch_query_definition" "ses-problems" {
-  name = "${var.environment}/email-bounces-ses-tf"
+  name = "${var.environment}/email-bounces-ses-tf${var.cloudwatch_suffix}"
 
   log_group_names = [local.log_group_name_problem]
 

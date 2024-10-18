@@ -14,3 +14,9 @@ variable "alarms_sns_topic_arn" {
   description = "SNS topic ARN to send alarm notifications to"
   type        = string
 }
+
+variable "cloudwatch_suffix" {
+  description = "Optional suffix for names of cloudwatch log groups and related lambdas"
+  type        = string
+  default     = ""
+}
