@@ -23,6 +23,34 @@ resource "aws_kms_alias" "ml_deploy_secrets" {
   target_key_id = aws_kms_key.ml_deploy_secrets.key_id
 }
 
+resource "aws_kms_key" "cpm_ml_deploy_secrets" {
+  description         = "cpm-ses-deploy-secrets-${var.environment}"
+  enable_key_rotation = true
+
+  tags = {
+    "terraform-plan-read" = true
+  }
+}
+
+resource "aws_kms_alias" "cpm_ml_deploy_secrets" {
+  name          = "alias/cpm-ses-deploy-secrets-${var.environment}"
+  target_key_id = aws_kms_key.cpm_ml_deploy_secrets.key_id
+}
+
+resource "aws_kms_key" "delta_ml_deploy_secrets" {
+  description         = "delta-ses-deploy-secrets-${var.environment}"
+  enable_key_rotation = true
+
+  tags = {
+    "terraform-plan-read" = true
+  }
+}
+
+resource "aws_kms_alias" "delta_ml_deploy_secrets" {
+  name          = "alias/delta-ses-deploy-secrets-${var.environment}"
+  target_key_id = aws_kms_key.delta_ml_deploy_secrets.key_id
+}
+
 data "aws_secretsmanager_secret" "ml_admin_user" {
   name = "ml-admin-user-${var.environment}"
 
