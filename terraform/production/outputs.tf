@@ -144,6 +144,10 @@ output "deploy_user_kms_key_arn" {
   value = module.marklogic.deploy_user_kms_key_arn
 }
 
+output "deploy_user_delta_kms_key_arn" {
+  value = module.delta_ses_user.deploy_secret_arn
+}
+
 output "auth_internal_alb" {
   value = module.auth_internal_alb.alb
 }

@@ -327,6 +327,7 @@ module "marklogic" {
   ebs_backup_role_arn                     = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
   iam_github_openid_connect_provider_arn  = module.github_actions_openid_connect_provider.github_oidc_provider_arn
+  ses_deploy_secret_arns                  = []
 }
 
 module "gh_runner" {
