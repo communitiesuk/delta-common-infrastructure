@@ -248,7 +248,7 @@ module "marklogic" {
   # TODO DT-803 Reduce/remove this once we are happy with our testing on staging
   weekly_backup_bucket_retention_days    = 60
   iam_github_openid_connect_provider_arn = module.github_actions_openid_connect_provider.github_oidc_provider_arn
-  ses_deploy_secret_arns                  = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
+  ses_deploy_secret_arns                 = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
 }
 
 module "gh_runner" {
