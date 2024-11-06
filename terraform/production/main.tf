@@ -79,7 +79,6 @@ module "delta_ses_user" {
   ses_identity_arns     = [module.ses_identity.arn, module.ses_identity_communities.arn]
   from_address_patterns = ["delta@datacollection.levellingup.gov.uk", "delta@datacollection.communities.gov.uk"]
   environment           = local.environment
-  kms_key_arn           = module.marklogic.deploy_user_delta_kms_key_arn
   vpc_id                = module.networking.vpc.id
 }
 
@@ -89,7 +88,6 @@ module "cpm_ses_user" {
   ses_identity_arns     = [module.ses_identity.arn, module.ses_identity_communities.arn]
   from_address_patterns = ["cpm@datacollection.levellingup.gov.uk", "cpm@datacollection.communities.gov.uk"]
   environment           = local.environment
-  kms_key_arn           = module.marklogic.deploy_user_cpm_kms_key_arn
   vpc_id                = module.networking.vpc.id
 }
 

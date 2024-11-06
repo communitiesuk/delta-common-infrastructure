@@ -406,7 +406,6 @@ module "ses_user" {
   ses_identity_arns     = [module.ses_identity.arn]
   from_address_patterns = ["*@datacollection.dluhc-dev.uk"]
   environment           = local.environment
-  kms_key_arn           = null
   vpc_id                = module.networking.vpc.id
 }
 
