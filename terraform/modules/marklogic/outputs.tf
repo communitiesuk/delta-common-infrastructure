@@ -15,14 +15,6 @@ output "deploy_user_kms_key_arn" {
   value = aws_kms_key.ml_deploy_secrets.arn
 }
 
-output "deploy_user_cpm_kms_key_arn" {
-  value = aws_kms_key.cpm_ml_deploy_secrets.arn
-}
-
-output "deploy_user_delta_kms_key_arn" {
-  value = aws_kms_key.delta_ml_deploy_secrets.arn
-}
-
 output "instance_iam_role" {
   value = aws_iam_role.ml_iam_role.name
 }
