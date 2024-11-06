@@ -321,7 +321,7 @@ module "marklogic" {
   backup_replication_bucket               = module.backup_replication_bucket.bucket
   ebs_backup_role_arn                     = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
-  iam_github_openid_connect_provider_arn  = data.aws_iam_openid_connect_provider.github.arn,
+  iam_github_openid_connect_provider_arn  = data.aws_iam_openid_connect_provider.github.arn
   ses_deploy_secret_arns                  = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
 }
 
