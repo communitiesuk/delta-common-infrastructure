@@ -80,7 +80,6 @@ output "smtp_password" {
   sensitive = true
 }
 
-output "deploy_secret_arn"
-{
+output "deploy_secret_arn" {
   value   = aws_kms_key.deploy_secrets.arn
 }
