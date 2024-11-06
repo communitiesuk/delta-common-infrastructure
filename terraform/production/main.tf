@@ -57,15 +57,6 @@ module "communities_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain                               = "datacollection.levellingup.gov.uk"
-  environment                          = local.environment
-  email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
-  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
-}
-
-module "ses_identity_communities" {
-  source = "../modules/ses_identity"
-
   domain                               = "datacollection.communities.gov.uk"
   environment                          = local.environment
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
@@ -75,8 +66,8 @@ module "ses_identity_communities" {
 module "delta_ses_user" {
   source                = "../modules/ses_user"
   username              = "ses-user-delta-app-${local.environment}"
-  ses_identity_arns     = [module.ses_identity.arn, module.ses_identity_communities.arn]
-  from_address_patterns = ["delta@datacollection.levellingup.gov.uk", "delta@datacollection.communities.gov.uk"]
+  ses_identity_arns     = [module.ses_identity.arn]
+  from_address_patterns = ["delta@datacollection.communities.gov.uk"]
   environment           = local.environment
   kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
   vpc_id                = module.networking.vpc.id
@@ -85,8 +76,8 @@ module "delta_ses_user" {
 module "cpm_ses_user" {
   source                = "../modules/ses_user"
   username              = "ses-user-cpm-app-${local.environment}"
-  ses_identity_arns     = [module.ses_identity.arn, module.ses_identity_communities.arn]
-  from_address_patterns = ["cpm@datacollection.levellingup.gov.uk", "cpm@datacollection.communities.gov.uk"]
+  ses_identity_arns     = [module.ses_identity.arn]
+  from_address_patterns = ["cpm@datacollection.communities.gov.uk"]
   environment           = local.environment
   kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
   vpc_id                = module.networking.vpc.id
