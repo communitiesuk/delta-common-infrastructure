@@ -118,7 +118,7 @@ systemctl stop tomcat
 rm -f latest
 
 # Install new version
-TOMCAT_VERSION=9.0.70
+TOMCAT_VERSION=9.0.96
 wget "https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz" -P /tmp
 sudo -u tomcat tar -xf /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz -C /opt/tomcat/
 rm -f /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz

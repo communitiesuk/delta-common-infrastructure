@@ -3,9 +3,9 @@
 
 provider "registry.terraform.io/hashicorp/archive" {
   version     = "2.4.2"
-  constraints = "~> 2.4.1"
+  constraints = "~> 2.4.2"
   hashes = [
-    "h1:1eOz9vM/55vnQjxk23RhnYga7PZq8n2rGxG+2Vx2s6w=",
+    "h1:sCJKfmlbxo4w+AxizeJ3i1rPEfoVarCajyJuIODVPTg=",
     "zh:08faed7c9f42d82bc3d406d0d9d4971e2d1c2d34eae268ad211b8aca57b7f758",
     "zh:3564112ed2d097d7e0672378044a69b06642c326f6f1584d81c7cdd32ebf3a08",
     "zh:53cd9afd223c15828c1916e68cb728d2be1cbccb9545568d6c2b122d0bac5102",
@@ -25,7 +25,7 @@ provider "registry.terraform.io/hashicorp/aws" {
   version     = "5.72.1"
   constraints = "~> 5.72.1"
   hashes = [
-    "h1:jhd5O5o0CfZCNEwwN0EiDAzb7ApuFrtxJqa6HXW4EKE=",
+    "h1:ZSJLLwInUKiZ1fHNduFkIXJDXbLy5t4wZ6hFH1Lz1fE=",
     "zh:0dea6843836e926d33469b48b948744079023816d16a2ff7666bcfb6aa3522d4",
     "zh:195fa9513f75800a0d62797ebec75ee73e9b8c28d713fe9b63d3b1d1eec129b3",
     "zh:1ed92f3961715bf0e024bcde3c12dfbdc50b00c1f8a43cc00802cfc45a256208",
@@ -46,9 +46,9 @@ provider "registry.terraform.io/hashicorp/aws" {
 
 provider "registry.terraform.io/hashicorp/random" {
   version     = "3.6.3"
-  constraints = "~> 3.6.0"
+  constraints = "~> 3.6.3"
   hashes = [
-    "h1:zG9uFP8l9u+yGZZvi5Te7PV62j50azpgwPunq2vTm1E=",
+    "h1:+UItZOLue/moJfnI3tqZBQbXUYR4ZnqPYfJDJPgLZy0=",
     "zh:04ceb65210251339f07cd4611885d242cd4d0c7306e86dda9785396807c00451",
     "zh:448f56199f3e99ff75d5c0afacae867ee795e4dfda6cb5f8e3b2a72ec3583dd8",
     "zh:4b4c11ccfba7319e901df2dac836b1ae8f12185e37249e8d870ee10bb87a13fe",
@@ -66,9 +66,9 @@ provider "registry.terraform.io/hashicorp/random" {
 
 provider "registry.terraform.io/hashicorp/tls" {
   version     = "4.0.6"
-  constraints = "~> 4.0.5"
+  constraints = "~> 4.0.6"
   hashes = [
-    "h1:n3M50qfWfRSpQV9Pwcvuse03pEizqrmYEryxKky4so4=",
+    "h1:17Y+vdYNKgphpe1/SU5PBnGuYKEJkJZ7MZCnmAwsAGQ=",
     "zh:10de0d8af02f2e578101688fd334da3849f56ea91b0d9bd5b1f7a243417fdda8",
     "zh:37fc01f8b2bc9d5b055dc3e78bfd1beb7c42cfb776a4c81106e19c8911366297",
     "zh:4578ca03d1dd0b7f572d96bd03f744be24c726bfd282173d54b100fd221608bb",

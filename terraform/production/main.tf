@@ -2,19 +2,19 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.33.0"
+      version = "~> 5.72.1"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.6.0"
+      version = "~> 3.6.3"
     }
     archive = {
       source  = "hashicorp/archive"
-      version = "~> 2.4.1"
+      version = "~> 2.4.2"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "~> 4.0.5"
+      version = "~> 4.0.6"
     }
   }
 
@@ -59,6 +59,7 @@ module "ses_identity" {
 
   domain                               = "datacollection.communities.gov.uk"
   environment                          = local.environment
+  cloudwatch_suffix                    = "-communities"
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }

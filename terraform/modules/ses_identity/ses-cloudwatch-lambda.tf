@@ -50,12 +50,12 @@ module "sent_emails_log_group" {
   source             = "../encrypted_log_groups"
   retention_days     = var.email_cloudwatch_log_expiration_days
   log_group_names    = [local.log_group_name_problem, local.log_group_name_delivered]
-  kms_key_alias_name = "${var.environment}-sent-emails-log"
+  kms_key_alias_name = "${var.environment}-sent-emails-log${var.cloudwatch_suffix}"
 }
 
 locals {
-  log_group_name_delivered = "${var.environment}/ses-deliveries"
-  log_group_name_problem   = "${var.environment}/ses-problems"
+  log_group_name_delivered = "${var.environment}/ses-deliveries${var.cloudwatch_suffix}"
+  log_group_name_problem   = "${var.environment}/ses-problems${var.cloudwatch_suffix}"
   domain_string            = replace(var.domain, ".", "-")
 }
 
@@ -103,7 +103,7 @@ data "archive_file" "python_lambda_package" {
 }
 
 resource "aws_lambda_function" "ses_problems_to_cloudwatch_lambda" {
-  function_name = "${var.environment}-ses-problems-to-cloudwatch"
+  function_name = "${var.environment}-ses-problems-to-cloudwatch${var.cloudwatch_suffix}"
   tracing_config {
     mode = "Active"
   }
@@ -127,7 +127,7 @@ resource "aws_lambda_function" "ses_problems_to_cloudwatch_lambda" {
 }
 
 resource "aws_lambda_function" "ses_deliveries_to_cloudwatch_lambda" {
-  function_name = "${var.environment}-ses-deliveries-to-cloudwatch"
+  function_name = "${var.environment}-ses-deliveries-to-cloudwatch${var.cloudwatch_suffix}"
   tracing_config {
     mode = "Active"
   }
@@ -151,7 +151,7 @@ resource "aws_lambda_function" "ses_deliveries_to_cloudwatch_lambda" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ses_send_errors" {
-  alarm_name          = "${var.environment}-ses-to-cloudwatch-lambda-errors"
+  alarm_name          = "${var.environment}${var.cloudwatch_suffix}-ses-to-cloudwatch-lambda-errors"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "10"
   threshold           = "0"

@@ -6,15 +6,15 @@ terraform {
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.6.0"
+      version = "~> 3.6.3"
     }
     archive = {
       source  = "hashicorp/archive"
-      version = "~> 2.4.1"
+      version = "~> 2.4.2"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "~> 4.0.5"
+      version = "~> 4.0.6"
     }
   }
 
@@ -381,6 +381,7 @@ module "ses_identity" {
   environment                          = local.environment
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   domain                               = "datacollection.test.communities.gov.uk"
+  cloudwatch_suffix                    = "-communities"
   alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }
 
