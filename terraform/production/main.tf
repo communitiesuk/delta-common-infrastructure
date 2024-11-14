@@ -70,7 +70,6 @@ module "delta_ses_user" {
   ses_identity_arns     = [module.ses_identity.arn]
   from_address_patterns = ["delta@datacollection.communities.gov.uk"]
   environment           = local.environment
-  kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
   vpc_id                = module.networking.vpc.id
 }
 
@@ -80,7 +79,6 @@ module "cpm_ses_user" {
   ses_identity_arns     = [module.ses_identity.arn]
   from_address_patterns = ["cpm@datacollection.communities.gov.uk"]
   environment           = local.environment
-  kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
   vpc_id                = module.networking.vpc.id
 }
 
@@ -241,6 +239,7 @@ module "marklogic" {
   # TODO DT-803 Reduce/remove this once we are happy with our testing on staging
   weekly_backup_bucket_retention_days    = 60
   iam_github_openid_connect_provider_arn = module.github_actions_openid_connect_provider.github_oidc_provider_arn
+  ses_deploy_secret_arns                 = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
 }
 
 module "gh_runner" {

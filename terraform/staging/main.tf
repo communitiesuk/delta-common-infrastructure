@@ -322,6 +322,7 @@ module "marklogic" {
   ebs_backup_role_arn                     = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
   iam_github_openid_connect_provider_arn  = data.aws_iam_openid_connect_provider.github.arn
+  ses_deploy_secret_arns                  = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
 }
 
 module "gh_runner" {
@@ -391,7 +392,6 @@ module "delta_ses_user" {
   ses_identity_arns     = [module.ses_identity.arn]
   from_address_patterns = ["delta-staging@datacollection.test.communities.gov.uk"]
   environment           = local.environment
-  kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
   vpc_id                = module.networking.vpc.id
 }
 
@@ -401,7 +401,6 @@ module "cpm_ses_user" {
   ses_identity_arns     = [module.ses_identity.arn]
   from_address_patterns = ["cpm-staging@datacollection.test.communities.gov.uk"]
   environment           = local.environment
-  kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
   vpc_id                = module.networking.vpc.id
 }
 
