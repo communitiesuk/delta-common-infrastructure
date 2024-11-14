@@ -44,7 +44,7 @@ locals {
   cloudwatch_log_expiration_days       = 731
   patch_cloudwatch_log_expiration_days = 90
   s3_log_expiration_days               = 731
-  all_notifications_email_addresses    = ["delta-notifications@levellingup.gov.uk", "Group-DLUHCDeltaNotifications@softwire.com", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
+  all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk", "Group-DLUHCDeltaNotifications@softwire.com", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
 }
 
 module "communities_only_ssl_certs" {
@@ -57,15 +57,6 @@ module "communities_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain                               = "datacollection.levellingup.gov.uk"
-  environment                          = local.environment
-  email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
-  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
-}
-
-module "ses_identity_communities" {
-  source = "../modules/ses_identity"
-
   domain                               = "datacollection.communities.gov.uk"
   environment                          = local.environment
   cloudwatch_suffix                    = "-communities"
@@ -76,8 +67,8 @@ module "ses_identity_communities" {
 module "delta_ses_user" {
   source                = "../modules/ses_user"
   username              = "ses-user-delta-app-${local.environment}"
-  ses_identity_arns     = [module.ses_identity.arn, module.ses_identity_communities.arn]
-  from_address_patterns = ["delta@datacollection.levellingup.gov.uk", "delta@datacollection.communities.gov.uk"]
+  ses_identity_arns     = [module.ses_identity.arn]
+  from_address_patterns = ["delta@datacollection.communities.gov.uk"]
   environment           = local.environment
   vpc_id                = module.networking.vpc.id
 }
@@ -85,8 +76,8 @@ module "delta_ses_user" {
 module "cpm_ses_user" {
   source                = "../modules/ses_user"
   username              = "ses-user-cpm-app-${local.environment}"
-  ses_identity_arns     = [module.ses_identity.arn, module.ses_identity_communities.arn]
-  from_address_patterns = ["cpm@datacollection.levellingup.gov.uk", "cpm@datacollection.communities.gov.uk"]
+  ses_identity_arns     = [module.ses_identity.arn]
+  from_address_patterns = ["cpm@datacollection.communities.gov.uk"]
   environment           = local.environment
   vpc_id                = module.networking.vpc.id
 }
