@@ -23,6 +23,7 @@ resource "aws_kms_alias" "ml_deploy_secrets" {
   target_key_id = aws_kms_key.ml_deploy_secrets.key_id
 }
 
+
 data "aws_secretsmanager_secret" "ml_admin_user" {
   name = "ml-admin-user-${var.environment}"
 
@@ -66,6 +67,11 @@ data "aws_iam_policy_document" "read_marklogic_deploy_secrets" {
     actions   = ["kms:DescribeKey", "kms:Decrypt"]
     effect    = "Allow"
     resources = [aws_kms_key.ml_deploy_secrets.arn]
+  }
+  statement {
+    actions   = ["kms:DescribeKey", "kms:Decrypt"]
+    effect    = "Allow"
+    resources = var.ses_deploy_secret_arns
   }
   statement {
     actions   = ["secretsmanager:ListSecrets"]
