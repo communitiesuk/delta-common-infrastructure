@@ -96,6 +96,8 @@ resource "aws_cloudwatch_metric_alarm" "blocked_requests" {
   alarm_description   = <<EOF
 WAF ${aws_wafv2_web_acl.waf_acl.name} blocking large number of requests.
 Check the WAF logs in CloudWatch, us-east-1 region.
+Confluence description:
+https://mhclgdigital.atlassian.net/wiki/spaces/DT/pages/329809926/Alarms#%3Cenv%3E-%3Capp%3E-cloudfront-waf-blocked-requests--(NB%3A-switch-to-the-us-east-1-region-to-see-this-in-the-AWS-console)
 This is usually a harmless bot scanning the site and getting lots of requests blocked, but could indicate an attack,
 look for any suspicious activity (e.g. lots of login attempts) and escalate if unsure.
   EOF
