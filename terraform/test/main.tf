@@ -2,19 +2,19 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.70.0"
+      version = "~> 5.72.1"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.6.0"
+      version = "~> 3.6.3"
     }
     archive = {
       source  = "hashicorp/archive"
-      version = "~> 2.4.1"
+      version = "~> 2.4.2"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "~> 4.0.5"
+      version = "~> 4.0.6"
     }
   }
 
@@ -327,6 +327,7 @@ module "marklogic" {
   ebs_backup_role_arn                     = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
   iam_github_openid_connect_provider_arn  = module.github_actions_openid_connect_provider.github_oidc_provider_arn
+  ses_deploy_secret_arns                  = []
 }
 
 module "gh_runner" {
@@ -402,10 +403,9 @@ data "aws_iam_policy" "enable_session_manager" {
 module "ses_user" {
   source                = "../modules/ses_user"
   username              = "ses-user-${local.environment}"
-  ses_identity_arn      = module.ses_identity.arn
+  ses_identity_arns     = [module.ses_identity.arn]
   from_address_patterns = ["*@datacollection.dluhc-dev.uk"]
   environment           = local.environment
-  kms_key_arn           = null
   vpc_id                = module.networking.vpc.id
 }
 
