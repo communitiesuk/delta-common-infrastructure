@@ -1,7 +1,7 @@
 resource "aws_secretsmanager_secret" "ses_user" {
   name                    = "tf-smtp-${var.username}"
   description             = "Managed by Terraform, do not update manually"
-  kms_key_id              = var.kms_key_arn
+  kms_key_id              = aws_kms_key.deploy_secrets.arn
   recovery_window_in_days = 0
 
   tags = {

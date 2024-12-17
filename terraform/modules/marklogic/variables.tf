@@ -125,3 +125,8 @@ variable "weekly_backup_bucket_retention_days" {
 variable "iam_github_openid_connect_provider_arn" {
   type = string
 }
+
+variable "ses_deploy_secret_arns" {
+  type        = list(string)
+  description = "List of arns of the kms keys for SES credentials"
+}

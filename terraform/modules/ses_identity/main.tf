@@ -65,13 +65,13 @@ data "aws_iam_policy_document" "kms_key_policy" {
 }
 
 resource "aws_kms_key" "ses_sns_topic_encryption_key" {
-  description         = "SES SNS topic encryption key"
+  description         = "SES SNS topic encryption key for ${var.domain}"
   enable_key_rotation = true
   policy              = data.aws_iam_policy_document.kms_key_policy.json
 }
 
 resource "aws_kms_alias" "ses_sns_topic_encryption_key" {
-  name          = "alias/ses-sns-topic-${var.environment}"
+  name          = "alias/ses-sns-topic-${var.environment}${var.cloudwatch_suffix}"
   target_key_id = aws_kms_key.ses_sns_topic_encryption_key.key_id
 }
 
