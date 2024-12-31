@@ -10,7 +10,9 @@ To use this module you need to manually create two AWS secrets:
 
 ## SSH access
 
-You can manually ssh onto a MarkLogic instance:
+Connect via AWS Session Manager: https://eu-west-1.console.aws.amazon.com/systems-manager/session-manager/sessions. You can run `sudo -i` to access the server as the root user.
+
+If session manager is not working for some reason, you can instead manually ssh onto a MarkLogic instance via the bastion server. See [the main README](/README.md) for how to access the bastion server, and then SSH to the MarkLogic instance:
 
 1. `terraform output -raw ml_ssh_private_key > ~/.ssh/ml_privatekey`
 2. `ssh -J <username>@$(terraform output -raw bastion_dns_name) ec2-user@instance.ip.here -i ~/.ssh/your_normal_key -i ~/.ssh/ml_privatekey`

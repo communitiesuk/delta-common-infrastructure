@@ -29,8 +29,15 @@ aws s3 cp ~/.ssh/id_rsa.pub s3://$(terraform output -raw bastion_ssh_keys_bucket
 
 For information on creating an SSH key please [see here](https://docs.github.com/en/enterprise-cloud@latest/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#about-ssh-key-passphrases).
 
-After five minutes you should be able to SSH in to the bastion server. Currently, the Softwire London and Cambridge office IPs are allowlisted.
+After five minutes the bastion server should synchronise with the bucket to create a user for you with your public key in its authorized_keys file.
 
+You also need to ensure that your IP address is allowed access if you are trying to access staging or production (see `var.allowed_ssh_cidrs`). The test environment is not IP restricted because developers require bastion port forwarding and not all developers have static IP addresses. If a developer has a static IP address, they can add it to the allowlists in Terraform, but if your IP address is not static or you just want temporary access, then manually add it via the AWS console in order to connect to bastion server (your manual changes will be reverted by the next Terraform apply).
+* Navigate to the desired environment's VPC network ACL, [https://eu-west-1.console.aws.amazon.com/vpcconsole/home?#acls:]. Select the ACL and then select "edit inbound rules". Add a new inbound rule to allow SSH (port 22) from your public IP address. 
+* Navigate to the bastion's security group (it should have "bastion" in the name, e.g. https://eu-west-1.console.aws.amazon.com/ec2/home?region=eu-west-1#SecurityGroup:groupId=sg-0c4532cfed331a1a6) and select "edit inbound rules". Again, add a new rule to allow SSH to port 22 from your IP address.
+
+The bastion DNS name is available as a Terraform output: `terraform output -raw bastion_dns_name`.
+
+You can run this command to test your SSH connection:
 ```sh
 ssh <username>@$(terraform output -raw bastion_dns_name)
 ```

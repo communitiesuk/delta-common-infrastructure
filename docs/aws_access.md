@@ -186,7 +186,7 @@ You'll then need to include `--profile delta-dev` or `--profile delta-prod` in y
 
 ### Session Manager CLI access
 
-AWS Systems Manager Session Manager can be used to connect to instances inside the VPC.
+AWS Systems Manager Session Manager can be used to connect to instances inside the VPC. Go to the [AWS console](https://eu-west-1.console.aws.amazon.com/systems-manager/session-manager/sessions) and start a session. You can elevate your session to the root user if needed. All session manager activity is logged to CloudWatch. 
 
 Port forwarding can also be used, for example to connect to the MarkLogic admin interface:
 
