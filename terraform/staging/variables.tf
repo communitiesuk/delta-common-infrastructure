@@ -53,3 +53,9 @@ variable "dap_external_role_arns" {
   type    = list(string)
   default = ["arn:aws:iam::062321884391:role/DSQSS"]
 }
+
+variable "dap_external_canonical_users" {
+  type = list(string)
+  # These are funding service accounts that we wish to have access to staging DAP S3 bucket
+  default = ["4a20e1ecba266786127536b068cbbf222b344a2e21024029f1a778f98e8667c0", "5544757b63b565e6774e61121ba15cfa98206f1629455df924f60d942a861d56"]
+}
