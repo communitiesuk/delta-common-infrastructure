@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "allow_access_from_dap" {
     ]
   }
   statement {
-    sid = "AllowExternalBucketAccess"
+    sid    = "AllowExternalBucketAccess"
     effect = "Allow"
     principals {
       type        = "CanonicalUser"

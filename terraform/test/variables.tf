@@ -54,6 +54,6 @@ variable "dap_external_role_arns" {
 }
 
 variable "dap_external_canonical_users" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
