@@ -31,6 +31,21 @@ data "aws_iam_policy_document" "allow_access_from_dap" {
       "${module.dap_export_bucket.bucket_arn}/latest/*",
     ]
   }
+  statement {
+    sid    = "AllowExternalBucketAccess"
+    effect = "Allow"
+    principals {
+      type        = "CanonicalUser"
+      identifiers = var.dap_external_canonical_users
+    }
+    actions = [
+      "s3:GetObject"
+    ]
+    resources = [
+      module.dap_export_bucket.bucket_arn,
+      "${module.dap_export_bucket.bucket_arn}/latest/*",
+    ]
+  }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "dap_export" {
