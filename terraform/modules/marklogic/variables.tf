@@ -101,7 +101,9 @@ variable "dap_external_role_arns" {
 }
 
 variable "dap_external_canonical_users" {
-  type = list(string)
+  description = "AWS service accounts that we wish to have access to DAP S3 bucket (read-only)"
+  type        = list(string)
+  default     = []
 }
 
 variable "marklogic_ami_version" {
