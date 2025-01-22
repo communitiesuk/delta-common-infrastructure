@@ -52,3 +52,8 @@ variable "dap_external_role_arns" {
   type    = list(string)
   default = ["arn:aws:iam::062321884391:role/DSQSS"]
 }
+
+variable "dap_external_canonical_users" {
+  type    = list(string)
+  default = []
+}
