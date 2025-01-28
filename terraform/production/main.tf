@@ -2,19 +2,19 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.33.0"
+      version = "~> 5.72.1"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.6.0"
+      version = "~> 3.6.3"
     }
     archive = {
       source  = "hashicorp/archive"
-      version = "~> 2.4.1"
+      version = "~> 2.4.2"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "~> 4.0.5"
+      version = "~> 4.0.6"
     }
   }
 
@@ -28,7 +28,7 @@ terraform {
     region         = "eu-west-1"
   }
 
-  required_version = "~> 1.7.0"
+  required_version = "~> 1.9.0"
 }
 
 provider "aws" {
@@ -44,7 +44,7 @@ locals {
   cloudwatch_log_expiration_days       = 731
   patch_cloudwatch_log_expiration_days = 90
   s3_log_expiration_days               = 731
-  all_notifications_email_addresses    = ["delta-notifications@levellingup.gov.uk", "Group-DLUHCDeltaNotifications@softwire.com", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
+  all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk", "Group-DLUHCDeltaNotifications@softwire.com", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
 }
 
 module "communities_only_ssl_certs" {
@@ -57,8 +57,9 @@ module "communities_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain                               = "datacollection.levellingup.gov.uk"
+  domain                               = "datacollection.communities.gov.uk"
   environment                          = local.environment
+  cloudwatch_suffix                    = "-communities"
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }
@@ -66,20 +67,18 @@ module "ses_identity" {
 module "delta_ses_user" {
   source                = "../modules/ses_user"
   username              = "ses-user-delta-app-${local.environment}"
-  ses_identity_arn      = module.ses_identity.arn
-  from_address_patterns = ["delta@datacollection.levellingup.gov.uk"]
+  ses_identity_arns     = [module.ses_identity.arn]
+  from_address_patterns = ["delta@datacollection.communities.gov.uk"]
   environment           = local.environment
-  kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
   vpc_id                = module.networking.vpc.id
 }
 
 module "cpm_ses_user" {
   source                = "../modules/ses_user"
   username              = "ses-user-cpm-app-${local.environment}"
-  ses_identity_arn      = module.ses_identity.arn
-  from_address_patterns = ["cpm@datacollection.levellingup.gov.uk"]
+  ses_identity_arns     = [module.ses_identity.arn]
+  from_address_patterns = ["cpm@datacollection.communities.gov.uk"]
   environment           = local.environment
-  kms_key_arn           = module.marklogic.deploy_user_kms_key_arn
   vpc_id                = module.networking.vpc.id
 }
 
@@ -120,7 +119,7 @@ module "bastion_log_group" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/Softwire/terraform-bastion-host-aws?ref=bc9595185a8d805397a9622388f26b1246fafb04"
+  source = "../modules/bastion_host"
 
   region                  = "eu-west-1"
   name_prefix             = "prd"
@@ -230,9 +229,10 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 55
   dap_external_role_arns                  = var.dap_external_role_arns
+  dap_external_canonical_users            = var.dap_external_canonical_users
   dap_job_notification_emails = concat(
     local.all_notifications_email_addresses,
-    ["deltastatsupport@levellingup.gov.uk"]
+    ["deltastatsupport@communities.gov.uk"]
   )
   backup_replication_bucket          = module.backup_replication_bucket.bucket
   ebs_backup_role_arn                = module.ebs_backup.role_arn
@@ -240,6 +240,7 @@ module "marklogic" {
   # TODO DT-803 Reduce/remove this once we are happy with our testing on staging
   weekly_backup_bucket_retention_days    = 60
   iam_github_openid_connect_provider_arn = module.github_actions_openid_connect_provider.github_oidc_provider_arn
+  ses_deploy_secret_arns                 = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
 }
 
 module "gh_runner" {
@@ -279,7 +280,7 @@ module "cloudfront_alb_monitoring" {
     alb_arn_suffix             = module.public_albs.delta_api.arn_suffix
     instance_metric_namespace  = null
   }
-  keycloak = {
+  auth = {
     cloudfront_distribution_id = module.cloudfront_distributions.auth_cloudfront_distribution_id
     alb_arn_suffix             = module.public_albs.auth.arn_suffix
     instance_metric_namespace  = null
@@ -288,11 +289,6 @@ module "cloudfront_alb_monitoring" {
     cloudfront_distribution_id = module.cloudfront_distributions.cpm_cloudfront_distribution_id
     alb_arn_suffix             = module.public_albs.cpm.arn_suffix
     instance_metric_namespace  = null
-  }
-  jaspersoft = {
-    cloudfront_distribution_id = module.cloudfront_distributions.jaspersoft_cloudfront_distribution_id
-    alb_arn_suffix             = module.public_albs.jaspersoft.arn_suffix
-    instance_metric_namespace  = "${local.environment}/Jaspersoft"
   }
   alarms_sns_topic_arn          = module.notifications.alarms_sns_topic_arn
   alarms_sns_topic_global_arn   = module.notifications.alarms_sns_topic_global_arn
@@ -335,7 +331,7 @@ module "cloudfront_distributions" {
     # Home Connections claim their servers are in the UK, but they currently get geo-located to US
     geo_restriction_countries = ["GB", "IE", "US"]
   }
-  keycloak = {
+  auth = {
     alb = module.public_albs.auth
     domain = {
       aliases             = ["auth.delta.${var.primary_domain}"]
@@ -354,15 +350,6 @@ module "cloudfront_distributions" {
     ip_allowlist              = local.cloudfront_ip_allowlists.cpm
     geo_restriction_countries = ["GB", "IE", "DE"] # SAP middleware operates from AWS located in Germany
     origin_read_timeout       = 180                # Required quota increase
-  }
-  jaspersoft = {
-    alb = module.public_albs.jaspersoft
-    domain = {
-      aliases             = ["reporting.delta.${var.primary_domain}"]
-      acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["jaspersoft_delta"].arn
-    }
-    ip_allowlist              = local.cloudfront_ip_allowlists.jaspersoft
-    geo_restriction_countries = ["GB", "IE"]
   }
 }
 
@@ -392,7 +379,6 @@ module "jaspersoft" {
   vpc                                  = module.networking.vpc
   prefix                               = "dluhc-prd-"
   ssh_key_name                         = aws_key_pair.jaspersoft_ssh_key.key_name
-  public_alb                           = module.public_albs.jaspersoft
   allow_ssh_from_sg_id                 = module.bastion.bastion_security_group_id
   jaspersoft_binaries_s3_bucket        = var.jasper_s3_bucket
   private_dns                          = module.networking.private_dns

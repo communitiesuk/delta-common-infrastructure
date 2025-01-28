@@ -45,10 +45,6 @@ locals {
       repo_name = "delta-fo-to-pdf",
       push_user = aws_iam_user.delta_ci.name
     },
-    "keycloak" = {
-      repo_name = "keycloak",
-      push_user = aws_iam_user.delta_ci.name
-    },
     "auth_service" = {
       repo_name = "delta-auth-service",
       push_user = aws_iam_user.delta_auth_ci.name

@@ -70,11 +70,6 @@ output "cpm_private_subnets" {
   description = "Three private /24 subnets for CPM"
 }
 
-output "keycloak_private_subnets" {
-  value       = aws_subnet.keycloak_private
-  description = "Three private /24 subnets for Keycloak"
-}
-
 output "mailhog_private_subnet" {
   value       = var.mailhog_subnet ? aws_subnet.mailhog[0] : null
   description = "Private /24 subnet for MailHog, if enabled"

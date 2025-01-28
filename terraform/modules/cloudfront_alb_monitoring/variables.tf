@@ -14,7 +14,7 @@ variable "delta_api" {
   })
 }
 
-variable "keycloak" {
+variable "auth" {
   type = object({
     cloudfront_distribution_id = string
     alb_arn_suffix             = string
@@ -23,14 +23,6 @@ variable "keycloak" {
 }
 
 variable "cpm" {
-  type = object({
-    cloudfront_distribution_id = string
-    alb_arn_suffix             = string
-    instance_metric_namespace  = string
-  })
-}
-
-variable "jaspersoft" {
   type = object({
     cloudfront_distribution_id = string
     alb_arn_suffix             = string

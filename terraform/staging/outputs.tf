@@ -75,10 +75,6 @@ output "cpm_private_subnet_ids" {
   value = module.networking.cpm_private_subnets[*].id
 }
 
-output "keycloak_private_subnet_ids" {
-  value = module.networking.keycloak_private_subnets[*].id
-}
-
 // TODO Remove once no longer referenced by Delta
 output "redis_private_subnet_ids" {
   value = module.networking.delta_website_db_private_subnets[*].id
@@ -101,10 +97,6 @@ output "private_dns" {
   value = module.networking.private_dns
 }
 
-output "jaspersoft_alb_domain" {
-  value = module.public_albs.jaspersoft.dns_name
-}
-
 output "jaspersoft_private_ip" {
   value = module.jaspersoft.instance_private_ip
 }
@@ -120,14 +112,17 @@ output "required_dns_records" {
 
 output "public_albs" {
   value = {
-    delta      = module.public_albs.delta
-    api        = module.public_albs.delta_api
-    auth       = module.public_albs.auth
-    cpm        = module.public_albs.cpm
-    jaspersoft = module.public_albs.jaspersoft
+    delta = module.public_albs.delta
+    api   = module.public_albs.delta_api
+    auth  = module.public_albs.auth
+    cpm   = module.public_albs.cpm
   }
   # Includes CloudFront keys
   sensitive = true
+}
+
+output "delta_cloudfront_distribution_id" {
+  value = module.cloudfront_distributions.delta_cloudfront_distribution_id
 }
 
 output "session_manager_policy_arn" {
@@ -156,6 +151,10 @@ output "security_sns_topic_global_arn" {
 
 output "deploy_user_kms_key_arn" {
   value = module.marklogic.deploy_user_kms_key_arn
+}
+
+output "deploy_user_delta_kms_key_arn" {
+  value = module.delta_ses_user.deploy_secret_arn
 }
 
 output "auth_internal_alb" {

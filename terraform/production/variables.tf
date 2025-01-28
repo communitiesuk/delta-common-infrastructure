@@ -54,3 +54,8 @@ variable "dap_external_role_arns" {
   # "DSQSS" is DAP's staging/test server. Added here for MSD-54917, informed they exist in the same environment.
   default = ["arn:aws:iam::062321884391:role/DSQL1", "arn:aws:iam::062321884391:role/DSQSS"]
 }
+
+variable "dap_external_canonical_users" {
+  type    = list(string)
+  default = []
+}

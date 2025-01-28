@@ -6,13 +6,10 @@ variable "username" {
   type = string
 }
 
-variable "ses_identity_arn" {
-  type = string
+variable "ses_identity_arns" {
+  type = list(string)
 }
 
-variable "kms_key_arn" {
-  type = string
-}
 
 variable "from_address_patterns" {
   type        = list(string)
@@ -37,10 +34,24 @@ resource "aws_iam_access_key" "smtp_user" {
   user = aws_iam_user.smtp_user.name
 }
 
+resource "aws_kms_key" "deploy_secrets" {
+  description         = "deploy-secrets-${var.username}"
+  enable_key_rotation = true
+
+  tags = {
+    "terraform-plan-read" = true
+  }
+}
+
+resource "aws_kms_alias" "deploy_secrets" {
+  name          = "alias/deploy-secrets-${var.username}"
+  target_key_id = aws_kms_key.deploy_secrets.key_id
+}
+
 data "aws_iam_policy_document" "ses_sender" {
   statement {
     actions   = ["ses:SendRawEmail"]
-    resources = [var.ses_identity_arn]
+    resources = var.ses_identity_arns
     condition {
       test     = "StringLike"
       variable = "ses:FromAddress"
@@ -67,4 +78,8 @@ output "smtp_username" {
 output "smtp_password" {
   value     = aws_iam_access_key.smtp_user.ses_smtp_password_v4
   sensitive = true
+}
+
+output "deploy_secret_arn" {
+  value = aws_kms_key.deploy_secrets.arn
 }

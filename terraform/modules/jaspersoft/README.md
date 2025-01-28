@@ -118,7 +118,7 @@ systemctl stop tomcat
 rm -f latest
 
 # Install new version
-TOMCAT_VERSION=9.0.70
+TOMCAT_VERSION=9.0.96
 wget "https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz" -P /tmp
 sudo -u tomcat tar -xf /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz -C /opt/tomcat/
 rm -f /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz
@@ -160,3 +160,22 @@ psql --host "jaspersoft-db.vpc.local" --username jaspersoft --password -d postgr
 pg_restore "./db_dump" --create --clean --dbname postgres --host "jaspersoft-db.vpc.local" --username jaspersoft --password --exit-on-error
 psql --host "jaspersoft-db.vpc.local" --username jaspersoft --password -d postgres -c 'ALTER DATABASE jasperserver OWNER TO jaspersoft;'
 ```
+
+## Access
+
+The server is only accessible within the VPC. To connect to it, set up port forwarding via the bastion server to jaspersoft.vpc.local:8080, or use these commands to connect with Session Manager, e.g.:
+
+```
+INSTANCE_ID=$(aws-vault exec delta-dev -- aws ec2 describe-instances \
+               --filter "Name=tag:Name,Values=dluhc-stg-jaspersoft-server" \
+               --query "Reservations[].Instances[?State.Name == 'running'].InstanceId[]" \
+               --output text)
+
+aws-vault exec delta-dev -- aws ssm start-session --target $INSTANCE_ID \
+  --document-name AWS-StartPortForwardingSession \
+  --parameters '{"portNumber":["8080"],"localPortNumber":["8080"]}'
+```
+
+You can then view the JasperSoft web interface at localhost:8080 in your browser. 
+
+Admin credentials are in AWS Secrets Manager.
