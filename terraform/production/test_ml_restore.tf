@@ -12,8 +12,10 @@ module "test_ml_restore" {
     iops                   = 16000
     throughput_MiB_per_sec = 1000
   }
+
+  // These give the test cluster permission to read any backup file
   daily_backup_bucket_arn  = module.marklogic.daily_backup_bucket_arn
   weekly_backup_bucket_arn = module.marklogic.weekly_backup_bucket_arn
   backup_key               = module.marklogic.backup_key
-  locked_backup_replication_bucket_arn = null
+  locked_backup_replication_bucket_arn = module.backup_replication_bucket.bucket.arn
 }

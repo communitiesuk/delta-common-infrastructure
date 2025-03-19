@@ -90,7 +90,7 @@ resource "aws_iam_role_policy_attachment" "ml_s3_backups" {
 
 resource "aws_iam_policy" "ml_s3_backups" {
   name        = "ml-s3-backups-access-for-rehearsal"
-  description = "Allows MarkLogic instances to read and write their S3 Backups bucket"
+  description = "Allows MarkLogic instances to read from the S3 Backups bucket"
 
   policy = data.aws_iam_policy_document.ml_s3_backups.json
 }
