@@ -2,6 +2,7 @@ Import-Module ActiveDirectory
 
 # Used during Barnsley/Sheffield merger to to add new ons versions of users access groups
 # Set Old/NewOns variables respectively to use
+# Update comment
 
 # Testing Ons
 $OldOns = 'S1234'
