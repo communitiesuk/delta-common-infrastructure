@@ -15,5 +15,5 @@ module "test_ml_restore" {
   daily_backup_bucket_arn  = module.marklogic.daily_backup_bucket_arn
   weekly_backup_bucket_arn = module.marklogic.weekly_backup_bucket_arn
   backup_key               = module.marklogic.backup_key
-  locked_backup_replication_bucket_arn = ""
+  locked_backup_replication_bucket_arn = null
 }
