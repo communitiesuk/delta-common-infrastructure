@@ -1,18 +1,18 @@
 Import-Module ActiveDirectory
 
 # Used during Barnsley/Sheffield merger to to add new ons versions of users access groups
-# Set Old/NewOns variables respectively to use
-# Update comment
+# Set Old/NewOns and OrgName variables respectively to use
 
 # Testing Ons
+$OrgName = 'Softwire'
 $OldOns = 'S1234'
 $NewOns = 'S9876'
 
-# Barnsley
+# $OrgName = 'Barnsley'
 # $OldOns = 'E08000016'
 # $NewOns = 'E08000038'
 
-# Sheffield
+# $OrgName = 'Sheffield'
 # $OldOns = 'E08000019'
 # $NewOns = 'E08000039'
 
@@ -21,7 +21,10 @@ function Create-Group {
 	param (
 		$NewGroup
 	)
-    # Gets the name and path of the new group
+    # Gets the name and path of the new group to be created from the new groups identity param passed in
+    # $New Group = CN=datamart-delta-abatements-approvers-S9876,OU=Groups,OU=dluhcdata,DC=dluhcdata,DC=local
+    # $name = datamart-delta-abatements-approvers-S9876
+    # $path = OU=Groups,OU=dluhcdata,DC=dluhcdata,DC=local
 	$strings = $NewGroup -split ","
 	$name = $strings[0].Substring(3)
 	$path = $strings[1..($strings.length -1)] -join ','
@@ -67,6 +70,6 @@ foreach($User in $Users) {
 	}
 	# Update comment
 	$UserWithComment = $User | Get-ADUser -Property Comment
-	$UserWithComment.Comment = $UserWithComment.Comment + "`nUpdated by script to add new Barnsley AD groups"
+	$UserWithComment.Comment = $UserWithComment.Comment + "`nUpdated by script to add new " + $OrgName + " AD groups"
 	Set-ADUser -Instance $UserWithComment
 }
