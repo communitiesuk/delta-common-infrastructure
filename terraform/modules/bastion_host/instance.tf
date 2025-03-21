@@ -3,7 +3,7 @@ data "aws_ami" "aws_linux_2" {
   count       = var.custom_ami != "" ? 0 : 1
   most_recent = true
   owners      = ["amazon"]
-  name_regex  = "^amzn2-ami-hvm-2.0.*"
+  name_regex  = "^al2023-ami-2023.*"
 
   filter {
     name   = "architecture"
