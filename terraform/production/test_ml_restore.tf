@@ -12,6 +12,8 @@ module "test_ml_restore" {
     iops                   = 16000
     throughput_MiB_per_sec = 1000
   }
+  
+  extra_instance_policy_arn = module.session_manager_config.policy_arn
 
   // These give the test cluster permission to read any backup file
   daily_backup_bucket_arn  = module.marklogic.daily_backup_bucket_arn

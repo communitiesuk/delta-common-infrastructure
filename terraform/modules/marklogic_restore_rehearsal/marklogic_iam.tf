@@ -119,3 +119,8 @@ data "aws_iam_policy_document" "ml_s3_backups" {
     resources = [var.backup_key]
   }
 }
+
+resource "aws_iam_role_policy_attachment" "extra_attach" {
+  role       = aws_iam_role.ml_iam_role.name
+  policy_arn = var.extra_instance_policy_arn
+}
