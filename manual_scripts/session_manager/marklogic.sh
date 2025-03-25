@@ -7,7 +7,7 @@ LOCAL_PORT=${2:-9001}
 REMOTE_PORT=${3:-8001}
 
 INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=MarkLogic-ASG-2" "Name=tag:marklogic:stack:name,Values=marklogic-stack-${ENVIRONMENT}" \
+  --filters "Name=tag:Name,Values=MarkLogic-ASG-1" "Name=tag:marklogic:stack:name,Values=marklogic-stack-${ENVIRONMENT}" \
   --query "Reservations[].Instances[?State.Name == 'running'].InstanceId[]" \
   --output text)
 echo "Connecting to $INSTANCE_ID forwarding $LOCAL_PORT -> $REMOTE_PORT"
