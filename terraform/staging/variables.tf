@@ -25,7 +25,7 @@ variable "secondary_domain_zone_id" {
 }
 
 variable "allowed_ssh_cidrs" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
