@@ -26,9 +26,7 @@ variable "secondary_domain_zone_id" {
 
 variable "allowed_ssh_cidrs" {
   type = list(string)
-  default = [
-    "31.221.86.178/32", "167.98.33.82/32", "82.163.115.98/32", "87.224.105.250/32", "87.224.116.242/32", # Softwire
-  ]
+  default = []
 }
 
 variable "github_actions_runner_token" {
