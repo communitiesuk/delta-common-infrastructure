@@ -31,21 +31,24 @@ data "aws_iam_policy_document" "allow_access_from_dap" {
       "${module.dap_export_bucket.bucket_arn}/latest/*",
     ]
   }
-  statement {
-    sid    = "AllowExternalBucketAccess"
-    effect = "Allow"
-    principals {
-      type        = "CanonicalUser"
-      identifiers = var.dap_external_canonical_users
+  dynamic "statement" {
+    for_each = length(var.dap_external_canonical_users) > 1 ? [1] : []
+    content {
+      sid    = "AllowExternalBucketAccess"
+      effect = "Allow"
+      principals {
+        type        = "CanonicalUser"
+        identifiers = var.dap_external_canonical_users
+      }
+      actions = [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ]
+      resources = [
+        module.dap_export_bucket.bucket_arn,
+        "${module.dap_export_bucket.bucket_arn}/latest/*",
+      ]
     }
-    actions = [
-      "s3:GetObject",
-      "s3:ListBucket"
-    ]
-    resources = [
-      module.dap_export_bucket.bucket_arn,
-      "${module.dap_export_bucket.bucket_arn}/latest/*",
-    ]
   }
 }
 

@@ -62,3 +62,8 @@ variable "backup_key" {
   type        = string
   description = "From the main ML module, aws_kms_key.ml_backup_bucket_key.arn"
 }
+
+variable "extra_instance_policy_arn" {
+  type        = string
+  description = "arn of IAM policy to give instance necessary permissions for access via Session Manager"
+}
