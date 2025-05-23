@@ -632,7 +632,7 @@ Resources:
               - |+
 
               - MARKLOGIC_EBS_VOLUME=
-              - !Ref DataVolume1
+              - !Ref DataVolume2
               - ',:'
               - !Ref VolumeSize
               - '::'
@@ -715,7 +715,7 @@ Resources:
               - |+
 
               - MARKLOGIC_EBS_VOLUME=
-              - !Ref DataVolume1
+              - !Ref DataVolume3
               - ',:'
               - !Ref VolumeSize
               - '::'
