@@ -6,6 +6,14 @@ updates:
     directory: "terraform/test/"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "terraform/staging/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "terraform/production/"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
