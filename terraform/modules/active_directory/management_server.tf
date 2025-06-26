@@ -61,17 +61,17 @@ resource "aws_ssm_association" "ad_management_server_setup" {
 }
 
 resource "aws_ssm_document" "ad_management_server_install_ncsc_tool" {
-  name          = "InstallAgent"
+  name          = "InstallAgent-${var.environment}"
   document_type = "Command"
   content = jsonencode(
     {
-      "schemaVersion" = "2.0"
-      "description"   = "Command Document to install NCSC tool on Windows server",
+      "schemaVersion" = "2.2"
+      "description"   = "Command document to installs NCSC tool on AD server"
       "mainSteps" = [
         {
-          "action": "aws:runPowerShellScript",
-          "name": "runPowerShellScript",
-          "inputs": {
+          "action" = "aws:runPowerShellScript",
+          "name"   = "runPowerShellScript",
+          "inputs" = {
             "runCommand": [
               "powershell.exe -ExecutionPolicy Bypass -Command \"",
               "$bucketName = 'dluhc-delta-aws-srt-support-bucket';",
