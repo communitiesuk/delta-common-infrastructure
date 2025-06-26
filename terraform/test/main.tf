@@ -2,11 +2,11 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.81.0"
+      version = "~> 5.97.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.6.3"
+      version = "~> 3.7.1"
     }
     archive = {
       source  = "hashicorp/archive"
@@ -45,7 +45,7 @@ locals {
   cloudwatch_log_expiration_days       = 30
   patch_cloudwatch_log_expiration_days = 30
   s3_log_expiration_days               = 30
-  all_notifications_email_addresses    = ["Group-DLUHCDeltaDevNotifications+test@softwire.com"]
+  all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk"]
 }
 
 module "communities_only_ssl_certs" {

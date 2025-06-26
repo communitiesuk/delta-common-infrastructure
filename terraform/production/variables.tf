@@ -3,7 +3,7 @@ variable "default_tags" {
   default = {
     project           = "Data Collection Service"
     business-unit     = "Digital Delivery"
-    technical-contact = "Team-DLUHC@softwire.com"
+    technical-contact = "delta-notifications@communities.gov.uk"
     environment       = "production"
     repository        = "https://github.com/communitiesuk/delta-common-infrastructure"
   }
@@ -25,10 +25,8 @@ variable "secondary_domain_zone_id" {
 }
 
 variable "allowed_ssh_cidrs" {
-  type = list(string)
-  default = [
-    "31.221.86.178/32", "167.98.33.82/32", "82.163.115.98/32", "87.224.105.250/32", "87.224.116.242/32", # Softwire
-  ]
+  type    = list(string)
+  default = []
 }
 
 variable "ecr_repo_account_id" {
