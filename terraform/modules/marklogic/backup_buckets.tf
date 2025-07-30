@@ -45,7 +45,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "weekly_backup_bucket" {
   rule {
     id = "noncurrent-version-expiration"
 
-    filter {}
+    filter {
+      prefix = ""
+    }
 
     abort_incomplete_multipart_upload {
       days_after_initiation = 14

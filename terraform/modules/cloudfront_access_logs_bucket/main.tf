@@ -32,16 +32,25 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudfront_logs" {
 
   rule {
     id     = "default-to-intelligent-tiering"
+
+    filter {
+      prefix = ""
+    }
+
     status = "Enabled"
+
     transition {
       storage_class = "INTELLIGENT_TIERING"
+      days          = 0
     }
   }
 
   rule {
     id = "expiration"
 
-    filter {}
+    filter {
+      prefix = ""
+    }
 
     expiration {
       days = var.expiration_days

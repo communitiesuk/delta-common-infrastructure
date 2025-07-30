@@ -120,7 +120,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "ssh_keys_logs" {
   rule {
     id = "expire-old-logs"
 
-    filter {}
+    filter {
+      prefix = ""
+    }
 
     expiration {
       days = var.s3_access_log_expiration_days
