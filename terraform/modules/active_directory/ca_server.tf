@@ -92,5 +92,5 @@ resource "aws_cloudformation_stack" "ca_server" {
 
 data "aws_instance" "ca_server" {
   count       = var.include_ca ? 1 : 0
-  instance_id = aws_cloudformation_stack.ca_server[0].outputs["EntRootCAInstanceId"]
+  instance_id = var.include_ca ? aws_cloudformation_stack.ca_server[0].outputs["EntRootCAInstanceId"] : ""
 }
