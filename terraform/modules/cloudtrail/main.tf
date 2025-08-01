@@ -83,7 +83,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "expire" {
 
   rule {
     id = "expiration"
-    filter {}
+    filter {
+      prefix = ""
+    }
     expiration {
       days = var.s3_log_expiration_days
     }

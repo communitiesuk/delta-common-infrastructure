@@ -87,7 +87,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "main" {
   rule {
     id = "expire-old-versions"
 
-    filter {}
+    filter {
+      prefix = ""
+    }
 
     abort_incomplete_multipart_upload {
       days_after_initiation = 14
@@ -137,7 +139,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "log_bucket" {
   rule {
     id = "expire-old-logs"
 
-    filter {}
+    filter {
+      prefix = ""
+    }
 
     expiration {
       days = var.access_s3_log_expiration_days

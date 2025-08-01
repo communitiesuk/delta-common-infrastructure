@@ -60,7 +60,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "dap_export" {
   rule {
     id = "expire-old-versions"
 
-    filter {}
+    filter {
+      prefix = ""
+    }
 
     noncurrent_version_expiration {
       noncurrent_days = 180

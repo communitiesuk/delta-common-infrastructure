@@ -52,7 +52,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "object_locked_backup_bucket" {
   rule {
     id = "noncurrent-version-expiration"
 
-    filter {}
+    filter {
+      prefix = ""
+    }
 
     abort_incomplete_multipart_upload {
       days_after_initiation = 7
@@ -68,7 +70,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "object_locked_backup_bucket" {
   rule {
     id = "expire"
 
-    filter {}
+    filter {
+      prefix = ""
+    }
 
     expiration {
       days = var.object_expiration_days
