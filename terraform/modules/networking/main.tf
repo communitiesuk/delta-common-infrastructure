@@ -50,10 +50,10 @@ locals {
         ".firefox.com"                                          # Firefox
       ]
       tls_allowed_domains = [
-        ".microsoft.com", ".windows.com", ".windowsupdate.com",                                  # Windows update
-        "onegetcdn.azureedge.net", "www.powershellgallery.com", "psg-prod-eastus.azureedge.net", # Install PowerShell tools
-        "download.mozilla.org", ".mozilla.net", ".services.mozilla.com", ".mozilla.org",         # Firefox
-        ".digicert.com",                                                                         # CRL
+        ".microsoft.com", ".windows.com", ".windowsupdate.com",                                                                               # Windows update
+        ".oneget.org", "onegetcdn.azureedge.net", "www.powershellgallery.com", "cdn.powershellgallery.com", "psg-prod-eastus.azureedge.net",  # Install PowerShell tools
+        "download.mozilla.org", ".mozilla.net", ".services.mozilla.com", ".mozilla.org",                                                      # Firefox
+        ".digicert.com",                                                                                                                      # CRL
         # Allow connections to SSM.
         # These would normally flow through the VPC endpoint, but if Active Directory's DNS forwarding is misconfigured they will instead go to the main region endpoint.
         # The AD Management server relies on SSM to join the domain, so allowing those connections makes it easier to fix.
