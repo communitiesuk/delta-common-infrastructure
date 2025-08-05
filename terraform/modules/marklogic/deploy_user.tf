@@ -40,10 +40,6 @@ data "aws_secretsmanager_secret" "ml_admin_user" {
   }
 }
 
-resource "aws_iam_policy" "read_marklogic_deploy_secrets" {
-  name   = "read-marklogic-admin-password-${var.environment}"
-  policy = data.aws_iam_policy_document.read_marklogic_deploy_secrets.json
-}
 
 # Tag based access control
 # tfsec:ignore:aws-iam-no-policy-wildcards
@@ -68,16 +64,24 @@ data "aws_iam_policy_document" "read_marklogic_deploy_secrets" {
     effect    = "Allow"
     resources = [aws_kms_key.ml_deploy_secrets.arn]
   }
-  statement {
-    actions   = ["kms:DescribeKey", "kms:Decrypt"]
-    effect    = "Allow"
-    resources = var.ses_deploy_secret_arns
+  dynamic "statement" {
+    for_each = var.environment != "test" ? [1] : []
+    content {
+      actions   = ["kms:DescribeKey", "kms:Decrypt"]
+      effect    = "Allow"
+      resources = var.ses_deploy_secret_arns
+    }
   }
   statement {
     actions   = ["secretsmanager:ListSecrets"]
     effect    = "Allow"
     resources = ["*"]
   }
+}
+
+resource "aws_iam_policy" "read_marklogic_deploy_secrets" {
+  name   = "read-marklogic-admin-password-${var.environment}"
+  policy = data.aws_iam_policy_document.read_marklogic_deploy_secrets.json
 }
 
 resource "aws_iam_user_policy_attachment" "read_marklogic_deploy_secrets" {

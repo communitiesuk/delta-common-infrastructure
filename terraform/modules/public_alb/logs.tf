@@ -20,10 +20,14 @@ resource "aws_s3_bucket_lifecycle_configuration" "alb_logs" {
   bucket = aws_s3_bucket.alb_logs.id
 
   rule {
-    id     = "default-to-intelligent-tiering"
+    id = "default-to-intelligent-tiering"
+    filter {
+      prefix = ""
+    }
     status = "Enabled"
     transition {
       storage_class = "INTELLIGENT_TIERING"
+      days          = 0
     }
   }
 

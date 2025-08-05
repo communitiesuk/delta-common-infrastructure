@@ -76,7 +76,7 @@ resource "aws_cloudformation_stack" "ca_server" {
     S3CRLBucketName          = aws_s3_bucket.ldaps_crl.id
     EntCaValidityPeriodUnits = var.ent_ca_validity_years
     # The test environment's CA server had to be rebuilt with a new name
-    EntCaServerNetBIOSName = "CASRV${var.environment == "test" ? "test2" : var.environment}"
+    EntCaServerNetBIOSName = "CASRV${var.environment == "test" ? "test4" : var.environment}"
   }
 
   template_body      = file("${path.module}/one_tier_ca.yml")
@@ -92,5 +92,5 @@ resource "aws_cloudformation_stack" "ca_server" {
 
 data "aws_instance" "ca_server" {
   count       = var.include_ca ? 1 : 0
-  instance_id = aws_cloudformation_stack.ca_server[0].outputs["EntRootCAInstanceId"]
+  instance_id = var.include_ca ? aws_cloudformation_stack.ca_server[0].outputs["EntRootCAInstanceId"] : ""
 }

@@ -80,7 +80,9 @@ resource "aws_s3_bucket_replication_configuration" "backup_replication" {
   rule {
     id = local.replication_rule_id
 
-    filter {}
+    filter {
+      prefix = ""
+    }
 
     status = "Enabled"
 
