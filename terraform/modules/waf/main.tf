@@ -227,6 +227,33 @@ resource "aws_wafv2_web_acl" "waf_acl" {
     }
   }
 
+
+  # only use anonymous ip list if we don't have an explicit allow list
+  dynamic "rule" {
+    for_each = local.ip_reputation_foreach
+    content {
+      name     = "aws-anonymous-ips"
+      priority = 61 + local.priority_base
+
+      override_action {
+        none {}
+      }
+
+      statement {
+        managed_rule_group_statement {
+          name        = "AWSManagedRulesAnonymousIpList"
+          vendor_name = "AWS"
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = local.metric_names.ip_reputation
+        sampled_requests_enabled   = true
+      }
+    }
+  }
+
   dynamic "rule" {
     for_each = local.path_specific_ip_allowlist_foreach
     content {
