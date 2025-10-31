@@ -226,10 +226,13 @@ module "marklogic" {
   config_s3_log_expiration_days           = local.s3_log_expiration_days
   dap_export_s3_log_expiration_days       = local.s3_log_expiration_days
   backup_s3_log_expiration_days           = local.s3_log_expiration_days
+  s151_export_s3_log_expiration_days      = local.s3_log_expiration_days
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 55
   dap_external_role_arns                  = var.dap_external_role_arns
   dap_external_canonical_users            = var.dap_external_canonical_users
+  s151_external_role_arns                 = var.s151_external_role_arns
+  s151_external_canonical_users           = var.s151_external_canonical_users
   dap_job_notification_emails = concat(
     local.all_notifications_email_addresses,
     ["deltastatsupport@communities.gov.uk"]
