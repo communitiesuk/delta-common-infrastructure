@@ -1,15 +1,17 @@
 locals {
   s151_export_path                          = "/delta/s151/export"
   latest_s151_export_files_lifespan_in_days = 7
+  s151_bucket_name                          = "dluhc-delta-s151-export-${var.environment}"
+  s151_bucket_arn                           = "arn:aws:s3:::${local.s151_bucket_name}"
 }
 
 module "s151_export_bucket" {
   source                             = "../s3_bucket"
-  bucket_name                        = "dluhc-delta-s151-export-${var.environment}"
+  bucket_name                        = local.s151_bucket_name
   access_log_bucket_name             = "dluhc-delta-s151-export-access-logs-${var.environment}"
   access_s3_log_expiration_days      = var.s151_export_s3_log_expiration_days
   noncurrent_version_expiration_days = null
-  policy                             = data.aws_iam_policy_document.allow_access_s151_bucket.json
+  policy                             = length(var.s151_external_canonical_users) == 0 ? "" : data.aws_iam_policy_document.allow_access_s151_bucket.json
 }
 
 data "aws_iam_policy_document" "allow_access_s151_bucket" {
@@ -27,8 +29,8 @@ data "aws_iam_policy_document" "allow_access_s151_bucket" {
     ]
 
     resources = [
-      module.s151_export_bucket.bucket_arn,
-      "${module.s151_export_bucket.bucket_arn}/latest/*",
+      local.s151_bucket_arn,
+      "${local.s151_bucket_arn}/latest/*",
     ]
   }
   dynamic "statement" {
@@ -45,8 +47,8 @@ data "aws_iam_policy_document" "allow_access_s151_bucket" {
         "s3:ListBucket"
       ]
       resources = [
-        module.s151_export_bucket.bucket_arn,
-        "${module.s151_export_bucket.bucket_arn}/latest/*",
+        local.s151_bucket_arn,
+        "${local.s151_bucket_arn}/latest/*",
       ]
     }
   }
