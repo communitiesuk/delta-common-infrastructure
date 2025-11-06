@@ -132,6 +132,7 @@ resource "aws_lambda_function_event_invoke_config" "waf_ip_update_async" {
 
 resource "aws_lambda_permission" "allow_logs_invoke" {
   for_each      = toset(var.log_group_names)
+  provider      = aws.us-east-1
   statement_id  = "AllowExecutionFromCloudWatchLogs-${each.key}"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.waf_ip_update.function_name
