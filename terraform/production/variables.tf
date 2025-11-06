@@ -57,3 +57,13 @@ variable "dap_external_canonical_users" {
   type    = list(string)
   default = []
 }
+
+variable "s151_external_role_arns" {
+  type    = list(string)
+  default = []
+}
+
+variable "s151_external_canonical_users" {
+  type    = list(string)
+  default = []
+}
