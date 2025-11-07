@@ -83,7 +83,7 @@ module "s151_export_job_window" {
   subscribed_emails = var.s151_job_notification_emails
 }
 
-resource "aws_ssm_maintenance_window_target" "ml_server" {
+resource "aws_ssm_maintenance_window_target" "ml_server_s151" {
   window_id     = module.s151_export_job_window.window_id
   name          = "marklogic-s151-s3-upload-${var.environment}"
   description   = "This should contain the MarkLogic servers from the ${var.environment} environment"
@@ -113,7 +113,7 @@ resource "aws_ssm_maintenance_window_task" "s151_s3_upload" {
 
   targets {
     key    = "WindowTargetIds"
-    values = [aws_ssm_maintenance_window_target.ml_server.id]
+    values = [aws_ssm_maintenance_window_target.ml_server_s151.id]
   }
 
   task_invocation_parameters {
