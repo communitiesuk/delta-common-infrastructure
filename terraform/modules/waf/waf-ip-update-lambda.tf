@@ -74,15 +74,15 @@ resource "aws_iam_policy" "waf_permissions" {
 }
 
 resource "aws_iam_role_policy_attachment" "attach_logs" {
-  provider  = aws.us-east-1
-  role      = aws_iam_role.waf_ip_update_lambda_role.name
-  policy_arn = aws_iam_policy.lambda_logs_write.arn
+  provider    = aws.us-east-1
+  role        = aws_iam_role.waf_ip_update_lambda_role.name
+  policy_arn  = aws_iam_policy.lambda_logs_write.arn
 }
 
 resource "aws_iam_role_policy_attachment" "attach_waf" {
-  provider  = aws.us-east-1
-  role      = aws_iam_role.waf_ip_update_lambda_role.name
-  policy_arn = aws_iam_policy.waf_permissions.arn
+  provider    = aws.us-east-1
+  role        = aws_iam_role.waf_ip_update_lambda_role.name
+  policy_arn  = aws_iam_policy.waf_permissions.arn
 }
 
 resource "aws_lambda_function" "waf_ip_update" {
@@ -141,13 +141,13 @@ resource "aws_lambda_permission" "allow_logs_invoke" {
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "waf_block_actions" {
-  provider = aws.us-east-1
+  provider        = aws.us-east-1
 
   name            = "${var.prefix}waf-block-actions-to-lambda"
   log_group_name  = aws_cloudwatch_log_group.main.name
   destination_arn = aws_lambda_function.waf_ip_update.arn
 
-  filter_pattern = "{ $.action = \"BLOCK\" }"
+  filter_pattern  = "{ $.action = \"BLOCK\" }"
 
-  depends_on = [aws_lambda_permission.allow_logs_invoke]
+  depends_on      = [aws_lambda_permission.allow_logs_invoke]
 }
