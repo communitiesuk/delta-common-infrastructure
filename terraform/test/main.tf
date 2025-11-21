@@ -179,7 +179,7 @@ module "cloudfront_alb_monitoring" {
 # then the DNS records, then add the "domain" values back in.
 module "cloudfront_distributions" {
   source = "../modules/cloudfront_distributions"
-
+  
   environment                              = local.environment
   base_domains                             = [var.primary_domain]
   waf_per_ip_rate_limit                    = 100000
@@ -202,6 +202,7 @@ module "cloudfront_distributions" {
     geo_restriction_countries = null
     # We don't want to IP restrict test (yet)
     client_error_rate_alarm_threshold_percent = 15
+    ip_allowlist = var.ip_allowlist
   }
   api = {
     alb = module.public_albs.delta_api

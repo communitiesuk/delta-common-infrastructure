@@ -30,6 +30,11 @@ variable "allowed_ssh_cidrs" {
   default = ["0.0.0.0/0"]
 }
 
+variable "ip_allowlist" {
+  type    = list(string)
+  default = ["52.17.9.21/32", "52.17.98.131/32"]
+}
+
 variable "github_actions_runner_token" {
   type        = string
   default     = "invalid-token"
