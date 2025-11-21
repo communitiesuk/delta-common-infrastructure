@@ -202,6 +202,7 @@ module "cloudfront_distributions" {
     geo_restriction_countries = null
     # We don't want to IP restrict test (yet)
     client_error_rate_alarm_threshold_percent = 15
+    ip_allowlist                              = var.ip_allowlist
   }
   api = {
     alb = module.public_albs.delta_api
