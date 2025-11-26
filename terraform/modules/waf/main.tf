@@ -98,7 +98,7 @@ resource "aws_wafv2_web_acl" "waf_acl" {
 
       statement {
         ip_set_reference_statement {
-            arn = aws_wafv2_ip_set.main[0].arn
+          arn = aws_wafv2_ip_set.main[0].arn
         }
       }
 
