@@ -193,6 +193,7 @@ module "cloudfront_distributions" {
     # We don't want to IP restrict staging until we are able to confirm who needs access
     client_error_rate_alarm_threshold_percent = 15
     origin_read_timeout                       = 180 # Required quota increase
+    ip_allowlist                              = var.ip_allowlist
   }
   api = {
     alb = module.public_albs.delta_api
