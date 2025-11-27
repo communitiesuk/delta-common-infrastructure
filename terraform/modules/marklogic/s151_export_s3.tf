@@ -132,11 +132,11 @@ resource "aws_ssm_maintenance_window_task" "s151_s3_upload" {
         name = "commands"
         values = [
           "set -ex",
-          "if [ -z \"$(ls ${local.delta_export_path})\" ]; then echo 'Error ${local.delta_export_path} is empty nothing to export'; exit 1; fi",
-          "rm -rf /delta/export-workdir/s151 && cp -r ${local.delta_export_path}/. /delta/export-workdir/s151",
+          "if [ -z \"$(ls ${local.s151_export_path})\" ]; then echo 'Error ${local.s151_export_path} is empty nothing to export'; exit 1; fi",
+          "rm -rf /delta/export-workdir/s151 && cp -r ${local.s151_export_path}/. /delta/export-workdir/s151",
           "cd /delta/export-workdir/s151 && echo 'Files to upload' && find . -type f",
           "aws s3 cp --region ${data.aws_region.current.name} /delta/export-workdir/s151 \"s3://${module.s151_export_bucket.bucket}/latest\" --recursive",
-          "rm -rf ${local.delta_export_path}/*",
+          "rm -rf ${local.s151_export_path}/*",
         ]
       }
 

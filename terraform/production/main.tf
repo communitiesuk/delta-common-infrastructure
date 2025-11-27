@@ -238,8 +238,7 @@ module "marklogic" {
     ["deltastatsupport@communities.gov.uk"]
   )
   s151_job_notification_emails = concat(
-    local.all_notifications_email_addresses,
-    ["deltastatsupport@communities.gov.uk"]
+    local.all_notifications_email_addresses
   )
   backup_replication_bucket          = module.backup_replication_bucket.bucket
   ebs_backup_role_arn                = module.ebs_backup.role_arn
