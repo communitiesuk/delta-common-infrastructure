@@ -7,11 +7,11 @@ data "archive_file" "waf_problematic_ip_update_package" {
 variable "log_group_names" {
   type = list(string)
   default = [
-      "test-cpm-waf-block-actions-to-lambda",
-      "test-delta-website-waf-block-actions-to-lambda",
-      "test-auth-waf-block-actions-to-lambda",
-      "test-delta-api-waf-block-actions-to-lambda",
-    ]
+    "${var.prefix}cpm-waf-block-actions-to-lambda",
+    "${var.prefix}delta-website-waf-block-actions-to-lambda",
+    "${var.prefix}auth-waf-block-actions-to-lambda",
+    "${var.prefix}delta-api-waf-block-actions-to-lambda",
+  ]
 }
 
 data "aws_caller_identity" "current" {}
@@ -74,20 +74,19 @@ resource "aws_iam_policy" "waf_permissions" {
 }
 
 resource "aws_iam_role_policy_attachment" "attach_logs" {
-  provider    = aws.us-east-1
-  role        = aws_iam_role.waf_ip_update_lambda_role.name
-  policy_arn  = aws_iam_policy.lambda_logs_write.arn
+  provider   = aws.us-east-1
+  role       = aws_iam_role.waf_ip_update_lambda_role.name
+  policy_arn = aws_iam_policy.lambda_logs_write.arn
 }
 
 resource "aws_iam_role_policy_attachment" "attach_waf" {
-  provider    = aws.us-east-1
-  role        = aws_iam_role.waf_ip_update_lambda_role.name
-  policy_arn  = aws_iam_policy.waf_permissions.arn
+  provider   = aws.us-east-1
+  role       = aws_iam_role.waf_ip_update_lambda_role.name
+  policy_arn = aws_iam_policy.waf_permissions.arn
 }
 
 resource "aws_lambda_function" "waf_ip_update" {
-  provider = aws.us-east-1
-
+  provider      = aws.us-east-1
   function_name = "${var.prefix}cloudfront-waf-ip-update"
   description   = "Updates the WAF blocklist IP set when matching log entries are seen"
   handler       = "lambdaFunction.lambda_handler"
@@ -123,11 +122,10 @@ resource "aws_lambda_function" "waf_ip_update" {
 }
 
 resource "aws_lambda_function_event_invoke_config" "waf_ip_update_async" {
-  provider = aws.us-east-1
-
-  function_name                 = aws_lambda_function.waf_ip_update.function_name
-  maximum_event_age_in_seconds  = 21600
-  maximum_retry_attempts        = 2
+  provider                     = aws.us-east-1
+  function_name                = aws_lambda_function.waf_ip_update.function_name
+  maximum_event_age_in_seconds = 21600
+  maximum_retry_attempts       = 2
 }
 
 resource "aws_lambda_permission" "allow_logs_invoke" {
@@ -142,12 +140,9 @@ resource "aws_lambda_permission" "allow_logs_invoke" {
 
 resource "aws_cloudwatch_log_subscription_filter" "waf_block_actions" {
   provider        = aws.us-east-1
-
   name            = "${var.prefix}waf-block-actions-to-lambda"
   log_group_name  = aws_cloudwatch_log_group.main.name
   destination_arn = aws_lambda_function.waf_ip_update.arn
-
   filter_pattern  = "{ $.action = \"BLOCK\" }"
-
   depends_on      = [aws_lambda_permission.allow_logs_invoke]
 }
