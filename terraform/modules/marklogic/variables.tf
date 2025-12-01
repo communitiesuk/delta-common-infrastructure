@@ -53,6 +53,10 @@ variable "dap_job_notification_emails" {
   type = list(string)
 }
 
+variable "s151_job_notification_emails" {
+  type = list(string)
+}
+
 variable "patch_maintenance_window" {
   type = object({
     window_id            = string

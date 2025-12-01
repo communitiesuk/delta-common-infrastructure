@@ -322,6 +322,7 @@ module "marklogic" {
   s151_external_role_arns                 = var.s151_external_role_arns
   s151_external_canonical_users           = var.s151_external_canonical_users
   dap_job_notification_emails             = local.all_notifications_email_addresses
+  s151_job_notification_emails            = local.all_notifications_email_addresses
   backup_replication_bucket               = module.backup_replication_bucket.bucket
   ebs_backup_role_arn                     = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
