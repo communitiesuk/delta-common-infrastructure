@@ -79,7 +79,7 @@ module "s151_export_job_window" {
 
   environment       = var.environment
   prefix            = "marklogic-s151-job"
-  schedule          = "cron(00 01 ? * * *)"
+  schedule          = "cron(00 02 ? * * *)"
   subscribed_emails = var.s151_job_notification_emails
 }
 
