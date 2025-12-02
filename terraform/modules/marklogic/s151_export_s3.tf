@@ -1,5 +1,5 @@
 locals {
-  s151_export_path                          = "/delta/export/s151"
+  s151_export_path                          = "/delta/export-s151/s151/*"
   latest_s151_export_files_lifespan_in_days = 7
   s151_bucket_name                          = "dluhc-delta-s151-export-${var.environment}"
   s151_bucket_arn                           = "arn:aws:s3:::${local.s151_bucket_name}"
