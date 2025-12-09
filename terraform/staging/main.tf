@@ -318,8 +318,6 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 70
   dap_external_role_arns                  = var.dap_external_role_arns
-  dap_external_canonical_users            = var.dap_external_canonical_users
-  s151_external_role_arns                 = var.s151_external_role_arns
   s151_external_canonical_users           = var.s151_external_canonical_users
   dap_job_notification_emails             = local.all_notifications_email_addresses
   s151_job_notification_emails            = local.all_notifications_email_addresses
