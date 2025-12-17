@@ -53,10 +53,6 @@ variable "dap_job_notification_emails" {
   type = list(string)
 }
 
-variable "s151_job_notification_emails" {
-  type = list(string)
-}
-
 variable "patch_maintenance_window" {
   type = object({
     window_id            = string
@@ -105,14 +101,6 @@ variable "data_disk_usage_alarm_threshold_percent" {
 }
 
 variable "dap_external_role_arns" {
-  type = list(string)
-}
-
-variable "dap_external_canonical_users" {
-  type = list(string)
-}
-
-variable "s151_external_role_arns" {
   type = list(string)
 }
 
