@@ -30,6 +30,12 @@ variable "allowed_ssh_cidrs" {
   default = ["0.0.0.0/0"]
 }
 
+variable "ip_allowlist" {
+  type = list(string)
+  # Detectify surface monitoring tool : see https://www.security.gov.uk/services-resources/cyber-and-domains-protection/detectify-surface-monitoring-tool
+  default = ["52.17.9.21/32", "52.17.98.131/32"]
+}
+
 variable "github_actions_runner_token" {
   type        = string
   default     = "invalid-token"
