@@ -54,6 +54,7 @@ variable "dap_external_role_arns" {
 }
 
 variable "s151_external_canonical_users" {
-  type    = list(string)
-  default = []
+  type        = list(string)
+  description = "Funding service account with access to production S151 data in DAP export S3 bucket"
+  default     = ["42482d88bedb952015d8cff60dea3a1a6fe1a58d6720cc6a673c020d1fb70591"]
 }
