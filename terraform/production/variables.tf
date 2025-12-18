@@ -24,6 +24,12 @@ variable "secondary_domain_zone_id" {
   default = null
 }
 
+variable "ip_allowlist" {
+  type = list(string)
+  # Detectify surface monitoring tool : see https://www.security.gov.uk/services-resources/cyber-and-domains-protection/detectify-surface-monitoring-tool
+  default = ["52.17.9.21/32", "52.17.98.131/32"]
+}
+
 variable "allowed_ssh_cidrs" {
   type    = list(string)
   default = []
@@ -53,7 +59,8 @@ variable "dap_external_role_arns" {
   default = ["arn:aws:iam::062321884391:role/DSQL1", "arn:aws:iam::062321884391:role/DSQSS"]
 }
 
-variable "dap_external_canonical_users" {
-  type    = list(string)
-  default = []
+variable "s151_external_canonical_users" {
+  type        = list(string)
+  description = "Funding service account with access to production S151 data in DAP export S3 bucket"
+  default     = ["42482d88bedb952015d8cff60dea3a1a6fe1a58d6720cc6a673c020d1fb70591"]
 }

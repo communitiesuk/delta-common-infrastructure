@@ -93,21 +93,12 @@ resource "aws_wafv2_web_acl" "waf_acl" {
       name     = "ip-allowlist"
       priority = 20 + local.priority_base
       action {
-        block {
-          custom_response {
-            custom_response_body_key = "ip_error"
-            response_code            = 403
-          }
-        }
+        allow {}
       }
 
       statement {
-        not_statement {
-          statement {
-            ip_set_reference_statement {
-              arn = aws_wafv2_ip_set.main[0].arn
-            }
-          }
+        ip_set_reference_statement {
+          arn = aws_wafv2_ip_set.main[0].arn
         }
       }
 

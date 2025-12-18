@@ -86,6 +86,10 @@ variable "dap_export_s3_log_expiration_days" {
   type = number
 }
 
+variable "s151_export_s3_log_expiration_days" {
+  type = number
+}
+
 variable "alarms_sns_topic_arn" {
   description = "SNS topic ARN to send alarm notifications to"
   type        = string
@@ -100,7 +104,7 @@ variable "dap_external_role_arns" {
   type = list(string)
 }
 
-variable "dap_external_canonical_users" {
+variable "s151_external_canonical_users" {
   type = list(string)
 }
 
