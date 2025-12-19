@@ -88,7 +88,7 @@ resource "aws_lambda_function" "waf_ip_update" {
   provider      = aws.us-east-1
   function_name = "${var.prefix}cloudfront-waf-ip-update"
   description   = "Updates the WAF blocklist IP set when matching log entries are seen"
-  handler       = "lambdaFunction.lambda_handler"
+  handler       = "waf-problematic-ip-update.lambda_handler"
   runtime       = "python3.12"
   memory_size   = 128
   timeout       = 3
