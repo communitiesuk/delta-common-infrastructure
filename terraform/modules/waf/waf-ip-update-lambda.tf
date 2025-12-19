@@ -128,13 +128,12 @@ resource "aws_lambda_function_event_invoke_config" "waf_ip_update_async" {
 }
 
 resource "aws_lambda_permission" "allow_logs_invoke" {
-  for_each      = toset(local.log_group_names)
   provider      = aws.us-east-1
-  statement_id  = "AllowExecutionFromCloudWatchLogs-${each.key}"
+  statement_id  = "AllowExecutionFromCloudWatchLogs"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.waf_ip_update.function_name
   principal     = "logs.us-east-1.amazonaws.com"
-  source_arn    = "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:log-group:${each.value}:*"
+  source_arn    = "${aws_cloudwatch_log_group.main.arn}:*"
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "waf_block_actions" {
