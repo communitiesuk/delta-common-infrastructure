@@ -14,7 +14,8 @@ locals {
   amis = {
     # https://aws.amazon.com/marketplace/server/configuration?productId=52ce1567-c738-4208-be90-08b575f2c41d
     "10.0-9.5"  = "ami-07701d367691e0220"
-    "10.0-10.2" = "ami-072f9d963cd827efb"
+    "10.0-10.2" = "ami-072f9d963cd827efb",
+    "11.3.3"    = "ami-01907b01c5d597358"
   }
 }
 

@@ -305,7 +305,7 @@ module "marklogic" {
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3a.large"
-  marklogic_ami_version    = "10.0-10.2"
+  marklogic_ami_version    = "11.3.3"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
   data_volume = {

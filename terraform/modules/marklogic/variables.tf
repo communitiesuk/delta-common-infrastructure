@@ -112,7 +112,7 @@ variable "marklogic_ami_version" {
   type = string
 
   validation {
-    condition     = var.marklogic_ami_version == "10.0-10.2" || var.marklogic_ami_version == "10.0-9.5"
+    condition     = var.marklogic_ami_version == "10.0-10.2" || var.marklogic_ami_version == "10.0-9.5" ||  var.marklogic_ami_version == "11.3.3"
     error_message = "Only specific versions allowed, configure AMIs for others"
   }
 }
