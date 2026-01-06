@@ -402,11 +402,62 @@ module "guardduty" {
 }
 
 module "cloudtrail" {
-  source                               = "../modules/cloudtrail"
-  environment                          = local.environment
-  include_data_events_for_bucket_names = ["data-collection-service-tfstate-production"]
-  cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
-  s3_log_expiration_days               = 90 # We're mostly interested in the CloudWatch logs, the central DLUHC account keeps a CloudTrail in S3 for security investigations
+  source      = "../modules/cloudtrail"
+  environment = local.environment
+  include_data_events_for_bucket_names = [
+    "data-collection-service-tfstate-production",
+    "data-collection-service-tfstate-access-logs-production",
+    "data-collection-service-ldaps-crl-production",
+    "dluhc-datamart-imported-logs-production",
+    "dluhc-datamart-imported-logs-production-access-logs",
+    "dluhc-daily-backup-access-logs-production",
+    "dluhc-daily-ml-backup-production",
+    "dluhc-delta-aws-srt-support-bucket-production",
+    "dluhc-delta-api-swagger-access-logs-production",
+    "dluhc-delta-api-swagger-production",
+    "dluhc-delta-cloudtrail-production",
+    "dluhc-delta-cloudtrail-production-access-logs",
+    "dluhc-delta-dap-export-access-logs-production",
+    "dluhc-delta-dap-export-production",
+    "dluhc-delta-jasper-config-access-logs-production",
+    "dluhc-delta-jasper-config-production",
+    "dluhc-delta-jasper-config-staging",
+    "delta-production-error-page",
+    "delta-production-error-page-access-logs",
+    "delta-website-deployments-access-logs-production",
+    "delta-website-deployments-production",
+    "dluhc-backup-locked-access-logs-production",
+    "dluhc-backup-locked-production",
+    "dluhc-cloudfront-access-logs-production",
+    "dluhc-datamart-imported-logs-production",
+    "dluhc-datamart-imported-logs-production-access-logs",
+    "dluhc-daily-ml-backup-production",
+    "dluhc-weekly-ml-backup-access-logs-production",
+    "dluhc-weekly-ml-backup-production",
+    "dluhc-delta-jasper-config-staging",
+    "dluhc-delta-jasper-config-production",
+    "dluhc-delta-jasper-config-staging",
+    "dluhc-jaspersoft-bin-prod",
+    "dluhc-jaspersoft-bin-staging",
+    "dluhc-jaspersoft-bin-test",
+    "dluhc-jaspersoft-bin-uat",
+    "payments-bucket-access-logs-production",
+    "payments-bucket-access-logs-staging",
+    "payments-bucket-access-logs-test",
+    "payments-evidence-production",
+    "payments-evidence-staging",
+    "payments-evidence-test",
+    "production-cpm-alb-access-logs",
+    "production-delta-api-alb-access-logs",
+    "production-delta-site-alb-access-logs",
+    "production-keycloak-alb-access-logs",
+    "production-marklogic-config",
+    "production-marklogic-config-access-logs",
+    "prdsh-keys20221006120919024200000002",
+    "prdsh-keys-logs20221006120919024200000003",
+  ]
+  cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
+  s3_log_expiration_days         = 90 # We're mostly interested in the CloudWatch logs, the central DLUHC account keeps a CloudTrail in S3 for security investigations
 }
 
 module "iam_roles" {
