@@ -41,3 +41,5 @@ terraform.rc
 lambdaFunction.zip
 
 manual_scripts/logs/logs
+
+/terraform/*/waf-problematic-ip-update.zip
