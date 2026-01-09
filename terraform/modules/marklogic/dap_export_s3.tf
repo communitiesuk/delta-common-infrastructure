@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "allow_access_from_dap" {
     ]
   }
   dynamic "statement" {
-    for_each = length(var.s151_external_canonical_users) > 1 ? [1] : []
+    for_each = length(var.s151_external_canonical_users) > 0 ? [1] : []
     content {
       sid    = "AllowExternalBucketAccess"
       effect = "Allow"
