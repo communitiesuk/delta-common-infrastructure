@@ -138,3 +138,10 @@ variable "ses_deploy_secret_arns" {
   type        = list(string)
   description = "List of arns of the kms keys for SES credentials"
 }
+
+
+variable "create_dns_record" {
+  type        = bool
+  description = "Whether to create the default Route53 DNS record (marklogic.vpc.local)"
+  default     = true
+}
