@@ -150,12 +150,12 @@ module "ebs_backup" {
 module "marklogic" {
   source = "../modules/marklogic"
 
-  default_tags                        = var.default_tags
-  environment                         = local.environment
-  vpc                                 = data.aws_vpc.staging
-  private_subnets                     = local.ml_private_subnets
-  instance_type                       = "t3a.2xlarge"
-  marklogic_ami_version               = "10.0-10.2"
+  default_tags          = var.default_tags
+  environment           = local.environment
+  vpc                   = data.aws_vpc.staging
+  private_subnets       = local.ml_private_subnets
+  instance_type         = "t3a.2xlarge"
+  marklogic_ami_version = "10.0-10.2"
   private_dns = {
     zone_id     = data.aws_route53_zone.private.zone_id
     base_domain = data.aws_route53_zone.private.name
@@ -183,9 +183,8 @@ module "marklogic" {
   ebs_backup_role_arn                     = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
   iam_github_openid_connect_provider_arn  = data.aws_iam_openid_connect_provider.github.arn
-  ses_deploy_secret_arns = ["arn:aws:kms:eu-west-1:486283582667:key/*"]
-  cluster_suffix          = "-staging1"
-  create_dns_record       = false # We create our own DNS record (marklogic1.vpc.local) below
+  ses_deploy_secret_arns                  = ["arn:aws:kms:eu-west-1:486283582667:key/*"]
+  create_dns_record                       = false # We create our own DNS record (marklogic1.vpc.local) below
 }
 
 # Create separate Route53 record for marklogic1.vpc.local
