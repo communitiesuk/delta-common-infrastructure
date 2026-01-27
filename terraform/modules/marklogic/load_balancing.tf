@@ -69,9 +69,9 @@ resource "aws_lb_listener" "ml" {
 resource "aws_route53_record" "marklogic_internal_nlb" {
   count = var.create_dns_record ? 1 : 0
 
-  zone_id        = var.private_dns.zone_id
-  name           = "marklogic.${var.private_dns.base_domain}"
-  type           = "A"
+  zone_id         = var.private_dns.zone_id
+  name            = "marklogic.${var.private_dns.base_domain}"
+  type            = "A"
   allow_overwrite = true
 
   alias {
