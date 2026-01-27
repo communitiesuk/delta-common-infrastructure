@@ -2,8 +2,8 @@ import os
 import ipaddress
 import boto3
 
-IPV4_SET_NAME = os.getenv("IPV4_SET_NAME", "problematic-ips")
-IPV4_SET_ID   = os.getenv("IPV4_SET_ID",   "f159f337-4595-4a42-a913-571b718679ec")
+IPV4_SET_NAME = os.getenv("IPV4_SET_NAME")
+IPV4_SET_ID   = os.getenv("IPV4_SET_ID")
 WAF_SCOPE     = os.getenv("WAF_SCOPE",     "REGIONAL")
 
 waf = boto3.client("wafv2")
