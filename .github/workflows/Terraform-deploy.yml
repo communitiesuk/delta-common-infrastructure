@@ -1,5 +1,5 @@
 name: Deploy Delta Common Infrastructure
-run-name: Terraform Infra Deploy ${{ inputs.environment }}
+run-name: Terraform Deploy ${{ inputs.environment }}
 on:
   workflow_dispatch:
     inputs:
@@ -142,7 +142,7 @@ jobs:
 
       - name: Terraform init
         env:
-          COMMON_INFRA_DEPLOY_KEY: ${{ secrets.COMMON_INFRA_DEPLOY_KEY }}
+          COMMON_INFRA_DEPLOY_KEY: ${{ secrets.APP_PRIVATE_KEY }}
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         id: init
         run: |
