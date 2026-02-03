@@ -64,12 +64,12 @@ jobs:
 
       - name: Terraform init
         env:
-          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         id: init
         run: |
           mkdir -p ~/.ssh
-          echo "$APP_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          echo "$SECRET_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           terraform init -no-color
 
@@ -142,12 +142,12 @@ jobs:
 
       - name: Terraform init
         env:
-          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         id: init
         run: |
           mkdir -p ~/.ssh
-          echo "$APP_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          echo "$SECRET_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           terraform init -no-color
 
