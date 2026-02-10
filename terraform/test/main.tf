@@ -235,34 +235,7 @@ module "cloudfront_distributions" {
 module "cloudtrail" {
   source      = "../modules/cloudtrail"
   environment = local.environment
-  include_data_events_for_bucket_names = [
-    "test-marklogic-config-access-logs",
-    "dluhc-weekly-ml-backup-test",
-    "test-delta-site-alb-access-logs",
-    "test-marklogic-config",
-    "dluhc-delta-api-swagger-test",
-    "dluhc-cloudfront-access-logs-test",
-    "dluhc-backup-locked-access-logs-test",
-    "delta-website-deployments-test",
-    "dluhc-weekly-ml-backup-access-logs-test",
-    "test-keycloak-alb-access-logs",
-    "dluhc-delta-jasper-config-access-logs-test",
-    "test-cpm-alb-access-logs",
-    "delta-test-error-page",
-    "dluhc-delta-jasper-config-test",
-    "payments-bucket-access-logs-test",
-    "test-delta-api-alb-access-logs",
-    "delta-website-deployments-access-logs-test",
-    "dluhc-delta-dap-export-test",
-    "dluhc-backup-locked-test",
-    "dluhc-delta-api-swagger-access-logs-test",
-    "data-collection-service-ldaps-crl-test",
-    "dluhc-daily-ml-backup-test",
-    "delta-test-error-page-access-logs",
-    "dluhc-daily-backup-access-logs-test",
-    "dluhc-delta-dap-export-access-logs-test",
-    "payments-evidence-test"
-  ]
+  include_data_events_for_bucket_names = []
   cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   s3_log_expiration_days         = local.s3_log_expiration_days
 }

@@ -447,37 +447,7 @@ module "guardduty" {
 module "cloudtrail" {
   source      = "../modules/cloudtrail"
   environment = local.environment
-  include_data_events_for_bucket_names = [
-    "data-collection-service-tfstate-dev",
-    "delta-staging-error-page",
-    "dluhc-delta-dap-export-staging",
-    "payments-bucket-access-logs-staging",
-    "staging-cpm-alb-access-logs",
-    "dluhc-delta-jasper-config-access-logs-staging",
-    "dluhc-daily-backup-access-logs-staging",
-    "delta-website-deployments-staging",
-    "dluhc-daily-ml-backup-staging",
-    "dluhc-delta-cloudtrail-staging-access-logs",
-    "staging-marklogic-config-access-logs",
-    "delta-website-deployments-access-logs-staging",
-    "staging-marklogic-config",
-    "delta-staging-error-page-access-logs",
-    "dluhc-delta-cloudtrail-staging",
-    "dluhc-cloudfront-access-logs-staging",
-    "staging-delta-site-alb-access-logs",
-    "data-collection-service-ldaps-crl-staging",
-    "dluhc-weekly-ml-backup-access-logs-staging",
-    "payments-evidence-staging",
-    "staging-keycloak-alb-access-logs",
-    "dluhc-delta-dap-export-access-logs-staging",
-    "dluhc-backup-locked-staging",
-    "dluhc-delta-api-swagger-access-logs-staging",
-    "staging-delta-api-alb-access-logs",
-    "dluhc-backup-locked-access-logs-staging",
-    "dluhc-delta-api-swagger-staging",
-    "dluhc-weekly-ml-backup-staging",
-    "dluhc-delta-jasper-config-staging"
-  ]
+  include_data_events_for_bucket_names = []
   cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
   s3_log_expiration_days         = local.s3_log_expiration_days
 }
