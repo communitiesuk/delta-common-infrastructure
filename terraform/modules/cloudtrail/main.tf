@@ -24,7 +24,9 @@ locals {
   trail_name     = "dluhc-${var.environment}"
   log_group_name = "cloudtrail-${var.environment}"
   s3_prefix      = "dluhc-${var.environment}"
-  data_event_s3_arns = [
+  data_event_s3_arns = length(var.include_data_events_for_bucket_names) == 0 ? [
+    "arn:aws:s3:::"
+    ] : [
     for name in concat(var.include_data_events_for_bucket_names) : "arn:aws:s3:::${name}/"
   ]
 }

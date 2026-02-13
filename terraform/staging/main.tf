@@ -447,7 +447,7 @@ module "guardduty" {
 module "cloudtrail" {
   source                               = "../modules/cloudtrail"
   environment                          = local.environment
-  include_data_events_for_bucket_names = ["data-collection-service-tfstate-dev"]
+  include_data_events_for_bucket_names = []
   cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   s3_log_expiration_days               = local.s3_log_expiration_days
 }
