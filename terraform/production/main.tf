@@ -402,11 +402,11 @@ module "guardduty" {
 }
 
 module "cloudtrail" {
-  source      = "../modules/cloudtrail"
-  environment = local.environment
+  source                               = "../modules/cloudtrail"
+  environment                          = local.environment
   include_data_events_for_bucket_names = []
-  cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
-  s3_log_expiration_days         = 90 # We're mostly interested in the CloudWatch logs, the central DLUHC account keeps a CloudTrail in S3 for security investigations
+  cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
+  s3_log_expiration_days               = 90 # We're mostly interested in the CloudWatch logs, the central DLUHC account keeps a CloudTrail in S3 for security investigations
 }
 
 module "iam_roles" {
