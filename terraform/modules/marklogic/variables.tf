@@ -112,7 +112,7 @@ variable "marklogic_ami_version" {
   type = string
 
   validation {
-    condition     = var.marklogic_ami_version == "10.0-10.2" || var.marklogic_ami_version == "10.0-9.5"
+    condition     = var.marklogic_ami_version == "10.0-10.2" || var.marklogic_ami_version == "10.0-9.5" || var.marklogic_ami_version == "11.3.3"
     error_message = "Only specific versions allowed, configure AMIs for others"
   }
 }
@@ -137,4 +137,11 @@ variable "iam_github_openid_connect_provider_arn" {
 variable "ses_deploy_secret_arns" {
   type        = list(string)
   description = "List of arns of the kms keys for SES credentials"
+}
+
+
+variable "create_dns_record" {
+  type        = bool
+  description = "Whether to create the default Route53 DNS record (marklogic.vpc.local)"
+  default     = true
 }
