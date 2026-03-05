@@ -313,7 +313,7 @@ module "marklogic" {
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3a.large"
-  marklogic_ami_version    = "10.0-10.2"
+  marklogic_ami_version    = "11.3.3"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
   data_volume = {
@@ -339,6 +339,7 @@ module "marklogic" {
   ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
   iam_github_openid_connect_provider_arn  = module.github_actions_openid_connect_provider.github_oidc_provider_arn
   ses_deploy_secret_arns                  = []
+  create_dns_record                       = true
 }
 
 module "gh_runner" {
