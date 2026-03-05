@@ -232,6 +232,14 @@ module "cloudfront_distributions" {
   }
 }
 
+module "cloudtrail" {
+  source                               = "../modules/cloudtrail"
+  environment                          = local.environment
+  include_data_events_for_bucket_names = []
+  cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
+  s3_log_expiration_days               = local.s3_log_expiration_days
+}
+
 locals {
   all_dns_records = setunion(
     module.communities_only_ssl_certs.required_validation_records,
