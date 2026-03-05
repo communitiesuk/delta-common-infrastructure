@@ -193,6 +193,7 @@ module "cloudfront_distributions" {
     # We don't want to IP restrict staging until we are able to confirm who needs access
     client_error_rate_alarm_threshold_percent = 15
     origin_read_timeout                       = 180 # Required quota increase
+    ip_allowlist                              = var.ip_allowlist
   }
   api = {
     alb = module.public_albs.delta_api
@@ -318,8 +319,6 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 70
   dap_external_role_arns                  = var.dap_external_role_arns
-  dap_external_canonical_users            = var.dap_external_canonical_users
-  s151_external_role_arns                 = var.s151_external_role_arns
   s151_external_canonical_users           = var.s151_external_canonical_users
   dap_job_notification_emails             = local.all_notifications_email_addresses
   backup_replication_bucket               = module.backup_replication_bucket.bucket
@@ -448,7 +447,7 @@ module "guardduty" {
 module "cloudtrail" {
   source                               = "../modules/cloudtrail"
   environment                          = local.environment
-  include_data_events_for_bucket_names = ["data-collection-service-tfstate-dev"]
+  include_data_events_for_bucket_names = []
   cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   s3_log_expiration_days               = local.s3_log_expiration_days
 }

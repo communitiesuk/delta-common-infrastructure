@@ -44,7 +44,7 @@ locals {
   cloudwatch_log_expiration_days       = 731
   patch_cloudwatch_log_expiration_days = 90
   s3_log_expiration_days               = 731
-  all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
+  all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk", "Group-DLUHCDeltaNotifications@softwire.com", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
 }
 
 module "communities_only_ssl_certs" {
@@ -230,8 +230,6 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 55
   dap_external_role_arns                  = var.dap_external_role_arns
-  dap_external_canonical_users            = var.dap_external_canonical_users
-  s151_external_role_arns                 = var.s151_external_role_arns
   s151_external_canonical_users           = var.s151_external_canonical_users
   dap_job_notification_emails = concat(
     local.all_notifications_email_addresses,
@@ -323,6 +321,7 @@ module "cloudfront_distributions" {
     }
     geo_restriction_countries = ["GB", "IE"]
     origin_read_timeout       = 180 # Required quota increase
+    ip_allowlist              = var.ip_allowlist
   }
   api = {
     alb = module.public_albs.delta_api
@@ -405,7 +404,7 @@ module "guardduty" {
 module "cloudtrail" {
   source                               = "../modules/cloudtrail"
   environment                          = local.environment
-  include_data_events_for_bucket_names = ["data-collection-service-tfstate-production"]
+  include_data_events_for_bucket_names = []
   cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   s3_log_expiration_days               = 90 # We're mostly interested in the CloudWatch logs, the central DLUHC account keeps a CloudTrail in S3 for security investigations
 }

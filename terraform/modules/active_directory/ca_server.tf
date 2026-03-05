@@ -1,3 +1,10 @@
+locals {
+  ca_suffix = {
+    test    = "test8"
+    staging = "staging2"
+  }
+}
+
 resource "aws_secretsmanager_secret_version" "ca_install_credentials" {
   secret_id = aws_secretsmanager_secret.ca_install_credentials.id
   secret_string = jsonencode({
@@ -76,7 +83,7 @@ resource "aws_cloudformation_stack" "ca_server" {
     S3CRLBucketName          = aws_s3_bucket.ldaps_crl.id
     EntCaValidityPeriodUnits = var.ent_ca_validity_years
     # The test environment's CA server had to be rebuilt with a new name
-    EntCaServerNetBIOSName = "CASRV${var.environment == "test" ? "test4" : var.environment}"
+    EntCaServerNetBIOSName = "CASRV${lookup(local.ca_suffix, var.environment, var.environment)}"
   }
 
   template_body      = file("${path.module}/one_tier_ca.yml")
@@ -92,5 +99,5 @@ resource "aws_cloudformation_stack" "ca_server" {
 
 data "aws_instance" "ca_server" {
   count       = var.include_ca ? 1 : 0
-  instance_id = var.include_ca ? aws_cloudformation_stack.ca_server[0].outputs["EntRootCAInstanceId"] : ""
+  instance_id = var.include_ca ? try(aws_cloudformation_stack.ca_server[0].outputs["EntRootCAInstanceId"], "") : ""
 }
