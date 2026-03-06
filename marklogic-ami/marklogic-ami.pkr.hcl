@@ -54,7 +54,7 @@ source "amazon-ebs" "marklogic" {
 
   vpc_id    = var.vpc_id
   subnet_id = var.subnet_id
-  associate_public_ip_address = true
+  associate_public_ip_address = false
 
   ssh_timeout = "15m"
 
