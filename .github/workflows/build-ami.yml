@@ -1,0 +1,88 @@
+# Build MarkLogic AMI with Packer.
+# Assumes the same IAM role as Terraform deploy (OIDC). Set repository variables for region, VPC, subnet, base AMI.
+
+name: Build MarkLogic AMI
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment (controls IAM role assumption)"
+        required: true
+        type: choice
+        options:
+          - test
+          - staging
+          - staging1
+          - production
+      region:
+        description: 'AWS region'
+        required: false
+        default: 'eu-west-1'
+      source_ami_id:
+        description: 'Base AMI ID'
+        required: false
+        default: 'ami-01907b01c5d597358'
+  push:
+    branches: [main]
+    paths:
+      - 'marklogic-ami/marklogic-ami.pkr.hcl'
+      - 'marklogic-ami/scripts/**'
+      - 'marklogic-ami/systemd/**'
+      - 'marklogic-ami/config/**'
+      - '.github/workflows/build-ami.yml'
+
+env:
+  AWS_REGION: ${{ github.event.inputs.region || 'eu-west-1' }}
+  # Default to "test" for push builds (no inputs); for manual runs use workflow_dispatch input.
+  ENVIRONMENT: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'test' }}
+  DEPLOYMENT_ROLE: ${{ ((github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'test') == 'production' && 'arn:aws:iam::468442790030:role/terraform-prod-deployment-role' || 'arn:aws:iam::486283582667:role/terraform-test-deployment-role' }}
+  DEPLOYMENT_SESSION_NAME: ${{ format('github-actions-{0}-marklogic-ami-build', (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'test') }}
+  # Production uses dedicated VPC/subnet; other environments use vars or defaults
+  PACKER_VPC_ID: ${{ ((github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'test') == 'production' && 'vpc-036f245818e9e3798' || (vars.PACKER_VPC_ID || 'vpc-07a867ec880ffb57e') }}
+  PACKER_SUBNET_ID: ${{ ((github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'test') == 'production' && 'subnet-0bfb6c86462f662e9' || (vars.PACKER_SUBNET_ID || 'subnet-0c7ae48d942c6f7b3') }}
+  PACKER_SOURCE_AMI_ID: ${{ github.event.inputs.source_ami_id || 'ami-01907b01c5d597358' }}
+
+jobs:
+  build-ami:
+    name: Packer build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.DEPLOYMENT_ROLE }}
+          role-session-name: ${{ env.DEPLOYMENT_SESSION_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@v1
+        with:
+          packer_version: '1.11.0'
+
+      - name: Packer init
+        working-directory: marklogic-ami
+        run: packer init marklogic-ami.pkr.hcl
+
+      - name: Packer build
+        working-directory: marklogic-ami
+        run: |
+          packer build \
+            -var "region=${{ env.AWS_REGION }}" \
+            -var "vpc_id=${{ env.PACKER_VPC_ID }}" \
+            -var "subnet_id=${{ env.PACKER_SUBNET_ID }}" \
+            -var "source_ami_id=${{ env.PACKER_SOURCE_AMI_ID }}" \
+            marklogic-ami.pkr.hcl
+
+      - name: Output AMI ID
+        if: success()
+        working-directory: marklogic-ami
+        run: |
+          echo "Build completed. Check the Packer output above for the new AMI ID."
