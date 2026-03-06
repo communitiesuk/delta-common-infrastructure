@@ -46,7 +46,7 @@ env:
 jobs:
   build-ami:
     name: Packer build
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'test' }}"]
     permissions:
       id-token: write
       contents: read
@@ -63,7 +63,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Packer
-        uses: hashicorp/setup-packer@v1
+        uses: hashicorp/setup-packer@v3
         with:
           packer_version: '1.11.0'
 
