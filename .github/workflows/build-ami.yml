@@ -46,7 +46,7 @@ env:
 jobs:
   build-ami:
     name: Packer build
-    runs-on: ["self-hosted", "${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'test' }}"]
+    runs-on: ["self-hosted", "${{ inputs.environment }}"]
     permissions:
       id-token: write
       contents: read
