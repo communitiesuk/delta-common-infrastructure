@@ -63,7 +63,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Packer
-        uses: hashicorp/setup-packer@v1
+        uses: hashicorp/setup-packer@v3
         with:
           packer_version: '1.11.0'
 
