@@ -26,10 +26,10 @@ on:
   push:
     branches: [main]
     paths:
-      - 'marklogic-ami.pkr.hcl'
-      - 'scripts/**'
-      - 'systemd/**'
-      - 'config/**'
+      - 'marklogic-ami/marklogic-ami.pkr.hcl'
+      - 'marklogic-ami/scripts/**'
+      - 'marklogic-ami/systemd/**'
+      - 'marklogic-ami/config/**'
       - '.github/workflows/build-ami.yml'
 
 env:
@@ -68,9 +68,11 @@ jobs:
           packer_version: '1.11.0'
 
       - name: Packer init
+        working-directory: marklogic-ami
         run: packer init marklogic-ami.pkr.hcl
 
       - name: Packer build
+        working-directory: marklogic-ami
         run: |
           packer build \
             -var "region=${{ env.AWS_REGION }}" \
@@ -81,5 +83,6 @@ jobs:
 
       - name: Output AMI ID
         if: success()
+        working-directory: marklogic-ami
         run: |
           echo "Build completed. Check the Packer output above for the new AMI ID."
