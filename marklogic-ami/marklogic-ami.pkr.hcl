@@ -128,7 +128,7 @@ build {
     inline = [
       "sudo chown -R root:root /tmp/marklogic-ami",
       "cd /tmp/marklogic-ami && sudo bash scripts/install-hostname-setup.sh",
-      "rm -rf /tmp/marklogic-ami"
+      "sudo rm -rf /tmp/marklogic-ami"
     ]
   }
 }
