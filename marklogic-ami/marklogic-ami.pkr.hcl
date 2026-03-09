@@ -99,9 +99,26 @@ source "amazon-ebs" "marklogic" {
 build {
   sources = ["source.amazon-ebs.marklogic"]
 
-  # Copy this repo onto the instance so install script can run
+  # Create directory first
+  provisioner "shell" {
+    inline = ["mkdir -p /tmp/marklogic-ami"]
+  }
+
+  # Copy required directories onto the instance so install script can run
   provisioner "file" {
-    source      = "."
+    source      = "scripts"
+    destination = "/tmp/marklogic-ami"
+    direction   = "upload"
+  }
+
+  provisioner "file" {
+    source      = "systemd"
+    destination = "/tmp/marklogic-ami"
+    direction   = "upload"
+  }
+
+  provisioner "file" {
+    source      = "config"
     destination = "/tmp/marklogic-ami"
     direction   = "upload"
   }
