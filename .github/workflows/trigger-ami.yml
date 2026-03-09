@@ -1,12 +1,6 @@
 name: "Run Marklogic AMI build"
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "marklogic/**"
-      - ".github/workflows/deploy-ml-main.yml"
   workflow_dispatch:
     inputs:
       environment:
