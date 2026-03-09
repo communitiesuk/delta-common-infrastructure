@@ -46,11 +46,19 @@ variable "subnet_id" {
   default = "subnet-0c7ae48d942c6f7b3"
 }
 
+variable "iam_instance_profile" {
+  type    = string
+  default = "PackerSSMBuildRole"
+}
+
 source "amazon-ebs" "marklogic" {
   region = var.region
   ami_name = "${var.ami_name_prefix}-{{timestamp}}"
   instance_type = var.instance_type
   ssh_username  = var.ssh_username
+  
+  ssh_interface        = "session_manager"
+  iam_instance_profile = var.iam_instance_profile
 
   vpc_id    = var.vpc_id
   subnet_id = var.subnet_id
