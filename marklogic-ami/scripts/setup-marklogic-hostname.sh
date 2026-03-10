@@ -72,25 +72,28 @@ ensure_hosts_entry "$PRIVATE_IP" "$HOSTNAME"
 log "Setting hostname to: $HOSTNAME"
 hostnamectl set-hostname "$HOSTNAME" || true
 
-# Optional: register in Route53 (private hosted zone)
-if [[ -n "${R53_HOSTED_ZONE_ID:-}" && -n "${R53_DOMAIN:-}" ]]; then
-  if command -v aws &>/dev/null; then
-    log "Upserting Route53 A record: $R53_DOMAIN -> $PRIVATE_IP"
-    aws route53 change-resource-record-sets \
-      --hosted-zone-id "$R53_HOSTED_ZONE_ID" \
-      --change-batch "{
-        \"Changes\": [{
-          \"Action\": \"UPSERT\",
-          \"ResourceRecordSet\": {
-            \"Name\": \"$R53_DOMAIN\",
-            \"Type\": \"A\",
-            \"TTL\": 300,
-            \"ResourceRecords\": [{\"Value\": \"$PRIVATE_IP\"}]
-          }
-        }]
-      }" 2>&1 | tee -a /var/log/setup-marklogic-hostname.log || log "WARN: Route53 update failed (non-fatal)"
-  else
-    log "WARN: Route53 requested but aws CLI not found (skipping)"
+# Optional: register in Route53 (private hosted zone). Uses MARKLOGIC_HOSTNAME as the record name if R53_DOMAIN is not set.
+if [[ -n "${R53_HOSTED_ZONE_ID:-}" ]]; then
+  R53_DOMAIN="${R53_DOMAIN:-$HOSTNAME}"
+  if [[ -n "${R53_DOMAIN:-}" ]]; then
+    if command -v aws &>/dev/null; then
+      log "Upserting Route53 A record: $R53_DOMAIN -> $PRIVATE_IP"
+      aws route53 change-resource-record-sets \
+        --hosted-zone-id "$R53_HOSTED_ZONE_ID" \
+        --change-batch "{
+          \"Changes\": [{
+            \"Action\": \"UPSERT\",
+            \"ResourceRecordSet\": {
+              \"Name\": \"$R53_DOMAIN\",
+              \"Type\": \"A\",
+              \"TTL\": 300,
+              \"ResourceRecords\": [{\"Value\": \"$PRIVATE_IP\"}]
+            }
+          }]
+        }" 2>&1 | tee -a /var/log/setup-marklogic-hostname.log || log "WARN: Route53 update failed (non-fatal)"
+    else
+      log "WARN: Route53 requested but aws CLI not found (skipping)"
+    fi
   fi
 fi
 
