@@ -38,63 +38,71 @@ resource "aws_iam_policy" "ml_instance_policy" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "ec2:DescribeInstances",
-          "ec2:DescribeVolumes",
-          "ec2messages:GetMessages",
-          "ec2:CreateTags",
+    Statement = concat(
+      [
+        {
+          Action = [
+            "ec2:DescribeInstances",
+            "ec2:DescribeVolumes",
+            "ec2messages:GetMessages",
+            "ec2:CreateTags",
 
-          "ssm:UpdateInstanceInformation",
-          "ssm:ListInstanceAssociations",
-          "ssm:ListAssociations",
-          "ssm:PutInventory",
-          "ssm:UpdateInstanceAssociationStatus",
-          "ssmmessages:OpenControlChannel",
-          "ssmmessages:CreateControlChannel",
-        ]
-        Effect   = "Allow"
-        Resource = "*"
-      },
-      {
-        Action = [
-          "kms:GenerateDataKey",
-          "kms:DescribeKey",
-          "kms:Decrypt"
-        ]
-        Effect = "Allow"
-        Resource = [
-          aws_kms_key.ml_logs_encryption_key.arn,
-          aws_kms_key.ml_deploy_secrets.arn,
-        ]
-      },
-      {
-        Action = [
-          "dynamodb:PutItem",
-          "dynamodb:DescribeTable",
-          "dynamodb:GetItem",
-          "dynamodb:Scan",
-          "dynamodb:UpdateItem"
-        ]
-        Effect   = "Allow"
-        Resource = "arn:aws:dynamodb:*:*:table/*MarkLogicDDBTable*"
-      },
-      {
-        Action = [
-          "ec2:AttachVolume"
-        ]
-        Effect   = "Allow"
-        Resource = ["arn:aws:ec2:*:*:volume/*", "arn:aws:ec2:*:*:instance/*"]
-      },
-      {
-        Action = [
-          "sns:Publish"
-        ]
-        Effect   = "Allow"
-        Resource = [aws_sns_topic.ml_logs.arn]
-      }
-    ]
+            "ssm:UpdateInstanceInformation",
+            "ssm:ListInstanceAssociations",
+            "ssm:ListAssociations",
+            "ssm:PutInventory",
+            "ssm:UpdateInstanceAssociationStatus",
+            "ssmmessages:OpenControlChannel",
+            "ssmmessages:CreateControlChannel",
+          ]
+          Effect   = "Allow"
+          Resource = "*"
+        },
+        {
+          Action = [
+            "kms:GenerateDataKey",
+            "kms:DescribeKey",
+            "kms:Decrypt"
+          ]
+          Effect = "Allow"
+          Resource = [
+            aws_kms_key.ml_logs_encryption_key.arn,
+            aws_kms_key.ml_deploy_secrets.arn,
+          ]
+        },
+        {
+          Action = [
+            "dynamodb:PutItem",
+            "dynamodb:DescribeTable",
+            "dynamodb:GetItem",
+            "dynamodb:Scan",
+            "dynamodb:UpdateItem"
+          ]
+          Effect   = "Allow"
+          Resource = "arn:aws:dynamodb:*:*:table/*MarkLogicDDBTable*"
+        },
+        {
+          Action = [
+            "ec2:AttachVolume"
+          ]
+          Effect   = "Allow"
+          Resource = ["arn:aws:ec2:*:*:volume/*", "arn:aws:ec2:*:*:instance/*"]
+        },
+        {
+          Action = [
+            "sns:Publish"
+          ]
+          Effect   = "Allow"
+          Resource = [aws_sns_topic.ml_logs.arn]
+        }
+      ],
+      var.zone_id != "" ? [{
+        Sid       = "Route53UpsertHostname"
+        Effect    = "Allow"
+        Action    = "route53:ChangeResourceRecordSets"
+        Resource  = "arn:aws:route53:::hostedzone/${var.zone_id}"
+      }] : []
+    )
   })
 }
 

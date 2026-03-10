@@ -51,6 +51,10 @@ resource "aws_cloudformation_stack" "marklogic" {
     AdminPass  = jsondecode(data.aws_secretsmanager_secret_version.ml_admin_user.secret_string)["password"]
     Licensee   = jsondecode(data.aws_secretsmanager_secret_version.ml_license.secret_string)["licensee"]
     LicenseKey = jsondecode(data.aws_secretsmanager_secret_version.ml_license.secret_string)["license_key"]
+    Route53HostedZoneId= var.zone_id
+    MarkLogicHostname1 = var.marklogic_host_name1
+    MarkLogicHostname2 = var.marklogic_host_name2
+    MarkLogicHostname3 = var.marklogic_host_name3
   }
 
   template_body      = file("${path.module}/marklogic_cf_template.yml")

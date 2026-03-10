@@ -10,10 +10,6 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 install -m 0755 "$PROJECT_ROOT/scripts/setup-marklogic-hostname.sh" /usr/local/bin/setup-marklogic-hostname.sh
 install -m 0644 -D "$PROJECT_ROOT/systemd/setup-marklogic-hostname.service" /etc/systemd/system/setup-marklogic-hostname.service
 
-if [[ ! -f /etc/default/marklogic-hostname ]]; then
-  install -m 0644 "$PROJECT_ROOT/config/marklogic-hostname.example" /etc/default/marklogic-hostname
-  echo "Created /etc/default/marklogic-hostname — edit MARKLOGIC_HOSTNAME for your hostname."
-fi
 
 systemctl daemon-reload
 systemctl enable setup-marklogic-hostname.service

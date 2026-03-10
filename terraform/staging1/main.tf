@@ -185,6 +185,10 @@ module "marklogic" {
   iam_github_openid_connect_provider_arn  = data.aws_iam_openid_connect_provider.github.arn
   ses_deploy_secret_arns                  = ["arn:aws:kms:eu-west-1:486283582667:key/*"]
   create_dns_record                       = false # We create our own DNS record (marklogic1.vpc.local) below
+  zone_id                                 = data.aws_route53_zone.private.zone_id
+  marklogic_host_name1 = "ml1.${data.aws_route53_zone.private.name}"
+  marklogic_host_name2 = "ml2.${data.aws_route53_zone.private.name}"
+  marklogic_host_name3 = "ml3.${data.aws_route53_zone.private.name}"
 }
 
 # Create separate Route53 record for marklogic1.vpc.local

@@ -24,7 +24,7 @@ on:
         required: false
         default: 'ami-01907b01c5d597358'
   push:
-    branches: [main, marklogic-ami]
+    branches: [main]
     paths:
       - 'marklogic-ami/marklogic-ami.pkr.hcl'
       - 'marklogic-ami/scripts/**'

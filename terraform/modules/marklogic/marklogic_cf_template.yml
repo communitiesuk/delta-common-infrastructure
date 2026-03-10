@@ -38,6 +38,10 @@ Metadata:
           - AdminPass
           - Licensee
           - LicenseKey
+          - Route53HostedZoneId
+          - MarkLogicHostname1
+          - MarkLogicHostname2
+          - MarkLogicHostname3
     ParameterLabels:
       AdminUser:
         default: Admin User
@@ -47,6 +51,14 @@ Metadata:
         default: Licensee
       LicenseKey:
         default: License Key
+      Route53HostedZoneId:
+        default: Route53 Hosted Zone Id (optional)
+      MarkLogicHostname1:
+        default: MarkLogic hostname zone 1 (optional)
+      MarkLogicHostname2:
+        default: MarkLogic hostname zone 2 (optional)
+      MarkLogicHostname3:
+        default: MarkLogic hostname zone 3 (optional)
       IAMRole:
         default: IAM Role
       LogSNS:
@@ -312,6 +324,22 @@ Parameters:
     Type: String
     Default: none
     NoEcho: 'true'
+  Route53HostedZoneId:
+    Description: The Route53 Hosted Zone Id for the domain name (optional). When set, R53_HOSTED_ZONE_ID is passed to the hostname setup script.
+    Type: String
+    Default: ""
+  MarkLogicHostname1:
+    Description: Hostname (FQDN) for the MarkLogic node in zone 1 (e.g. ml-node01.example.local). Passed as MARKLOGIC_HOSTNAME and used for Route53 A record when Route53HostedZoneId is set.
+    Type: String
+    Default: ""
+  MarkLogicHostname2:
+    Description: Hostname (FQDN) for the MarkLogic node in zone 2 (e.g. ml-node02.example.local).
+    Type: String
+    Default: ""
+  MarkLogicHostname3:
+    Description: Hostname (FQDN) for the MarkLogic node in zone 3 (e.g. ml-node03.example.local).
+    Type: String
+    Default: ""
 Conditions:
   UseLogSNS: !Not [!Equals [!Ref LogSNS, "none"]]
   EssentialEnterprise:
@@ -544,6 +572,14 @@ Resources:
                   yum install jq -y
                   exit 0
 
+              - MARKLOGIC_HOSTNAME=
+              - !Ref MarkLogicHostname1
+              - |+
+
+              - R53_HOSTED_ZONE_ID=
+              - !Ref Route53HostedZoneId
+              - |+
+
               - MARKLOGIC_CLUSTER_NAME=
               - !Ref MarkLogicDDBTable
               - |+
@@ -627,6 +663,14 @@ Resources:
                   yum install jq -y
                   exit 0
 
+              - MARKLOGIC_HOSTNAME=
+              - !Ref MarkLogicHostname2
+              - |+
+
+              - R53_HOSTED_ZONE_ID=
+              - !Ref Route53HostedZoneId
+              - |+
+
               - MARKLOGIC_CLUSTER_NAME=
               - !Ref MarkLogicDDBTable
               - |+
@@ -709,6 +753,14 @@ Resources:
                   chmod 777 /delta/export
                   yum install jq -y
                   exit 0
+
+              - MARKLOGIC_HOSTNAME=
+              - !Ref MarkLogicHostname3
+              - |+
+
+              - R53_HOSTED_ZONE_ID=
+              - !Ref Route53HostedZoneId
+              - |+
 
               - MARKLOGIC_CLUSTER_NAME=
               - !Ref MarkLogicDDBTable
