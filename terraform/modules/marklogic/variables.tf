@@ -162,3 +162,7 @@ variable "marklogic_host_name3" {
   type = string
   description = "marklogic_host_name3"
 }
+variable "ami_id" {
+  type = string
+  description = "AMI ID for MarkLogic"
+}
