@@ -1,0 +1,14 @@
+# Config for scripts that use the MarkLogic Manage API (e.g. restart-replica-forests.sh)
+# Source this or copy to /etc/default/marklogic-manage and set values.
+
+# Manage API base (host and port)
+# ML_HOST=localhost
+# ML_PORT=8002
+
+# Admin (or manage-admin) credentials for digest auth
+# ML_USER=mhclg-ravi
+# ML_PASSWORD=your-password
+
+# Optional: restart-replica-forests.sh
+# POLL_INTERVAL=10   # seconds between status checks
+# SYNC_TIMEOUT=600   # max seconds to wait for "sync replicating" per forest
