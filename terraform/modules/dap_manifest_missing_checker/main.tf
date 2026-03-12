@@ -1,5 +1,6 @@
 resource "aws_sns_topic" "dap_manifest_missing" {
-  name = "dap-manifest-missing-${var.environment}"
+  name              = "dap-manifest-missing-${var.environment}"
+  kms_master_key_id = aws_kms_key.dap_missing_manifest_logs_encryption_key.arn
 }
 
 resource "aws_sns_topic_subscription" "dap_manifest_missing_subscription" {
@@ -59,11 +60,16 @@ resource "aws_lambda_function" "dap_manifest_missing_checker" {
   function_name    = "dap-manifest-missing-${var.environment}"
   filename         = data.archive_file.dap_manifest_missing_checker.output_path
   source_code_hash = data.archive_file.dap_manifest_missing_checker.output_base64sha256
+  kms_key_arn      = aws_kms_key.state_bucket_encryption_key.arn
 
   role    = aws_iam_role.dap_manifest_missing_role.arn
   handler = "dap_manifest_checker.lambda_handler"
   runtime = "python3.12"
   timeout = 30
+
+  tracing_config {
+    mode = "Active" # Enable X-Ray tracing
+  }
 
   environment {
     variables = {
@@ -106,6 +112,7 @@ resource "aws_scheduler_schedule" "dap_manifest_missing_daily" {
   name                         = "dap-manifest-missing-${var.environment}"
   schedule_expression          = "cron(0 7 * * ? *)"
   schedule_expression_timezone = "Europe/London"
+  kms_key_arn                  = aws_kms_key.state_bucket_encryption_key.arn
 
   flexible_time_window {
     mode = "OFF"
@@ -123,4 +130,14 @@ resource "aws_lambda_permission" "allow_scheduler_invoke_dap_manifest_missing" {
   function_name = aws_lambda_function.dap_manifest_missing_checker.function_name
   principal     = "scheduler.amazonaws.com"
   source_arn    = aws_scheduler_schedule.dap_manifest_missing_daily.arn
+}
+
+resource "aws_kms_key" "dap_missing_manifest_logs_encryption_key" {
+  description         = "DAP Missing Manifest Lambda logs encryption key"
+  enable_key_rotation = true
+}
+
+resource "aws_kms_alias" "dap_missing_manifest_logs_encryption_key" {
+  name          = "alias/dap_missing_manifest-lambda-logs-${var.environment}"
+  target_key_id = aws_kms_key.dap_missing_manifest_logs_encryption_key.key_id
 }
