@@ -60,7 +60,6 @@ resource "aws_lambda_function" "dap_manifest_missing_checker" {
   function_name    = "dap-manifest-missing-${var.environment}"
   filename         = data.archive_file.dap_manifest_missing_checker.output_path
   source_code_hash = data.archive_file.dap_manifest_missing_checker.output_base64sha256
-  kms_key_arn      = aws_kms_key.state_bucket_encryption_key.arn
 
   role    = aws_iam_role.dap_manifest_missing_role.arn
   handler = "dap_manifest_checker.lambda_handler"
@@ -112,7 +111,6 @@ resource "aws_scheduler_schedule" "dap_manifest_missing_daily" {
   name                         = "dap-manifest-missing-${var.environment}"
   schedule_expression          = "cron(0 7 * * ? *)"
   schedule_expression_timezone = "Europe/London"
-  kms_key_arn                  = aws_kms_key.state_bucket_encryption_key.arn
 
   flexible_time_window {
     mode = "OFF"
