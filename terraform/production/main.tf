@@ -435,6 +435,15 @@ module "notifications" {
   security_sns_topic_emails = local.all_notifications_email_addresses
 }
 
+module "dap_manifest_missing_checker" {
+  source = "../modules/dap_manifest_missing_checker"
+
+  environment                 = local.environment
+  dap_manifest_missing_emails = local.all_notifications_email_addresses
+  dap_export_bucket_name      = "dluhc-delta-dap-export-${local.environment}"
+  bucket_manifest_location    = "latest/form-data/"
+}
+
 moved {
   from = aws_lb_listener.auth
   to   = module.public_albs.aws_lb_listener.auth
