@@ -189,7 +189,7 @@ module "marklogic" {
   marklogic_host_name1                    = "ml1.${data.aws_route53_zone.private.name}"
   marklogic_host_name2                    = "ml2.${data.aws_route53_zone.private.name}"
   marklogic_host_name3                    = "ml3.${data.aws_route53_zone.private.name}"
-  ami_id                                  = "ami-0051edf0933a2fff2"
+  ami_id                                  = "ami-0ec1c288dc6b713b9"
 }
 
 # Create separate Route53 record for marklogic1.vpc.local

@@ -340,6 +340,12 @@ module "marklogic" {
   iam_github_openid_connect_provider_arn  = module.github_actions_openid_connect_provider.github_oidc_provider_arn
   ses_deploy_secret_arns                  = []
   create_dns_record                       = true
+  zone_id                                 = data.aws_route53_zone.private.zone_id
+  marklogic_host_name1                    = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
+  marklogic_host_name2                    = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
+  marklogic_host_name3                    = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
+  ami_id                                  = "ami-0ec1c288dc6b713b9"
+
 }
 
 module "gh_runner" {
@@ -411,6 +417,13 @@ data "aws_iam_policy" "enable_session_manager" {
   # Created by the staging environment
   name = "session-manager-policy"
 }
+
+data "aws_route53_zone" "private" {
+  name         = "vpc.local"
+  private_zone = true
+  vpc_id       =  module.networking.vpc.id
+}
+
 
 module "ses_user" {
   source                = "../modules/ses_user"

@@ -570,20 +570,31 @@ Resources:
                   chmod 777 /delta
                   chmod 777 /delta/export
                   yum install jq -y
-                  exit 0
-
+              - 'echo "MARKLOGIC_HOSTNAME='
+              - !Ref MarkLogicHostname1
+              - '" | sudo tee -a /etc/marklogic.conf'
+              - "\n"
+              - 'echo "MARKLOGIC_HOSTNAME='
+              - !Ref MarkLogicHostname1
+              - '" | sudo tee -a /var/local/mlcmd.conf'
+              - "\n"
+              - 'printf ''MARKLOGIC_HOSTNAME=%s\nR53_HOSTED_ZONE_ID=%s\n'' "'
+              - !Ref MarkLogicHostname1
+              - '" "'
+              - !Ref Route53HostedZoneId
+              - '" | sudo tee /etc/default/marklogic-hostname'
+              - "\n"
+              - |
+                exit 0
               - MARKLOGIC_HOSTNAME=
               - !Ref MarkLogicHostname1
-              - |+
-
+              - "\n"
               - R53_HOSTED_ZONE_ID=
               - !Ref Route53HostedZoneId
-              - |+
-
+              - "\n"
               - MARKLOGIC_CLUSTER_NAME=
               - !Ref MarkLogicDDBTable
-              - |+
-
+              - "\n"
               - MARKLOGIC_EBS_VOLUME=
               - !Ref DataVolume1
               - ',:'
@@ -596,30 +607,24 @@ Resources:
                 MARKLOGIC_NODE_NAME=NodeA#
               - MARKLOGIC_ADMIN_USERNAME=
               - !Ref AdminUser
-              - |+
-
+              - "\n"
               - MARKLOGIC_ADMIN_PASSWORD=
               - !Ref AdminPass
-              - |+
-
+              - "\n"
               - |
                 MARKLOGIC_CLUSTER_MASTER=1
               - MARKLOGIC_LICENSEE=
               - !Ref Licensee
-              - |+
-
+              - "\n"
               - MARKLOGIC_LICENSE_KEY=
               - !Ref LicenseKey
-              - |+
-
+              - "\n"
               - MARKLOGIC_LOG_SNS=
               - !Ref LogSNS
-              - |+
-
+              - "\n"
               - MARKLOGIC_AWS_SWAP_SIZE=
               - 32
-              - |+
-
+              - "\n"
               - !If
                 - UseVolumeEncryption
                 - !Join
@@ -661,20 +666,31 @@ Resources:
                   chmod 777 /delta
                   chmod 777 /delta/export
                   yum install jq -y
-                  exit 0
-
+              - 'echo "MARKLOGIC_HOSTNAME='
+              - !Ref MarkLogicHostname2
+              - '" | sudo tee -a /etc/marklogic.conf'
+              - "\n"
+              - 'echo "MARKLOGIC_HOSTNAME='
+              - !Ref MarkLogicHostname2
+              - '" | sudo tee -a /var/local/mlcmd.conf'
+              - "\n"
+              - 'printf ''MARKLOGIC_HOSTNAME=%s\nR53_HOSTED_ZONE_ID=%s\n'' "'
+              - !Ref MarkLogicHostname2
+              - '" "'
+              - !Ref Route53HostedZoneId
+              - '" | sudo tee /etc/default/marklogic-hostname'
+              - "\n"
+              - |
+                exit 0
               - MARKLOGIC_HOSTNAME=
               - !Ref MarkLogicHostname2
-              - |+
-
+              - "\n"
               - R53_HOSTED_ZONE_ID=
               - !Ref Route53HostedZoneId
-              - |+
-
+              - "\n"
               - MARKLOGIC_CLUSTER_NAME=
               - !Ref MarkLogicDDBTable
-              - |+
-
+              - "\n"
               - MARKLOGIC_EBS_VOLUME=
               - !Ref DataVolume2
               - ',:'
@@ -687,30 +703,24 @@ Resources:
                 MARKLOGIC_NODE_NAME=NodeB#
               - MARKLOGIC_ADMIN_USERNAME=
               - !Ref AdminUser
-              - |+
-
+              - "\n"
               - MARKLOGIC_ADMIN_PASSWORD=
               - !Ref AdminPass
-              - |+
-
+              - "\n"
               - |
                 MARKLOGIC_CLUSTER_MASTER=0
               - MARKLOGIC_LICENSEE=
               - !Ref Licensee
-              - |+
-
+              - "\n"
               - MARKLOGIC_LICENSE_KEY=
               - !Ref LicenseKey
-              - |+
-
+              - "\n"
               - MARKLOGIC_LOG_SNS=
               - !Ref LogSNS
-              - |+
-
+              - "\n"
               - MARKLOGIC_AWS_SWAP_SIZE=
               - 32
-              - |+
-
+              - "\n"
               - !If
                 - UseVolumeEncryption
                 - !Join
@@ -752,20 +762,31 @@ Resources:
                   chmod 777 /delta
                   chmod 777 /delta/export
                   yum install jq -y
-                  exit 0
-
+              - 'echo "MARKLOGIC_HOSTNAME='
+              - !Ref MarkLogicHostname3
+              - '" | sudo tee -a /etc/marklogic.conf'
+              - "\n"
+              - 'echo "MARKLOGIC_HOSTNAME='
+              - !Ref MarkLogicHostname3
+              - '" | sudo tee -a /var/local/mlcmd.conf'
+              - "\n"
+              - 'printf ''MARKLOGIC_HOSTNAME=%s\nR53_HOSTED_ZONE_ID=%s\n'' "'
+              - !Ref MarkLogicHostname3
+              - '" "'
+              - !Ref Route53HostedZoneId
+              - '" | sudo tee /etc/default/marklogic-hostname'
+              - "\n"
+              - |
+                exit 0
               - MARKLOGIC_HOSTNAME=
               - !Ref MarkLogicHostname3
-              - |+
-
+              - "\n"
               - R53_HOSTED_ZONE_ID=
               - !Ref Route53HostedZoneId
-              - |+
-
+              - "\n"
               - MARKLOGIC_CLUSTER_NAME=
               - !Ref MarkLogicDDBTable
-              - |+
-
+              - "\n"
               - MARKLOGIC_EBS_VOLUME=
               - !Ref DataVolume3
               - ',:'
@@ -778,30 +799,24 @@ Resources:
                 MARKLOGIC_NODE_NAME=NodeC#
               - MARKLOGIC_ADMIN_USERNAME=
               - !Ref AdminUser
-              - |+
-
+              - "\n"
               - MARKLOGIC_ADMIN_PASSWORD=
               - !Ref AdminPass
-              - |+
-
+              - "\n"
               - |
                 MARKLOGIC_CLUSTER_MASTER=0
               - MARKLOGIC_LICENSEE=
               - !Ref Licensee
-              - |+
-
+              - "\n"
               - MARKLOGIC_LICENSE_KEY=
               - !Ref LicenseKey
-              - |+
-
+              - "\n"
               - MARKLOGIC_LOG_SNS=
               - !Ref LogSNS
-              - |+
-
+              - "\n"
               - MARKLOGIC_AWS_SWAP_SIZE=
               - 32
-              - |+
-
+              - "\n"
               - !If
                 - UseVolumeEncryption
                 - !Join

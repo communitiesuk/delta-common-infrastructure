@@ -292,6 +292,13 @@ moved {
   to   = module.ebs_backup.aws_iam_role_policy_attachment.service_restore
 }
 
+
+data "aws_route53_zone" "private" {
+  name         = "vpc.local"
+  private_zone = true
+  vpc_id       =  module.networking.vpc.id
+}
+
 module "marklogic" {
   source = "../modules/marklogic"
 
@@ -327,6 +334,12 @@ module "marklogic" {
   iam_github_openid_connect_provider_arn  = data.aws_iam_openid_connect_provider.github.arn
   ses_deploy_secret_arns                  = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
   create_dns_record                       = true
+  zone_id                                 = data.aws_route53_zone.private.zone_id
+  marklogic_host_name1                    = "mlnode1.${data.aws_route53_zone.private.name}"
+  marklogic_host_name2                    = "mlnode2.${data.aws_route53_zone.private.name}"
+  marklogic_host_name3                    = "mlnode3.${data.aws_route53_zone.private.name}"
+  ami_id                                  = "ami-0051edf0933a2fff2"
+
 }
 
 module "gh_runner" {
