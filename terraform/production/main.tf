@@ -211,7 +211,7 @@ module "marklogic" {
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "r5a.8xlarge" # r6a is not allowed (as of 26/02/2023)
-  marklogic_ami_version    = "10.0-10.2"
+  marklogic_ami_version    = "11.3.3"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
   data_volume = {
@@ -433,6 +433,15 @@ module "notifications" {
   environment               = local.environment
   alarm_sns_topic_emails    = local.all_notifications_email_addresses
   security_sns_topic_emails = local.all_notifications_email_addresses
+}
+
+module "dap_manifest_missing_checker" {
+  source = "../modules/dap_manifest_missing_checker"
+
+  environment                 = local.environment
+  dap_manifest_missing_emails = local.all_notifications_email_addresses
+  dap_export_bucket_name      = "dluhc-delta-dap-export-${local.environment}"
+  bucket_manifest_location    = "latest/form-data/"
 }
 
 moved {

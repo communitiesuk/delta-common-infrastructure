@@ -300,7 +300,7 @@ module "marklogic" {
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3a.2xlarge"
-  marklogic_ami_version    = "10.0-10.2"
+  marklogic_ami_version    = "11.3.3"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
   data_volume = {
@@ -326,6 +326,7 @@ module "marklogic" {
   ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
   iam_github_openid_connect_provider_arn  = data.aws_iam_openid_connect_provider.github.arn
   ses_deploy_secret_arns                  = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
+  create_dns_record                       = true
 }
 
 module "gh_runner" {
@@ -436,6 +437,15 @@ module "notifications" {
   environment               = local.environment
   alarm_sns_topic_emails    = local.all_notifications_email_addresses
   security_sns_topic_emails = local.all_notifications_email_addresses
+}
+
+module "dap_manifest_missing_checker" {
+  source = "../modules/dap_manifest_missing_checker"
+
+  environment                 = local.environment
+  dap_manifest_missing_emails = local.all_notifications_email_addresses
+  dap_export_bucket_name      = "dluhc-delta-dap-export-${local.environment}"
+  bucket_manifest_location    = "latest/form-data/"
 }
 
 module "guardduty" {

@@ -1,0 +1,18 @@
+[Unit]
+Description=Set hostname and DNS for MarkLogic from private IP
+Documentation=file:///usr/local/bin/setup-marklogic-hostname.sh
+# Run after cloud-init so UserData (e.g. from CloudFormation) can write /etc/default/marklogic-hostname
+After=network-online.target cloud-init.service
+Wants=network-online.target
+# Run before MarkLogic so MARKLOGIC_HOST matches the configured hostname
+Before=MarkLogic.service marklogic.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Load hostname from env file
+EnvironmentFile=-/etc/default/marklogic-hostname
+ExecStart=/usr/local/bin/setup-marklogic-hostname.sh
+
+[Install]
+WantedBy=multi-user.target
