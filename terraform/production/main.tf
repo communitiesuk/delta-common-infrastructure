@@ -49,7 +49,7 @@ locals {
 data "aws_route53_zone" "private" {
   name         = "vpc.local"
   private_zone = true
-  vpc_id       =  module.networking.vpc.id
+  vpc_id       = module.networking.vpc.id
 }
 module "communities_only_ssl_certs" {
   source = "../modules/ssl_certificates"
@@ -246,11 +246,11 @@ module "marklogic" {
   weekly_backup_bucket_retention_days    = 60
   iam_github_openid_connect_provider_arn = module.github_actions_openid_connect_provider.github_oidc_provider_arn
   ses_deploy_secret_arns                 = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
-  zone_id                                 = data.aws_route53_zone.private.zone_id
-  marklogic_host_name1                    = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
-  marklogic_host_name2                    = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
-  marklogic_host_name3                    = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
-  ami_id                                  = "ami-0ec1c288dc6b713b9"
+  zone_id                                = data.aws_route53_zone.private.zone_id
+  marklogic_host_name1                   = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
+  marklogic_host_name2                   = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
+  marklogic_host_name3                   = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
+  ami_id                                 = "ami-0ec1c288dc6b713b9"
 }
 
 module "gh_runner" {
