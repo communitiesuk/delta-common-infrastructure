@@ -296,7 +296,7 @@ moved {
 data "aws_route53_zone" "private" {
   name         = "vpc.local"
   private_zone = true
-  vpc_id       =  module.networking.vpc.id
+  vpc_id       = module.networking.vpc.id
 }
 
 module "marklogic" {

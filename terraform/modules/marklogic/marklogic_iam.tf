@@ -97,10 +97,10 @@ resource "aws_iam_policy" "ml_instance_policy" {
         }
       ],
       var.zone_id != "" ? [{
-        Sid       = "Route53UpsertHostname"
-        Effect    = "Allow"
-        Action    = "route53:ChangeResourceRecordSets"
-        Resource  = "arn:aws:route53:::hostedzone/${var.zone_id}"
+        Sid      = "Route53UpsertHostname"
+        Effect   = "Allow"
+        Action   = "route53:ChangeResourceRecordSets"
+        Resource = "arn:aws:route53:::hostedzone/${var.zone_id}"
       }] : []
     )
   })

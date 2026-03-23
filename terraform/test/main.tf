@@ -421,7 +421,7 @@ data "aws_iam_policy" "enable_session_manager" {
 data "aws_route53_zone" "private" {
   name         = "vpc.local"
   private_zone = true
-  vpc_id       =  module.networking.vpc.id
+  vpc_id       = module.networking.vpc.id
 }
 
 
