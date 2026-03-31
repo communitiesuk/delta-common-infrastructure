@@ -42,6 +42,13 @@ resource "aws_s3_object" "ml_check_forest_state_shell_script" {
   etag   = filemd5("${path.module}/check_forest_state.sh")
 }
 
+resource "aws_s3_object" "ml_manage_forest_status_shell_script" {
+  bucket = module.config_files_bucket.bucket
+  key    = "manage-forest-status.sh"
+  source = "${path.module}/manage-forest-status.sh"
+  etag   = filemd5("${path.module}/manage-forest-status.sh")
+}
+
 resource "aws_s3_object" "ml_final_forest_state_script" {
   bucket = module.config_files_bucket.bucket
   key    = "final_forest_state.xqy"

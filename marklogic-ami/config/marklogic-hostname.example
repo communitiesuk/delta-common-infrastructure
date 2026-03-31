@@ -1,9 +1,10 @@
 # Config for setup-marklogic-hostname.service
 # This hostname will be set before MarkLogic starts; use the same value for MARKLOGIC_HOST.
 
-# Required: hostname (short or FQDN) to set and register to this instance's private IP
+# Required: hostname (short or FQDN) to set and register to this instance's private IP.
+# If R53_HOSTED_ZONE_ID is set, this same value is used for the Route53 A record unless R53_DOMAIN is set.
 MARKLOGIC_HOSTNAME=ml-node01.example.local
 
-# Optional: register the hostname in Route53 (private hosted zone)
+# Optional: register the hostname in Route53 (private hosted zone). Record name defaults to MARKLOGIC_HOSTNAME.
 # R53_HOSTED_ZONE_ID=Z0123456789ABCDEF
-# R53_DOMAIN=ml-node01.example.local
+# R53_DOMAIN=ml-node01.example.local   # optional; defaults to MARKLOGIC_HOSTNAME

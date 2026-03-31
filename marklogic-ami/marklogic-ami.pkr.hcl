@@ -99,10 +99,27 @@ source "amazon-ebs" "marklogic" {
 build {
   sources = ["source.amazon-ebs.marklogic"]
 
-  # Copy this repo onto the instance so install script can run
+  # Create directory first
+  provisioner "shell" {
+    inline = ["mkdir -p /tmp/marklogic-ami/scripts /tmp/marklogic-ami/systemd /tmp/marklogic-ami/config"]
+  }
+
+  # Copy required directories onto the instance so install script can run
   provisioner "file" {
-    source      = "."
-    destination = "/tmp/marklogic-ami"
+    source      = "scripts/"
+    destination = "/tmp/marklogic-ami/scripts"
+    direction   = "upload"
+  }
+
+  provisioner "file" {
+    source      = "systemd/"
+    destination = "/tmp/marklogic-ami/systemd"
+    direction   = "upload"
+  }
+
+  provisioner "file" {
+    source      = "config/"
+    destination = "/tmp/marklogic-ami/config"
     direction   = "upload"
   }
 
@@ -110,8 +127,8 @@ build {
   provisioner "shell" {
     inline = [
       "sudo chown -R root:root /tmp/marklogic-ami",
-      "cd /tmp/marklogic-ami && sudo ./scripts/install-hostname-setup.sh",
-      "rm -rf /tmp/marklogic-ami"
+      "cd /tmp/marklogic-ami && sudo bash scripts/install-hostname-setup.sh",
+      "sudo rm -rf /tmp/marklogic-ami"
     ]
   }
 }

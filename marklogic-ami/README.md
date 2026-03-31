@@ -8,7 +8,7 @@ Set the instance **hostname** from its **private IP** and (optionally) register 
 2. Gets the instance private IP (EC2 metadata or primary interface).
 3. Ensures `/etc/hosts` has `private_ip  hostname` so the hostname resolves.
 4. Sets the system hostname with `hostnamectl`.
-5. Optionally upserts an A record in Route53 (if `R53_HOSTED_ZONE_ID` and `R53_DOMAIN` are set).
+5. Optionally upserts an A record in Route53 (if `R53_HOSTED_ZONE_ID` is set; record name defaults to `MARKLOGIC_HOSTNAME` unless `R53_DOMAIN` is set).
 6. Runs as a systemd oneshot **before** `MarkLogic.service`, so hostname is ready when MarkLogic starts.
 
 ## Quick start
@@ -24,12 +24,12 @@ sudo ./scripts/install-hostname-setup.sh
 Edit `/etc/default/marklogic-hostname`:
 
 ```bash
-# Required: hostname to set (use this same value as MARKLOGIC_HOST)
+# Required: hostname to set (use this same value as MARKLOGIC_HOST). If using Route53, this is also the record name unless R53_DOMAIN is set.
 MARKLOGIC_HOSTNAME=ml-node01.example.local
 
-# Optional: register in Route53 private hosted zone
+# Optional: register in Route53 private hosted zone (record name defaults to MARKLOGIC_HOSTNAME)
 # R53_HOSTED_ZONE_ID=Z0123456789ABCDEF
-# R53_DOMAIN=ml-node01.example.local
+# R53_DOMAIN=ml-node01.example.local   # optional
 ```
 
 ### 3. Set MARKLOGIC_HOST
@@ -48,7 +48,7 @@ After boot, `hostname` and `MARKLOGIC_HOST` will match the same name that resolv
 
 The AMI is built with the hostname setup script and systemd unit already installed. At launch time, **pass all variables from CloudFormation parameters through User Data only**. User Data is a **shell script** that exports the parameters and runs the setup script; **no config file is written**.
 
-1. In your template, define parameters (e.g. `MarkLogicHostname`, optional `Route53HostedZoneId`, `Route53Domain`).
+1. In your template, define parameters (e.g. `MarkLogicHostname`, optional `Route53HostedZoneId`). You only need one hostname value; it is used for both the system hostname and the Route53 A record (when the hosted zone is set).
 2. Set the Launch Template **UserData** to a script that exports and runs:
 
 ```yaml
@@ -58,7 +58,6 @@ UserData:
     set -e
     export MARKLOGIC_HOSTNAME="${MarkLogicHostname}"
     export R53_HOSTED_ZONE_ID="${Route53HostedZoneId}"
-    export R53_DOMAIN="${Route53Domain}"
     /usr/local/bin/setup-marklogic-hostname.sh
 ```
 
@@ -101,7 +100,7 @@ A workflow builds the MarkLogic AMI with Packer on GitHub Actions.
 
 ## Route53 (optional)
 
-If you set `R53_HOSTED_ZONE_ID` and `R53_DOMAIN` (via User Data exports or in `/etc/default/marklogic-hostname`), the script will use the AWS CLI to UPSERT an A record for that domain to the instance private IP. The instance role (or credentials) needs `route53:ChangeResourceRecordSets` on the hosted zone.
+If you set `R53_HOSTED_ZONE_ID` (via User Data or in `/etc/default/marklogic-hostname`), the script will UPSERT an A record for **MARKLOGIC_HOSTNAME** to the instance private IP. Set `R53_DOMAIN` only if you need a different DNS name for the record; otherwise it defaults to `MARKLOGIC_HOSTNAME`. The instance role needs `route53:ChangeResourceRecordSets` on the hosted zone.
 
 ## Ordering
 

@@ -145,3 +145,24 @@ variable "create_dns_record" {
   description = "Whether to create the default Route53 DNS record (marklogic.vpc.local)"
   default     = true
 }
+
+variable "zone_id" {
+  type        = string
+  description = "Private Zone Id for Route 53"
+}
+variable "marklogic_host_name1" {
+  type        = string
+  description = "marklogic_host_name1"
+}
+variable "marklogic_host_name2" {
+  type        = string
+  description = "marklogic_host_name2"
+}
+variable "marklogic_host_name3" {
+  type        = string
+  description = "marklogic_host_name3"
+}
+variable "ami_id" {
+  type        = string
+  description = "AMI ID for MarkLogic"
+}
