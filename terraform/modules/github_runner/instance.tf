@@ -58,7 +58,7 @@ resource "aws_instance" "gh_runner" {
     Name = "GitHub-Runner-${var.environment}"
   }
   lifecycle {
-    ignore_changes = [user_data, ami]
+    ignore_changes = [user_data]
   }
 }
 
