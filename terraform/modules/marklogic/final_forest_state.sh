@@ -10,6 +10,11 @@ ML_USER=$(echo $ML_USER_PASS | jq -r '.username')
 ML_PASS=$(echo $ML_USER_PASS | jq -r '.password')
 
 aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/final_forest_state.xqy /patching/final_forest_state.xqy
+aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/manage-forest-status.sh /patching/manage-forest-status.sh
+chmod +x /patching/manage-forest-status.sh
+
+echo "Restarting replica forests to restore expected state"
+ML_USER="$ML_USER" ML_PASSWORD="$ML_PASS" bash /patching/manage-forest-status.sh -r
 
 set +e
 response=$(curl -sS --anyauth --user "$ML_USER":"$ML_PASS" -X POST -d @/patching/final_forest_state.xqy \

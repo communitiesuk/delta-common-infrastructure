@@ -20,12 +20,6 @@ ML_PASS=$(echo $ML_USER_PASS | jq -r '.password')
 mkdir -p /patching # Folder for any patching-related files that are copied down
 
 if [[ "InService" == $LIFECYCLE_STATE ]]; then
-  aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/check_forest_state.sh /patching/check_forest_state.sh
-  aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/check_forest_state.xqy /patching/check_forest_state.xqy
-  aws s3 cp --region ${AWS_REGION} s3://${MARKLOGIC_CONFIG_BUCKET}/manage-forest-status.sh /patching/manage-forest-status.sh
-
-  bash /patching/check_forest_state.sh "$ML_USER" "$ML_PASS"
-
   echo "Requesting enter-standby"
   aws autoscaling enter-standby --instance-ids $INSTANCE_ID --auto-scaling-group-name $AUTOSCALING_GROUP_NAME --should-decrement-desired-capacity
   echo "Waiting for instance to be in standby state"
@@ -62,11 +56,7 @@ if [[ "Standby" == $LIFECYCLE_STATE ]]; then
     LIFECYCLE_STATE=`aws autoscaling describe-auto-scaling-instances --instance-ids $INSTANCE_ID --query 'AutoScalingInstances[0].LifecycleState' --output text`
     echo "Current state: $${LIFECYCLE_STATE}"
   done
-  echo "Restarting replica forests to restore expected state"
-  chmod +x /patching/manage-forest-status.sh
-  ML_PASSWORD="$ML_PASS" bash /patching/manage-forest-status.sh -r
   echo "Patching complete at $(date --iso-8601=seconds)"
-  bash /patching/check_forest_state.sh "$ML_USER" "$ML_PASS"
   exit 0
 fi
 
