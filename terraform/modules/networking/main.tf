@@ -24,7 +24,7 @@ locals {
       tls_allowed_domains = [
         "github.com", "api.github.com",
         "codeload.github.com",
-        "objects.githubusercontent.com", "objects-origin.githubusercontent.com", "github-releases.githubusercontent.com", "github-registry-files.githubusercontent.com",
+        "objects.githubusercontent.com", "objects-origin.githubusercontent.com", "github-releases.githubusercontent.com", "github-registry-files.githubusercontent.com","release-assets.githubusercontent.com",
         ".actions.githubusercontent.com",
         "actions-results-receiver-production.githubapp.com",
         "sts.eu-west-1.amazonaws.com", # For getting AWS credentials via OIDC
