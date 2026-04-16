@@ -2,19 +2,19 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.72.1"
+      version = "~> 5.100.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.7.2"
+      version = "~> 3.8.0"
     }
     archive = {
       source  = "hashicorp/archive"
-      version = "~> 2.4.2"
+      version = "~> 2.7.1"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "~> 4.0.6"
+      version = "~> 4.1.0"
     }
   }
 
@@ -292,6 +292,13 @@ moved {
   to   = module.ebs_backup.aws_iam_role_policy_attachment.service_restore
 }
 
+
+data "aws_route53_zone" "private" {
+  name         = "vpc.local"
+  private_zone = true
+  vpc_id       = module.networking.vpc.id
+}
+
 module "marklogic" {
   source = "../modules/marklogic"
 
@@ -327,6 +334,12 @@ module "marklogic" {
   iam_github_openid_connect_provider_arn  = data.aws_iam_openid_connect_provider.github.arn
   ses_deploy_secret_arns                  = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
   create_dns_record                       = true
+  zone_id                                 = data.aws_route53_zone.private.zone_id
+  marklogic_host_name1                    = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
+  marklogic_host_name2                    = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
+  marklogic_host_name3                    = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
+  ami_id                                  = "ami-0ec1c288dc6b713b9"
+
 }
 
 module "gh_runner" {
