@@ -255,7 +255,7 @@ module "marklogic_patch_maintenance_window" {
 
   environment       = local.environment
   prefix            = "ml-instance-patching"
-  schedule          = "cron(00 06 ? * TUE *)"
+  schedule          = "cron(00 06 ? * MON,THU *)"
   subscribed_emails = local.all_notifications_email_addresses
 
   enabled = true
