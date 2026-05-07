@@ -12,7 +12,8 @@ mkdir -p actions-runner && cd actions-runner
 
 
 echo "Downloading the GH Action runner from $RUNNER_TARBALL_URL to $file_name"
-curl -o $file_name -L https://github.com/actions/runner/releases/download/v2.298.2/actions-runner-linux-x64-2.298.2.tar.gz
+# Keep in sync with https://github.com/actions/runner/releases (required for modern actions, e.g. setup-java@v5)
+curl -o $file_name -L https://github.com/actions/runner/releases/download/v2.334.0/actions-runner-linux-x64-2.334.0.tar.gz
 
 echo "Un-tar action runner"
 tar xzf ./$file_name
