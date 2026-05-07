@@ -32,7 +32,13 @@ locals {
         ".amazonlinux.com",
         "index.rubygems.org",
         "rubygems.org",
-        "cache.ruby-lang.org"
+        "cache.ruby-lang.org",
+        "corretto.github.io", # Corretto metadata for actions/setup-java (indexmap_with_checksum.json)
+        "corretto.aws",
+        ".gradle.org",
+        "repo.maven.apache.org",
+        "repo1.maven.org"
+
       ]
       sid_offset = 300
     }
