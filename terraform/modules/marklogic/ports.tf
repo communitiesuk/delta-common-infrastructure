@@ -64,7 +64,14 @@ locals {
     "to_port"           = 8240
     "description"       = "HTTP to CPM SAML port"
     "log_name_fragment" = "cpm"
-  }, ]
+  },
+    {
+      "from_port"         = 8144
+      "to_port"           = 8144
+      "description"       = "HTTP to CPM rest-api-"
+      "log_name_fragment" = "cpm"
+    }
+  ]
   lb_ports = {
     for port in flatten([
       for port_range in local.ml_sg_ingress_port_ranges : range(port_range.from_port, port_range.to_port + 1) if port_range.from_port >= 8000]
