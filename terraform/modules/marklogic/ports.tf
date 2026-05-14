@@ -64,7 +64,7 @@ locals {
     "to_port"           = 8240
     "description"       = "HTTP to CPM SAML port"
     "log_name_fragment" = "cpm"
-  },
+    },
     {
       "from_port"         = 8144
       "to_port"           = 8144
