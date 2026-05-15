@@ -1,6 +1,9 @@
 locals {
   delta_export_path                    = "/delta/export"
   latest_export_files_lifespan_in_days = 30
+  dap_export_external_access = {
+    for access in var.dap_export_external_access : access.name => access
+  }
 }
 
 module "dap_export_bucket" {
@@ -64,6 +67,166 @@ data "aws_iam_policy_document" "allow_access_from_dap" {
       ]
     }
   }
+}
+
+resource "time_rotating" "dap_export_external_iam_user" {
+  for_each = local.dap_export_external_access
+
+  rotation_days = each.value.rotation_days
+}
+
+resource "aws_iam_user" "dap_export_external" {
+  for_each = local.dap_export_external_access
+
+  name = "${each.key}-dap-export-${var.environment}"
+
+  lifecycle {
+    ignore_changes = [tags, tags_all] # AWS uses tags for access key descriptions
+  }
+}
+
+resource "aws_iam_access_key" "dap_export_external" {
+  for_each = local.dap_export_external_access
+
+  user = aws_iam_user.dap_export_external[each.key].name
+
+  lifecycle {
+    replace_triggered_by = [
+      time_rotating.dap_export_external_iam_user[each.key].id
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "dap_export_external" {
+  for_each = local.dap_export_external_access
+
+  statement {
+    sid = "AllowLatestObjectReadFromApprovedIps"
+    actions = [
+      "s3:GetObject",
+    ]
+    resources = [
+      "${module.dap_export_bucket.bucket_arn}/latest/*",
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = each.value.allowed_cidrs
+    }
+  }
+
+  statement {
+    sid = "AllowBucketMetadataReadFromApprovedIps"
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:GetEncryptionConfiguration",
+    ]
+    resources = [
+      module.dap_export_bucket.bucket_arn,
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = each.value.allowed_cidrs
+    }
+  }
+
+  statement {
+    sid = "AllowLatestBucketListFromApprovedIps"
+    actions = [
+      "s3:ListBucket",
+    ]
+    resources = [
+      module.dap_export_bucket.bucket_arn,
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = each.value.allowed_cidrs
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values = [
+        "latest",
+        "latest/*",
+      ]
+    }
+  }
+
+  statement {
+    sid    = "DenyS151ObjectRead"
+    effect = "Deny"
+    actions = [
+      "s3:GetObject",
+    ]
+    resources = [
+      "${module.dap_export_bucket.bucket_arn}/latest/s151*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "dap_export_external" {
+  for_each = local.dap_export_external_access
+
+  name        = "${each.key}-dap-export-${var.environment}"
+  description = "Allows ${each.key} to read non-S151 DAP export objects"
+  policy      = data.aws_iam_policy_document.dap_export_external[each.key].json
+}
+
+resource "aws_iam_user_policy_attachment" "dap_export_external" {
+  for_each = local.dap_export_external_access
+
+  user       = aws_iam_user.dap_export_external[each.key].name
+  policy_arn = aws_iam_policy.dap_export_external[each.key].arn
+}
+
+resource "aws_kms_key" "dap_export_external_secret" {
+  for_each = local.dap_export_external_access
+
+  description         = "dap-export-${each.key}-${var.environment}"
+  enable_key_rotation = true
+
+  tags = {
+    "terraform-plan-read" = true
+  }
+}
+
+resource "aws_kms_alias" "dap_export_external_secret" {
+  for_each = local.dap_export_external_access
+
+  name          = "alias/dap-export-${each.key}-${var.environment}"
+  target_key_id = aws_kms_key.dap_export_external_secret[each.key].key_id
+}
+
+resource "aws_secretsmanager_secret" "dap_export_external" {
+  for_each = local.dap_export_external_access
+
+  name                    = "tf-dap-export-${each.key}-${var.environment}"
+  description             = "Managed by Terraform, do not update manually"
+  kms_key_id              = aws_kms_key.dap_export_external_secret[each.key].arn
+  recovery_window_in_days = 0
+
+  tags = {
+    "terraform-plan-read" = true
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "dap_export_external" {
+  for_each = local.dap_export_external_access
+
+  secret_id = aws_secretsmanager_secret.dap_export_external[each.key].id
+  secret_string = jsonencode({
+    access_key_id     = aws_iam_access_key.dap_export_external[each.key].id
+    secret_access_key = aws_iam_access_key.dap_export_external[each.key].secret
+    region            = data.aws_region.current.name
+    bucket            = module.dap_export_bucket.bucket
+    prefix            = "latest/"
+  })
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "dap_export" {

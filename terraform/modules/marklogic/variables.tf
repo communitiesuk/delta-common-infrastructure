@@ -108,6 +108,16 @@ variable "s151_external_canonical_users" {
   type = list(string)
 }
 
+variable "dap_export_external_access" {
+  description = "External DAP export access configurations that create IAM users restricted to approved CIDRs"
+  type = list(object({
+    name          = string
+    allowed_cidrs = list(string)
+    rotation_days = number
+  }))
+  default = []
+}
+
 variable "marklogic_ami_version" {
   type = string
 

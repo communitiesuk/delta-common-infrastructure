@@ -327,18 +327,25 @@ module "marklogic" {
   data_disk_usage_alarm_threshold_percent = 70
   dap_external_role_arns                  = var.dap_external_role_arns
   s151_external_canonical_users           = var.s151_external_canonical_users
-  dap_job_notification_emails             = local.all_notifications_email_addresses
-  backup_replication_bucket               = module.backup_replication_bucket.bucket
-  ebs_backup_role_arn                     = module.ebs_backup.role_arn
-  ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
-  iam_github_openid_connect_provider_arn  = data.aws_iam_openid_connect_provider.github.arn
-  ses_deploy_secret_arns                  = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
-  create_dns_record                       = true
-  zone_id                                 = data.aws_route53_zone.private.zone_id
-  marklogic_host_name1                    = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
-  marklogic_host_name2                    = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
-  marklogic_host_name3                    = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
-  ami_id                                  = "ami-0ec1c288dc6b713b9"
+  dap_export_external_access = length(var.azure_dap_export_allowed_cidrs) == 0 ? [] : [
+    {
+      name          = "azure-dap-export"
+      allowed_cidrs = var.azure_dap_export_allowed_cidrs
+      rotation_days = 180
+    }
+  ]
+  dap_job_notification_emails            = local.all_notifications_email_addresses
+  backup_replication_bucket              = module.backup_replication_bucket.bucket
+  ebs_backup_role_arn                    = module.ebs_backup.role_arn
+  ebs_backup_completed_sns_topic_arn     = module.ebs_backup.sns_topic_arn
+  iam_github_openid_connect_provider_arn = data.aws_iam_openid_connect_provider.github.arn
+  ses_deploy_secret_arns                 = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
+  create_dns_record                      = true
+  zone_id                                = data.aws_route53_zone.private.zone_id
+  marklogic_host_name1                   = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
+  marklogic_host_name2                   = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
+  marklogic_host_name3                   = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
+  ami_id                                 = "ami-0ec1c288dc6b713b9"
 
 }
 
