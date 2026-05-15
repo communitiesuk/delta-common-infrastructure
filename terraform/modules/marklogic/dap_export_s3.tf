@@ -69,12 +69,6 @@ data "aws_iam_policy_document" "allow_access_from_dap" {
   }
 }
 
-resource "time_rotating" "dap_export_external_iam_user" {
-  for_each = local.dap_export_external_access
-
-  rotation_days = each.value.rotation_days
-}
-
 resource "aws_iam_user" "dap_export_external" {
   for_each = local.dap_export_external_access
 
@@ -82,18 +76,6 @@ resource "aws_iam_user" "dap_export_external" {
 
   lifecycle {
     ignore_changes = [tags, tags_all] # AWS uses tags for access key descriptions
-  }
-}
-
-resource "aws_iam_access_key" "dap_export_external" {
-  for_each = local.dap_export_external_access
-
-  user = aws_iam_user.dap_export_external[each.key].name
-
-  lifecycle {
-    replace_triggered_by = [
-      time_rotating.dap_export_external_iam_user[each.key].id
-    ]
   }
 }
 
@@ -221,12 +203,168 @@ resource "aws_secretsmanager_secret_version" "dap_export_external" {
 
   secret_id = aws_secretsmanager_secret.dap_export_external[each.key].id
   secret_string = jsonencode({
-    access_key_id     = aws_iam_access_key.dap_export_external[each.key].id
-    secret_access_key = aws_iam_access_key.dap_export_external[each.key].secret
+    access_key_id     = ""
+    secret_access_key = ""
     region            = data.aws_region.current.name
     bucket            = module.dap_export_bucket.bucket
     prefix            = "latest/"
   })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+data "archive_file" "dap_export_secret_rotation" {
+  type        = "zip"
+  source_file = "${path.module}/dap_export_secret_rotation.py"
+  output_path = "${path.module}/dap_export_secret_rotation.zip"
+}
+
+module "dap_export_secret_rotation_log_group" {
+  for_each = local.dap_export_external_access
+
+  source         = "../encrypted_log_groups"
+  retention_days = var.patch_cloudwatch_log_expiration_days
+
+  kms_key_alias_name = "dap-export-secret-rotation-${each.key}-${var.environment}"
+  log_group_names    = ["/aws/lambda/dap-export-secret-rotation-${each.key}-${var.environment}"]
+}
+
+resource "aws_iam_role" "dap_export_secret_rotation" {
+  for_each = local.dap_export_external_access
+
+  name = "dap-export-secret-rotation-${each.key}-${var.environment}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+data "aws_iam_policy_document" "dap_export_secret_rotation" {
+  for_each = local.dap_export_external_access
+
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents",
+    ]
+    resources = ["${module.dap_export_secret_rotation_log_group[each.key].log_group_arns[0]}:*"]
+  }
+
+  statement {
+    actions = [
+      "iam:CreateAccessKey",
+      "iam:DeleteAccessKey",
+      "iam:ListAccessKeys",
+    ]
+    resources = [aws_iam_user.dap_export_external[each.key].arn]
+  }
+
+  statement {
+    actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:PutSecretValue",
+      "secretsmanager:UpdateSecretVersionStage",
+    ]
+    resources = [aws_secretsmanager_secret.dap_export_external[each.key].arn]
+  }
+
+  statement {
+    actions = [
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
+    ]
+    resources = [
+      aws_kms_key.dap_export_external_secret[each.key].arn,
+      module.dap_export_secret_rotation_log_group[each.key].kms_key_arn,
+    ]
+  }
+}
+
+resource "aws_iam_policy" "dap_export_secret_rotation" {
+  for_each = local.dap_export_external_access
+
+  name        = "dap-export-secret-rotation-${each.key}-${var.environment}"
+  description = "Allows rotation of DAP export access keys for ${each.key}"
+  policy      = data.aws_iam_policy_document.dap_export_secret_rotation[each.key].json
+}
+
+resource "aws_iam_role_policy_attachment" "dap_export_secret_rotation" {
+  for_each = local.dap_export_external_access
+
+  role       = aws_iam_role.dap_export_secret_rotation[each.key].name
+  policy_arn = aws_iam_policy.dap_export_secret_rotation[each.key].arn
+}
+
+resource "aws_lambda_function" "dap_export_secret_rotation" {
+  for_each = local.dap_export_external_access
+
+  function_name    = "dap-export-secret-rotation-${each.key}-${var.environment}"
+  filename         = data.archive_file.dap_export_secret_rotation.output_path
+  source_code_hash = data.archive_file.dap_export_secret_rotation.output_base64sha256
+
+  role    = aws_iam_role.dap_export_secret_rotation[each.key].arn
+  handler = "dap_export_secret_rotation.lambda_handler"
+  runtime = "python3.12"
+  timeout = 60
+
+  environment {
+    variables = {
+      AWS_REGION_NAME   = data.aws_region.current.name
+      DAP_EXPORT_BUCKET = module.dap_export_bucket.bucket
+      DAP_EXPORT_PREFIX = "latest/"
+      IAM_USER_NAME     = aws_iam_user.dap_export_external[each.key].name
+    }
+  }
+
+  tracing_config {
+    mode = "Active"
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.dap_export_secret_rotation,
+    module.dap_export_secret_rotation_log_group,
+  ]
+}
+
+resource "aws_lambda_permission" "allow_secretsmanager_dap_export_rotation" {
+  for_each = local.dap_export_external_access
+
+  statement_id  = "AllowSecretsManagerRotation"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.dap_export_secret_rotation[each.key].function_name
+  principal     = "secretsmanager.amazonaws.com"
+  source_arn    = aws_secretsmanager_secret.dap_export_external[each.key].arn
+}
+
+resource "aws_secretsmanager_secret_rotation" "dap_export_external" {
+  for_each = local.dap_export_external_access
+
+  secret_id           = aws_secretsmanager_secret.dap_export_external[each.key].id
+  rotation_lambda_arn = aws_lambda_function.dap_export_secret_rotation[each.key].arn
+
+  rotation_rules {
+    automatically_after_days = each.value.rotation_days
+  }
+
+  depends_on = [
+    aws_lambda_permission.allow_secretsmanager_dap_export_rotation,
+    aws_secretsmanager_secret_version.dap_export_external,
+  ]
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "dap_export" {
