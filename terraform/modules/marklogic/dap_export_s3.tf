@@ -4,6 +4,7 @@ locals {
   dap_export_external_access = {
     for access in var.dap_export_external_access : access.name => access
   }
+  dap_export_rotation_lambda_subnets = var.dap_export_rotation_lambda_subnets == null ? var.private_subnets : var.dap_export_rotation_lambda_subnets
 }
 
 module "dap_export_bucket" {
@@ -150,6 +151,26 @@ data "aws_iam_policy_document" "dap_export_external" {
       "${module.dap_export_bucket.bucket_arn}/latest/s151*",
     ]
   }
+
+  statement {
+    sid    = "DenyS151BucketList"
+    effect = "Deny"
+    actions = [
+      "s3:ListBucket",
+    ]
+    resources = [
+      module.dap_export_bucket.bucket_arn,
+    ]
+
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values = [
+        "latest/s151",
+        "latest/s151*",
+      ]
+    }
+  }
 }
 
 resource "aws_iam_policy" "dap_export_external" {
@@ -239,11 +260,11 @@ resource "aws_security_group" "dap_export_secret_rotation_lambda" {
   vpc_id      = var.vpc.id
 
   egress {
-    description = "Allow HTTPS egress within the VPC"
+    description = "Allow HTTPS egress to AWS APIs"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [var.vpc.cidr_block]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -358,7 +379,7 @@ resource "aws_lambda_function" "dap_export_secret_rotation" {
   }
 
   vpc_config {
-    subnet_ids         = var.private_subnets[*].id
+    subnet_ids         = local.dap_export_rotation_lambda_subnets[*].id
     security_group_ids = [aws_security_group.dap_export_secret_rotation_lambda[each.key].id]
   }
 

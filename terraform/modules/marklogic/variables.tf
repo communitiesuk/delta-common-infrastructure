@@ -21,6 +21,11 @@ variable "private_subnets" {
   description = "Three private subnets"
 }
 
+variable "dap_export_rotation_lambda_subnets" {
+  description = "Private subnets for the DAP export secret rotation Lambda"
+  default     = null
+}
+
 variable "private_dns" {
   type = object({
     zone_id     = string
