@@ -331,7 +331,6 @@ module "marklogic" {
     {
       name          = "azure-dap-export"
       allowed_cidrs = var.azure_dap_export_allowed_cidrs
-      rotation_days = 90
     }
   ]
   dap_job_notification_emails            = local.all_notifications_email_addresses

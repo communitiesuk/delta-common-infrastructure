@@ -113,7 +113,7 @@ variable "dap_export_external_access" {
   type = list(object({
     name          = string
     allowed_cidrs = list(string)
-    rotation_days = number
+    rotation_days = optional(number, 90)
   }))
   default = []
 }
