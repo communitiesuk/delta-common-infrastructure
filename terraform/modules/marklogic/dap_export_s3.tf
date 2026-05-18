@@ -345,6 +345,8 @@ resource "aws_lambda_function" "dap_export_secret_rotation" {
   runtime = "python3.12"
   timeout = 60
 
+  kms_key_arn = aws_kms_key.dap_export_external_secret[each.key].arn
+
   environment {
     variables = {
       AWS_REGION_NAME   = data.aws_region.current.name
