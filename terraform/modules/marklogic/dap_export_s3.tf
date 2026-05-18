@@ -231,6 +231,23 @@ module "dap_export_secret_rotation_log_group" {
   log_group_names    = ["/aws/lambda/dap-export-secret-rotation-${each.key}-${var.environment}"]
 }
 
+resource "aws_security_group" "dap_export_secret_rotation_lambda" {
+  for_each = local.dap_export_external_access
+
+  name        = "dap-export-secret-rotation-${each.key}-${var.environment}"
+  description = "Security group for DAP export secret rotation Lambda"
+  vpc_id      = var.vpc.id
+
+  # tfsec:ignore:aws-vpc-no-public-egress-sgr
+  egress {
+    description = "Allow HTTPS egress"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_iam_role" "dap_export_secret_rotation" {
   for_each = local.dap_export_external_access
 
@@ -310,6 +327,13 @@ resource "aws_iam_role_policy_attachment" "dap_export_secret_rotation" {
   policy_arn = aws_iam_policy.dap_export_secret_rotation[each.key].arn
 }
 
+resource "aws_iam_role_policy_attachment" "dap_export_secret_rotation_vpc_access" {
+  for_each = local.dap_export_external_access
+
+  role       = aws_iam_role.dap_export_secret_rotation[each.key].name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
 resource "aws_lambda_function" "dap_export_secret_rotation" {
   for_each = local.dap_export_external_access
 
@@ -331,12 +355,18 @@ resource "aws_lambda_function" "dap_export_secret_rotation" {
     }
   }
 
+  vpc_config {
+    subnet_ids         = var.private_subnets[*].id
+    security_group_ids = [aws_security_group.dap_export_secret_rotation_lambda[each.key].id]
+  }
+
   tracing_config {
     mode = "Active"
   }
 
   depends_on = [
     aws_iam_role_policy_attachment.dap_export_secret_rotation,
+    aws_iam_role_policy_attachment.dap_export_secret_rotation_vpc_access,
     module.dap_export_secret_rotation_log_group,
   ]
 }
