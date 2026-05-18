@@ -259,6 +259,7 @@ resource "aws_security_group" "dap_export_secret_rotation_lambda" {
   description = "Security group for DAP export secret rotation Lambda"
   vpc_id      = var.vpc.id
 
+  # tfsec:ignore:aws-vpc-no-public-egress-sgr
   egress {
     description = "Allow HTTPS egress to AWS APIs"
     from_port   = 443
