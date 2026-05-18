@@ -238,13 +238,12 @@ resource "aws_security_group" "dap_export_secret_rotation_lambda" {
   description = "Security group for DAP export secret rotation Lambda"
   vpc_id      = var.vpc.id
 
-  # tfsec:ignore:aws-vpc-no-public-egress-sgr
   egress {
-    description = "Allow HTTPS egress"
+    description = "Allow HTTPS egress within the VPC"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.vpc.cidr_block]
   }
 }
 
