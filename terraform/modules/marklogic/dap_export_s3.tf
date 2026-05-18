@@ -345,7 +345,8 @@ resource "aws_lambda_function" "dap_export_secret_rotation" {
   runtime = "python3.12"
   timeout = 60
 
-  kms_key_arn = aws_kms_key.dap_export_external_secret[each.key].arn
+  kms_key_arn                    = aws_kms_key.dap_export_external_secret[each.key].arn
+  reserved_concurrent_executions = 1
 
   environment {
     variables = {
