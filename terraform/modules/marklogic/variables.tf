@@ -21,6 +21,11 @@ variable "private_subnets" {
   description = "Three private subnets"
 }
 
+variable "dap_export_rotation_lambda_subnets" {
+  description = "Private subnets for the DAP export secret rotation Lambda"
+  default     = null
+}
+
 variable "private_dns" {
   type = object({
     zone_id     = string
@@ -106,6 +111,16 @@ variable "dap_external_role_arns" {
 
 variable "s151_external_canonical_users" {
   type = list(string)
+}
+
+variable "dap_export_external_access" {
+  description = "External DAP export access configurations that create IAM users restricted to approved CIDRs"
+  type = list(object({
+    name          = string
+    allowed_cidrs = list(string)
+    rotation_days = optional(number, 90)
+  }))
+  default = []
 }
 
 variable "marklogic_ami_version" {
