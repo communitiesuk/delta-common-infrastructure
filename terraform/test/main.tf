@@ -1,23 +1,4 @@
 terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.100.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.8.0"
-    }
-    archive = {
-      source  = "hashicorp/archive"
-      version = "~> 2.7.1"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 4.1.0"
-    }
-  }
-
   # Requires S3 bucket & Dynamo DB to be configured, please see README.md
   backend "s3" {
     bucket         = "data-collection-service-tfstate-dev"
@@ -27,8 +8,10 @@ terraform {
     key            = "common-infra-test"
     region         = "eu-west-1"
   }
+}
 
-  required_version = "~> 1.9.0"
+module "provider_versions" {
+  source = "../modules/provider_versions"
 }
 
 provider "aws" {
