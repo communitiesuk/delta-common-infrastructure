@@ -64,3 +64,8 @@ variable "s151_external_canonical_users" {
   default     = ["4a20e1ecba266786127536b068cbbf222b344a2e21024029f1a778f98e8667c0", "5544757b63b565e6774e61121ba15cfa98206f1629455df924f60d942a861d56"]
 }
 
+variable "azure_dap_export_allowed_cidrs" {
+  type        = list(string)
+  description = "Azure partner CIDRs allowed to use the staging DAP export access key"
+  default     = ["4.158.35.41/32"]
+}

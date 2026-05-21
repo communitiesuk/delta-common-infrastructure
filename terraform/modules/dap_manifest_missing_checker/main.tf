@@ -45,6 +45,14 @@ resource "aws_iam_role_policy" "dap_manifest_missing_access" {
         Effect   = "Allow"
         Action   = ["sns:Publish"]
         Resource = aws_sns_topic.dap_manifest_missing.arn
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "kms:GenerateDataKey",
+          "kms:Decrypt"
+        ],
+        "Resource" : aws_kms_key.dap_missing_manifest_logs_encryption_key.arn
       }
     ]
   })

@@ -248,7 +248,7 @@ resource "aws_cloudwatch_metric_alarm" "swap_usage_high" {
   namespace           = "${var.environment}/MarkLogic"
   period              = 300
   statistic           = "Maximum"
-  threshold           = 1
+  threshold           = 2
 
   alarm_description  = <<EOT
   Swap usage percentage is higher than expected.
