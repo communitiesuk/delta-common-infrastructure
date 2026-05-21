@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -27,9 +27,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: tfsec
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
           working_directory: terraform/
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.COMMON_INFRA_GITHUB_ACTION_PAT_KEITHKENNEDY }}

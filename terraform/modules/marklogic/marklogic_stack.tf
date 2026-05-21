@@ -14,7 +14,8 @@ locals {
   amis = {
     # https://aws.amazon.com/marketplace/server/configuration?productId=52ce1567-c738-4208-be90-08b575f2c41d
     "10.0-9.5"  = "ami-07701d367691e0220"
-    "10.0-10.2" = "ami-072f9d963cd827efb"
+    "10.0-10.2" = "ami-072f9d963cd827efb",
+    "11.3.3"    = "ami-0051edf0933a2fff2"
   }
 }
 
@@ -33,7 +34,7 @@ resource "aws_cloudformation_stack" "marklogic" {
     PrivateSubnet1 = var.private_subnets[0].id
     PrivateSubnet2 = var.private_subnets[1].id
     PrivateSubnet3 = var.private_subnets[2].id
-    AMI            = local.amis[var.marklogic_ami_version]
+    AMI            = var.ami_id
 
     DataVolume1 = aws_ebs_volume.marklogic_data_volumes[var.private_subnets[0].tags.Name].id
     DataVolume2 = aws_ebs_volume.marklogic_data_volumes[var.private_subnets[1].tags.Name].id
@@ -46,10 +47,14 @@ resource "aws_cloudformation_stack" "marklogic" {
 
     InstanceType = var.instance_type
 
-    AdminUser  = jsondecode(data.aws_secretsmanager_secret_version.ml_admin_user.secret_string)["username"]
-    AdminPass  = jsondecode(data.aws_secretsmanager_secret_version.ml_admin_user.secret_string)["password"]
-    Licensee   = jsondecode(data.aws_secretsmanager_secret_version.ml_license.secret_string)["licensee"]
-    LicenseKey = jsondecode(data.aws_secretsmanager_secret_version.ml_license.secret_string)["license_key"]
+    AdminUser           = jsondecode(data.aws_secretsmanager_secret_version.ml_admin_user.secret_string)["username"]
+    AdminPass           = jsondecode(data.aws_secretsmanager_secret_version.ml_admin_user.secret_string)["password"]
+    Licensee            = jsondecode(data.aws_secretsmanager_secret_version.ml_license.secret_string)["licensee"]
+    LicenseKey          = jsondecode(data.aws_secretsmanager_secret_version.ml_license.secret_string)["license_key"]
+    Route53HostedZoneId = var.zone_id
+    MarkLogicHostname1  = var.marklogic_host_name1
+    MarkLogicHostname2  = var.marklogic_host_name2
+    MarkLogicHostname3  = var.marklogic_host_name3
   }
 
   template_body      = file("${path.module}/marklogic_cf_template.yml")
@@ -59,8 +64,9 @@ resource "aws_cloudformation_stack" "marklogic" {
     # prevent_destroy = true
     ignore_changes = [
       # Otherwise Terraform always detects NoEcho CF parameters as changed
-      parameters["AdminPass"],
-      parameters["LicenseKey"]
+      #parameters["AdminPass"],
+
+      # parameters["LicenseKey"]
     ]
   }
   depends_on = [aws_iam_role_policy_attachment.ml_attach]

@@ -2,19 +2,19 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.72.1"
+      version = "~> 5.100.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.7.2"
+      version = "~> 3.8.0"
     }
     archive = {
       source  = "hashicorp/archive"
-      version = "~> 2.4.2"
+      version = "~> 2.7.1"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "~> 4.0.6"
+      version = "~> 4.1.0"
     }
   }
 
@@ -193,6 +193,7 @@ module "cloudfront_distributions" {
     # We don't want to IP restrict staging until we are able to confirm who needs access
     client_error_rate_alarm_threshold_percent = 15
     origin_read_timeout                       = 180 # Required quota increase
+    ip_allowlist                              = var.ip_allowlist
   }
   api = {
     alb = module.public_albs.delta_api
@@ -254,7 +255,7 @@ module "marklogic_patch_maintenance_window" {
 
   environment       = local.environment
   prefix            = "ml-instance-patching"
-  schedule          = "cron(00 06 ? * TUE *)"
+  schedule          = "cron(00 06 ? * MON,THU *)"
   subscribed_emails = local.all_notifications_email_addresses
 
   enabled = true
@@ -291,17 +292,25 @@ moved {
   to   = module.ebs_backup.aws_iam_role_policy_attachment.service_restore
 }
 
+
+data "aws_route53_zone" "private" {
+  name         = "vpc.local"
+  private_zone = true
+  vpc_id       = module.networking.vpc.id
+}
+
 module "marklogic" {
   source = "../modules/marklogic"
 
-  default_tags             = var.default_tags
-  environment              = local.environment
-  vpc                      = module.networking.vpc
-  private_subnets          = module.networking.ml_private_subnets
-  instance_type            = "t3a.2xlarge"
-  marklogic_ami_version    = "10.0-10.2"
-  private_dns              = module.networking.private_dns
-  patch_maintenance_window = module.marklogic_patch_maintenance_window
+  default_tags                       = var.default_tags
+  environment                        = local.environment
+  vpc                                = module.networking.vpc
+  private_subnets                    = module.networking.ml_private_subnets
+  dap_export_rotation_lambda_subnets = module.networking.dap_export_rotation_lambda_subnets
+  instance_type                      = "t3a.2xlarge"
+  marklogic_ami_version              = "11.3.3"
+  private_dns                        = module.networking.private_dns
+  patch_maintenance_window           = module.marklogic_patch_maintenance_window
   data_volume = {
     size_gb                = 200
     iops                   = 3000
@@ -318,15 +327,26 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 70
   dap_external_role_arns                  = var.dap_external_role_arns
-  dap_external_canonical_users            = var.dap_external_canonical_users
-  s151_external_role_arns                 = var.s151_external_role_arns
   s151_external_canonical_users           = var.s151_external_canonical_users
-  dap_job_notification_emails             = local.all_notifications_email_addresses
-  backup_replication_bucket               = module.backup_replication_bucket.bucket
-  ebs_backup_role_arn                     = module.ebs_backup.role_arn
-  ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
-  iam_github_openid_connect_provider_arn  = data.aws_iam_openid_connect_provider.github.arn
-  ses_deploy_secret_arns                  = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
+  dap_export_external_access = length(var.azure_dap_export_allowed_cidrs) == 0 ? [] : [
+    {
+      name          = "azure-dap-export"
+      allowed_cidrs = var.azure_dap_export_allowed_cidrs
+    }
+  ]
+  dap_job_notification_emails            = local.all_notifications_email_addresses
+  backup_replication_bucket              = module.backup_replication_bucket.bucket
+  ebs_backup_role_arn                    = module.ebs_backup.role_arn
+  ebs_backup_completed_sns_topic_arn     = module.ebs_backup.sns_topic_arn
+  iam_github_openid_connect_provider_arn = data.aws_iam_openid_connect_provider.github.arn
+  ses_deploy_secret_arns                 = [module.delta_ses_user.deploy_secret_arn, module.cpm_ses_user.deploy_secret_arn]
+  create_dns_record                      = true
+  zone_id                                = data.aws_route53_zone.private.zone_id
+  marklogic_host_name1                   = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
+  marklogic_host_name2                   = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
+  marklogic_host_name3                   = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
+  ami_id                                 = "ami-0ec1c288dc6b713b9"
+
 }
 
 module "gh_runner" {
@@ -439,6 +459,15 @@ module "notifications" {
   security_sns_topic_emails = local.all_notifications_email_addresses
 }
 
+module "dap_manifest_missing_checker" {
+  source = "../modules/dap_manifest_missing_checker"
+
+  environment                 = local.environment
+  dap_manifest_missing_emails = local.all_notifications_email_addresses
+  dap_export_bucket_name      = "dluhc-delta-dap-export-${local.environment}"
+  bucket_manifest_location    = "latest/form-data/"
+}
+
 module "guardduty" {
   source = "../modules/guardduty"
 
@@ -448,7 +477,7 @@ module "guardduty" {
 module "cloudtrail" {
   source                               = "../modules/cloudtrail"
   environment                          = local.environment
-  include_data_events_for_bucket_names = ["data-collection-service-tfstate-dev"]
+  include_data_events_for_bucket_names = []
   cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   s3_log_expiration_days               = local.s3_log_expiration_days
 }

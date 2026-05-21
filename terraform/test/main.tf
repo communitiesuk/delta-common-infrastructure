@@ -2,19 +2,19 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.97.0"
+      version = "~> 5.100.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.7.1"
+      version = "~> 3.8.0"
     }
     archive = {
       source  = "hashicorp/archive"
-      version = "~> 2.7.0"
+      version = "~> 2.7.1"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "~> 4.0.6"
+      version = "~> 4.1.0"
     }
   }
 
@@ -202,6 +202,7 @@ module "cloudfront_distributions" {
     geo_restriction_countries = null
     # We don't want to IP restrict test (yet)
     client_error_rate_alarm_threshold_percent = 15
+    ip_allowlist                              = var.ip_allowlist
   }
   api = {
     alb = module.public_albs.delta_api
@@ -229,6 +230,14 @@ module "cloudfront_distributions" {
     # So GitHub Actions can access for end to end tests
     geo_restriction_countries = null
   }
+}
+
+module "cloudtrail" {
+  source                               = "../modules/cloudtrail"
+  environment                          = local.environment
+  include_data_events_for_bucket_names = []
+  cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
+  s3_log_expiration_days               = local.s3_log_expiration_days
 }
 
 locals {
@@ -304,7 +313,7 @@ module "marklogic" {
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
   instance_type            = "t3a.large"
-  marklogic_ami_version    = "10.0-10.2"
+  marklogic_ami_version    = "11.3.3"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
   data_volume = {
@@ -323,8 +332,6 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 70
   dap_external_role_arns                  = var.dap_external_role_arns
-  dap_external_canonical_users            = var.dap_external_canonical_users
-  s151_external_role_arns                 = var.s151_external_role_arns
   s151_external_canonical_users           = var.s151_external_canonical_users
   dap_job_notification_emails             = local.all_notifications_email_addresses
   backup_replication_bucket               = module.backup_replication_bucket.bucket
@@ -332,6 +339,13 @@ module "marklogic" {
   ebs_backup_completed_sns_topic_arn      = module.ebs_backup.sns_topic_arn
   iam_github_openid_connect_provider_arn  = module.github_actions_openid_connect_provider.github_oidc_provider_arn
   ses_deploy_secret_arns                  = []
+  create_dns_record                       = true
+  zone_id                                 = data.aws_route53_zone.private.zone_id
+  marklogic_host_name1                    = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
+  marklogic_host_name2                    = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
+  marklogic_host_name3                    = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
+  ami_id                                  = "ami-0ec1c288dc6b713b9"
+
 }
 
 module "gh_runner" {
@@ -403,6 +417,13 @@ data "aws_iam_policy" "enable_session_manager" {
   # Created by the staging environment
   name = "session-manager-policy"
 }
+
+data "aws_route53_zone" "private" {
+  name         = "vpc.local"
+  private_zone = true
+  vpc_id       = module.networking.vpc.id
+}
+
 
 module "ses_user" {
   source                = "../modules/ses_user"

@@ -21,6 +21,11 @@ variable "private_subnets" {
   description = "Three private subnets"
 }
 
+variable "dap_export_rotation_lambda_subnets" {
+  description = "Private subnets for the DAP export secret rotation Lambda"
+  default     = null
+}
+
 variable "private_dns" {
   type = object({
     zone_id     = string
@@ -104,23 +109,25 @@ variable "dap_external_role_arns" {
   type = list(string)
 }
 
-variable "dap_external_canonical_users" {
-  type = list(string)
-}
-
-variable "s151_external_role_arns" {
-  type = list(string)
-}
-
 variable "s151_external_canonical_users" {
   type = list(string)
+}
+
+variable "dap_export_external_access" {
+  description = "External DAP export access configurations that create IAM users restricted to approved CIDRs"
+  type = list(object({
+    name          = string
+    allowed_cidrs = list(string)
+    rotation_days = optional(number, 90)
+  }))
+  default = []
 }
 
 variable "marklogic_ami_version" {
   type = string
 
   validation {
-    condition     = var.marklogic_ami_version == "10.0-10.2" || var.marklogic_ami_version == "10.0-9.5"
+    condition     = var.marklogic_ami_version == "10.0-10.2" || var.marklogic_ami_version == "10.0-9.5" || var.marklogic_ami_version == "11.3.3"
     error_message = "Only specific versions allowed, configure AMIs for others"
   }
 }
@@ -145,4 +152,32 @@ variable "iam_github_openid_connect_provider_arn" {
 variable "ses_deploy_secret_arns" {
   type        = list(string)
   description = "List of arns of the kms keys for SES credentials"
+}
+
+
+variable "create_dns_record" {
+  type        = bool
+  description = "Whether to create the default Route53 DNS record (marklogic.vpc.local)"
+  default     = true
+}
+
+variable "zone_id" {
+  type        = string
+  description = "Private Zone Id for Route 53"
+}
+variable "marklogic_host_name1" {
+  type        = string
+  description = "marklogic_host_name1"
+}
+variable "marklogic_host_name2" {
+  type        = string
+  description = "marklogic_host_name2"
+}
+variable "marklogic_host_name3" {
+  type        = string
+  description = "marklogic_host_name3"
+}
+variable "ami_id" {
+  type        = string
+  description = "AMI ID for MarkLogic"
 }
