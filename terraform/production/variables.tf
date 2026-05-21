@@ -64,3 +64,9 @@ variable "s151_external_canonical_users" {
   description = "Funding service account with access to production S151 data in DAP export S3 bucket"
   default     = ["42482d88bedb952015d8cff60dea3a1a6fe1a58d6720cc6a673c020d1fb70591"]
 }
+
+variable "azure_dap_export_allowed_cidrs" {
+  type        = list(string)
+  description = "Azure partner CIDRs allowed to use the DAP export access key"
+  default     = ["4.158.35.41/32"]
+}

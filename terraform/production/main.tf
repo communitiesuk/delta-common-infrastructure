@@ -170,7 +170,7 @@ module "marklogic_patch_maintenance_window" {
 
   environment       = local.environment
   prefix            = "ml-instance-patching"
-  schedule          = "cron(00 06 ? * WED *)"
+  schedule          = "cron(00 06 ? * TUE,FRI *)"
   subscribed_emails = local.all_notifications_email_addresses
 
   enabled = true
@@ -210,14 +210,15 @@ moved {
 module "marklogic" {
   source = "../modules/marklogic"
 
-  default_tags             = var.default_tags
-  environment              = local.environment
-  vpc                      = module.networking.vpc
-  private_subnets          = module.networking.ml_private_subnets
-  instance_type            = "r5a.8xlarge" # r6a is not allowed (as of 26/02/2023)
-  marklogic_ami_version    = "11.3.3"
-  private_dns              = module.networking.private_dns
-  patch_maintenance_window = module.marklogic_patch_maintenance_window
+  default_tags                       = var.default_tags
+  environment                        = local.environment
+  vpc                                = module.networking.vpc
+  private_subnets                    = module.networking.ml_private_subnets
+  dap_export_rotation_lambda_subnets = module.networking.dap_export_rotation_lambda_subnets
+  instance_type                      = "r5a.8xlarge" # r6a is not allowed (as of 26/02/2023)
+  marklogic_ami_version              = "11.3.3"
+  private_dns                        = module.networking.private_dns
+  patch_maintenance_window           = module.marklogic_patch_maintenance_window
   data_volume = {
     size_gb                = 3000
     iops                   = 16000
@@ -234,7 +235,13 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 55
   dap_external_role_arns                  = var.dap_external_role_arns
-  s151_external_canonical_users           = var.s151_external_canonical_users
+  dap_export_external_access = length(var.azure_dap_export_allowed_cidrs) == 0 ? [] : [
+    {
+      name          = "azure-dap-export"
+      allowed_cidrs = var.azure_dap_export_allowed_cidrs
+    }
+  ]
+  s151_external_canonical_users = var.s151_external_canonical_users
   dap_job_notification_emails = concat(
     local.all_notifications_email_addresses,
     ["deltastatsupport@communities.gov.uk"]
