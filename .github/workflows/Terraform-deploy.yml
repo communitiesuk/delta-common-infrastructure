@@ -40,20 +40,20 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Confirming Checked Out Branch
         run: echo "The checked out branch is ${{ github.ref_name }}"
 
       - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ env.DEPLOYMENT_ROLE }}
           role-session-name: ${{ env.DEPLOYMENT_SESSION_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
@@ -84,7 +84,7 @@ jobs:
 
       - name: Save Terraform Plan
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: terraform-plan
           path: |
@@ -120,17 +120,17 @@ jobs:
 
     steps:
       - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ env.DEPLOYMENT_ROLE }}
           role-session-name: ${{ env.DEPLOYMENT_SESSION_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
@@ -140,7 +140,7 @@ jobs:
         run: terraform init -no-color
 
       - name: Download Terraform Plan
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: terraform-plan
           path: ${{ env.TF_WORKING_DIRECTORY }}
