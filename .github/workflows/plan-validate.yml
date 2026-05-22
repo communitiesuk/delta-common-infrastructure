@@ -34,7 +34,7 @@ jobs:
         with:
           terraform_version: 1.9.3
       - name: Terraform init
-        run: terraform init -input=false
+        run: terraform init -upgrade -input=false
         working-directory: terraform/test
       - name: Terraform validate
         run: terraform validate
@@ -63,7 +63,7 @@ jobs:
         with:
           terraform_version: 1.9.3
       - name: Terraform init
-        run: terraform init -input=false
+        run: terraform init -upgrade -input=false
         working-directory: terraform/staging
       - name: Terraform validate
         run: terraform validate
@@ -82,7 +82,7 @@ jobs:
         with:
           terraform_version: 1.9.3
       - name: Terraform init
-        run: terraform init -input=false -backend=false
+        run: terraform init -upgrade -input=false -backend=false
         working-directory: terraform/production
       - name: Terraform validate
         run: terraform validate
