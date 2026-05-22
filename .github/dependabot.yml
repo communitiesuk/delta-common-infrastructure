@@ -3,15 +3,11 @@
 version: 2
 updates:
   - package-ecosystem: "terraform"
-    directory: "terraform/test/"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "terraform"
-    directory: "terraform/staging/"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "terraform"
-    directory: "terraform/production/"
+    directories:
+      - "terraform/modules/provider_versions/"
+      - "terraform/test/"
+      - "terraform/staging/"
+      - "terraform/production/"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
