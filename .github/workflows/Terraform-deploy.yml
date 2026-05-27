@@ -149,6 +149,7 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         id: apply
         run: |
+          set -o pipefail
           terraform apply -auto-approve tfplan 2>&1 | tee apply_output.txt
 
       - name: Post Apply Summary
