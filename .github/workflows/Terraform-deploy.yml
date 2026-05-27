@@ -65,7 +65,7 @@ jobs:
       - name: Terraform init
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         id: init
-        run: terraform init -no-color
+        run: terraform init -no-color -upgrade
 
       - name: Terraform validate
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
@@ -137,7 +137,7 @@ jobs:
       - name: Terraform init
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         id: init
-        run: terraform init -no-color
+        run: terraform init -no-color -upgrade
 
       - name: Download Terraform Plan
         uses: actions/download-artifact@v8
