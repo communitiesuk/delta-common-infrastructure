@@ -135,6 +135,7 @@ Parameters:
     Default: r5.4xlarge
     AllowedValues:
       - ---- Essential Enterprise and Bring-Your-Own-License ----
+      - r7a.8xlarge
       - m4.xlarge
       - m4.2xlarge
       - m4.4xlarge
