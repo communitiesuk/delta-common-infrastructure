@@ -31,8 +31,4 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@v6
       - name: tfsec
-        uses: aquasecurity/tfsec-action@v1.0.3
-        with:
-          working_directory: terraform/
-          version: v1.28.14
-          github_token: ${{ github.token }}
+        run: docker run --rm -v "${GITHUB_WORKSPACE}:/src:ro" aquasec/tfsec:v1.28.14 /src/terraform
