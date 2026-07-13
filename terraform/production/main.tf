@@ -198,7 +198,7 @@ module "marklogic" {
   vpc                                = module.networking.vpc
   private_subnets                    = module.networking.ml_private_subnets
   dap_export_rotation_lambda_subnets = module.networking.dap_export_rotation_lambda_subnets
-  instance_type                      = "r5a.8xlarge" # r6a is not allowed (as of 26/02/2023)
+  instance_type                      = "r7a.8xlarge"
   marklogic_ami_version              = "11.3.3"
   private_dns                        = module.networking.private_dns
   patch_maintenance_window           = module.marklogic_patch_maintenance_window
