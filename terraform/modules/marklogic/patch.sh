@@ -35,8 +35,15 @@ if [[ "InService" == $LIFECYCLE_STATE ]]; then
     echo "Current state: $${LIFECYCLE_STATE}"
   done
   
-  echo "Running yum update"
-  yum update --security -y
+  # AL2023 version-locks package repos to the installed system-release. In-version
+  # `yum update --security` often reports "Nothing to do" while newer releases
+  # contain kernel/security fixes (e.g. CVE-2026-43499 / ALAS2023-2026-1753).
+  # `dnf check-release-update` lists many intermediate versions on stderr and is
+  # awkward to parse; `--releasever=latest` upgrades to the newest available.
+  echo "Checking for Amazon Linux release updates (informational)"
+  dnf check-release-update 2>&1 || true
+  echo "Upgrading Amazon Linux to latest available release"
+  dnf upgrade --releasever=latest -y
   echo "Updates complete, requesting reboot from SSM agent at $(date --iso-8601=seconds)"
   exit 194 # Reboot and re-run the script https://docs.aws.amazon.com/systems-manager/latest/userguide/send-commands-reboot.html
 fi
