@@ -13,7 +13,6 @@ on:
         options:
           - test
           - staging
-          - staging1
           - production
       region:
         description: 'AWS region'
