@@ -22,7 +22,7 @@ variable "ami_name_prefix" {
 
 variable "instance_type" {
   type    = string
-  default = "t3.medium"
+  default = "r5.2xlarge"
 }
 
 variable "ssh_username" {
