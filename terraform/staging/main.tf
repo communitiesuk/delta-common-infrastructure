@@ -290,7 +290,7 @@ module "marklogic" {
   vpc                                = module.networking.vpc
   private_subnets                    = module.networking.ml_private_subnets
   dap_export_rotation_lambda_subnets = module.networking.dap_export_rotation_lambda_subnets
-  instance_type                      = "t3a.2xlarge"
+  instance_type                      = "m6a.2xlarge"
   marklogic_ami_version              = "11.3.6"
   private_dns                        = module.networking.private_dns
   patch_maintenance_window           = module.marklogic_patch_maintenance_window

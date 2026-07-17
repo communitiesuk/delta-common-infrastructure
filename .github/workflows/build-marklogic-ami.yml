@@ -12,7 +12,6 @@ on:
         type: choice
         options:
           - test
-          - staging
           - production
       region:
         description: 'AWS region'
@@ -22,14 +21,6 @@ on:
         description: 'Base AMI ID'
         required: false
         default: 'ami-01907b01c5d597358'
-  push:
-    branches: [main]
-    paths:
-      - 'marklogic-ami/marklogic-ami.pkr.hcl'
-      - 'marklogic-ami/scripts/**'
-      - 'marklogic-ami/systemd/**'
-      - 'marklogic-ami/config/**'
-      - '.github/workflows/build-ami.yml'
 
 env:
   AWS_REGION: ${{ github.event.inputs.region || 'eu-west-1' }}
