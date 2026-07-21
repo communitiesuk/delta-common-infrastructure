@@ -22,7 +22,7 @@ variable "ami_name_prefix" {
 
 variable "instance_type" {
   type    = string
-  default = "t3.medium"
+  default = "r5.2xlarge"
 }
 
 variable "ssh_username" {
@@ -33,7 +33,7 @@ variable "ssh_username" {
 # Base AMI to build from. Pass as parameter, e.g. -var 'source_ami_id=ami-xxx'
 variable "source_ami_id" {
   type    = string
-  default = "ami-01907b01c5d597358"
+  default = "ami-0fb1f3e38ccf0dedb"
 }
 
 variable "vpc_id" {

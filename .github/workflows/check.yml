@@ -25,11 +25,10 @@ jobs:
   tfsec:
     name: tfsec check
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Clone repo
         uses: actions/checkout@v6
       - name: tfsec
-        uses: aquasecurity/tfsec-action@v1.0.3
-        with:
-          working_directory: terraform/
-          github_token: ${{ secrets.COMMON_INFRA_GITHUB_ACTION_PAT_KEITHKENNEDY }}
+        run: docker run --rm -v "${GITHUB_WORKSPACE}:/src:ro" aquasec/tfsec:v1.28.14 /src/terraform
