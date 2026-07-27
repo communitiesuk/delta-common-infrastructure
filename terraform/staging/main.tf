@@ -328,7 +328,7 @@ module "marklogic" {
   marklogic_host_name1                   = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
   marklogic_host_name2                   = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
   marklogic_host_name3                   = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
-  ami_id                                 = "ami-0c4944f64c5f0fde7"
+  ami_id                                 = "ami-034c20f47653315ab"
 
 }
 
