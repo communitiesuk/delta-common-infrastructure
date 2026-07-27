@@ -16,6 +16,18 @@ variable "enabled" {
   default = true
 }
 
+variable "duration" {
+  type        = number
+  description = "Maintenance window duration in hours"
+  default     = 2
+}
+
+variable "cutoff" {
+  type        = number
+  description = "Hours before the end of the maintenance window when new tasks stop starting"
+  default     = 1
+}
+
 variable "subscribed_emails" {
   type = list(string)
 }
@@ -37,8 +49,8 @@ resource "aws_ssm_maintenance_window" "main" {
   enabled           = var.enabled
   schedule          = var.schedule
   schedule_timezone = "Etc/UTC"
-  duration          = 2
-  cutoff            = 1
+  duration          = var.duration
+  cutoff            = var.cutoff
 }
 
 # SNS topic for errors with the maintenance window job. Non-sensitive.

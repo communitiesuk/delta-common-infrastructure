@@ -77,3 +77,15 @@ variable "alarms_sns_topic_arn" {
   description = "SNS topic ARN to send alarm notifications to"
   type        = string
 }
+
+variable "patch_maintenance_window" {
+  type = object({
+    window_id            = string
+    service_role_arn     = string
+    errors_sns_topic_arn = string
+  })
+}
+
+variable "patch_cloudwatch_log_expiration_days" {
+  type = number
+}

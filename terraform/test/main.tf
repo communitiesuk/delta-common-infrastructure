@@ -234,18 +234,31 @@ locals {
 module "active_directory" {
   source = "../modules/active_directory"
 
-  edition                   = "Standard"
-  vpc                       = module.networking.vpc
-  domain_controller_subnets = module.networking.ad_private_subnets
-  management_server_subnet  = module.networking.ad_management_server_subnet
-  ldaps_ca_subnet           = module.networking.ldaps_ca_subnet
-  environment               = local.environment
-  rdp_ingress_sg_id         = module.bastion.bastion_security_group_id
-  private_dns               = module.networking.private_dns
-  ad_domain                 = "dluhctest.local"
-  ad_netbios_name           = "DLUHCTEST"
-  management_instance_type  = "t3a.medium"
-  alarms_sns_topic_arn      = module.notifications.alarms_sns_topic_arn
+  edition                              = "Standard"
+  vpc                                  = module.networking.vpc
+  domain_controller_subnets            = module.networking.ad_private_subnets
+  management_server_subnet             = module.networking.ad_management_server_subnet
+  ldaps_ca_subnet                      = module.networking.ldaps_ca_subnet
+  environment                          = local.environment
+  rdp_ingress_sg_id                    = module.bastion.bastion_security_group_id
+  private_dns                          = module.networking.private_dns
+  ad_domain                            = "dluhctest.local"
+  ad_netbios_name                      = "DLUHCTEST"
+  management_instance_type             = "t3a.medium"
+  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
+  patch_maintenance_window             = module.windows_patch_maintenance_window
+  patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
+}
+
+module "windows_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment       = local.environment
+  prefix            = "windows-instance-patching"
+  schedule          = "cron(00 06 ? * WED *)"
+  duration          = 4
+  cutoff            = 1
+  subscribed_emails = local.all_notifications_email_addresses
 }
 
 module "marklogic_patch_maintenance_window" {

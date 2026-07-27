@@ -60,6 +60,11 @@ resource "aws_cloudformation_stack" "ca_server" {
   count      = var.include_ca ? 1 : 0
   name       = "ca-server-${var.environment}"
   on_failure = "DO_NOTHING"
+  # CloudFormation propagates stack tags to the CA EC2 instance, allowing the
+  # existing environment backup plan to protect both of its attached volumes.
+  tags = {
+    system-drive-backup = var.environment
+  }
 
   parameters = {
     # Network Configuration
