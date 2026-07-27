@@ -187,6 +187,7 @@ module "cloudfront_distributions" {
     # Home Connections claim their servers are in the UK, but they currently get geo-located to US
     # Home Connections developer environments are in India
     geo_restriction_countries = ["GB", "IE", "US", "IN"]
+    ip_allowlist              = var.ip_allowlist
   }
   auth = {
     alb = module.public_albs.auth

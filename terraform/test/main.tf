@@ -194,6 +194,7 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["api"].arn
     }
     geo_restriction_countries = ["GB", "IE"]
+    ip_allowlist              = var.ip_allowlist
   }
   auth = {
     alb = module.public_albs.auth
