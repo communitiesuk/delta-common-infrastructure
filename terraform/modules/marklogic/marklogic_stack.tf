@@ -65,9 +65,8 @@ resource "aws_cloudformation_stack" "marklogic" {
     # prevent_destroy = true
     ignore_changes = [
       # Otherwise Terraform always detects NoEcho CF parameters as changed
-      #parameters["AdminPass"],
-
-      # parameters["LicenseKey"]
+      parameters["AdminPass"],
+      parameters["LicenseKey"]
     ]
   }
   depends_on = [aws_iam_role_policy_attachment.ml_attach]
