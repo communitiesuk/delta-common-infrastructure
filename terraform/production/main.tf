@@ -240,7 +240,7 @@ module "marklogic" {
   marklogic_host_name1                   = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
   marklogic_host_name2                   = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
   marklogic_host_name3                   = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
-  ami_id                                 = "ami-0f19ddca04d6f66ca"
+  ami_id                                 = "ami-0a0ae2451350ad1f8"
 }
 
 module "gh_runner" {

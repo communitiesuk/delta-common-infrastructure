@@ -33,7 +33,7 @@ variable "ssh_username" {
 # Base AMI to build from. Pass as parameter, e.g. -var 'source_ami_id=ami-xxx'
 variable "source_ami_id" {
   type    = string
-  default = "ami-0fb1f3e38ccf0dedb"
+  default = "ami-00c039f39abdf422b"
 }
 
 variable "vpc_id" {
@@ -66,7 +66,7 @@ source "amazon-ebs" "marklogic" {
 
   ssh_timeout = "15m"
 
-  # Base AMI from source_ami_id variable (default ami-01907b01c5d597358); filter used only if source_ami_id is empty
+  # Base AMI from source_ami_id variable (default ami-00c039f39abdf422b); filter used only if source_ami_id is empty
   ami_description = "MarkLogic with hostname setup (private IP -> hostname before MarkLogic starts)"
 
   dynamic "source_ami_filter" {
