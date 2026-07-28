@@ -109,7 +109,7 @@ locals {
       subnets              = aws_subnet.mailhog
       cidr                 = local.mailhog_cidr_10
       http_allowed_domains = []
-      tls_allowed_domains  = [".github.com", "github.com", "golang.org", "go.googlesource.com", "gopkg.in"] # Downloading and installing golang and MailHog
+      tls_allowed_domains  = [".github.com", "github.com", ".golang.org", "golang.org", "go.googlesource.com", "gopkg.in"] # Downloading and installing golang and MailHog
       sid_offset           = 1100
     } : null
     delta_website_db = {
