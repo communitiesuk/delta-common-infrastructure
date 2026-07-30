@@ -155,6 +155,8 @@ Parameters:
       - m5a.12xlarge
       - m5a.16xlarge
       - m5a.24xlarge
+      - m6a.xlarge
+      - m6a.2xlarge
       - c3.xlarge
       - c4.xlarge
       - c4.2xlarge

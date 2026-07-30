@@ -185,7 +185,6 @@ module "cloudfront_distributions" {
     geo_restriction_countries = null
     # We don't want to IP restrict test (yet)
     client_error_rate_alarm_threshold_percent = 15
-    ip_allowlist                              = var.ip_allowlist
   }
   api = {
     alb = module.public_albs.delta_api
@@ -194,6 +193,7 @@ module "cloudfront_distributions" {
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["api"].arn
     }
     geo_restriction_countries = ["GB", "IE"]
+    ip_allowlist              = var.ip_allowlist
   }
   auth = {
     alb = module.public_albs.auth
@@ -295,7 +295,7 @@ module "marklogic" {
   environment              = local.environment
   vpc                      = module.networking.vpc
   private_subnets          = module.networking.ml_private_subnets
-  instance_type            = "t3a.large"
+  instance_type            = "m6a.xlarge"
   marklogic_ami_version    = "11.3.6"
   private_dns              = module.networking.private_dns
   patch_maintenance_window = module.marklogic_patch_maintenance_window
@@ -327,21 +327,25 @@ module "marklogic" {
   marklogic_host_name1                    = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
   marklogic_host_name2                    = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
   marklogic_host_name3                    = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
-  ami_id                                  = "ami-0c4944f64c5f0fde7"
+  ami_id                                  = "ami-034c20f47653315ab"
 
 }
 
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id                      = module.networking.github_runner_private_subnet.id
-  environment                    = local.environment
-  vpc                            = module.networking.vpc
-  github_token                   = var.github_actions_runner_token
-  ssh_ingress_sg_id              = module.bastion.bastion_security_group_id
-  private_dns                    = module.networking.private_dns
-  extra_instance_policy_arn      = data.aws_iam_policy.enable_session_manager.arn
-  cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
+  subnet_id                            = module.networking.github_runner_private_subnet.id
+  environment                          = local.environment
+  vpc                                  = module.networking.vpc
+  github_token                         = var.github_actions_runner_token
+  ssh_ingress_sg_id                    = module.bastion.bastion_security_group_id
+  private_dns                          = module.networking.private_dns
+  extra_instance_policy_arn            = data.aws_iam_policy.enable_session_manager.arn
+  cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
+  daily_backup_bucket_arn              = module.marklogic.daily_backup_bucket_arn
+  weekly_backup_bucket_arn             = module.marklogic.weekly_backup_bucket_arn
+  locked_backup_replication_bucket_arn = module.backup_replication_bucket.bucket.arn
+  backup_key_arn                       = module.marklogic.backup_key
 }
 
 resource "tls_private_key" "jaspersoft_ssh_key" {
