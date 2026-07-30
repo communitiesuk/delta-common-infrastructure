@@ -54,9 +54,7 @@ variable "jasper_s3_bucket" {
 
 variable "dap_external_role_arns" {
   type = list(string)
-  # "DSQL1" is DAP's production server.
-  # "DSQSS" is DAP's staging/test server. Added here for MSD-54917, informed they exist in the same environment.
-  default = ["arn:aws:iam::062321884391:role/DSQL1", "arn:aws:iam::062321884391:role/DSQSS"]
+  default = []
 }
 
 variable "s151_external_canonical_users" {
