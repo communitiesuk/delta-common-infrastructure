@@ -53,7 +53,7 @@ variable "jasper_s3_bucket" {
 }
 
 variable "dap_external_role_arns" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
