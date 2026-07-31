@@ -5,6 +5,22 @@ set -euo pipefail
 echo "Starting final forest state script at $(date --iso-8601=seconds)"
 echo "Checking if all forests are in the correct state"
 
+export AWS_REGION=${AWS_REGION}
+export AWS_DEFAULT_REGION=${AWS_REGION}
+
+# This runs shortly after the patch reboot, when IMDS may not be serving instance
+# profile credentials yet. The CLI defaults of a 1 second timeout and a single attempt
+# then fail as NoCredentials, and set -e aborts before the forests are checked.
+export AWS_METADATA_SERVICE_TIMEOUT=10
+export AWS_METADATA_SERVICE_NUM_ATTEMPTS=5
+
+echo "Waiting for instance credentials"
+for _ in $(seq 1 30); do
+  aws sts get-caller-identity > /dev/null 2>&1 && break
+  sleep 10
+done
+aws sts get-caller-identity > /dev/null
+
 ML_USER_PASS=$(aws secretsmanager get-secret-value --secret-id ml-admin-user-${ENVIRONMENT} --region ${AWS_REGION} --query SecretString --output text)
 ML_USER=$(echo $ML_USER_PASS | jq -r '.username')
 ML_PASS=$(echo $ML_USER_PASS | jq -r '.password')
