@@ -10,7 +10,7 @@ resource "aws_ssm_maintenance_window_target" "jasper_server" {
   }
 }
 
-# Apt update output, non-sensitive
+# DNF update output, non-sensitive
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "jasper_patch" {
   name              = "${var.environment}/jasper-ssm-patch"
@@ -34,7 +34,7 @@ resource "aws_ssm_maintenance_window_task" "jasper_patch" {
 
   task_invocation_parameters {
     run_command_parameters {
-      comment         = "Apt update"
+      comment         = "DNF update"
       timeout_seconds = 900
 
       service_role_arn = var.patch_maintenance_window.service_role_arn

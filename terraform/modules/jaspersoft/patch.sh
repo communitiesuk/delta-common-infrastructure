@@ -4,11 +4,11 @@ set -euo pipefail
 
 echo "Script starting at $(date --iso-8601=seconds)"
 
-yum update -y
+dnf upgrade -y --releasever=latest
 
-echo "Yum updates complete"
+echo "DNF updates complete"
 
-if ! needs-restarting -r; then
+if ! dnf needs-restarting -r; then
   echo "Needs restart, Shutting down Tomcat at $(date --iso-8601=seconds)"
   systemctl stop tomcat
   # We are confident tomcat will stop because we are rebooting, but it does not reliably delete the .pid file
