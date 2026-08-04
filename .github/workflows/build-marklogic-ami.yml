@@ -12,8 +12,6 @@ on:
         type: choice
         options:
           - test
-          - staging
-          - staging1
           - production
       region:
         description: 'AWS region'
@@ -22,15 +20,7 @@ on:
       source_ami_id:
         description: 'Base AMI ID'
         required: false
-        default: 'ami-01907b01c5d597358'
-  push:
-    branches: [main]
-    paths:
-      - 'marklogic-ami/marklogic-ami.pkr.hcl'
-      - 'marklogic-ami/scripts/**'
-      - 'marklogic-ami/systemd/**'
-      - 'marklogic-ami/config/**'
-      - '.github/workflows/build-ami.yml'
+        default: 'ami-00c039f39abdf422b'
 
 env:
   AWS_REGION: ${{ github.event.inputs.region || 'eu-west-1' }}
@@ -41,7 +31,7 @@ env:
   # Production uses dedicated VPC/subnet; other environments use vars or defaults
   PACKER_VPC_ID: ${{ ((github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'test') == 'production' && 'vpc-036f245818e9e3798' || (vars.PACKER_VPC_ID || 'vpc-07a867ec880ffb57e') }}
   PACKER_SUBNET_ID: ${{ ((github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'test') == 'production' && 'subnet-0bfb6c86462f662e9' || (vars.PACKER_SUBNET_ID || 'subnet-0c7ae48d942c6f7b3') }}
-  PACKER_SOURCE_AMI_ID: ${{ github.event.inputs.source_ami_id || 'ami-01907b01c5d597358' }}
+  PACKER_SOURCE_AMI_ID: ${{ github.event.inputs.source_ami_id || 'ami-00c039f39abdf422b' }}
   PACKER_IAM_INSTANCE_PROFILE: ${{ vars.PACKER_IAM_INSTANCE_PROFILE || 'PackerSSMBuildRole' }}
 
 
@@ -56,10 +46,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ env.DEPLOYMENT_ROLE }}
           role-session-name: ${{ env.DEPLOYMENT_SESSION_NAME }}

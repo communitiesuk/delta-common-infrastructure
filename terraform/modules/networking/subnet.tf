@@ -19,6 +19,7 @@ locals {
   website_db_cidr_10                  = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 13)  # 52.0/22
   auth_service_cidr_10                = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 14)  # 56.0/22
   ml_restore_rehearsal_subnet_cidr_10 = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 15)  # 60.0/22
+  dap_export_rotation_lambda_cidr_10  = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 16)  # 64.0/22
   public_cidr_10                      = cidrsubnet(aws_vpc.vpc.cidr_block, 6, 32)  # 128.0/22
   firewall_cidr_8                     = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 254) # 254.0/24
   nat_gateway_cidr_8                  = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 255) # 255.0/24
@@ -198,4 +199,12 @@ resource "aws_subnet" "auth_service" {
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
   tags                    = { Name = "auth-service-private-subnet-${data.aws_availability_zones.available.names[count.index]}-${var.environment}" }
+}
+
+resource "aws_subnet" "dap_export_rotation_lambda" {
+  cidr_block              = cidrsubnet(local.dap_export_rotation_lambda_cidr_10, 2, 0)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[0]
+  map_public_ip_on_launch = false
+  tags                    = { Name = "dap-export-rotation-lambda-private-subnet-${var.environment}" }
 }

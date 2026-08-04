@@ -53,14 +53,18 @@ variable "jasper_s3_bucket" {
 }
 
 variable "dap_external_role_arns" {
-  type = list(string)
-  # "DSQL1" is DAP's production server.
-  # "DSQSS" is DAP's staging/test server. Added here for MSD-54917, informed they exist in the same environment.
-  default = ["arn:aws:iam::062321884391:role/DSQL1", "arn:aws:iam::062321884391:role/DSQSS"]
+  type    = list(string)
+  default = []
 }
 
 variable "s151_external_canonical_users" {
   type        = list(string)
   description = "Funding service account with access to production S151 data in DAP export S3 bucket"
   default     = ["42482d88bedb952015d8cff60dea3a1a6fe1a58d6720cc6a673c020d1fb70591"]
+}
+
+variable "azure_dap_export_allowed_cidrs" {
+  type        = list(string)
+  description = "Azure partner CIDRs allowed to use the DAP export access key"
+  default     = ["4.158.35.41/32"]
 }

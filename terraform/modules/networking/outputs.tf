@@ -85,6 +85,11 @@ output "auth_service_private_subnets" {
   description = "Private /24 subnets for auth service"
 }
 
+output "dap_export_rotation_lambda_subnets" {
+  value       = [aws_subnet.dap_export_rotation_lambda]
+  description = "Private subnet for DAP export secret rotation Lambda"
+}
+
 output "private_dns" {
   value = {
     zone_id     = aws_route53_zone.private.zone_id

@@ -6,7 +6,7 @@ terraform {
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.8.0"
+      version = "~> 3.9.0"
     }
     archive = {
       source  = "hashicorp/archive"
@@ -28,7 +28,7 @@ terraform {
     region         = "eu-west-1"
   }
 
-  required_version = "~> 1.9.0"
+  required_version = ">= 1.9.0, < 2.0.0"
 }
 
 provider "aws" {
@@ -210,14 +210,15 @@ moved {
 module "marklogic" {
   source = "../modules/marklogic"
 
-  default_tags             = var.default_tags
-  environment              = local.environment
-  vpc                      = module.networking.vpc
-  private_subnets          = module.networking.ml_private_subnets
-  instance_type            = "r5a.8xlarge" # r6a is not allowed (as of 26/02/2023)
-  marklogic_ami_version    = "11.3.3"
-  private_dns              = module.networking.private_dns
-  patch_maintenance_window = module.marklogic_patch_maintenance_window
+  default_tags                       = var.default_tags
+  environment                        = local.environment
+  vpc                                = module.networking.vpc
+  private_subnets                    = module.networking.ml_private_subnets
+  dap_export_rotation_lambda_subnets = module.networking.dap_export_rotation_lambda_subnets
+  instance_type                      = "r7a.8xlarge"
+  marklogic_ami_version              = "11.3.6"
+  private_dns                        = module.networking.private_dns
+  patch_maintenance_window           = module.marklogic_patch_maintenance_window
   data_volume = {
     size_gb                = 3000
     iops                   = 16000
@@ -234,7 +235,13 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 55
   dap_external_role_arns                  = var.dap_external_role_arns
-  s151_external_canonical_users           = var.s151_external_canonical_users
+  dap_export_external_access = length(var.azure_dap_export_allowed_cidrs) == 0 ? [] : [
+    {
+      name          = "azure-dap-export"
+      allowed_cidrs = var.azure_dap_export_allowed_cidrs
+    }
+  ]
+  s151_external_canonical_users = var.s151_external_canonical_users
   dap_job_notification_emails = concat(
     local.all_notifications_email_addresses,
     ["deltastatsupport@communities.gov.uk"]
@@ -250,20 +257,24 @@ module "marklogic" {
   marklogic_host_name1                   = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
   marklogic_host_name2                   = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
   marklogic_host_name3                   = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
-  ami_id                                 = "ami-0a3b4627d822c43dc"
+  ami_id                                 = "ami-0a0ae2451350ad1f8"
 }
 
 module "gh_runner" {
   source = "../modules/github_runner"
 
-  subnet_id                      = module.networking.github_runner_private_subnet.id
-  environment                    = local.environment
-  vpc                            = module.networking.vpc
-  github_token                   = var.github_actions_runner_token
-  ssh_ingress_sg_id              = module.bastion.bastion_security_group_id
-  private_dns                    = module.networking.private_dns
-  extra_instance_policy_arn      = module.session_manager_config.policy_arn
-  cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
+  subnet_id                            = module.networking.github_runner_private_subnet.id
+  environment                          = local.environment
+  vpc                                  = module.networking.vpc
+  github_token                         = var.github_actions_runner_token
+  ssh_ingress_sg_id                    = module.bastion.bastion_security_group_id
+  private_dns                          = module.networking.private_dns
+  extra_instance_policy_arn            = module.session_manager_config.policy_arn
+  cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
+  daily_backup_bucket_arn              = module.marklogic.daily_backup_bucket_arn
+  weekly_backup_bucket_arn             = module.marklogic.weekly_backup_bucket_arn
+  locked_backup_replication_bucket_arn = module.backup_replication_bucket.bucket.arn
+  backup_key_arn                       = module.marklogic.backup_key
 }
 
 module "public_albs" {
@@ -330,7 +341,6 @@ module "cloudfront_distributions" {
     }
     geo_restriction_countries = ["GB", "IE"]
     origin_read_timeout       = 180 # Required quota increase
-    ip_allowlist              = var.ip_allowlist
   }
   api = {
     alb = module.public_albs.delta_api
@@ -471,5 +481,3 @@ module "auth_internal_alb" {
 module "github_actions_openid_connect_provider" {
   source = "../modules/github_actions_openid_connect_provider"
 }
-
-

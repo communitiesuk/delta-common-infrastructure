@@ -11,6 +11,7 @@ data "aws_secretsmanager_secret_version" "ml_admin_user" {
 
 locals {
   stack_name = "marklogic-stack-${var.environment}"
+  # Do not update the AMI version here, instead update the ami_id in the environment main.tf file
   amis = {
     # https://aws.amazon.com/marketplace/server/configuration?productId=52ce1567-c738-4208-be90-08b575f2c41d
     "10.0-9.5"  = "ami-07701d367691e0220"
@@ -64,9 +65,8 @@ resource "aws_cloudformation_stack" "marklogic" {
     # prevent_destroy = true
     ignore_changes = [
       # Otherwise Terraform always detects NoEcho CF parameters as changed
-      #parameters["AdminPass"],
-
-      # parameters["LicenseKey"]
+      parameters["AdminPass"],
+      parameters["LicenseKey"]
     ]
   }
   depends_on = [aws_iam_role_policy_attachment.ml_attach]

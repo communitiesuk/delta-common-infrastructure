@@ -74,8 +74,8 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
 
   task_invocation_parameters {
     run_command_parameters {
-      comment         = "Yum update security"
-      timeout_seconds = 1800
+      comment         = "AL2023 release upgrade / security updates"
+      timeout_seconds = 3600
 
       service_role_arn = var.patch_maintenance_window.service_role_arn
       notification_config {

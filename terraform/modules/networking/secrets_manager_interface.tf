@@ -20,7 +20,12 @@ resource "aws_vpc_endpoint" "secrets_manager" {
 # Note that endpoint policies only limit access, credentials to access a given secret are still required
 data "aws_iam_policy_document" "secret_manager_endpoint" {
   statement {
-    actions = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
+    actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:PutSecretValue",
+      "secretsmanager:UpdateSecretVersionStage",
+    ]
     principals {
       type        = "AWS"
       identifiers = [data.aws_caller_identity.current.account_id]

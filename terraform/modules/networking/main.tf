@@ -109,7 +109,7 @@ locals {
       subnets              = aws_subnet.mailhog
       cidr                 = local.mailhog_cidr_10
       http_allowed_domains = []
-      tls_allowed_domains  = [".github.com", "github.com", "golang.org", "go.googlesource.com", "gopkg.in"] # Downloading and installing golang and MailHog
+      tls_allowed_domains  = ["github.com", "release-assets.githubusercontent.com"] # Downloading MailHog
       sid_offset           = 1100
     } : null
     delta_website_db = {
@@ -162,6 +162,14 @@ locals {
       sid_offset = 4100
       // Note that base rules use sid 5000+ 
     }
+    dap_export_rotation_lambda = {
+      cidr                 = local.dap_export_rotation_lambda_cidr_10
+      http_allowed_domains = []
+      tls_allowed_domains = [
+        "iam.amazonaws.com", # IAM has no VPC endpoint, required to rotate the generated access key
+      ]
+      sid_offset = 4200
+    }
   }
   firewalled_subnets = concat(
     aws_subnet.bastion_private_subnets,
@@ -175,6 +183,7 @@ locals {
     aws_subnet.mailhog,
     aws_subnet.jaspersoft,
     aws_subnet.auth_service,
+    [aws_subnet.dap_export_rotation_lambda],
     [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server, aws_subnet.github_runner]
   )
 

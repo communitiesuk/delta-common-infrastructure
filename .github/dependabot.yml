@@ -3,17 +3,15 @@
 version: 2
 updates:
   - package-ecosystem: "terraform"
-    directory: "terraform/test/"
+    directories:
+      - "terraform/test/"
+      - "terraform/staging/"
+      - "terraform/production/"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "terraform"
-    directory: "terraform/staging/"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "terraform"
-    directory: "terraform/production/"
-    schedule:
-      interval: "weekly"
+    groups:
+      terraform-providers:
+        group-by: dependency-name
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

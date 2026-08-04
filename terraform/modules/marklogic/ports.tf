@@ -70,7 +70,14 @@ locals {
       "to_port"           = 8144
       "description"       = "HTTP to CPM rest-api-"
       "log_name_fragment" = "cpm"
+    },
+    {
+      "from_port"         = 8063
+      "to_port"           = 8063
+      "description"       = "HTTP to dclg_bi rest-api-"
+      "log_name_fragment" = "dclg_bi"
     }
+
   ]
   lb_ports = {
     for port in flatten([
