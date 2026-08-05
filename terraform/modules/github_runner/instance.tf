@@ -47,6 +47,15 @@ resource "aws_instance" "gh_runner" {
   }))
   key_name = aws_key_pair.gh_runner.key_name
 
+  # Ensure bootstrap can use SSM and CloudWatch as soon as the instance starts.
+  depends_on = [
+    aws_iam_role_policy.get_ssm_parameters,
+    aws_iam_role_policy.cloudwatch,
+    aws_iam_role_policy_attachment.managed_policies,
+    aws_iam_role_policy_attachment.extra_attach,
+    aws_iam_role_policy_attachment.s3_backups,
+  ]
+
   metadata_options {
     http_tokens   = "required"
     http_endpoint = "enabled"
