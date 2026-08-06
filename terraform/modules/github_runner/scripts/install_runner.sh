@@ -1,4 +1,7 @@
-file_name="actions-runner.tar.gz"
+runner_version="2.336.0"
+runner_sha256="04cf0be1aff4c3ec3554466c39124ca250e3effd8873bb7e8d68535aa9505d5d"
+file_name="actions-runner-linux-x64-$runner_version.tar.gz"
+runner_url="https://github.com/actions/runner/releases/download/v$runner_version/$file_name"
 
 echo "Setting up GH Actions runner tool cache"
 # Required for various */setup-* actions to work, location is also know by various environment
@@ -11,14 +14,17 @@ cd /opt/
 mkdir -p actions-runner && cd actions-runner
 
 
-echo "Downloading the GH Action runner from $RUNNER_TARBALL_URL to $file_name"
+echo "Downloading GitHub Actions runner v$runner_version to $file_name"
 # Keep in sync with https://github.com/actions/runner/releases (required for modern actions, e.g. setup-java@v5)
-curl -o $file_name -L https://github.com/actions/runner/releases/download/v2.334.0/actions-runner-linux-x64-2.334.0.tar.gz
+curl --fail --show-error --location --output "$file_name" "$runner_url"
+
+echo "Verifying GitHub Actions runner checksum"
+echo "$runner_sha256  $file_name" | sha256sum --check --strict
 
 echo "Un-tar action runner"
-tar xzf ./$file_name
+tar xzf "./$file_name"
 echo "Delete tar file"
-rm -rf $file_name
+rm -f "$file_name"
 
 yum install -y libicu
 
