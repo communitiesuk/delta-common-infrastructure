@@ -2,13 +2,13 @@
 
 set -exuo pipefail
 
-export TOMCAT_VERSION=9.0.96
+export TOMCAT_VERSION=9.0.120
 
 # Let the instance finish booting
 sleep 5
 
-yum upgrade -y
-yum install iptables-services -y
+dnf upgrade -y
+dnf install -y dnf-utils iptables-services java-11-amazon-corretto-headless unzip wget
 systemctl enable iptables
 systemctl start iptables
 
@@ -19,9 +19,6 @@ iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
 service iptables save
 
 # Based on the JasperReports Server CP Install Guide for 7.8
-
-# Install Java
-yum install java-11-amazon-corretto-headless -y
 
 # Install Tomcat
 rm -rf /opt/tomcat/base

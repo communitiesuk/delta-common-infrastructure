@@ -41,3 +41,23 @@ variable "extra_instance_policy_arn" {
 variable "cloudwatch_log_expiration_days" {
   type = number
 }
+
+variable "daily_backup_bucket_arn" {
+  type        = string
+  description = "ARN of the MarkLogic daily backup S3 bucket"
+}
+
+variable "weekly_backup_bucket_arn" {
+  type        = string
+  description = "ARN of the MarkLogic weekly backup S3 bucket"
+}
+
+variable "locked_backup_replication_bucket_arn" {
+  type        = string
+  description = "ARN of the object-locked backup replication S3 bucket"
+}
+
+variable "backup_key_arn" {
+  type        = string
+  description = "KMS key ARN used to encrypt MarkLogic backup buckets"
+}

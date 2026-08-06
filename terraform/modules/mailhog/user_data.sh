@@ -6,21 +6,24 @@ set -exuo pipefail
 # Will still use the AWS local one (169.254.169.123)
 rm -f /etc/chrony.d/ntp-pool.sources
 
+dnf upgrade -y
+dnf install -y cronie
+
+systemctl enable --now crond
+
 # Daily job to delete stored emails older than 3 days
 echo "0 2 * * * find /mailhog/mail/ -type f -mtime +3 -execdir rm -- '{}' \;" | crontab -
-
-yum update
-yum install golang -y
-
-go version
 
 mkdir /mailhog
 useradd -d /mailhog -r -U mailhog
 chown mailhog:mailhog /mailhog
 sudo -u mailhog mkdir -p /mailhog/mail
 
-cd /mailhog
-sudo -u mailhog go install github.com/mailhog/MailHog@latest
+curl --fail --location --retry 5 \
+  --output /tmp/MailHog \
+  https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_linux_amd64
+echo "e2ed634ded49929f089b20045581955ed217672078fd86082dd7a6c67c5d09c7  /tmp/MailHog" | sha256sum --check
+install -o mailhog -g mailhog -m 0755 /tmp/MailHog /mailhog/MailHog
 
 aws secretsmanager get-secret-value --region ${region} --secret-id ${auth_file_secret_id} --query SecretString --output text > /mailhog/auth
 chown mailhog:mailhog /mailhog/auth
@@ -40,7 +43,7 @@ Environment=MH_MAILDIR_PATH=/mailhog/mail
 Environment=MH_STORAGE=maildir
 Environment=MH_AUTH_FILE=/mailhog/auth
 Environment=MH_OUTGOING_SMTP=/mailhog/smtp
-ExecStart=/mailhog/go/bin/MailHog
+ExecStart=/mailhog/MailHog
 
 [Install]
 WantedBy=multi-user.target
