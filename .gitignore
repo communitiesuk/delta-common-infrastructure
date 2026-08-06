@@ -43,3 +43,4 @@ lambdaFunction.zip
 manual_scripts/logs/logs
 
 /terraform/*/waf-problematic-ip-update.zip
+/terraform/modules/marklogic/dap_export_secret_rotation.zip
