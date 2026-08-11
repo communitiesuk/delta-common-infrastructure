@@ -55,13 +55,13 @@ data "aws_iam_policy_document" "allow_access_from_dap" {
     }
   }
   dynamic "statement" {
-    for_each = length(var.s151_external_canonical_users) > 0 ? [1] : []
+    for_each = length(var.s151_external_aws_principal_arns) > 0 ? [1] : []
     content {
       sid    = "AllowExternalBucketAccess"
       effect = "Allow"
       principals {
-        type        = "CanonicalUser"
-        identifiers = var.s151_external_canonical_users
+        type        = "AWS"
+        identifiers = var.s151_external_aws_principal_arns
       }
       actions = [
         "s3:GetObject",
