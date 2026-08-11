@@ -138,7 +138,9 @@ locals {
           ".marklogic.com",
           "repo.ius.io", "mirrors.fedoraproject.org",                        # Yum repos
           "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com", # The instances make some requests to us-east-1 services on startup
-          "d2lzkl7pfhq30w.cloudfront.net"                                    # Used by MarkLogic's AMI yum updates, unclear why
+          "d2lzkl7pfhq30w.cloudfront.net",                                   # Used by MarkLogic's AMI yum updates, unclear why
+          # Patching SSM script waits on `aws sts get-caller-identity`; STS has no VPC endpoint here
+          "sts.${data.aws_region.current.name}.amazonaws.com",
         ],
         var.attack_iq_testing_domains,
         var.auth_server_domains # Used to fetch access tokens to communicate with Orbeon through the API, those connections are internal
@@ -154,7 +156,9 @@ locals {
           ".marklogic.com",
           "repo.ius.io", "mirrors.fedoraproject.org",                        # Yum repos
           "dynamodb.us-east-1.amazonaws.com", "sns.us-east-1.amazonaws.com", # The instances make some requests to us-east-1 services on startup
-          "d2lzkl7pfhq30w.cloudfront.net"                                    # Used by MarkLogic's AMI yum updates, unclear why
+          "d2lzkl7pfhq30w.cloudfront.net",                                   # Used by MarkLogic's AMI yum updates, unclear why
+          # Same as marklogic: patching readiness check calls public STS
+          "sts.${data.aws_region.current.name}.amazonaws.com",
         ],
         var.attack_iq_testing_domains,
         var.auth_server_domains # Used to fetch access tokens to communicate with Orbeon through the API, those connections are internal
