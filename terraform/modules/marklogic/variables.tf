@@ -109,8 +109,9 @@ variable "dap_external_role_arns" {
   type = list(string)
 }
 
-variable "s151_external_canonical_users" {
-  type = list(string)
+variable "s151_external_aws_principal_arns" {
+  type    = list(string)
+  default = []
 }
 
 variable "dap_export_external_access" {

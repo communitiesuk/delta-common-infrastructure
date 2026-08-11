@@ -241,7 +241,7 @@ module "marklogic" {
       allowed_cidrs = var.azure_dap_export_allowed_cidrs
     }
   ]
-  s151_external_canonical_users = var.s151_external_canonical_users
+  s151_external_aws_principal_arns = var.s151_external_aws_principal_arns
   dap_job_notification_emails = concat(
     local.all_notifications_email_addresses,
     ["deltastatsupport@communities.gov.uk"]
