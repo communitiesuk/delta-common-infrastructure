@@ -4,12 +4,14 @@ version: 2
 updates:
   - package-ecosystem: "terraform"
     directories:
-      - "terraform/modules/provider_versions/"
       - "terraform/test/"
       - "terraform/staging/"
       - "terraform/production/"
     schedule:
       interval: "weekly"
+    groups:
+      terraform-providers:
+        group-by: dependency-name
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

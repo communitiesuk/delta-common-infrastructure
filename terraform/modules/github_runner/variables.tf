@@ -13,6 +13,7 @@ variable "subnet_id" {
 variable "github_token" {
   description = "short-lived token to register the runner with the repo"
   type        = string
+  sensitive   = true
 }
 
 variable "vpc" {

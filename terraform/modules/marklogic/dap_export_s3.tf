@@ -17,37 +17,43 @@ module "dap_export_bucket" {
 }
 
 data "aws_iam_policy_document" "allow_access_from_dap" {
-  statement {
-    principals {
-      type        = "AWS"
-      identifiers = var.dap_external_role_arns
+  dynamic "statement" {
+    for_each = length(var.dap_external_role_arns) > 0 ? [1] : []
+    content {
+      principals {
+        type        = "AWS"
+        identifiers = var.dap_external_role_arns
+      }
+
+      actions = [
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:GetEncryptionConfiguration",
+        "s3:GetBucketLocation"
+      ]
+
+      resources = [
+        module.dap_export_bucket.bucket_arn,
+        "${module.dap_export_bucket.bucket_arn}/latest/*",
+      ]
     }
-
-    actions = [
-      "s3:GetObject",
-      "s3:ListBucket",
-      "s3:GetEncryptionConfiguration",
-      "s3:GetBucketLocation"
-    ]
-
-    resources = [
-      module.dap_export_bucket.bucket_arn,
-      "${module.dap_export_bucket.bucket_arn}/latest/*",
-    ]
   }
-  statement {
-    sid    = "DenyExternalRoleArnsAccessToS151Folder"
-    effect = "Deny"
-    principals {
-      type        = "AWS"
-      identifiers = var.dap_external_role_arns
+  dynamic "statement" {
+    for_each = length(var.dap_external_role_arns) > 0 ? [1] : []
+    content {
+      sid    = "DenyExternalRoleArnsAccessToS151Folder"
+      effect = "Deny"
+      principals {
+        type        = "AWS"
+        identifiers = var.dap_external_role_arns
+      }
+      actions = [
+        "s3:GetObject"
+      ]
+      resources = [
+        "${module.dap_export_bucket.bucket_arn}/latest/s151*",
+      ]
     }
-    actions = [
-      "s3:GetObject"
-    ]
-    resources = [
-      "${module.dap_export_bucket.bucket_arn}/latest/s151*",
-    ]
   }
   dynamic "statement" {
     for_each = length(var.s151_external_canonical_users) > 0 ? [1] : []
