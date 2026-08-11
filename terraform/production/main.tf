@@ -44,7 +44,7 @@ locals {
   cloudwatch_log_expiration_days       = 731
   patch_cloudwatch_log_expiration_days = 90
   s3_log_expiration_days               = 731
-  all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk", "Group-DLUHCDeltaNotifications@softwire.com", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
+  all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
 }
 data "aws_route53_zone" "private" {
   name         = "vpc.local"
