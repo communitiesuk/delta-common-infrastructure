@@ -59,7 +59,7 @@ variable "dap_external_role_arns" {
   default = []
 }
 
-variable "s151_external_canonical_users" {
+variable "s151_external_aws_principal_arns" {
   type    = list(string)
   default = []
 }

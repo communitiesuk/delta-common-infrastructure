@@ -327,7 +327,7 @@ module "marklogic" {
   alarms_sns_topic_arn                    = module.notifications.alarms_sns_topic_arn
   data_disk_usage_alarm_threshold_percent = 70
   dap_external_role_arns                  = var.dap_external_role_arns
-  s151_external_canonical_users           = var.s151_external_canonical_users
+  s151_external_aws_principal_arns        = var.s151_external_aws_principal_arns
   dap_export_external_access = length(var.azure_dap_export_allowed_cidrs) == 0 ? [] : [
     {
       name          = "azure-dap-export"
