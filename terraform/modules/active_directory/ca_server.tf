@@ -60,11 +60,6 @@ resource "aws_cloudformation_stack" "ca_server" {
   count      = var.include_ca ? 1 : 0
   name       = "ca-server-${var.environment}"
   on_failure = "DO_NOTHING"
-  # CloudFormation propagates stack tags to the CA EC2 instance, allowing the
-  # existing environment backup plan to protect both of its attached volumes.
-  tags = {
-    system-drive-backup = var.environment
-  }
 
   parameters = {
     # Network Configuration
@@ -105,4 +100,25 @@ resource "aws_cloudformation_stack" "ca_server" {
 data "aws_instance" "ca_server" {
   count       = var.include_ca ? 1 : 0
   instance_id = var.include_ca ? try(aws_cloudformation_stack.ca_server[0].outputs["EntRootCAInstanceId"], "") : ""
+}
+
+# Tag the CA instance and volumes directly so we do not update the CloudFormation
+# stack (stack tag updates make outputs unknown and force replacement of the
+# directory-controller SG rules that depend on the CA private IP).
+resource "aws_ec2_tag" "ca_server_system_drive_backup" {
+  count       = var.include_ca ? 1 : 0
+  resource_id = data.aws_instance.ca_server[0].id
+  key         = "system-drive-backup"
+  value       = var.environment
+}
+
+resource "aws_ec2_tag" "ca_server_volume_system_drive_backup" {
+  for_each = var.include_ca ? toset(compact(concat(
+    [for b in data.aws_instance.ca_server[0].root_block_device : b.volume_id],
+    [for b in data.aws_instance.ca_server[0].ebs_block_device : b.volume_id],
+  ))) : toset([])
+
+  resource_id = each.value
+  key         = "system-drive-backup"
+  value       = var.environment
 }
