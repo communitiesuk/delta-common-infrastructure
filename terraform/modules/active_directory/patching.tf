@@ -23,30 +23,35 @@ resource "aws_ssm_maintenance_window_target" "ca_server" {
   }
 }
 
-# Windows patch output is non-sensitive.
-# tfsec:ignore:aws-cloudwatch-log-group-customer-key
-resource "aws_cloudwatch_log_group" "windows_patch" {
-  name              = "${var.environment}/windows-ssm-patch"
-  retention_in_days = var.patch_cloudwatch_log_expiration_days
+# Windows patch output is non-sensitive, but encrypt at rest with a CMK to satisfy IaC checks.
+locals {
+  windows_patch_log_group_name = "${var.environment}/windows-ssm-patch"
 }
 
+module "windows_patch_log_group" {
+  source         = "../encrypted_log_groups"
+  retention_days = var.patch_cloudwatch_log_expiration_days
+
+  kms_key_alias_name = "windows-ssm-patch-logs-${var.environment}"
+  log_group_names    = [local.windows_patch_log_group_name]
+}
+
+# Scope all CloudWatch Logs actions to the Windows patch log group. Avoid Resource
+# "*" so IAM least-privilege checks pass; session_manager_config uses the same pattern.
+# tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "ad_management_patch_logs" {
   statement {
-    actions = ["logs:DescribeLogGroups"]
-    # CloudWatch Logs does not support resource-level permissions for this action.
-    # tfsec:ignore:aws-iam-no-policy-wildcards
-    resources = ["*"]
-  }
-
-  statement {
     actions = [
+      "logs:DescribeLogGroups",
       "logs:CreateLogStream",
       "logs:DescribeLogStreams",
       "logs:PutLogEvents",
     ]
-    # SSM creates a new stream under this group for each command and instance.
-    # tfsec:ignore:aws-iam-no-policy-wildcards
-    resources = ["${aws_cloudwatch_log_group.windows_patch.arn}:*"]
+    # Include the log-group ARN and :* for stream names SSM creates per command.
+    resources = [
+      module.windows_patch_log_group.log_group_arns[0],
+      "${module.windows_patch_log_group.log_group_arns[0]}:*",
+    ]
   }
 }
 
@@ -104,7 +109,7 @@ resource "aws_ssm_maintenance_window_task" "ad_management_server_patch" {
       }
 
       cloudwatch_config {
-        cloudwatch_log_group_name = aws_cloudwatch_log_group.windows_patch.name
+        cloudwatch_log_group_name = module.windows_patch_log_group.log_group_names[0]
         cloudwatch_output_enabled = true
       }
     }
@@ -155,7 +160,7 @@ resource "aws_ssm_maintenance_window_task" "ca_server_patch" {
       }
 
       cloudwatch_config {
-        cloudwatch_log_group_name = aws_cloudwatch_log_group.windows_patch.name
+        cloudwatch_log_group_name = module.windows_patch_log_group.log_group_names[0]
         cloudwatch_output_enabled = true
       }
     }
