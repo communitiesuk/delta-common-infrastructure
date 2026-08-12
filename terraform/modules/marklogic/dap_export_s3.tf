@@ -506,6 +506,7 @@ data "aws_iam_policy_document" "dap_export_promoter" {
   statement {
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:GetObject",
       "s3:ListMultipartUploadParts",
       "s3:PutObject",
     ]
