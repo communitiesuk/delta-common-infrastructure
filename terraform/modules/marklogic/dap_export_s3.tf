@@ -563,6 +563,10 @@ data "aws_iam_policy_document" "dap_export_promoter" {
       "s3:GetObject",
       "s3:GetObjectVersion",
     ]
+    # Archive object keys contain dates and export-generated filenames that are
+    # not known at deploy time. The wildcard is restricted to archive objects
+    # in this DAP export bucket.
+    # tfsec:ignore:aws-iam-no-policy-wildcards
     resources = ["${module.dap_export_bucket.bucket_arn}/archive/*"]
   }
 
@@ -573,6 +577,9 @@ data "aws_iam_policy_document" "dap_export_promoter" {
       "s3:ListMultipartUploadParts",
       "s3:PutObject",
     ]
+    # Latest object keys mirror the dynamic archive filenames. The wildcard is
+    # restricted to latest objects in this DAP export bucket.
+    # tfsec:ignore:aws-iam-no-policy-wildcards
     resources = ["${module.dap_export_bucket.bucket_arn}/latest/*"]
   }
 
@@ -598,6 +605,9 @@ data "aws_iam_policy_document" "dap_export_promoter" {
       "logs:DescribeLogStreams",
       "logs:PutLogEvents",
     ]
+    # Lambda creates log stream names at runtime. The wildcard is restricted to
+    # streams in the promoter's dedicated CloudWatch log group.
+    # tfsec:ignore:aws-iam-no-policy-wildcards
     resources = ["${module.dap_export_promoter_log_group.log_group_arns[0]}:*"]
   }
 
