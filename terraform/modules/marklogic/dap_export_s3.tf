@@ -473,10 +473,47 @@ module "dap_export_promoter_log_group" {
   log_group_names    = ["/aws/lambda/dap-export-promoter-${var.environment}"]
 }
 
+resource "aws_kms_key" "dap_export_promoter_environment" {
+  description         = "DAP export promoter Lambda environment encryption key"
+  enable_key_rotation = true
+}
+
+resource "aws_kms_alias" "dap_export_promoter_environment" {
+  name          = "alias/dap-export-promoter-environment-${var.environment}"
+  target_key_id = aws_kms_key.dap_export_promoter_environment.key_id
+}
+
 resource "aws_sqs_queue" "dap_export_promoter_dead_letter" {
   name                      = "dap-export-promoter-dead-letter-${var.environment}"
   message_retention_seconds = 1209600
   sqs_managed_sse_enabled   = true
+}
+
+data "aws_iam_policy_document" "dap_export_promoter_dead_letter" {
+  statement {
+    sid     = "DenyInsecureTransport"
+    effect  = "Deny"
+    actions = ["sqs:*"]
+    resources = [
+      aws_sqs_queue.dap_export_promoter_dead_letter.arn,
+    ]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
+}
+
+resource "aws_sqs_queue_policy" "dap_export_promoter_dead_letter" {
+  queue_url = aws_sqs_queue.dap_export_promoter_dead_letter.id
+  policy    = data.aws_iam_policy_document.dap_export_promoter_dead_letter.json
 }
 
 resource "aws_security_group" "dap_export_promoter_lambda" {
@@ -559,6 +596,11 @@ data "aws_iam_policy_document" "dap_export_promoter" {
   }
 
   statement {
+    actions   = ["kms:Decrypt"]
+    resources = [aws_kms_key.dap_export_promoter_environment.arn]
+  }
+
+  statement {
     actions   = ["sqs:SendMessage"]
     resources = [aws_sqs_queue.dap_export_promoter_dead_letter.arn]
   }
@@ -603,6 +645,7 @@ resource "aws_lambda_function" "dap_export_promoter" {
   runtime     = "python3.12"
   timeout     = 900
   memory_size = 512
+  kms_key_arn = aws_kms_key.dap_export_promoter_environment.arn
 
   # Serial processing makes the date/sequencer guard authoritative: an older
   # archive event cannot race a newer event and overwrite its latest object.
