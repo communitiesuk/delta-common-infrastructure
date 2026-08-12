@@ -479,6 +479,21 @@ resource "aws_sqs_queue" "dap_export_promoter_dead_letter" {
   sqs_managed_sse_enabled   = true
 }
 
+resource "aws_security_group" "dap_export_promoter_lambda" {
+  name        = "dap-export-promoter-${var.environment}"
+  description = "Security group for DAP export promoter Lambda"
+  vpc_id      = var.vpc.id
+
+  # tfsec:ignore:aws-vpc-no-public-egress-sgr
+  egress {
+    description = "Allow HTTPS egress to AWS APIs"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_iam_role" "dap_export_promoter" {
   name = "dap-export-promoter-${var.environment}"
 
@@ -573,6 +588,11 @@ resource "aws_iam_role_policy_attachment" "dap_export_promoter" {
   policy_arn = aws_iam_policy.dap_export_promoter.arn
 }
 
+resource "aws_iam_role_policy_attachment" "dap_export_promoter_vpc_access" {
+  role       = aws_iam_role.dap_export_promoter.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
 resource "aws_lambda_function" "dap_export_promoter" {
   function_name    = "dap-export-promoter-${var.environment}"
   filename         = data.archive_file.dap_export_promoter.output_path
@@ -600,12 +620,18 @@ resource "aws_lambda_function" "dap_export_promoter" {
     target_arn = aws_sqs_queue.dap_export_promoter_dead_letter.arn
   }
 
+  vpc_config {
+    subnet_ids         = local.dap_export_rotation_lambda_subnets[*].id
+    security_group_ids = [aws_security_group.dap_export_promoter_lambda.id]
+  }
+
   tracing_config {
     mode = "Active"
   }
 
   depends_on = [
     aws_iam_role_policy_attachment.dap_export_promoter,
+    aws_iam_role_policy_attachment.dap_export_promoter_vpc_access,
     module.dap_export_promoter_log_group,
   ]
 }
