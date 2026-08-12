@@ -619,6 +619,12 @@ data "aws_iam_policy_document" "dap_export_promoter" {
   statement {
     actions   = ["cloudwatch:PutMetricData"]
     resources = ["*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "cloudwatch:namespace"
+      values   = ["Delta/DAPExport"]
+    }
   }
 
   statement {
