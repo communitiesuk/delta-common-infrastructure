@@ -36,18 +36,23 @@ module "windows_patch_log_group" {
   log_group_names    = [local.windows_patch_log_group_name]
 }
 
-# Scope all CloudWatch Logs actions to the Windows patch log group. Avoid Resource
-# "*" so IAM least-privilege checks pass; session_manager_config uses the same pattern.
+# CloudWatch Logs permissions for SSM patch output.
+# DescribeLogGroups does not support resource-level permissions (SSM agent calls it
+# with an empty log-group ARN); other actions stay scoped to this log group.
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "ad_management_patch_logs" {
   statement {
+    actions   = ["logs:DescribeLogGroups"]
+    resources = ["*"]
+  }
+
+  statement {
     actions = [
-      "logs:DescribeLogGroups",
       "logs:CreateLogStream",
       "logs:DescribeLogStreams",
       "logs:PutLogEvents",
     ]
-    # Include the log-group ARN and :* for stream names SSM creates per command.
+    # SSM creates a new stream under this group for each command and instance.
     resources = [
       module.windows_patch_log_group.log_group_arns[0],
       "${module.windows_patch_log_group.log_group_arns[0]}:*",
