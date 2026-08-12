@@ -6,6 +6,10 @@ locals {
   dap_export_rotation_lambda_subnets = var.dap_export_rotation_lambda_subnets == null ? var.private_subnets : var.dap_export_rotation_lambda_subnets
 }
 
+data "aws_prefix_list" "s3" {
+  name = "com.amazonaws.${data.aws_region.current.name}.s3"
+}
+
 module "dap_export_bucket" {
   source                             = "../s3_bucket"
   bucket_name                        = "dluhc-delta-dap-export-${var.environment}"
@@ -521,13 +525,20 @@ resource "aws_security_group" "dap_export_promoter_lambda" {
   description = "Security group for DAP export promoter Lambda"
   vpc_id      = var.vpc.id
 
-  # tfsec:ignore:aws-vpc-no-public-egress-sgr
   egress {
-    description = "Allow HTTPS egress to AWS APIs"
+    description = "Allow HTTPS egress to AWS interface endpoints"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.vpc.cidr_block]
+  }
+
+  egress {
+    description     = "Allow HTTPS egress to the S3 gateway endpoint"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    prefix_list_ids = [data.aws_prefix_list.s3.id]
   }
 }
 
