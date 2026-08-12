@@ -513,6 +513,22 @@ data "aws_iam_policy_document" "dap_export_promoter" {
     resources = ["${module.dap_export_bucket.bucket_arn}/latest/*"]
   }
 
+  # S3 returns 403 rather than 404 from HeadObject for a missing destination
+  # unless the caller can list the bucket. Restrict listing to latest only.
+  statement {
+    actions   = ["s3:ListBucket"]
+    resources = [module.dap_export_bucket.bucket_arn]
+
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values = [
+        "latest",
+        "latest/*",
+      ]
+    }
+  }
+
   statement {
     actions = [
       "logs:CreateLogStream",
