@@ -58,10 +58,13 @@ variable "dap_external_role_arns" {
   default = []
 }
 
-variable "s151_external_canonical_users" {
+variable "s151_external_aws_principal_arns" {
   type        = list(string)
   description = "Funding service accounts that we wish to have access to staging S151 data in DAP export S3 bucket"
-  default     = ["4a20e1ecba266786127536b068cbbf222b344a2e21024029f1a778f98e8667c0", "5544757b63b565e6774e61121ba15cfa98206f1629455df924f60d942a861d56"]
+  default = [
+    "arn:aws:iam::960556738724:root",
+    "arn:aws:iam::012986738649:root",
+  ]
 }
 
 variable "azure_dap_export_allowed_cidrs" {

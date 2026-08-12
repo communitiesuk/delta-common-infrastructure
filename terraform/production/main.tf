@@ -44,7 +44,7 @@ locals {
   cloudwatch_log_expiration_days       = 731
   patch_cloudwatch_log_expiration_days = 90
   s3_log_expiration_days               = 731
-  all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk", "Group-DLUHCDeltaNotifications@softwire.com", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
+  all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
 }
 data "aws_route53_zone" "private" {
   name         = "vpc.local"
@@ -254,7 +254,7 @@ module "marklogic" {
       allowed_cidrs = var.azure_dap_export_allowed_cidrs
     }
   ]
-  s151_external_canonical_users = var.s151_external_canonical_users
+  s151_external_aws_principal_arns = var.s151_external_aws_principal_arns
   dap_job_notification_emails = concat(
     local.all_notifications_email_addresses,
     ["deltastatsupport@communities.gov.uk"]
