@@ -9,14 +9,6 @@ locals {
       tls_allowed_domains  = []
       sid_offset           = 100
     }
-    jaspersoft = {
-      cidr                 = local.jaspersoft_cidr_10
-      http_allowed_domains = []
-      tls_allowed_domains = [
-        "archive.apache.org", # to download Tomcat
-      ]
-      sid_offset = 200
-    }
     github_runner = {
       cidr                 = local.github_runner_cidr_10
       http_allowed_domains = []
@@ -185,7 +177,6 @@ locals {
     aws_subnet.ml_private_subnets,
     aws_subnet.ml_restore_rehearsal_private_subnets,
     aws_subnet.mailhog,
-    aws_subnet.jaspersoft,
     aws_subnet.auth_service,
     [aws_subnet.dap_export_rotation_lambda],
     [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server, aws_subnet.github_runner]

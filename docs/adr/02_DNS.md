@@ -26,7 +26,7 @@ Note that the delegation of delta.communities.gov.uk currently has a high TTL th
 
 ## Design
 
-We've opted to use separate CloudFront distributions for each application (CPM, Delta, Delta API, Keycloak, Jasper Reports).
+We've opted to use separate CloudFront distributions for each application (CPM, Delta, Delta API).
 Delta is the only application that will benefit to any significant degree, we have used CloudFront for all of them mostly for consistency's sake.
 
 We'll use ACM for certificates, requesting a certificate for each application domain in both the us-east-1 and eu-west-1 region for CloudFront and ALBs respectively.

@@ -54,6 +54,5 @@ locals {
         "147.161.140.0/23",
       ]
     )
-    jaspersoft = local.all_distribution_ip_allowlist
   }
 }

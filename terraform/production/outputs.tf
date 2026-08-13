@@ -81,11 +81,6 @@ output "gh_runner_private_key" {
   sensitive = true
 }
 
-output "jaspersoft_ssh_private_key" {
-  value     = tls_private_key.jaspersoft_ssh_key.private_key_openssh
-  sensitive = true
-}
-
 output "ml_hostname" {
   value = module.marklogic.ml_hostname
 }

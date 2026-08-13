@@ -72,13 +72,12 @@ Reserved instances are a billing construct, and not configured in code like the 
 
 | Instance Type | Count | Used by |
 |-----|:-----:|-----|
-| c6a.xlarge | 3 | Production Delta website |
-| r5a.8xlarge | 3 | Production ML |
-| m6a.large | 1 | Production JasperSoft |
-| t3a.2xlarge | 3 | Staging ML |
-| t3a.large | 6 | Test ML, Test/Staging Delta website |
-| t3a.medium (2 Linux, 3 Windows) | 5 | Test/Staging JasperSoft + Test/Staging/Prod AD management server |
-| t3.medium (Windows) | 2 | Staging/Prod LDAP CA |
+| c6a.xlarge |   3   | Production Delta website |
+| r5a.8xlarge |   3   | Production ML |
+| t3a.2xlarge |   3   | Staging ML |
+| t3a.large |   6   | Test ML, Test/Staging Delta website |
+| t3a.medium (3 Windows) |   3   |  Test/Staging/Prod AD management server |
+| t3.medium (Windows) |   2   | Staging/Prod LDAP CA |
 
 ## Pull Request Formatting issues
 
@@ -184,17 +183,6 @@ If you are managing DNS for one of the domains, then create the necessary DNS re
 are created. Do this with the dns_records module.
 
 We use an origin timeout of 180 for the Delta website. This is above the normal limit of 60 and requires requesting a quota increase for the account from AWS support, which can be done [through the AWS console](https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&limitType=service-code-cloudfront-distributions).
-
-### 8 JasperReports server
-
-Follow the setup instructions in the module readme.
-Make sure the `jasper_s3_bucket` variable is set correctly.
-
-```sh
-terraform apply -target module.jaspersoft
-```
-
-Once the server has initialised JasperReports should be available at `https://reporting.delta.<domain>`.
 
 ### 9 Applications
 
