@@ -103,9 +103,12 @@ resource "aws_ssm_maintenance_window_task" "ad_management_server_patch" {
         values = ["Install"]
       }
 
+      # NoReboot: AD/CA should not auto-reboot mid-window. RebootIfNeeded has left
+      # AWS-RunPatchBaseline InProgress after a successful install (stuck after
+      # "Posting metrics"); reboot separately if InstalledPendingReboot > 0.
       parameter {
         name   = "RebootOption"
-        values = ["RebootIfNeeded"]
+        values = ["NoReboot"]
       }
 
       parameter {
@@ -156,7 +159,7 @@ resource "aws_ssm_maintenance_window_task" "ca_server_patch" {
 
       parameter {
         name   = "RebootOption"
-        values = ["RebootIfNeeded"]
+        values = ["NoReboot"]
       }
 
       parameter {
