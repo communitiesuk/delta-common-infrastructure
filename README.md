@@ -202,13 +202,7 @@ Run a full `terraform apply` to create any remaining resources.
 
 Continue with the setup instructions in the common-payments-module and then delta repositories.
 
-### 10 API Swagger static files
-
-The static files in the api/docs/static-site folder in the delta repository should be uploaded to the
-relevant S3 bucket (name `dluhc-delta-api-swagger-{environment}`) in each environment to serve the swagger interface
-for the API. This can be done via the AWS console or CLI.
-
-### 11 AWS Shield Advanced manual config
+### 10 AWS Shield Advanced manual config
 
 NOTE: This is only relevant if you have enabled AWS Shield Advanced protection.
 Navigate to the [AWS Shield page](https://us-east-1.console.aws.amazon.com/wafv2/shieldv2?region=us-east-1#/overview)

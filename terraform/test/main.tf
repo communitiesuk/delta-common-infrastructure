@@ -187,7 +187,6 @@ module "cloudfront_distributions" {
   apply_aws_shield                         = local.apply_aws_shield
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
-  swagger_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_global_arn              = module.notifications.alarms_sns_topic_global_arn
   wait_for_deployment                      = false
   security_sns_topic_global_arn            = module.notifications.security_sns_topic_global_arn

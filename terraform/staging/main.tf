@@ -176,7 +176,6 @@ module "cloudfront_distributions" {
   apply_aws_shield                         = local.apply_aws_shield
   waf_cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
   cloudfront_access_s3_log_expiration_days = local.s3_log_expiration_days
-  swagger_s3_log_expiration_days           = local.s3_log_expiration_days
   alarms_sns_topic_global_arn              = module.notifications.alarms_sns_topic_global_arn
   wait_for_deployment                      = true
   security_sns_topic_global_arn            = module.notifications.security_sns_topic_global_arn
@@ -187,9 +186,7 @@ module "cloudfront_distributions" {
       aliases             = ["delta.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["delta"].arn
     }
-    # Home Connections claim their servers are in the UK, but they currently get geo-located to US
-    # Home Connections developer environments are in India
-    geo_restriction_countries = ["GB", "IE", "US", "IN"]
+    geo_restriction_countries = ["GB", "IE"]
     # We don't want to IP restrict staging until we are able to confirm who needs access
     client_error_rate_alarm_threshold_percent = 15
     origin_read_timeout                       = 180 # Required quota increase
@@ -200,9 +197,7 @@ module "cloudfront_distributions" {
       aliases             = ["api.delta.${var.primary_domain}"]
       acm_certificate_arn = module.communities_only_ssl_certs.cloudfront_certs["api"].arn
     }
-    # Home Connections claim their servers are in the UK, but they currently get geo-located to US
-    # Home Connections developer environments are in India
-    geo_restriction_countries = ["GB", "IE", "US", "IN"]
+    geo_restriction_countries = ["GB", "IE"]
     ip_allowlist              = var.ip_allowlist
   }
   auth = {
