@@ -184,7 +184,7 @@ are created. Do this with the dns_records module.
 
 We use an origin timeout of 180 for the Delta website. This is above the normal limit of 60 and requires requesting a quota increase for the account from AWS support, which can be done [through the AWS console](https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&limitType=service-code-cloudfront-distributions).
 
-### 9 Applications
+### 8 Applications
 
 Run a full `terraform apply` to create any remaining resources.
 
