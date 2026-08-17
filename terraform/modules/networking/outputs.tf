@@ -55,11 +55,6 @@ output "delta_website_subnets" {
   description = "Three private /24 subnets for the Delta website instances"
 }
 
-output "jaspersoft_private_subnets" {
-  value       = aws_subnet.jaspersoft
-  description = "Two private /24 subnets for Jaspersoft instance and database"
-}
-
 output "github_runner_private_subnet" {
   value       = aws_subnet.github_runner
   description = "Private /24 subnet for GitHub runner instance"
