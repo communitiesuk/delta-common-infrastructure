@@ -256,7 +256,7 @@ module "windows_patch_maintenance_window" {
   source = "../modules/maintenance_window"
 
   environment       = local.environment
-  prefix            = "windows-instance-patching"
+  prefix            = "ad-ca-instance-patching"
   schedule          = "cron(00 06 ? * THU *)"
   duration          = 4
   cutoff            = 1
