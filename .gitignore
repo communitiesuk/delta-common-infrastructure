@@ -1,5 +1,6 @@
 #IDE files
 .idea
+.vscode/*
 
 # Local .terraform directories
 **/.terraform/*
@@ -36,11 +37,10 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-.vscode
-
 lambdaFunction.zip
 
 manual_scripts/logs/logs
 
 /terraform/*/waf-problematic-ip-update.zip
 /terraform/modules/marklogic/dap_export_secret_rotation.zip
+/terraform/modules/marklogic/dap_export_promoter.zip
