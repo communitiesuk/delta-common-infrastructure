@@ -36,17 +36,13 @@ module "windows_patch_log_group" {
   log_group_names    = [local.windows_patch_log_group_name]
 }
 
-# CloudWatch Logs + metrics for SSM patch output.
-# DescribeLogGroups and PutMetricData do not support resource-level permissions.
-# PatchBaselineOperations "Posting metrics" calls PutMetricData; without it (or if
-# the call hangs on a blocked endpoint) AWS-RunPatchBaseline never returns status to SSM.
+# CloudWatch Logs permissions for SSM patch output.
+# DescribeLogGroups does not support resource-level permissions (SSM agent calls it
+# with an empty log-group ARN); other actions stay scoped to this log group.
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "ad_management_patch_logs" {
   statement {
-    actions = [
-      "logs:DescribeLogGroups",
-      "cloudwatch:PutMetricData",
-    ]
+    actions   = ["logs:DescribeLogGroups"]
     resources = ["*"]
   }
 
@@ -66,7 +62,7 @@ data "aws_iam_policy_document" "ad_management_patch_logs" {
 
 resource "aws_iam_policy" "ad_management_patch_logs" {
   name        = "ad-management-patch-logs-${var.environment}"
-  description = "Allow Windows AD/CA patch instances to write SSM patch logs and Patch Manager metrics"
+  description = "Allow Windows AD/CA patch instances to write SSM patch output"
   policy      = data.aws_iam_policy_document.ad_management_patch_logs.json
 }
 
