@@ -42,12 +42,6 @@ variable "github_actions_runner_token" {
   description = "Token to register the VPC internal GitHub runner with GitHub. This token is short lived and only needs to be provided for the apply where the GitHub runner is created."
 }
 
-# Bucket containing JasperReports zip, see modules/jaspersoft/README for details
-variable "jasper_s3_bucket" {
-  type    = string
-  default = "dluhc-jaspersoft-bin"
-}
-
 variable "ecr_repo_account_id" {
   type        = string
   description = "AWS account id containing the ECR repo that ECS services will pull from"

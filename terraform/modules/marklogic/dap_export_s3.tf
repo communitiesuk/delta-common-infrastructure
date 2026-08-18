@@ -465,7 +465,7 @@ module "dap_export_job_window" {
 
   environment       = var.environment
   prefix            = "marklogic-dap-job"
-  schedule          = "cron(00 04 ? * * *)"
+  schedule          = "cron(00 45 04 ? * * *)"
   subscribed_emails = var.dap_job_notification_emails
 }
 

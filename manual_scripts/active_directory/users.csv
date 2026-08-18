@@ -8,6 +8,5 @@ paymentapprover,put password here,payment.approver@dluhcdata.local,Payment Appro
 cpmapp,put password here,cpm.app@dluhcdata.local,CPM App,,,,cpm.app,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 sap,put password here,sap@dluhcdata.local,SAP,,,,sap,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 eclaims,put password here,eclaims@dluhcdata.local,Eclaims,,,,eclaims,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
-jasperreports,put password here,jasperreports@dluhcdata.local,Jasper Reports app,,,,jasperreports,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 keycloak,put password here,keycloak@dluhcdata.local,Keycloak app,,,,keycloak,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"
 deltaorbeon (see delta-service in datamart production for appropriate roles),put password here,deltaorbeon@dluhcdata.local,Delta Orbeon Service,,,,deltaorbeon,"OU=Users,OU=dluhcdata,DC=dluhcdata,DC=local"  
