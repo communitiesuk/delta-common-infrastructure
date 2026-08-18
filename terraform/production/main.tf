@@ -254,11 +254,7 @@ module "marklogic" {
       allowed_cidrs = var.azure_dap_export_allowed_cidrs
     }
   ]
-  s151_external_aws_principal_arns = var.s151_external_aws_principal_arns
-  dap_job_notification_emails = concat(
-    local.all_notifications_email_addresses,
-    ["deltastatsupport@communities.gov.uk"]
-  )
+  s151_external_aws_principal_arns   = var.s151_external_aws_principal_arns
   backup_replication_bucket          = module.backup_replication_bucket.bucket
   ebs_backup_role_arn                = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn = module.ebs_backup.sns_topic_arn
