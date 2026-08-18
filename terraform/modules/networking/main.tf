@@ -9,14 +9,6 @@ locals {
       tls_allowed_domains  = []
       sid_offset           = 100
     }
-    jaspersoft = {
-      cidr                 = local.jaspersoft_cidr_10
-      http_allowed_domains = []
-      tls_allowed_domains = [
-        "archive.apache.org", # to download Tomcat
-      ]
-      sid_offset = 200
-    }
     github_runner = {
       cidr                 = local.github_runner_cidr_10
       http_allowed_domains = []
@@ -64,10 +56,15 @@ locals {
         "download.mozilla.org", ".mozilla.net", ".services.mozilla.com", ".mozilla.org",
         # CRL
         ".digicert.com",
-        # Allow connections to SSM.
+        # Allow connections to SSM, CloudWatch metrics, and CloudWatch Logs.
         # These would normally flow through the VPC endpoint, but if Active Directory's DNS forwarding is misconfigured they will instead go to the main region endpoint.
         # The AD Management server relies on SSM to join the domain, so allowing those connections makes it easier to fix.
+        # AWS-RunPatchBaseline hangs InProgress after "Posting metrics" if monitoring is blocked; SSM command output needs logs.
         "ssm.${data.aws_region.current.name}.amazonaws.com", "ssmmessages.${data.aws_region.current.name}.amazonaws.com", "ec2messages.${data.aws_region.current.name}.amazonaws.com",
+        "monitoring.${data.aws_region.current.name}.amazonaws.com",
+        "monitoring.${data.aws_region.current.name}.api.aws",
+        "logs.${data.aws_region.current.name}.amazonaws.com",
+        "logs.${data.aws_region.current.name}.api.aws",
         # Does not currently have an endpoint
         "ds.${data.aws_region.current.name}.amazonaws.com"
       ]
@@ -185,7 +182,6 @@ locals {
     aws_subnet.ml_private_subnets,
     aws_subnet.ml_restore_rehearsal_private_subnets,
     aws_subnet.mailhog,
-    aws_subnet.jaspersoft,
     aws_subnet.auth_service,
     [aws_subnet.dap_export_rotation_lambda],
     [aws_subnet.ldaps_ca_server, aws_subnet.ad_management_server, aws_subnet.github_runner]

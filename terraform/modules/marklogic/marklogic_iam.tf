@@ -130,8 +130,17 @@ resource "aws_iam_policy" "ml_dap_s3" {
 #tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "ml_dap_s3" {
   statement {
-    actions = ["s3:GetObject", "s3:GetBucketLocation", "s3:ListBucket", "s3:PutObject", "s3:DeleteObject"]
-    effect  = "Allow"
+    actions = [
+      "s3:AbortMultipartUpload",
+      "s3:DeleteObject",
+      "s3:GetBucketLocation",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListMultipartUploadParts",
+      "s3:PutObject",
+    ]
+    effect = "Allow"
     resources = [
       module.dap_export_bucket.bucket_arn,
       "${module.dap_export_bucket.bucket_arn}/*"

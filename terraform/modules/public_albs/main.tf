@@ -4,7 +4,7 @@
 
 # These are sent by CloudFront in the X-Cloudfront-Key header and verified by the ALB listeners
 resource "random_password" "cloudfront_keys" {
-  for_each = toset(["delta", "api", "auth", "cpm", "jaspersoft"])
+  for_each = toset(["delta", "api", "auth", "cpm"])
   length   = 24
   special  = false
 }

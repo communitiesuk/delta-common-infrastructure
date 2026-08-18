@@ -97,15 +97,6 @@ output "private_dns" {
   value = module.networking.private_dns
 }
 
-output "jaspersoft_private_ip" {
-  value = module.jaspersoft.instance_private_ip
-}
-
-output "jaspersoft_ssh_private_key" {
-  value     = tls_private_key.jaspersoft_ssh_key.private_key_openssh
-  sensitive = true
-}
-
 output "required_dns_records" {
   value = [for record in local.all_dns_records : record if !endswith(record.record_name, "${var.secondary_domain}.")]
 }

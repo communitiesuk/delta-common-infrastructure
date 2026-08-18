@@ -20,10 +20,9 @@
 Afterwards:
 
 * Run the three validation scripts in this folder against the original database and the restored one and check the output is the same.
-* Create three admin users with passwords taken from AWS Secrets Manager:
+* Create two admin users with passwords taken from AWS Secrets Manager:
   * admin, see "ml-admin-user-\<env>"
   * cpm-ml-admin, see "cpm-app-ml-password-\<env>"
-  * jasperreports, see "\<env>-jaspersoft-ml-password"
 * Update the post-migration-update-security.xqy query with the correct list of users to delete. Run it from the MarkLogic query console, targeting the Security database.
 * Enable app servers using the script from above
 * Run the Roxy deployment jobs from <https://github.com/communitiesuk/delta-marklogic-deploy> for both Delta and CPM.

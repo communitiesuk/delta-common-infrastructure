@@ -154,15 +154,28 @@ module "active_directory" {
   source  = "../modules/active_directory"
   edition = "Standard"
 
-  vpc                       = module.networking.vpc
-  domain_controller_subnets = module.networking.ad_private_subnets
-  management_server_subnet  = module.networking.ad_management_server_subnet
-  ldaps_ca_subnet           = module.networking.ldaps_ca_subnet
-  environment               = local.environment
-  rdp_ingress_sg_id         = module.bastion.bastion_security_group_id
-  private_dns               = module.networking.private_dns
-  management_instance_type  = "t3a.medium"
-  alarms_sns_topic_arn      = module.notifications.alarms_sns_topic_arn
+  vpc                                  = module.networking.vpc
+  domain_controller_subnets            = module.networking.ad_private_subnets
+  management_server_subnet             = module.networking.ad_management_server_subnet
+  ldaps_ca_subnet                      = module.networking.ldaps_ca_subnet
+  environment                          = local.environment
+  rdp_ingress_sg_id                    = module.bastion.bastion_security_group_id
+  private_dns                          = module.networking.private_dns
+  management_instance_type             = "t3a.medium"
+  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
+  patch_maintenance_window             = module.windows_patch_maintenance_window
+  patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
+}
+
+module "windows_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment       = local.environment
+  prefix            = "ad-ca-instance-patching"
+  schedule          = "cron(00 06 ? * SUN *)"
+  duration          = 4
+  cutoff            = 1
+  subscribed_emails = local.all_notifications_email_addresses
 }
 
 module "marklogic_patch_maintenance_window" {
@@ -241,11 +254,7 @@ module "marklogic" {
       allowed_cidrs = var.azure_dap_export_allowed_cidrs
     }
   ]
-  s151_external_aws_principal_arns = var.s151_external_aws_principal_arns
-  dap_job_notification_emails = concat(
-    local.all_notifications_email_addresses,
-    ["deltastatsupport@communities.gov.uk"]
-  )
+  s151_external_aws_principal_arns   = var.s151_external_aws_principal_arns
   backup_replication_bucket          = module.backup_replication_bucket.bucket
   ebs_backup_role_arn                = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn = module.ebs_backup.sns_topic_arn
@@ -372,46 +381,6 @@ module "cloudfront_distributions" {
     geo_restriction_countries = ["GB", "IE", "DE"] # SAP middleware operates from AWS located in Germany
     origin_read_timeout       = 180                # Required quota increase
   }
-}
-
-resource "tls_private_key" "jaspersoft_ssh_key" {
-  algorithm = "RSA"
-  rsa_bits  = 2048
-}
-
-resource "aws_key_pair" "jaspersoft_ssh_key" {
-  key_name   = "prd-jaspersoft-ssh-key"
-  public_key = tls_private_key.jaspersoft_ssh_key.public_key_openssh
-}
-
-module "jaspersoft_patch_maintenance_window" {
-  source = "../modules/maintenance_window"
-
-  environment       = local.environment
-  prefix            = "jasper-instance-patching"
-  schedule          = "cron(00 06 ? * WED *)"
-  subscribed_emails = local.all_notifications_email_addresses
-}
-
-module "jaspersoft" {
-  source                               = "../modules/jaspersoft"
-  private_instance_subnet              = module.networking.jaspersoft_private_subnets[0]
-  database_subnets                     = module.networking.jaspersoft_private_subnets
-  vpc                                  = module.networking.vpc
-  prefix                               = "dluhc-prd-"
-  ssh_key_name                         = aws_key_pair.jaspersoft_ssh_key.key_name
-  allow_ssh_from_sg_id                 = module.bastion.bastion_security_group_id
-  jaspersoft_binaries_s3_bucket        = var.jasper_s3_bucket
-  private_dns                          = module.networking.private_dns
-  environment                          = local.environment
-  patch_maintenance_window             = module.jaspersoft_patch_maintenance_window
-  instance_type                        = "m6a.large"
-  java_max_heap                        = "12G"
-  extra_instance_policy_arn            = module.session_manager_config.policy_arn
-  patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
-  config_s3_log_expiration_days        = local.s3_log_expiration_days
-  app_cloudwatch_log_expiration_days   = local.cloudwatch_log_expiration_days
-  alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }
 
 module "guardduty" {
