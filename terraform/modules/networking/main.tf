@@ -56,10 +56,15 @@ locals {
         "download.mozilla.org", ".mozilla.net", ".services.mozilla.com", ".mozilla.org",
         # CRL
         ".digicert.com",
-        # Allow connections to SSM.
+        # Allow connections to SSM, CloudWatch metrics, and CloudWatch Logs.
         # These would normally flow through the VPC endpoint, but if Active Directory's DNS forwarding is misconfigured they will instead go to the main region endpoint.
         # The AD Management server relies on SSM to join the domain, so allowing those connections makes it easier to fix.
+        # AWS-RunPatchBaseline hangs InProgress after "Posting metrics" if monitoring is blocked; SSM command output needs logs.
         "ssm.${data.aws_region.current.name}.amazonaws.com", "ssmmessages.${data.aws_region.current.name}.amazonaws.com", "ec2messages.${data.aws_region.current.name}.amazonaws.com",
+        "monitoring.${data.aws_region.current.name}.amazonaws.com",
+        "monitoring.${data.aws_region.current.name}.api.aws",
+        "logs.${data.aws_region.current.name}.amazonaws.com",
+        "logs.${data.aws_region.current.name}.api.aws",
         # Does not currently have an endpoint
         "ds.${data.aws_region.current.name}.amazonaws.com"
       ]
