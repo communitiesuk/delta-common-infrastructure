@@ -54,10 +54,6 @@ variable "ebs_backup_completed_sns_topic_arn" {
   type = string
 }
 
-variable "dap_job_notification_emails" {
-  type = list(string)
-}
-
 variable "patch_maintenance_window" {
   type = object({
     window_id            = string

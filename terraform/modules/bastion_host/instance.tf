@@ -88,8 +88,8 @@ resource "aws_security_group_rule" "http_egress" {
 resource "aws_launch_template" "bastion" {
   name_prefix = "${var.name_prefix}launch-template-"
   image_id    = var.custom_ami != "" ? var.custom_ami : data.aws_ami.aws_linux_2[0].image_id
-  # A t3.nano should be perfectly sufficient for a simple bastion host
-  instance_type = "t3.nano"
+  # Upgraded to t3.micro as t3.nano had insufficient memory
+  instance_type = "t3.micro"
   network_interfaces {
     associate_public_ip_address = false
     security_groups             = [aws_security_group.bastion.id]

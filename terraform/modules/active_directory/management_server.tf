@@ -15,7 +15,10 @@ resource "aws_instance" "ad_management_server" {
   }
   user_data = file("${path.module}/user_data.txt")
 
-  tags = { Name = "ad-management-server-${var.environment}" }
+  tags = {
+    Name                = "ad-management-server-${var.environment}"
+    system-drive-backup = var.environment
+  }
 
   lifecycle {
     ignore_changes = [user_data, ami]
