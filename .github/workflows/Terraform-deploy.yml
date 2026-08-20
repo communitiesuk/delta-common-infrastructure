@@ -90,7 +90,14 @@ jobs:
           path: |
             ${{ env.TF_WORKING_DIRECTORY }}/tfplan
             ${{ env.TF_WORKING_DIRECTORY }}/tfplan.txt
-          retention-days: 5
+          retention-days: 3
+
+      - name: Save Lambda Packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: lambda-packages
+          path: terraform/**/*.zip
+          retention-days: 3
 
       - name: Post Plan Summary
         if: always()
@@ -144,6 +151,12 @@ jobs:
         with:
           name: terraform-plan
           path: ${{ env.TF_WORKING_DIRECTORY }}
+
+      - name: Download Lambda Packages
+        uses: actions/download-artifact@v8
+        with:
+          name: lambda-packages
+          path: terraform
 
       - name: Terraform apply
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
