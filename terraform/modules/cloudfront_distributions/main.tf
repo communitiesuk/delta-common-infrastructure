@@ -93,9 +93,7 @@ module "api_cloudfront" {
   cloudfront_domain              = var.api.domain
   is_ipv6_enabled                = var.api.ip_allowlist == null
   geo_restriction_countries      = var.api.geo_restriction_countries
-  environment                    = var.environment
   apply_aws_shield               = var.apply_aws_shield
-  swagger_s3_log_expiration_days = var.swagger_s3_log_expiration_days
   wait_for_deployment            = var.wait_for_deployment
 
 }

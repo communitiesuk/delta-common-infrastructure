@@ -30,10 +30,6 @@ variable "cloudfront_access_s3_log_expiration_days" {
   type = number
 }
 
-variable "swagger_s3_log_expiration_days" {
-  type = number
-}
-
 variable "delta" {
   type = object({
     alb = object({

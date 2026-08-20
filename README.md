@@ -72,13 +72,12 @@ Reserved instances are a billing construct, and not configured in code like the 
 
 | Instance Type | Count | Used by |
 |-----|:-----:|-----|
-| c6a.xlarge | 3 | Production Delta website |
-| r5a.8xlarge | 3 | Production ML |
-| m6a.large | 1 | Production JasperSoft |
-| t3a.2xlarge | 3 | Staging ML |
-| t3a.large | 6 | Test ML, Test/Staging Delta website |
-| t3a.medium (2 Linux, 3 Windows) | 5 | Test/Staging JasperSoft + Test/Staging/Prod AD management server |
-| t3.medium (Windows) | 2 | Staging/Prod LDAP CA |
+| c6a.xlarge |   3   | Production Delta website |
+| r5a.8xlarge |   3   | Production ML |
+| t3a.2xlarge |   3   | Staging ML |
+| t3a.large |   6   | Test ML, Test/Staging Delta website |
+| t3a.medium (3 Windows) |   3   |  Test/Staging/Prod AD management server |
+| t3.medium (Windows) |   2   | Staging/Prod LDAP CA |
 
 ## Pull Request Formatting issues
 
@@ -185,30 +184,13 @@ are created. Do this with the dns_records module.
 
 We use an origin timeout of 180 for the Delta website. This is above the normal limit of 60 and requires requesting a quota increase for the account from AWS support, which can be done [through the AWS console](https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&limitType=service-code-cloudfront-distributions).
 
-### 8 JasperReports server
-
-Follow the setup instructions in the module readme.
-Make sure the `jasper_s3_bucket` variable is set correctly.
-
-```sh
-terraform apply -target module.jaspersoft
-```
-
-Once the server has initialised JasperReports should be available at `https://reporting.delta.<domain>`.
-
-### 9 Applications
+### 8 Applications
 
 Run a full `terraform apply` to create any remaining resources.
 
 Continue with the setup instructions in the common-payments-module and then delta repositories.
 
-### 10 API Swagger static files
-
-The static files in the api/docs/static-site folder in the delta repository should be uploaded to the
-relevant S3 bucket (name `dluhc-delta-api-swagger-{environment}`) in each environment to serve the swagger interface
-for the API. This can be done via the AWS console or CLI.
-
-### 11 AWS Shield Advanced manual config
+### 10 AWS Shield Advanced manual config
 
 NOTE: This is only relevant if you have enabled AWS Shield Advanced protection.
 Navigate to the [AWS Shield page](https://us-east-1.console.aws.amazon.com/wafv2/shieldv2?region=us-east-1#/overview)

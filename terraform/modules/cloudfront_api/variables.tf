@@ -3,10 +3,6 @@ variable "prefix" {
   type        = string
 }
 
-variable "environment" {
-  type = string
-}
-
 variable "access_logs_bucket_domain_name" {
   type = string
 }
@@ -49,10 +45,6 @@ variable "geo_restriction_countries" {
 
 variable "apply_aws_shield" {
   type = bool
-}
-
-variable "swagger_s3_log_expiration_days" {
-  type = number
 }
 
 variable "wait_for_deployment" {
