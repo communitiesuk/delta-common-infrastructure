@@ -56,6 +56,16 @@ resource "aws_s3_object" "ml_final_forest_state_script" {
   etag   = filemd5("${path.module}/final_forest_state.xqy")
 }
 
+locals {
+  imds_aws_credentials_helper = file("${path.module}/imds_aws_credentials.inc.sh")
+  patch_script_vars = {
+    ENVIRONMENT                 = var.environment
+    MARKLOGIC_CONFIG_BUCKET     = module.config_files_bucket.bucket
+    AWS_REGION                  = data.aws_region.current.name
+    IMDS_AWS_CREDENTIALS_HELPER = local.imds_aws_credentials_helper
+  }
+}
+
 resource "aws_ssm_maintenance_window_task" "ml_patch" {
   count           = length(var.host_names)
   name            = "marklogic-patch-${var.environment}"
@@ -87,12 +97,7 @@ resource "aws_ssm_maintenance_window_task" "ml_patch" {
       parameter {
         name = "commands"
         values = [
-          templatefile("${path.module}/patch.sh",
-            {
-              ENVIRONMENT             = var.environment,
-              MARKLOGIC_CONFIG_BUCKET = module.config_files_bucket.bucket,
-              AWS_REGION              = data.aws_region.current.name
-          })
+          templatefile("${path.module}/patch.sh", local.patch_script_vars)
         ]
       }
 
@@ -135,12 +140,7 @@ resource "aws_ssm_maintenance_window_task" "ml_restart" {
       parameter {
         name = "commands"
         values = [
-          templatefile("${path.module}/restart_server.sh",
-            {
-              ENVIRONMENT             = var.environment,
-              MARKLOGIC_CONFIG_BUCKET = module.config_files_bucket.bucket,
-              AWS_REGION              = data.aws_region.current.name
-        })]
+        templatefile("${path.module}/restart_server.sh", local.patch_script_vars)]
       }
 
       cloudwatch_config {
@@ -181,12 +181,7 @@ resource "aws_ssm_maintenance_window_task" "ml_final_forest_check" {
       parameter {
         name = "commands"
         values = [
-          templatefile("${path.module}/final_forest_state.sh",
-            {
-              ENVIRONMENT             = var.environment,
-              MARKLOGIC_CONFIG_BUCKET = module.config_files_bucket.bucket,
-              AWS_REGION              = data.aws_region.current.name
-        })]
+        templatefile("${path.module}/final_forest_state.sh", local.patch_script_vars)]
       }
 
       cloudwatch_config {
