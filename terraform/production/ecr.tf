@@ -33,6 +33,10 @@ resource "aws_iam_user" "delta_auth_ci" {
 
 locals {
   repositories = {
+    "delta" = {
+      repo_name = "delta",
+      push_user = aws_iam_user.delta_ci.name
+    },
     "cpm" = {
       repo_name = "cpm",
       push_user = aws_iam_user.cpm_ci.name
