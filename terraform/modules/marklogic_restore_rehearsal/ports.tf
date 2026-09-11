@@ -35,11 +35,6 @@ locals {
     "description"       = "HTTP to Delta deploy port"
     "log_name_fragment" = "deploy"
     }, {
-    "from_port"         = 8060
-    "to_port"           = 8062
-    "description"       = "HTTP to CPM DCLG BI ports"
-    "log_name_fragment" = "cpm-dclg-bi"
-    }, {
     "from_port"         = 8140
     "to_port"           = 8143
     "description"       = "HTTP to CPM ports"
