@@ -323,8 +323,8 @@ pass tls ${local.github_runner_cidr_10} [1024:] -> any 443 (tls.sni; content:"pr
 
 # The drop http and tls seem to kick in earlier than only dropping established TCP flows
 drop http any any -> any any (msg:"Drop HTTP traffic without allowlisted Host header"; sid:5001; rev:1;)
-drop tls  any any -> any any (msg:"Drop TLS traffic without allowlisted SNI"; sid:5002; rev:1;)
-drop tcp  any any -> any any (msg:"Drop remaining established TCP traffic"; flow:established; sid:5003; rev:1;)
+drop tls any any -> any any (msg:"Drop TLS traffic without allowlisted SNI"; flow:to_server; ssl_state:client_hello; sid:5002; rev:2;)
+drop tcp any any -> any any (msg:"Drop remaining established TCP traffic"; flow:established; ssl_state:client_hello; sid:5003; rev:2;)
 # Drop other traffic
 drop tcp  ${aws_vpc.vpc.cidr_block} any <> any ![80,443] (msg:"Drop TCP on ports except 80 and 443"; sid:5004; rev:1;)
 drop ip   any any <> any any (msg:"Drop non-TCP traffic"; ip_proto:!TCP;sid:5005; rev:1;)
