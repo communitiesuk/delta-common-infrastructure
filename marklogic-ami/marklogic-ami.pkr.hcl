@@ -33,7 +33,7 @@ variable "ssh_username" {
 # Base AMI to build from. Pass as parameter, e.g. -var 'source_ami_id=ami-xxx'
 variable "source_ami_id" {
   type    = string
-  default = "ami-00c039f39abdf422b"
+  default = "ami-01d713fb0d2180918"
 }
 
 variable "vpc_id" {
