@@ -27,6 +27,7 @@ locals {
         "cache.ruby-lang.org",
         "corretto.github.io", # Corretto metadata for actions/setup-java (indexmap_with_checksum.json)
         "corretto.aws",
+        "developer.marklogic.com",
         ".gradle.org",
         "repo.maven.apache.org",
         "repo1.maven.org"

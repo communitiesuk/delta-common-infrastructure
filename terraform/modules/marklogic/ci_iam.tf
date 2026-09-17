@@ -32,3 +32,16 @@ resource "aws_iam_role_policy_attachment" "github_actions_delta_marklogic_deploy
   role       = aws_iam_role.github_actions_delta_marklogic_deploy_secret_reader.name
   policy_arn = aws_iam_policy.read_marklogic_deploy_secrets.arn
 }
+
+resource "aws_iam_role_policy" "github_actions_mlcp_import" {
+  name = "marklogic-csv-import"
+  role = aws_iam_role.github_actions_delta_marklogic_deploy_secret_reader.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["s3:GetObject", "s3:GetObjectVersion"]
+      Resource = "${module.config_files_bucket.bucket_arn}/*"
+    }]
+  })
+}
