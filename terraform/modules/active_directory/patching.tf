@@ -63,6 +63,23 @@ locals {
     Get-Service bits, wuauserv, UsoSvc | ForEach-Object { Write-Output ($_.Name + '=' + $_.Status) }
     exit 0
   EOT
+
+  # Install with AllowReboot=False avoids exit 3010 false Failed on the install task.
+  # exit 3010 asks SSM Agent to reboot and re-run this script; after reboot markers clear → exit 0.
+  windows_pending_reboot_script = <<-EOT
+    $ErrorActionPreference = 'Continue'
+    Write-Output ("Computer=" + $env:COMPUTERNAME)
+    $wu = Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired'
+    $cbs = Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending'
+    Write-Output ("WU_RebootRequired=" + $wu)
+    Write-Output ("CBS_RebootPending=" + $cbs)
+    if ($wu -or $cbs) {
+      Write-Output 'Pending reboot detected; requesting SSM Agent reboot (exit 3010)'
+      exit 3010
+    }
+    Write-Output 'No reboot pending; continuing'
+    exit 0
+  EOT
 }
 
 module "windows_patch_log_group" {
@@ -157,9 +174,51 @@ resource "aws_ssm_maintenance_window_task" "ad_management_server_patch" {
         values = ["Install"]
       }
 
+      # Avoid exit 3010 on the install task (SSM marks Failed if reboot-resume races).
+      # Reboot is a separate MW task below.
       parameter {
         name   = "AllowReboot"
-        values = ["True"]
+        values = ["False"]
+      }
+
+      cloudwatch_config {
+        cloudwatch_log_group_name = module.windows_patch_log_group.log_group_names[0]
+        cloudwatch_output_enabled = true
+      }
+    }
+  }
+}
+
+resource "aws_ssm_maintenance_window_task" "ad_management_server_reboot" {
+  name            = "ad-management-server-reboot-${var.environment}"
+  window_id       = var.patch_maintenance_window.window_id
+  max_concurrency = 1
+  max_errors      = 0
+  priority        = 2
+  task_arn        = "AWS-RunPowerShellScript"
+  task_type       = "RUN_COMMAND"
+  cutoff_behavior = "CONTINUE_TASK"
+
+  targets {
+    key    = "WindowTargetIds"
+    values = [aws_ssm_maintenance_window_target.ad_management_server.id]
+  }
+
+  task_invocation_parameters {
+    run_command_parameters {
+      comment         = "Reboot AD management server if Windows Update left a pending reboot"
+      timeout_seconds = 3600
+
+      service_role_arn = var.patch_maintenance_window.service_role_arn
+      notification_config {
+        notification_arn    = var.patch_maintenance_window.errors_sns_topic_arn
+        notification_events = ["TimedOut", "Cancelled", "Failed"]
+        notification_type   = "Command"
+      }
+
+      parameter {
+        name   = "commands"
+        values = [local.windows_pending_reboot_script]
       }
 
       cloudwatch_config {
@@ -176,7 +235,7 @@ resource "aws_ssm_maintenance_window_task" "ca_server_patch" {
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
   max_errors      = 0
-  priority        = 2
+  priority        = 3
   task_arn        = "AWS-InstallWindowsUpdates"
   task_type       = "RUN_COMMAND"
   cutoff_behavior = "CONTINUE_TASK"
@@ -205,7 +264,48 @@ resource "aws_ssm_maintenance_window_task" "ca_server_patch" {
 
       parameter {
         name   = "AllowReboot"
-        values = ["True"]
+        values = ["False"]
+      }
+
+      cloudwatch_config {
+        cloudwatch_log_group_name = module.windows_patch_log_group.log_group_names[0]
+        cloudwatch_output_enabled = true
+      }
+    }
+  }
+}
+
+resource "aws_ssm_maintenance_window_task" "ca_server_reboot" {
+  count           = var.include_ca ? 1 : 0
+  name            = "ca-server-reboot-${var.environment}"
+  window_id       = var.patch_maintenance_window.window_id
+  max_concurrency = 1
+  max_errors      = 0
+  priority        = 4
+  task_arn        = "AWS-RunPowerShellScript"
+  task_type       = "RUN_COMMAND"
+  cutoff_behavior = "CONTINUE_TASK"
+
+  targets {
+    key    = "WindowTargetIds"
+    values = [aws_ssm_maintenance_window_target.ca_server[0].id]
+  }
+
+  task_invocation_parameters {
+    run_command_parameters {
+      comment         = "Reboot CA server if Windows Update left a pending reboot"
+      timeout_seconds = 3600
+
+      service_role_arn = var.patch_maintenance_window.service_role_arn
+      notification_config {
+        notification_arn    = var.patch_maintenance_window.errors_sns_topic_arn
+        notification_events = ["TimedOut", "Cancelled", "Failed"]
+        notification_type   = "Command"
+      }
+
+      parameter {
+        name   = "commands"
+        values = [local.windows_pending_reboot_script]
       }
 
       cloudwatch_config {
@@ -221,7 +321,7 @@ resource "aws_ssm_maintenance_window_task" "ad_management_wu_history_refresh" {
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
   max_errors      = 0
-  priority        = 3
+  priority        = 5
   task_arn        = "AWS-RunPowerShellScript"
   task_type       = "RUN_COMMAND"
   cutoff_behavior = "CONTINUE_TASK"
@@ -262,7 +362,7 @@ resource "aws_ssm_maintenance_window_task" "ca_server_wu_history_refresh" {
   window_id       = var.patch_maintenance_window.window_id
   max_concurrency = 1
   max_errors      = 0
-  priority        = 4
+  priority        = 6
   task_arn        = "AWS-RunPowerShellScript"
   task_type       = "RUN_COMMAND"
   cutoff_behavior = "CONTINUE_TASK"
