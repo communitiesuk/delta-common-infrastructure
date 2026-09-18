@@ -33,6 +33,8 @@ resource "aws_iam_role_policy_attachment" "github_actions_delta_marklogic_deploy
   policy_arn = aws_iam_policy.read_marklogic_deploy_secrets.arn
 }
 
+# MLCP import filenames are dynamic, so restrict access to a dedicated prefix.
+# tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_role_policy" "github_actions_mlcp_import" {
   name = "marklogic-csv-import"
   role = aws_iam_role.github_actions_delta_marklogic_deploy_secret_reader.id
@@ -40,8 +42,8 @@ resource "aws_iam_role_policy" "github_actions_mlcp_import" {
     Version = "2012-10-17"
     Statement = [{
       Effect   = "Allow"
-      Action   = ["s3:GetObject", "s3:GetObjectVersion"]
-      Resource = "${module.config_files_bucket.bucket_arn}/*"
+      Action   = ["s3:GetObject"]
+      Resource = "${module.config_files_bucket.bucket_arn}/mlcp-imports/*"
     }]
   })
 }
