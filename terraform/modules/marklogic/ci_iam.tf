@@ -42,7 +42,7 @@ resource "aws_iam_role_policy" "github_actions_mlcp_import" {
     Version = "2012-10-17"
     Statement = [{
       Effect   = "Allow"
-      Action   = ["s3:GetObject"]
+      Action   = ["s3:GetObject", "s3:GetObjectVersion"]
       Resource = "${module.config_files_bucket.bucket_arn}/mlcp-imports/*"
     }]
   })
