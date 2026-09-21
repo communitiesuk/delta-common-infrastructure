@@ -20,7 +20,7 @@ on:
       source_ami_id:
         description: 'Base AMI ID'
         required: false
-        default: 'ami-00c039f39abdf422b'
+        default: 'ami-01d713fb0d2180918'
 
 env:
   AWS_REGION: ${{ github.event.inputs.region || 'eu-west-1' }}
