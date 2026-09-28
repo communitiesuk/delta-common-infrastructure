@@ -66,7 +66,7 @@ source "amazon-ebs" "marklogic" {
 
   ssh_timeout = "15m"
 
-  # Base AMI from source_ami_id variable (default ami-00c039f39abdf422b); filter used only if source_ami_id is empty
+  # Base AMI from source_ami_id variable; filter used only if source_ami_id is empty
   ami_description = "MarkLogic with hostname setup (private IP -> hostname before MarkLogic starts)"
 
   dynamic "source_ami_filter" {

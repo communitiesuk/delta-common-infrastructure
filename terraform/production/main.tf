@@ -229,7 +229,7 @@ module "marklogic" {
   private_subnets                    = module.networking.ml_private_subnets
   dap_export_rotation_lambda_subnets = module.networking.dap_export_rotation_lambda_subnets
   instance_type                      = "r7a.8xlarge"
-  marklogic_ami_version              = "11.3.6"
+  marklogic_ami_version              = "11.3.7"
   private_dns                        = module.networking.private_dns
   patch_maintenance_window           = module.marklogic_patch_maintenance_window
   data_volume = {
@@ -266,7 +266,7 @@ module "marklogic" {
   marklogic_host_name1                   = "${local.environment}-ml1.${data.aws_route53_zone.private.name}"
   marklogic_host_name2                   = "${local.environment}-ml2.${data.aws_route53_zone.private.name}"
   marklogic_host_name3                   = "${local.environment}-ml3.${data.aws_route53_zone.private.name}"
-  ami_id                                 = "ami-0a0ae2451350ad1f8"
+  ami_id                                 = "ami-0e345b0211582c950"
 }
 
 module "gh_runner" {
