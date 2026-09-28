@@ -51,7 +51,7 @@ resource "aws_instance" "main" {
   subnet_id                   = var.private_subnet.id
   vpc_security_group_ids      = [aws_security_group.main.id]
   ami                         = data.aws_ami.amazon_linux.id
-  instance_type               = "t3.nano"
+  instance_type               = "t3.micro"
   iam_instance_profile        = aws_iam_instance_profile.main.name
   key_name                    = aws_key_pair.main.key_name
   user_data_replace_on_change = true
