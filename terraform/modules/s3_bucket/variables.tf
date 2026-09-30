@@ -42,3 +42,9 @@ variable "object_lock_enabled" {
   description = "Whether the bucket is configured to allow AWS Object Lock"
   default     = false
 }
+
+variable "versioning_enabled" {
+  description = "Enable versioning. Disable only for disposable data that must be permanently deleted."
+  type        = bool
+  default     = true
+}
