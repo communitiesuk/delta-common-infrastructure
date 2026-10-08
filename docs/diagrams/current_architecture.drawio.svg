@@ -26,13 +26,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="0.84468154"
-     inkscape:cx="1257.2786"
-     inkscape:cy="1766.9381"
-     inkscape:window-width="1512"
-     inkscape:window-height="920"
-     inkscape:window-x="0"
-     inkscape:window-y="34"
+     inkscape:zoom="1.1945601"
+     inkscape:cx="1141.4244"
+     inkscape:cy="1247.7397"
+     inkscape:window-width="2464"
+     inkscape:window-height="1382"
+     inkscape:window-x="109"
+     inkscape:window-y="30"
      inkscape:window-maximized="1"
      inkscape:current-layer="g518" />
   <defs
@@ -142,14 +142,55 @@
          style="stop-color: rgb(243, 68, 130); stop-opacity: 1;"
          id="stop14" />
     </linearGradient>
+    <linearGradient
+       x1="1406.5"
+       y1="1046.63"
+       x2="1406.5"
+       y2="968.63"
+       id="mx-gradient-f78e04-1-d05c17-1-s-0-5"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0%"
+         style="stop-color: rgb(208, 92, 23); stop-opacity: 1;"
+         id="stop1-7" />
+      <stop
+         offset="100%"
+         style="stop-color: rgb(247, 142, 4); stop-opacity: 1;"
+         id="stop2-1" />
+    </linearGradient>
+    <linearGradient
+       x1="1406.5"
+       y1="1046.63"
+       x2="1406.5"
+       y2="968.63"
+       id="mx-gradient-f78e04-1-d05c17-1-s-0-5-2"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0%"
+         style="stop-color: rgb(208, 92, 23); stop-opacity: 1;"
+         id="stop1-7-1" />
+      <stop
+         offset="100%"
+         style="stop-color: rgb(247, 142, 4); stop-opacity: 1;"
+         id="stop2-1-0" />
+    </linearGradient>
+    <linearGradient
+       x1="1406.5"
+       y1="1046.63"
+       x2="1406.5"
+       y2="968.63"
+       id="mx-gradient-f78e04-1-d05c17-1-s-0-5-2-8"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0%"
+         style="stop-color: rgb(208, 92, 23); stop-opacity: 1;"
+         id="stop1-7-1-5" />
+      <stop
+         offset="100%"
+         style="stop-color: rgb(247, 142, 4); stop-opacity: 1;"
+         id="stop2-1-0-8" />
+    </linearGradient>
   </defs>
-  <rect
-     fill="#ffffff"
-     width="100%"
-     height="100%"
-     x="245.85857"
-     y="145.60556"
-     id="rect14" />
   <g
      id="g518">
     <g
@@ -250,21 +291,6 @@
              id="text18">AZ: eu-west-1a</text>
         </switch>
       </g>
-    </g>
-    <g
-       id="g21">
-      <rect
-         x="961"
-         y="1398.6"
-         width="680"
-         height="266.8"
-         rx="40.02"
-         ry="40.02"
-         fill="none"
-         stroke="#d79b00"
-         stroke-dasharray="3 3"
-         pointer-events="all"
-         id="rect20" />
     </g>
     <g
        id="g22">
@@ -928,6 +954,7 @@
      style="font-size: 12px; background-color: initial; font-weight: normal;">The infrastructure is defined as code with Terraform </xhtml:span>
   <xhtml:br />
 </xhtml:h1>
+
 https://github.com/communitiesuk/delta-common-infrastructure<xhtml:div
    style="font-size: 12px;">
   <xhtml:font
@@ -1125,6 +1152,7 @@ https://github.com/communitiesuk/delta-common-infrastructure<xhtml:div
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 13px; font-family: Helvetica; color: rgb(0, 204, 0); line-height: 1.2; pointer-events: all; background-color: rgb(255, 255, 255); white-space: nowrap;">Encrypted ACK and CLR notifications<xhtml:br />
+
 (from SAP)</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -1328,6 +1356,7 @@ https://github.com/communitiesuk/delta-common-infrastructure<xhtml:div
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">Container Registry <xhtml:br />
+
 (shared with staging)</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -2884,21 +2913,6 @@ https://github.com/communitiesuk/delta-common-infrastructure<xhtml:div
       </g>
     </g>
     <g
-       id="g208">
-      <path
-         d="M 1271 1526.74 L 1325.78 1526.74 L 1325.78 1581.52 L 1271 1581.52 Z"
-         fill="url(#mx-gradient-f78e04-1-d05c17-1-s-0)"
-         stroke="none"
-         pointer-events="all"
-         id="path207" />
-      <path
-         d="M 1288.22 1564.3 L 1307.78 1564.3 L 1307.78 1544.74 L 1288.22 1544.74 Z M 1309.35 1544.74 L 1312.48 1544.74 L 1312.48 1546.3 L 1309.35 1546.3 L 1309.35 1549.43 L 1312.48 1549.43 L 1312.48 1551 L 1309.35 1551 L 1309.35 1553.35 L 1312.48 1553.35 L 1312.48 1554.91 L 1309.35 1554.91 L 1309.35 1558.04 L 1312.48 1558.04 L 1312.48 1559.61 L 1309.35 1559.61 L 1309.35 1562.74 L 1312.48 1562.74 L 1312.48 1564.3 L 1309.35 1564.3 L 1309.35 1564.41 C 1309.35 1565.22 1308.69 1565.87 1307.89 1565.87 L 1307.78 1565.87 L 1307.78 1569 L 1306.22 1569 L 1306.22 1565.87 L 1303.09 1565.87 L 1303.09 1569 L 1301.52 1569 L 1301.52 1565.87 L 1299.17 1565.87 L 1299.17 1569 L 1297.61 1569 L 1297.61 1565.87 L 1294.48 1565.87 L 1294.48 1569 L 1292.91 1569 L 1292.91 1565.87 L 1289.78 1565.87 L 1289.78 1569 L 1288.22 1569 L 1288.22 1565.87 L 1288.11 1565.87 C 1287.31 1565.87 1286.65 1565.22 1286.65 1564.41 L 1286.65 1564.3 L 1284.3 1564.3 L 1284.3 1562.74 L 1286.65 1562.74 L 1286.65 1559.61 L 1284.3 1559.61 L 1284.3 1558.04 L 1286.65 1558.04 L 1286.65 1554.91 L 1284.3 1554.91 L 1284.3 1553.35 L 1286.65 1553.35 L 1286.65 1551 L 1284.3 1551 L 1284.3 1549.43 L 1286.65 1549.43 L 1286.65 1546.3 L 1284.3 1546.3 L 1284.3 1544.74 L 1286.65 1544.74 L 1286.65 1544.63 C 1286.65 1543.83 1287.31 1543.17 1288.11 1543.17 L 1288.22 1543.17 L 1288.22 1540.04 L 1289.78 1540.04 L 1289.78 1543.17 L 1292.91 1543.17 L 1292.91 1540.04 L 1294.48 1540.04 L 1294.48 1543.17 L 1297.61 1543.17 L 1297.61 1540.04 L 1299.17 1540.04 L 1299.17 1543.17 L 1301.52 1543.17 L 1301.52 1540.04 L 1303.09 1540.04 L 1303.09 1543.17 L 1306.22 1543.17 L 1306.22 1540.04 L 1307.78 1540.04 L 1307.78 1543.17 L 1307.89 1543.17 C 1308.69 1543.17 1309.35 1543.83 1309.35 1544.63 Z M 1299.17 1574.38 C 1299.17 1574.43 1299.13 1574.48 1299.08 1574.48 L 1278.14 1574.48 C 1278.09 1574.48 1278.04 1574.43 1278.04 1574.38 L 1278.04 1553.44 C 1278.04 1553.39 1278.09 1553.35 1278.14 1553.35 L 1282.74 1553.35 L 1282.74 1551.78 L 1278.14 1551.78 C 1277.22 1551.78 1276.48 1552.53 1276.48 1553.44 L 1276.48 1574.38 C 1276.48 1575.3 1277.22 1576.04 1278.14 1576.04 L 1299.08 1576.04 C 1299.99 1576.04 1300.74 1575.3 1300.74 1574.38 L 1300.74 1570.57 L 1299.17 1570.57 Z M 1320.3 1533.88 L 1320.3 1554.82 C 1320.3 1555.73 1319.56 1556.48 1318.64 1556.48 L 1314.04 1556.48 L 1314.04 1554.91 L 1318.64 1554.91 C 1318.7 1554.91 1318.74 1554.87 1318.74 1554.82 L 1318.74 1533.88 C 1318.74 1533.83 1318.7 1533.78 1318.64 1533.78 L 1297.71 1533.78 C 1297.65 1533.78 1297.61 1533.83 1297.61 1533.88 L 1297.61 1538.48 L 1296.04 1538.48 L 1296.04 1533.88 C 1296.04 1532.96 1296.79 1532.22 1297.71 1532.22 L 1318.64 1532.22 C 1319.56 1532.22 1320.3 1532.96 1320.3 1533.88 Z"
-         fill="#ffffff"
-         stroke="none"
-         pointer-events="all"
-         id="path208" />
-    </g>
-    <g
        id="g209" />
     <g
        id="g210">
@@ -2996,21 +3010,6 @@ https://github.com/communitiesuk/delta-common-infrastructure<xhtml:div
              id="text213">Private subnet</text>
         </switch>
       </g>
-    </g>
-    <g
-       id="g216">
-      <path
-         d="M 1481 1526.74 L 1535.78 1526.74 L 1535.78 1581.52 L 1481 1581.52 Z"
-         fill="url(#mx-gradient-f78e04-1-d05c17-1-s-0)"
-         stroke="none"
-         pointer-events="all"
-         id="path215" />
-      <path
-         d="M 1498.22 1564.3 L 1517.78 1564.3 L 1517.78 1544.74 L 1498.22 1544.74 Z M 1519.35 1544.74 L 1522.48 1544.74 L 1522.48 1546.3 L 1519.35 1546.3 L 1519.35 1549.43 L 1522.48 1549.43 L 1522.48 1551 L 1519.35 1551 L 1519.35 1553.35 L 1522.48 1553.35 L 1522.48 1554.91 L 1519.35 1554.91 L 1519.35 1558.04 L 1522.48 1558.04 L 1522.48 1559.61 L 1519.35 1559.61 L 1519.35 1562.74 L 1522.48 1562.74 L 1522.48 1564.3 L 1519.35 1564.3 L 1519.35 1564.41 C 1519.35 1565.22 1518.69 1565.87 1517.89 1565.87 L 1517.78 1565.87 L 1517.78 1569 L 1516.22 1569 L 1516.22 1565.87 L 1513.09 1565.87 L 1513.09 1569 L 1511.52 1569 L 1511.52 1565.87 L 1509.17 1565.87 L 1509.17 1569 L 1507.61 1569 L 1507.61 1565.87 L 1504.48 1565.87 L 1504.48 1569 L 1502.91 1569 L 1502.91 1565.87 L 1499.78 1565.87 L 1499.78 1569 L 1498.22 1569 L 1498.22 1565.87 L 1498.11 1565.87 C 1497.31 1565.87 1496.65 1565.22 1496.65 1564.41 L 1496.65 1564.3 L 1494.3 1564.3 L 1494.3 1562.74 L 1496.65 1562.74 L 1496.65 1559.61 L 1494.3 1559.61 L 1494.3 1558.04 L 1496.65 1558.04 L 1496.65 1554.91 L 1494.3 1554.91 L 1494.3 1553.35 L 1496.65 1553.35 L 1496.65 1551 L 1494.3 1551 L 1494.3 1549.43 L 1496.65 1549.43 L 1496.65 1546.3 L 1494.3 1546.3 L 1494.3 1544.74 L 1496.65 1544.74 L 1496.65 1544.63 C 1496.65 1543.83 1497.31 1543.17 1498.11 1543.17 L 1498.22 1543.17 L 1498.22 1540.04 L 1499.78 1540.04 L 1499.78 1543.17 L 1502.91 1543.17 L 1502.91 1540.04 L 1504.48 1540.04 L 1504.48 1543.17 L 1507.61 1543.17 L 1507.61 1540.04 L 1509.17 1540.04 L 1509.17 1543.17 L 1511.52 1543.17 L 1511.52 1540.04 L 1513.09 1540.04 L 1513.09 1543.17 L 1516.22 1543.17 L 1516.22 1540.04 L 1517.78 1540.04 L 1517.78 1543.17 L 1517.89 1543.17 C 1518.69 1543.17 1519.35 1543.83 1519.35 1544.63 Z M 1509.17 1574.38 C 1509.17 1574.43 1509.13 1574.48 1509.08 1574.48 L 1488.14 1574.48 C 1488.09 1574.48 1488.04 1574.43 1488.04 1574.38 L 1488.04 1553.44 C 1488.04 1553.39 1488.09 1553.35 1488.14 1553.35 L 1492.74 1553.35 L 1492.74 1551.78 L 1488.14 1551.78 C 1487.22 1551.78 1486.48 1552.53 1486.48 1553.44 L 1486.48 1574.38 C 1486.48 1575.3 1487.22 1576.04 1488.14 1576.04 L 1509.08 1576.04 C 1509.99 1576.04 1510.74 1575.3 1510.74 1574.38 L 1510.74 1570.57 L 1509.17 1570.57 Z M 1530.3 1533.88 L 1530.3 1554.82 C 1530.3 1555.73 1529.56 1556.48 1528.64 1556.48 L 1524.04 1556.48 L 1524.04 1554.91 L 1528.64 1554.91 C 1528.7 1554.91 1528.74 1554.87 1528.74 1554.82 L 1528.74 1533.88 C 1528.74 1533.83 1528.7 1533.78 1528.64 1533.78 L 1507.71 1533.78 C 1507.65 1533.78 1507.61 1533.83 1507.61 1533.88 L 1507.61 1538.48 L 1506.04 1538.48 L 1506.04 1533.88 C 1506.04 1532.96 1506.79 1532.22 1507.71 1532.22 L 1528.64 1532.22 C 1529.56 1532.22 1530.3 1532.96 1530.3 1533.88 Z"
-         fill="#ffffff"
-         stroke="none"
-         pointer-events="all"
-         id="path216" />
     </g>
     <g
        id="g218">
@@ -3670,6 +3669,7 @@ https://github.com/communitiesuk/delta-common-infrastructure<xhtml:div
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">DynamoDB <xhtml:br />
+
 (Terraform statefile lock)</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -4026,7 +4026,9 @@ https://github.com/communitiesuk/delta-common-infrastructure<xhtml:div
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">CodeArtifact<xhtml:br />
+
 to store build artifacts<xhtml:br />
+
 (shared with staging)</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -4885,7 +4887,9 @@ to store build artifacts<xhtml:br />
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">WIndows Server<xhtml:br />
+
 EC2 Instance<xhtml:br />
+
 Microsoft Enterprise CA</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -4984,7 +4988,9 @@ Microsoft Enterprise CA</xhtml:div>
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">Windows Server<xhtml:br />
+
 EC2 instance<xhtml:br />
+
 AD Management Server</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -5033,12 +5039,16 @@ AD Management Server</xhtml:div>
                 <xhtml:div
                    style="display: inline-block; font-size: 10px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: nowrap;">User database.<xhtml:br
    style="font-size: 10px;" />
+
 Delta, CPM, MarkLogic,<xhtml:br
    style="font-size: 10px;" />
+
 internal, Keycloak<xhtml:br
    style="font-size: 10px;" />
+
 and auth service<xhtml:br
    style="font-size: 10px;" />
+
 all connect over LDAP(S)</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -5452,6 +5462,7 @@ all connect over LDAP(S)</xhtml:div>
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">AWS WAF<xhtml:br />
+
 (Web Application Firewall)</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -5590,6 +5601,7 @@ all connect over LDAP(S)</xhtml:div>
                  style="box-sizing: border-box; font-size: 0px; text-align: left;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">Cloudfront<xhtml:br />
+
 (CDN) </xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -5639,6 +5651,7 @@ all connect over LDAP(S)</xhtml:div>
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">AWS Shield Advanced<xhtml:br />
+
 (DDOS protection)</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -5689,6 +5702,7 @@ all connect over LDAP(S)</xhtml:div>
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">CloudWatch<xhtml:br />
+
 (Logs + Monitoring)</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -5964,6 +5978,7 @@ all connect over LDAP(S)</xhtml:div>
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: nowrap;">Outbound connection<xhtml:br />
+
 via Network Firewall</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -6139,72 +6154,6 @@ via Network Firewall</xhtml:div>
              font-family="Helvetica"
              font-size="12px"
              id="text437">Private subnet</text>
-        </switch>
-      </g>
-    </g>
-    <g
-       id="g440">
-      <path
-         d="M 1061 1527.4 L 1111.4 1527.4 L 1111.4 1577.8 L 1061 1577.8 Z"
-         fill="url(#mx-gradient-f78e04-1-d05c17-1-s-0)"
-         stroke="none"
-         pointer-events="all"
-         id="path439" />
-      <path
-         d="M 1076.84 1561.96 L 1094.84 1561.96 L 1094.84 1543.96 L 1076.84 1543.96 Z M 1096.28 1543.96 L 1099.16 1543.96 L 1099.16 1545.4 L 1096.28 1545.4 L 1096.28 1548.28 L 1099.16 1548.28 L 1099.16 1549.72 L 1096.28 1549.72 L 1096.28 1551.88 L 1099.16 1551.88 L 1099.16 1553.32 L 1096.28 1553.32 L 1096.28 1556.2 L 1099.16 1556.2 L 1099.16 1557.64 L 1096.28 1557.64 L 1096.28 1560.52 L 1099.16 1560.52 L 1099.16 1561.96 L 1096.28 1561.96 L 1096.28 1562.06 C 1096.28 1562.8 1095.68 1563.4 1094.94 1563.4 L 1094.84 1563.4 L 1094.84 1566.28 L 1093.4 1566.28 L 1093.4 1563.4 L 1090.52 1563.4 L 1090.52 1566.28 L 1089.08 1566.28 L 1089.08 1563.4 L 1086.92 1563.4 L 1086.92 1566.28 L 1085.48 1566.28 L 1085.48 1563.4 L 1082.6 1563.4 L 1082.6 1566.28 L 1081.16 1566.28 L 1081.16 1563.4 L 1078.28 1563.4 L 1078.28 1566.28 L 1076.84 1566.28 L 1076.84 1563.4 L 1076.74 1563.4 C 1076 1563.4 1075.4 1562.8 1075.4 1562.06 L 1075.4 1561.96 L 1073.24 1561.96 L 1073.24 1560.52 L 1075.4 1560.52 L 1075.4 1557.64 L 1073.24 1557.64 L 1073.24 1556.2 L 1075.4 1556.2 L 1075.4 1553.32 L 1073.24 1553.32 L 1073.24 1551.88 L 1075.4 1551.88 L 1075.4 1549.72 L 1073.24 1549.72 L 1073.24 1548.28 L 1075.4 1548.28 L 1075.4 1545.4 L 1073.24 1545.4 L 1073.24 1543.96 L 1075.4 1543.96 L 1075.4 1543.86 C 1075.4 1543.12 1076 1542.52 1076.74 1542.52 L 1076.84 1542.52 L 1076.84 1539.64 L 1078.28 1539.64 L 1078.28 1542.52 L 1081.16 1542.52 L 1081.16 1539.64 L 1082.6 1539.64 L 1082.6 1542.52 L 1085.48 1542.52 L 1085.48 1539.64 L 1086.92 1539.64 L 1086.92 1542.52 L 1089.08 1542.52 L 1089.08 1539.64 L 1090.52 1539.64 L 1090.52 1542.52 L 1093.4 1542.52 L 1093.4 1539.64 L 1094.84 1539.64 L 1094.84 1542.52 L 1094.94 1542.52 C 1095.68 1542.52 1096.28 1543.12 1096.28 1543.86 Z M 1086.92 1571.23 C 1086.92 1571.28 1086.88 1571.32 1086.83 1571.32 L 1067.57 1571.32 C 1067.52 1571.32 1067.48 1571.28 1067.48 1571.23 L 1067.48 1551.97 C 1067.48 1551.92 1067.52 1551.88 1067.57 1551.88 L 1071.8 1551.88 L 1071.8 1550.44 L 1067.57 1550.44 C 1066.73 1550.44 1066.04 1551.13 1066.04 1551.97 L 1066.04 1571.23 C 1066.04 1572.07 1066.73 1572.76 1067.57 1572.76 L 1086.83 1572.76 C 1087.67 1572.76 1088.36 1572.07 1088.36 1571.23 L 1088.36 1567.72 L 1086.92 1567.72 Z M 1106.36 1533.97 L 1106.36 1553.23 C 1106.36 1554.07 1105.67 1554.76 1104.83 1554.76 L 1100.6 1554.76 L 1100.6 1553.32 L 1104.83 1553.32 C 1104.88 1553.32 1104.92 1553.28 1104.92 1553.23 L 1104.92 1533.97 C 1104.92 1533.92 1104.88 1533.88 1104.83 1533.88 L 1085.57 1533.88 C 1085.52 1533.88 1085.48 1533.92 1085.48 1533.97 L 1085.48 1538.2 L 1084.04 1538.2 L 1084.04 1533.97 C 1084.04 1533.13 1084.73 1532.44 1085.57 1532.44 L 1104.83 1532.44 C 1105.67 1532.44 1106.36 1533.13 1106.36 1533.97 Z"
-         fill="#ffffff"
-         stroke="none"
-         pointer-events="all"
-         id="path440" />
-    </g>
-    <g
-       id="g441">
-      <rect
-         x="971"
-         y="1403.2"
-         width="36.96"
-         height="36.96"
-         fill="none"
-         stroke="none"
-         pointer-events="all"
-         id="rect440" />
-      <path
-         d="M 1007.82 1420.89 L 1001.13 1420.89 L 1004.32 1417.69 L 1003.14 1416.51 L 998.47 1421.18 C 998.15 1421.51 998.15 1422.04 998.47 1422.36 L 1003.14 1427.03 L 1004.32 1425.85 L 1001.03 1422.56 L 1007.82 1422.56 Z M 975.82 1416.51 L 974.64 1417.69 L 977.83 1420.89 L 971.14 1420.89 L 971.14 1422.56 L 977.93 1422.56 L 974.64 1425.85 L 975.82 1427.03 L 980.48 1422.36 C 980.81 1422.04 980.81 1421.51 980.48 1421.18 Z M 985.18 1426.02 L 993.78 1426.02 L 993.78 1417.42 L 985.18 1417.42 Z M 995.27 1416.48 L 996.81 1416.48 L 996.81 1418.15 L 995.45 1418.15 L 995.45 1419.42 L 996.81 1419.42 L 996.81 1421.09 L 995.45 1421.09 L 995.45 1422.35 L 996.81 1422.35 L 996.81 1424.02 L 995.45 1424.02 L 995.45 1425.29 L 996.81 1425.29 L 996.81 1426.96 L 995.27 1426.96 C 995.14 1427.19 994.95 1427.38 994.72 1427.51 L 994.72 1429.06 L 993.05 1429.06 L 993.05 1427.69 L 991.78 1427.69 L 991.78 1429.06 L 990.11 1429.06 L 990.11 1427.69 L 988.85 1427.69 L 988.85 1429.06 L 987.18 1429.06 L 987.18 1427.69 L 985.91 1427.69 L 985.91 1429.06 L 984.24 1429.06 L 984.24 1427.51 C 984.01 1427.38 983.82 1427.19 983.69 1426.96 L 982.14 1426.96 L 982.14 1425.29 L 983.51 1425.29 L 983.51 1424.02 L 982.14 1424.02 L 982.14 1422.35 L 983.51 1422.35 L 983.51 1421.09 L 982.14 1421.09 L 982.14 1419.42 L 983.51 1419.42 L 983.51 1418.15 L 982.14 1418.15 L 982.14 1416.48 L 983.69 1416.48 C 983.82 1416.25 984.01 1416.06 984.24 1415.93 L 984.24 1414.39 L 985.91 1414.39 L 985.91 1415.75 L 987.18 1415.75 L 987.18 1414.39 L 988.85 1414.39 L 988.85 1415.75 L 990.11 1415.75 L 990.11 1414.39 L 991.78 1414.39 L 991.78 1415.75 L 993.05 1415.75 L 993.05 1414.39 L 994.72 1414.39 L 994.72 1415.93 C 994.95 1416.06 995.14 1416.25 995.27 1416.48 Z M 990.32 1437.31 L 990.32 1430.52 L 988.65 1430.52 L 988.65 1437.31 L 985.4 1434.07 L 984.22 1435.25 L 988.89 1439.92 C 989.05 1440.08 989.26 1440.16 989.48 1440.16 C 989.69 1440.16 989.91 1440.08 990.07 1439.92 L 994.74 1435.25 L 993.56 1434.07 Z M 985.4 1409.38 L 984.22 1408.19 L 988.89 1403.53 C 989.21 1403.2 989.74 1403.2 990.07 1403.53 L 994.74 1408.19 L 993.56 1409.38 L 990.32 1406.13 L 990.32 1412.92 L 988.65 1412.92 L 988.65 1406.13 Z"
-         fill="#d45b07"
-         stroke="none"
-         pointer-events="all"
-         id="path441" />
-    </g>
-    <g
-       id="g443">
-      <g
-         transform="translate(-0.5 -0.5)"
-         id="g442">
-        <switch
-           id="switch441">
-          <foreignObject
-             pointer-events="none"
-             width="100%"
-             height="100%"
-             requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-             style="overflow: visible; text-align: left;">
-            <xhtml:div
-               style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 1px; height: 1px; padding-top: 1407px; margin-left: 1010px;">
-              <xhtml:div
-                 data-drawio-colors="color: #232F3E; "
-                 style="box-sizing: border-box; font-size: 0px; text-align: left;">
-                <xhtml:div
-                   style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">Autoscaling group</xhtml:div>
-              </xhtml:div>
-            </xhtml:div>
-          </foreignObject>
-          <text
-             x="1010"
-             y="1410"
-             fill="#232F3E"
-             font-family="Helvetica"
-             font-size="12px"
-             id="text441">Autosca...</text>
         </switch>
       </g>
     </g>
@@ -6597,6 +6546,7 @@ via Network Firewall</xhtml:div>
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">Scheduled tasks<xhtml:br />
+
 (EventBridge Scheduler)</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -6999,6 +6949,7 @@ via Network Firewall</xhtml:div>
                  style="box-sizing: border-box; font-size: 0px; text-align: center;">
                 <xhtml:div
                    style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">Replicated to<xhtml:br />
+
 locked bucket</xhtml:div>
               </xhtml:div>
             </xhtml:div>
@@ -7265,6 +7216,195 @@ locked bucket</xhtml:div>
          stroke-miterlimit="10"
          pointer-events="all"
          id="path517" />
+    </g>
+    <g
+       id="g2"
+       transform="translate(308.90032,143.98605)">
+      <g
+         id="g253-3"
+         transform="translate(-666.91101,403.48664)"
+         style="display:inline">
+        <g
+           transform="translate(-0.5,-0.5)"
+           id="g252-3">
+          <switch
+             id="switch251-5">
+            <foreignObject
+               pointer-events="none"
+               width="100%"
+               height="100%"
+               requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+               style="overflow: visible; text-align: left;">
+              <xhtml:div
+                 style="display: flex; align-items: unsafe flex-start; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 1054px; margin-left: 1446px;">
+                <xhtml:div
+                   data-drawio-colors="color: #232F3E; "
+                   style="box-sizing: border-box; font-size: 0px; text-align: center;">
+                  <xhtml:div
+                     style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">Fargate ECS</xhtml:div>
+                </xhtml:div>
+              </xhtml:div>
+            </foreignObject>
+            <text
+               x="1446"
+               y="1066"
+               fill="#232f3e"
+               font-family="Helvetica"
+               font-size="12px"
+               text-anchor="middle"
+               id="text251-0">Fargate ECS</text>
+          </switch>
+        </g>
+      </g>
+      <g
+         id="g1"
+         transform="translate(-0.83712825,87.061338)"
+         inkscape:label="g1">
+        <g
+           id="g251-0"
+           transform="translate(-666.07388,316.4253)"
+           style="display:inline">
+          <path
+             d="m 1406.5,968.63 h 78 v 78 h -78 z"
+             fill="url(#mx-gradient-f78e04-1-d05c17-1-s-0)"
+             stroke="none"
+             pointer-events="all"
+             id="path250-6"
+             style="fill:url(#mx-gradient-f78e04-1-d05c17-1-s-0-5)" />
+          <path
+             d="m 1460.18,1027.24 v -5.93 l 3.67,-1.46 v 5.92 z m -6.12,-7.39 3.67,1.46 v 5.93 l -3.67,-1.47 z m -7.34,15.95 v -5.93 l 3.67,-1.46 v 5.92 z m -6.11,-7.39 3.67,1.46 v 5.93 l -3.67,-1.47 z m -7.34,-1.17 v -5.93 l 3.67,-1.46 v 5.92 z m -6.12,-7.39 3.67,1.46 v 5.93 l -3.67,-1.47 z m 4.9,-2.94 2.82,1.13 -2.82,1.13 -2.83,-1.13 z m 13.45,8.56 2.82,1.13 -2.82,1.13 -2.82,-1.13 z m 13.45,-8.56 2.83,1.13 -2.83,1.13 -2.82,-1.13 z m 6.57,-0.01 -6.11,-2.44 c -0.29,-0.12 -0.62,-0.12 -0.91,0 l -6.12,2.44 c -0.46,0.19 -0.76,0.64 -0.76,1.14 v 7.24 l -5.67,-2.26 c -0.29,-0.12 -0.61,-0.12 -0.9,0 l -5.67,2.26 v -7.24 c 0,-0.5 -0.3,-0.95 -0.76,-1.14 l -6.12,-2.44 c -0.29,-0.12 -0.62,-0.12 -0.91,0 l -6.11,2.44 c -0.47,0.19 -0.77,0.64 -0.77,1.14 v 8.56 c 0,0.5 0.3,0.95 0.77,1.14 l 6.11,2.44 c 0.15,0.06 0.3,0.09 0.46,0.09 0.15,0 0.31,-0.03 0.45,-0.09 l 5.66,-2.26 v 7.24 c 0,0.5 0.31,0.95 0.77,1.14 l 6.12,2.44 c 0.14,0.06 0.3,0.09 0.45,0.09 0.15,0 0.31,-0.03 0.45,-0.09 l 6.12,-2.44 c 0.46,-0.19 0.77,-0.64 0.77,-1.14 v -7.24 l 5.66,2.26 c 0.14,0.06 0.3,0.09 0.45,0.09 0.16,0 0.31,-0.03 0.46,-0.09 l 6.11,-2.44 c 0.47,-0.19 0.77,-0.64 0.77,-1.14 v -8.56 c 0,-0.5 -0.3,-0.95 -0.77,-1.14 z m 10.56,-14.84 c 0,7.15 -15.76,11.01 -30.58,11.01 -14.82,0 -30.58,-3.86 -30.58,-11.01 0,-3.41 3.79,-6.41 10.66,-8.46 l 0.7,2.35 c -5.5,1.63 -8.91,3.98 -8.91,6.11 0,4.05 11.55,8.57 28.13,8.57 16.58,0 28.13,-4.52 28.13,-8.57 0,-2.13 -3.41,-4.48 -8.91,-6.11 l 0.7,-2.35 c 6.87,2.05 10.66,5.05 10.66,8.46 z m -30.58,-23.07 12.49,4.8 -12.49,4.81 -12.49,-4.81 z m 12.94,24.18 c -2.31,1.03 -6.18,2.23 -11.72,2.4 v -14.82 l 13.46,-5.17 v 14.91 c 0,1.16 -0.68,2.21 -1.74,2.68 z m -27.62,-2.68 v -14.91 l 13.46,5.17 v 14.82 c -5.54,-0.17 -9.41,-1.37 -11.72,-2.4 -1.06,-0.47 -1.74,-1.52 -1.74,-2.68 z m 0.74,4.91 c 2.69,1.21 7.3,2.64 13.94,2.64 6.64,0 11.25,-1.43 13.93,-2.64 1.94,-0.85 3.19,-2.78 3.19,-4.91 v -16.7 c 0,-0.5 -0.31,-0.96 -0.78,-1.14 l -15.9,-6.11 c -0.28,-0.11 -0.6,-0.11 -0.88,0 l -15.9,6.11 c -0.47,0.18 -0.78,0.64 -0.78,1.14 v 16.7 c 0,2.13 1.25,4.06 3.18,4.91 z"
+             fill="#ffffff"
+             stroke="none"
+             pointer-events="all"
+             id="path251-0" />
+        </g>
+      </g>
+    </g>
+    <g
+       id="g3"
+       transform="translate(516.56785,144.24325)">
+      <g
+         id="g253-3-7"
+         transform="translate(-666.91101,403.48664)"
+         style="display:inline">
+        <g
+           transform="translate(-0.5,-0.5)"
+           id="g252-3-3">
+          <switch
+             id="switch251-5-7">
+            <foreignObject
+               pointer-events="none"
+               width="100%"
+               height="100%"
+               requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+               style="overflow: visible; text-align: left;">
+              <xhtml:div
+                 style="display: flex; align-items: unsafe flex-start; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 1054px; margin-left: 1446px;">
+                <xhtml:div
+                   data-drawio-colors="color: #232F3E; "
+                   style="box-sizing: border-box; font-size: 0px; text-align: center;">
+                  <xhtml:div
+                     style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">Fargate ECS</xhtml:div>
+                </xhtml:div>
+              </xhtml:div>
+            </foreignObject>
+            <text
+               x="1446"
+               y="1066"
+               fill="#232f3e"
+               font-family="Helvetica"
+               font-size="12px"
+               text-anchor="middle"
+               id="text251-0-1">Fargate ECS</text>
+          </switch>
+        </g>
+      </g>
+      <g
+         id="g2-5"
+         transform="translate(-0.83712825,87.061338)"
+         inkscape:label="g1">
+        <g
+           id="g251-0-8"
+           transform="translate(-666.07388,316.4253)"
+           style="display:inline">
+          <path
+             d="m 1406.5,968.63 h 78 v 78 h -78 z"
+             fill="url(#mx-gradient-f78e04-1-d05c17-1-s-0)"
+             stroke="none"
+             pointer-events="all"
+             id="path250-6-4"
+             style="fill:url(#mx-gradient-f78e04-1-d05c17-1-s-0-5-2)" />
+          <path
+             d="m 1460.18,1027.24 v -5.93 l 3.67,-1.46 v 5.92 z m -6.12,-7.39 3.67,1.46 v 5.93 l -3.67,-1.47 z m -7.34,15.95 v -5.93 l 3.67,-1.46 v 5.92 z m -6.11,-7.39 3.67,1.46 v 5.93 l -3.67,-1.47 z m -7.34,-1.17 v -5.93 l 3.67,-1.46 v 5.92 z m -6.12,-7.39 3.67,1.46 v 5.93 l -3.67,-1.47 z m 4.9,-2.94 2.82,1.13 -2.82,1.13 -2.83,-1.13 z m 13.45,8.56 2.82,1.13 -2.82,1.13 -2.82,-1.13 z m 13.45,-8.56 2.83,1.13 -2.83,1.13 -2.82,-1.13 z m 6.57,-0.01 -6.11,-2.44 c -0.29,-0.12 -0.62,-0.12 -0.91,0 l -6.12,2.44 c -0.46,0.19 -0.76,0.64 -0.76,1.14 v 7.24 l -5.67,-2.26 c -0.29,-0.12 -0.61,-0.12 -0.9,0 l -5.67,2.26 v -7.24 c 0,-0.5 -0.3,-0.95 -0.76,-1.14 l -6.12,-2.44 c -0.29,-0.12 -0.62,-0.12 -0.91,0 l -6.11,2.44 c -0.47,0.19 -0.77,0.64 -0.77,1.14 v 8.56 c 0,0.5 0.3,0.95 0.77,1.14 l 6.11,2.44 c 0.15,0.06 0.3,0.09 0.46,0.09 0.15,0 0.31,-0.03 0.45,-0.09 l 5.66,-2.26 v 7.24 c 0,0.5 0.31,0.95 0.77,1.14 l 6.12,2.44 c 0.14,0.06 0.3,0.09 0.45,0.09 0.15,0 0.31,-0.03 0.45,-0.09 l 6.12,-2.44 c 0.46,-0.19 0.77,-0.64 0.77,-1.14 v -7.24 l 5.66,2.26 c 0.14,0.06 0.3,0.09 0.45,0.09 0.16,0 0.31,-0.03 0.46,-0.09 l 6.11,-2.44 c 0.47,-0.19 0.77,-0.64 0.77,-1.14 v -8.56 c 0,-0.5 -0.3,-0.95 -0.77,-1.14 z m 10.56,-14.84 c 0,7.15 -15.76,11.01 -30.58,11.01 -14.82,0 -30.58,-3.86 -30.58,-11.01 0,-3.41 3.79,-6.41 10.66,-8.46 l 0.7,2.35 c -5.5,1.63 -8.91,3.98 -8.91,6.11 0,4.05 11.55,8.57 28.13,8.57 16.58,0 28.13,-4.52 28.13,-8.57 0,-2.13 -3.41,-4.48 -8.91,-6.11 l 0.7,-2.35 c 6.87,2.05 10.66,5.05 10.66,8.46 z m -30.58,-23.07 12.49,4.8 -12.49,4.81 -12.49,-4.81 z m 12.94,24.18 c -2.31,1.03 -6.18,2.23 -11.72,2.4 v -14.82 l 13.46,-5.17 v 14.91 c 0,1.16 -0.68,2.21 -1.74,2.68 z m -27.62,-2.68 v -14.91 l 13.46,5.17 v 14.82 c -5.54,-0.17 -9.41,-1.37 -11.72,-2.4 -1.06,-0.47 -1.74,-1.52 -1.74,-2.68 z m 0.74,4.91 c 2.69,1.21 7.3,2.64 13.94,2.64 6.64,0 11.25,-1.43 13.93,-2.64 1.94,-0.85 3.19,-2.78 3.19,-4.91 v -16.7 c 0,-0.5 -0.31,-0.96 -0.78,-1.14 l -15.9,-6.11 c -0.28,-0.11 -0.6,-0.11 -0.88,0 l -15.9,6.11 c -0.47,0.18 -0.78,0.64 -0.78,1.14 v 16.7 c 0,2.13 1.25,4.06 3.18,4.91 z"
+             fill="#ffffff"
+             stroke="none"
+             pointer-events="all"
+             id="path251-0-2" />
+        </g>
+      </g>
+    </g>
+    <g
+       id="g3-0"
+       transform="translate(731.35947,145.70909)">
+      <g
+         id="g253-3-7-9"
+         transform="translate(-666.91101,403.48664)"
+         style="display:inline">
+        <g
+           transform="translate(-0.5,-0.5)"
+           id="g252-3-3-0">
+          <switch
+             id="switch251-5-7-7">
+            <foreignObject
+               pointer-events="none"
+               width="100%"
+               height="100%"
+               requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+               style="overflow: visible; text-align: left;">
+              <xhtml:div
+                 style="display: flex; align-items: unsafe flex-start; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 1054px; margin-left: 1446px;">
+                <xhtml:div
+                   data-drawio-colors="color: #232F3E; "
+                   style="box-sizing: border-box; font-size: 0px; text-align: center;">
+                  <xhtml:div
+                     style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(35, 47, 62); line-height: 1.2; pointer-events: all; white-space: nowrap;">Fargate ECS</xhtml:div>
+                </xhtml:div>
+              </xhtml:div>
+            </foreignObject>
+            <text
+               x="1446"
+               y="1066"
+               fill="#232f3e"
+               font-family="Helvetica"
+               font-size="12px"
+               text-anchor="middle"
+               id="text251-0-1-2">Fargate ECS</text>
+          </switch>
+        </g>
+      </g>
+      <g
+         id="g2-5-6"
+         transform="translate(-0.83712825,87.061338)"
+         inkscape:label="g1">
+        <g
+           id="g251-0-8-8"
+           transform="translate(-666.07388,316.4253)"
+           style="display:inline">
+          <path
+             d="m 1406.5,968.63 h 78 v 78 h -78 z"
+             fill="url(#mx-gradient-f78e04-1-d05c17-1-s-0)"
+             stroke="none"
+             pointer-events="all"
+             id="path250-6-4-8"
+             style="fill:url(#mx-gradient-f78e04-1-d05c17-1-s-0-5-2-8)" />
+          <path
+             d="m 1460.18,1027.24 v -5.93 l 3.67,-1.46 v 5.92 z m -6.12,-7.39 3.67,1.46 v 5.93 l -3.67,-1.47 z m -7.34,15.95 v -5.93 l 3.67,-1.46 v 5.92 z m -6.11,-7.39 3.67,1.46 v 5.93 l -3.67,-1.47 z m -7.34,-1.17 v -5.93 l 3.67,-1.46 v 5.92 z m -6.12,-7.39 3.67,1.46 v 5.93 l -3.67,-1.47 z m 4.9,-2.94 2.82,1.13 -2.82,1.13 -2.83,-1.13 z m 13.45,8.56 2.82,1.13 -2.82,1.13 -2.82,-1.13 z m 13.45,-8.56 2.83,1.13 -2.83,1.13 -2.82,-1.13 z m 6.57,-0.01 -6.11,-2.44 c -0.29,-0.12 -0.62,-0.12 -0.91,0 l -6.12,2.44 c -0.46,0.19 -0.76,0.64 -0.76,1.14 v 7.24 l -5.67,-2.26 c -0.29,-0.12 -0.61,-0.12 -0.9,0 l -5.67,2.26 v -7.24 c 0,-0.5 -0.3,-0.95 -0.76,-1.14 l -6.12,-2.44 c -0.29,-0.12 -0.62,-0.12 -0.91,0 l -6.11,2.44 c -0.47,0.19 -0.77,0.64 -0.77,1.14 v 8.56 c 0,0.5 0.3,0.95 0.77,1.14 l 6.11,2.44 c 0.15,0.06 0.3,0.09 0.46,0.09 0.15,0 0.31,-0.03 0.45,-0.09 l 5.66,-2.26 v 7.24 c 0,0.5 0.31,0.95 0.77,1.14 l 6.12,2.44 c 0.14,0.06 0.3,0.09 0.45,0.09 0.15,0 0.31,-0.03 0.45,-0.09 l 6.12,-2.44 c 0.46,-0.19 0.77,-0.64 0.77,-1.14 v -7.24 l 5.66,2.26 c 0.14,0.06 0.3,0.09 0.45,0.09 0.16,0 0.31,-0.03 0.46,-0.09 l 6.11,-2.44 c 0.47,-0.19 0.77,-0.64 0.77,-1.14 v -8.56 c 0,-0.5 -0.3,-0.95 -0.77,-1.14 z m 10.56,-14.84 c 0,7.15 -15.76,11.01 -30.58,11.01 -14.82,0 -30.58,-3.86 -30.58,-11.01 0,-3.41 3.79,-6.41 10.66,-8.46 l 0.7,2.35 c -5.5,1.63 -8.91,3.98 -8.91,6.11 0,4.05 11.55,8.57 28.13,8.57 16.58,0 28.13,-4.52 28.13,-8.57 0,-2.13 -3.41,-4.48 -8.91,-6.11 l 0.7,-2.35 c 6.87,2.05 10.66,5.05 10.66,8.46 z m -30.58,-23.07 12.49,4.8 -12.49,4.81 -12.49,-4.81 z m 12.94,24.18 c -2.31,1.03 -6.18,2.23 -11.72,2.4 v -14.82 l 13.46,-5.17 v 14.91 c 0,1.16 -0.68,2.21 -1.74,2.68 z m -27.62,-2.68 v -14.91 l 13.46,5.17 v 14.82 c -5.54,-0.17 -9.41,-1.37 -11.72,-2.4 -1.06,-0.47 -1.74,-1.52 -1.74,-2.68 z m 0.74,4.91 c 2.69,1.21 7.3,2.64 13.94,2.64 6.64,0 11.25,-1.43 13.93,-2.64 1.94,-0.85 3.19,-2.78 3.19,-4.91 v -16.7 c 0,-0.5 -0.31,-0.96 -0.78,-1.14 l -15.9,-6.11 c -0.28,-0.11 -0.6,-0.11 -0.88,0 l -15.9,6.11 c -0.47,0.18 -0.78,0.64 -0.78,1.14 v 16.7 c 0,2.13 1.25,4.06 3.18,4.91 z"
+             fill="#ffffff"
+             stroke="none"
+             pointer-events="all"
+             id="path251-0-2-0" />
+        </g>
+      </g>
     </g>
   </g>
   <switch
