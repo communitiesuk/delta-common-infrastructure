@@ -1,5 +1,5 @@
-runner_version="2.337.0"
-runner_sha256="70920811a4f8ad4328818682bca5c6469c1c942fab52448868071d0063816613"
+runner_version="2.338.0"
+runner_sha256="af4b794c1bc41d73d40535e3fe092a39f9679cd8d965954c2aca25a05ca41d32"
 file_name="actions-runner-linux-x64-$runner_version.tar.gz"
 runner_url="https://github.com/actions/runner/releases/download/v$runner_version/$file_name"
 
