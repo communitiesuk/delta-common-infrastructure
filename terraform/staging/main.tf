@@ -367,10 +367,21 @@ module "gh_runner" {
   private_dns                          = module.networking.private_dns
   extra_instance_policy_arn            = module.session_manager_config.policy_arn
   cloudwatch_log_expiration_days       = local.cloudwatch_log_expiration_days
+  patch_maintenance_window             = module.gh_runner_patch_maintenance_window
+  patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
   daily_backup_bucket_arn              = module.marklogic.daily_backup_bucket_arn
   weekly_backup_bucket_arn             = module.marklogic.weekly_backup_bucket_arn
   locked_backup_replication_bucket_arn = module.backup_replication_bucket.bucket.arn
   backup_key_arn                       = module.marklogic.backup_key
+}
+
+module "gh_runner_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment       = local.environment
+  prefix            = "gh-runner-instance-patching"
+  schedule          = "cron(00 04 ? * MON,WED,FRI *)"
+  subscribed_emails = local.all_notifications_email_addresses
 }
 
 module "ses_identity" {
