@@ -43,6 +43,18 @@ variable "cloudwatch_log_expiration_days" {
   type = number
 }
 
+variable "patch_maintenance_window" {
+  type = object({
+    window_id            = string
+    service_role_arn     = string
+    errors_sns_topic_arn = string
+  })
+}
+
+variable "patch_cloudwatch_log_expiration_days" {
+  type = number
+}
+
 variable "daily_backup_bucket_arn" {
   type        = string
   description = "ARN of the MarkLogic daily backup S3 bucket"
