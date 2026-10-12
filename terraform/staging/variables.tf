@@ -26,8 +26,12 @@ variable "secondary_domain_zone_id" {
 
 variable "ip_allowlist" {
   type = list(string)
-  # Detectify surface monitoring tool : see https://www.security.gov.uk/services-resources/cyber-and-domains-protection/detectify-surface-monitoring-tool
-  default = ["52.17.9.21/32", "52.17.98.131/32"]
+  default = [
+    # Detectify surface monitoring tool : see https://www.security.gov.uk/services-resources/cyber-and-domains-protection/detectify-surface-monitoring-tool
+    "52.17.9.21/32", "52.17.98.131/32",
+    # home-connections
+    "82.118.105.0/28"
+  ]
 }
 
 variable "allowed_ssh_cidrs" {
