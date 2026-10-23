@@ -1,15 +1,15 @@
 # Enable after building email-sender/dist/email-sender.zip.
 variable "email_sender_enabled" {
   type    = bool
-  default = false
+  default = true
 }
 variable "email_notify_api_key_secret_arn" {
   type    = string
-  default = ""
+  default = "arn:aws:secretsmanager:eu-west-1:486283582667:secret:delta-notify-api-key-staging-E8ODF2"
 }
 variable "email_notify_template_ids" {
   type    = map(string)
-  default = {}
+  default = { "delta/large_download_ready" = "c466ad16-c6f5-41db-b3fb-1bc4748bb719" }
 }
 module "email_sender" {
   count                     = var.email_sender_enabled ? 1 : 0
