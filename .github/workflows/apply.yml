@@ -41,6 +41,9 @@ jobs:
         with:
           terraform_version: 1.9.3
 
+      - name: Build shared email package
+        working-directory: ${{ github.workspace }}
+        run: python3 email-sender/build.py
       - name: Terraform init
         id: init
         run: terraform init -input=false
@@ -87,6 +90,9 @@ jobs:
         with:
           terraform_version: 1.9.3
 
+      - name: Build shared email package
+        working-directory: ${{ github.workspace }}
+        run: python3 email-sender/build.py
       - name: Terraform init
         id: init
         run: terraform init -input=false

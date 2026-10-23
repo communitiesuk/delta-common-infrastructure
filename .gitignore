@@ -46,3 +46,11 @@ manual_scripts/logs/logs
 /terraform/modules/marklogic/dap_export_promoter.zip
 
 .DS_Store
+
+# Shared email development/build artifacts
+**/__pycache__/
+**/.pytest_cache/
+/email-sender/dist/
+/email-sender/.venv/
+
+/email-sender/*.egg-info/

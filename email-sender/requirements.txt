@@ -1,0 +1,2 @@
+boto3==1.43.118
+notifications-python-client==12.2.0

@@ -216,3 +216,9 @@ Then you need to manually configure Layer 7 (Application layer) protection:
 
 We don't currently use proactive engagement (from the Overview page). If we configure Route53 Healthchecks, there may
 be manual steps here.
+
+## Shared email service
+
+The Delta large-download pilot and future CPM email infrastructure live in
+[email-sender](email-sender/README.md). Build the sender and enable the
+environment module before deploying the corresponding Delta publishing changes.

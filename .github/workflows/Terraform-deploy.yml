@@ -62,6 +62,9 @@ jobs:
         id: fmt
         run: terraform fmt -check -diff -recursive
 
+      - name: Build shared email package
+        working-directory: ${{ github.workspace }}
+        run: python3 email-sender/build.py
       - name: Terraform init
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         id: init
@@ -96,7 +99,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: lambda-packages
-          path: terraform/**/*.zip
+          path: |
+            terraform/**/*.zip
+            email-sender/dist/*.zip
           retention-days: 3
 
       - name: Post Plan Summary
@@ -156,7 +161,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: lambda-packages
-          path: terraform
+          path: .
 
       - name: Terraform apply
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}

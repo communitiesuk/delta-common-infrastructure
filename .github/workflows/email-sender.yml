@@ -1,0 +1,19 @@
+name: Shared email sender checks
+on:
+  pull_request:
+    paths: ["email-sender/**", ".github/workflows/email-sender.yml"]
+  push:
+    branches: [main]
+    paths: ["email-sender/**", ".github/workflows/email-sender.yml"]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r email-sender/requirements.lock pytest==9.1.1
+      - run: python -m pytest email-sender/tests -q
+      - name: Package shared sender
+        run: python email-sender/build.py

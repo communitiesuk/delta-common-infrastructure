@@ -96,6 +96,9 @@ jobs:
         id: fmt
         run: terraform fmt -check -recursive
 
+      - name: Build shared email package
+        working-directory: ${{ github.workspace }}
+        run: python3 email-sender/build.py
       - name: Terraform init
         working-directory: ${{ github.event.inputs.TF_WORKING_DIRECTORY }}
         id: init
@@ -210,6 +213,9 @@ jobs:
           echo "Setting Git config to use token"
           git config --global url."https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/communitiesuk".insteadOf "https://github.com/communitiesuk"
 
+      - name: Build shared email package
+        working-directory: ${{ github.workspace }}
+        run: python3 email-sender/build.py
       - name: Terraform init
         working-directory: ${{ github.event.inputs.TF_WORKING_DIRECTORY }}
         id: init

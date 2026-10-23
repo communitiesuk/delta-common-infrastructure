@@ -3,12 +3,14 @@ name: "Validate and plan"
 on:
   pull_request:
     paths:
+      - "email-sender/**"
       - "terraform/**"
       - ".github/workflows/**"
   push:
     branches:
       - "main"
     paths:
+      - "email-sender/**"
       - "terraform/**"
       - ".github/workflows/**"
 
@@ -33,6 +35,9 @@ jobs:
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: 1.9.3
+      - name: Build shared email package
+        working-directory: ${{ github.workspace }}
+        run: python3 email-sender/build.py
       - name: Terraform init
         run: terraform init -input=false
         working-directory: terraform/test
@@ -62,6 +67,9 @@ jobs:
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: 1.9.3
+      - name: Build shared email package
+        working-directory: ${{ github.workspace }}
+        run: python3 email-sender/build.py
       - name: Terraform init
         run: terraform init -input=false
         working-directory: terraform/staging
@@ -81,6 +89,9 @@ jobs:
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: 1.9.3
+      - name: Build shared email package
+        working-directory: ${{ github.workspace }}
+        run: python3 email-sender/build.py
       - name: Terraform init
         run: terraform init -input=false -backend=false
         working-directory: terraform/production
