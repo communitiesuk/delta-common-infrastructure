@@ -55,7 +55,10 @@ def test_notify_prepares_supported_attachments_and_skips_invalid(monkeypatch, re
             {"url": "s3://email-attachments/notifications/three", "filename": "large.csv"},
         ],
         "personalisation": {
-            "recipient_first_name": "Private Name",
+            "first_name": "Private Name",
+            "collection_name": "Test collection",
+            "start_date": "26 October 2026",
+            "deadline": "30 November 2026 5:00pm",
             "collection_url": "https://example.test/form",
         },
     })
@@ -77,7 +80,10 @@ def test_notify_prepares_supported_attachments_and_skips_invalid(monkeypatch, re
     assert personalisation["attachment_1"] == {"filename": "guide.pdf", "content": b"%PDF"}
     assert personalisation["attachment_2"] == ""
     assert personalisation["attachment_3"] == ""
-    assert personalisation["attachment_message"] == "Guidance documents are available below."
+    assert set(personalisation) == {
+        "attachment_1", "attachment_2", "attachment_3", "collection_name",
+        "collection_url", "deadline", "first_name", "start_date",
+    }
     assert s3.get_object.call_count == 2
     assert s3.delete_objects.call_args.kwargs["Delete"]["Objects"] == [
         {"Key": "notifications/one"},

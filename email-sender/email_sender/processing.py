@@ -51,7 +51,8 @@ def validate(message):
         if not values["download_url"].startswith(("https://", "http://")):
             raise SendFailure("invalid_download_url")
     if message["application"] == "delta" and message["notification_type"] == "collection_instance_release":
-        if not all(isinstance(values.get(k), str) and values[k] for k in ("recipient_first_name", "collection_url")):
+        required = ("collection_name", "collection_url", "deadline", "first_name", "start_date")
+        if not all(isinstance(values.get(k), str) and values[k] for k in required):
             raise SendFailure("invalid_personalisation")
         if not values["collection_url"].startswith(("https://", "http://")):
             raise SendFailure("invalid_collection_url")
@@ -131,9 +132,6 @@ def prepare_attachments(message):
         personalisation[ATTACHMENT_FIELDS[valid_count - 1]] = prepare_notify_upload(
             BytesIO(contents), filename
         )
-    personalisation["attachment_message"] = (
-        "Guidance documents are available below." if valid_count else ""
-    )
     return personalisation
 
 
