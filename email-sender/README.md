@@ -1,9 +1,8 @@
 # Shared email sender
 
-Delta publishes version 1 notification requests for large-download-ready and
-collection-instance-release emails.
+Delta and CPM publish version 1 notification requests.
 The shared processor runs behind Lambda in AWS. Local MarkLogic logs directly.
-Future CPM types can be added to the processor's notification registry.
+Additional types can be added to the processor's notification registry.
 
 | Environment | Backend | Outcome |
 |---|---|---|
@@ -50,9 +49,13 @@ Collection-instance-release requests add up to three attachment descriptors:
 Their scalar personalisation fields are `collection_name`, `collection_url`,
 `deadline`, `first_name`, and `start_date`.
 
+CPM approved-transactions-summary requests contain one PDF attachment and no
+scalar personalisation. The Notify template must define `attachment_1`.
+
 MarkLogic writes each recipient's filtered attachments before publishing the
 request. Lambda accepts only its configured private bucket. It skips unsupported
-types and files of 2MB or more, uploads valid files to Notify using
+types and files of 2MB or more for collection emails. The CPM report fails rather
+than sending without its required PDF. Lambda uploads valid files using
 `prepare_upload`, and deletes all staged objects after Notify accepts the email.
 The bucket lifecycle expires remaining objects after one day. Notify templates
 must define `attachment_1`, `attachment_2`, and `attachment_3` placeholders.

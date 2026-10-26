@@ -10,8 +10,13 @@ from urllib.parse import urlparse
 LOG = logging.getLogger("email_sender")
 LOG.setLevel(logging.INFO)
 NOTIFICATION_TYPES = {
+    ("cpm", "approved_transactions_summary"),
     ("delta", "collection_instance_release"),
     ("delta", "large_download_ready"),
+}
+ATTACHMENT_NOTIFICATION_TYPES = {
+    ("cpm", "approved_transactions_summary"),
+    ("delta", "collection_instance_release"),
 }
 MAX_ATTACHMENTS = 3
 MAX_ATTACHMENT_BYTES = 2 * 1024 * 1024
@@ -50,12 +55,14 @@ def validate(message):
             raise SendFailure("invalid_personalisation")
         if not values["download_url"].startswith(("https://", "http://")):
             raise SendFailure("invalid_download_url")
-    if message["application"] == "delta" and message["notification_type"] == "collection_instance_release":
+    notification = (message["application"], message["notification_type"])
+    if notification == ("delta", "collection_instance_release"):
         required = ("collection_name", "collection_url", "deadline", "first_name", "start_date")
         if not all(isinstance(values.get(k), str) and values[k] for k in required):
             raise SendFailure("invalid_personalisation")
         if not values["collection_url"].startswith(("https://", "http://")):
             raise SendFailure("invalid_collection_url")
+    if notification in ATTACHMENT_NOTIFICATION_TYPES:
         attachments = message.get("attachments")
         if not isinstance(attachments, list) or len(attachments) > MAX_ATTACHMENTS:
             raise SendFailure("invalid_attachments")
@@ -64,6 +71,10 @@ def validate(message):
                 raise SendFailure("invalid_attachments")
             if not all(isinstance(attachment[key], str) and attachment[key] for key in ("url", "filename")):
                 raise SendFailure("invalid_attachments")
+    if notification == ("cpm", "approved_transactions_summary"):
+        attachments = message["attachments"]
+        if len(attachments) != 1 or PurePosixPath(attachments[0]["filename"]).suffix.lower() != ".pdf":
+            raise SendFailure("invalid_attachments")
 
 
 _notify = None
@@ -108,7 +119,12 @@ def attachment_location(attachment):
 
 def prepare_attachments(message):
     personalisation = dict(message["personalisation"])
-    personalisation.update({field: "" for field in ATTACHMENT_FIELDS})
+    fields = (
+        ("attachment_1",)
+        if (message["application"], message["notification_type"]) == ("cpm", "approved_transactions_summary")
+        else ATTACHMENT_FIELDS
+    )
+    personalisation.update({field: "" for field in fields})
     valid_count = 0
     s3 = attachment_client()
     for index, attachment in enumerate(message.get("attachments", []), start=1):
@@ -129,9 +145,14 @@ def prepare_attachments(message):
             event("attachment_skipped", attachment_index=index, category="oversized")
             continue
         valid_count += 1
-        personalisation[ATTACHMENT_FIELDS[valid_count - 1]] = prepare_notify_upload(
+        personalisation[fields[valid_count - 1]] = prepare_notify_upload(
             BytesIO(contents), filename
         )
+    if (
+        (message["application"], message["notification_type"]) == ("cpm", "approved_transactions_summary")
+        and valid_count != 1
+    ):
+        raise SendFailure("invalid_attachments")
     return personalisation
 
 
@@ -152,17 +173,14 @@ def notify_send(message):
     template_id = mappings.get(f"{message['application']}/{message['notification_type']}")
     if not template_id:
         raise SendFailure("missing_template_configuration")
-    personalisation = (
-        prepare_attachments(message)
-        if message["notification_type"] == "collection_instance_release"
-        else message["personalisation"]
-    )
+    notification = (message["application"], message["notification_type"])
+    personalisation = prepare_attachments(message) if notification in ATTACHMENT_NOTIFICATION_TYPES else message["personalisation"]
     response = notify_client().send_email_notification(
         email_address=message["email_address"], template_id=template_id,
         personalisation=personalisation,
         reference=f"{message['application']}:{message['notification_type']}:{message['correlation_id']}",
     )
-    if message["notification_type"] == "collection_instance_release":
+    if notification in ATTACHMENT_NOTIFICATION_TYPES:
         try:
             delete_attachments(message)
         except Exception:

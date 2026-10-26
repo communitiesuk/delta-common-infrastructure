@@ -10,6 +10,7 @@ variable "email_notify_api_key_secret_arn" {
 variable "email_notify_template_ids" {
   type = map(string)
   default = {
+    "cpm/approved_transactions_summary" = "2f18a006-be39-4560-96d1-d749531b6b9f"
     "delta/collection_instance_release" = "73f8d2cd-3da0-4f1a-a4e4-7150395bfb56"
     "delta/large_download_ready"        = "c466ad16-c6f5-41db-b3fb-1bc4748bb719"
   }

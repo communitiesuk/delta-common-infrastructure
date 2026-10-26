@@ -95,6 +95,98 @@ def test_notify_prepares_supported_attachments_and_skips_invalid(monkeypatch, re
         assert value not in caplog.text
 
 
+def test_notify_sends_cpm_approved_transactions_pdf(monkeypatch, record):
+    monkeypatch.setenv("EMAIL_BACKEND", "notify")
+    monkeypatch.setenv("ATTACHMENT_BUCKET", "email-attachments")
+    monkeypatch.setenv(
+        "NOTIFY_TEMPLATE_IDS",
+        '{"cpm/approved_transactions_summary":"summary-template"}',
+    )
+    message = json.loads(record["body"])
+    message.update({
+        "application": "cpm",
+        "notification_type": "approved_transactions_summary",
+        "personalisation": {},
+        "attachments": [{
+            "url": "s3://email-attachments/notifications/report",
+            "filename": "approved-transactions-summary.pdf",
+        }],
+    })
+    client = MagicMock()
+    client.send_email_notification.return_value = {"id": "notify-123"}
+    s3 = MagicMock()
+    s3.get_object.return_value = {
+        "ContentLength": 4,
+        "Body": BytesIO(b"%PDF"),
+    }
+    monkeypatch.setattr(p, "notify_client", lambda: client)
+    monkeypatch.setattr(p, "attachment_client", lambda: s3)
+    monkeypatch.setattr(
+        p,
+        "prepare_notify_upload",
+        lambda body, filename: {"filename": filename, "content": body.read()},
+    )
+
+    p.process_record({**record, "body": json.dumps(message)})
+
+    args = client.send_email_notification.call_args.kwargs
+    assert args["template_id"] == "summary-template"
+    assert args["personalisation"] == {
+        "attachment_1": {
+            "filename": "approved-transactions-summary.pdf",
+            "content": b"%PDF",
+        },
+    }
+    s3.delete_objects.assert_called_once()
+
+
+def test_cpm_approved_transactions_rejects_oversized_pdf(monkeypatch, record):
+    monkeypatch.setenv("EMAIL_BACKEND", "notify")
+    monkeypatch.setenv("ATTACHMENT_BUCKET", "email-attachments")
+    monkeypatch.setenv(
+        "NOTIFY_TEMPLATE_IDS",
+        '{"cpm/approved_transactions_summary":"summary-template"}',
+    )
+    message = json.loads(record["body"])
+    message.update({
+        "application": "cpm",
+        "notification_type": "approved_transactions_summary",
+        "personalisation": {},
+        "attachments": [{
+            "url": "s3://email-attachments/notifications/report",
+            "filename": "approved-transactions-summary.pdf",
+        }],
+    })
+    s3 = MagicMock()
+    s3.get_object.return_value = {
+        "ContentLength": p.MAX_ATTACHMENT_BYTES,
+        "Body": BytesIO(),
+    }
+    monkeypatch.setattr(p, "attachment_client", lambda: s3)
+
+    with pytest.raises(p.SendFailure, match="invalid_attachments"):
+        p.process_record({**record, "body": json.dumps(message)})
+
+
+@pytest.mark.parametrize("attachments", [[], [
+    {
+        "url": "s3://email-attachments/notifications/report",
+        "filename": "approved-transactions-summary.csv",
+    },
+]])
+def test_cpm_approved_transactions_requires_one_pdf(record, attachments):
+    message = json.loads(record["body"])
+    message.update({
+        "application": "cpm",
+        "notification_type": "approved_transactions_summary",
+        "personalisation": {},
+        "attachments": attachments,
+    })
+
+    with pytest.raises(p.SendFailure, match="invalid_attachments"):
+        p.validate(message)
+
+
 def test_provider_error_is_sanitised_and_only_failed_record_retried(monkeypatch, record, caplog):
     monkeypatch.setenv("EMAIL_BACKEND", "notify")
     monkeypatch.setenv("NOTIFY_TEMPLATE_IDS", '{"delta/large_download_ready":"production-template"}')
