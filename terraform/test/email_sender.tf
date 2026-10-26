@@ -25,3 +25,6 @@ module "email_sender" {
 output "email_queue_url" {
   value = try(module.email_sender[0].queue_url, null)
 }
+output "email_attachment_bucket_url" {
+  value = try(module.email_sender[0].attachment_bucket_url, null)
+}

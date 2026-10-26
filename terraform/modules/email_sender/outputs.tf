@@ -1,2 +1,3 @@
 output "queue_url" { value = aws_sqs_queue.email.url }
 output "dead_letter_queue_url" { value = aws_sqs_queue.dead_letter.url }
+output "attachment_bucket_url" { value = "s3://${module.attachment_bucket.bucket}" }

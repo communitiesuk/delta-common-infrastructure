@@ -8,8 +8,11 @@ variable "email_notify_api_key_secret_arn" {
   default = "arn:aws:secretsmanager:eu-west-1:486283582667:secret:delta-notify-api-key-staging-E8ODF2"
 }
 variable "email_notify_template_ids" {
-  type    = map(string)
-  default = { "delta/large_download_ready" = "c466ad16-c6f5-41db-b3fb-1bc4748bb719" }
+  type = map(string)
+  default = {
+    "delta/collection_instance_release" = "73f8d2cd-3da0-4f1a-a4e4-7150395bfb56"
+    "delta/large_download_ready"        = "c466ad16-c6f5-41db-b3fb-1bc4748bb719"
+  }
 }
 module "email_sender" {
   count                     = var.email_sender_enabled ? 1 : 0
@@ -24,4 +27,7 @@ module "email_sender" {
 }
 output "email_queue_url" {
   value = try(module.email_sender[0].queue_url, null)
+}
+output "email_attachment_bucket_url" {
+  value = try(module.email_sender[0].attachment_bucket_url, null)
 }

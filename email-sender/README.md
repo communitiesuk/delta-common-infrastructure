@@ -1,6 +1,7 @@
 # Shared email sender
 
-Delta's large-download-ready pilot publishes version 1 notification requests.
+Delta publishes version 1 notification requests for large-download-ready and
+collection-instance-release emails.
 The shared processor runs behind Lambda in AWS. Local MarkLogic logs directly.
 Future CPM types can be added to the processor's notification registry.
 
@@ -32,6 +33,34 @@ wording is managed in Notify. Local/test require no template IDs or Notify keys.
 }
 ```
 
+Collection-instance-release requests add up to three attachment descriptors:
+
+```json
+{
+  "notification_type": "collection_instance_release",
+  "attachments": [
+    {
+      "url": "s3://ATTACHMENT_BUCKET/notifications/OPAQUE_ID",
+      "filename": "guidance.pdf"
+    }
+  ]
+}
+```
+
+Their scalar personalisation fields are `recipient_first_name`,
+`organisation_name`, `instance_description`, `availability_date`,
+`expected_completion_date`, `expected_completion_time`,
+`future_availability_message`, `collection_url`, `service_desk_portal_url`,
+`service_desk_email_address`, and `service_desk_phone_number`.
+
+MarkLogic writes each recipient's filtered attachments before publishing the
+request. Lambda accepts only its configured private bucket. It skips unsupported
+types and files of 2MB or more, uploads valid files to Notify using
+`prepare_upload`, and deletes all staged objects after Notify accepts the email.
+The bucket lifecycle expires remaining objects after one day. Notify templates
+must define `attachment_1`, `attachment_2`, `attachment_3`, and
+`attachment_message` placeholders.
+
 In AWS, the queue request carries the data needed by Notify. Test validates and
 acknowledges it without sending email; staging and production submit to Notify.
 Locally, the XQuery publisher logs directly before any queue access or AWS
@@ -61,6 +90,10 @@ selection are trusted deployment configuration, never controlled by a message.
 5. Configure each environment's Notify template with `((first_name))`,
    `((download_url))`, and `((download_type))`. Manage the subject, service desk
    details and all other wording there. Verify its download link before rollout.
+   Add a separate `delta/collection_instance_release` template mapping before
+   setting Delta's `collection-instance-release-notify-enabled=true`. That
+   template must include the release personalisation fields documented in the
+   request contract plus the four attachment placeholders.
 
 The environment modules are disabled until explicitly enabled. Staging and
 production require their own secret ARN and template mapping before activation. Keep the service enabled in the environment configuration/tfvars

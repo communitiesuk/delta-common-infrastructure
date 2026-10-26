@@ -1,4 +1,5 @@
 import json
+from io import BytesIO
 from unittest.mock import MagicMock
 
 import pytest
@@ -39,6 +40,53 @@ def test_notify_mapping_and_reference(monkeypatch, record, caplog):
     assert args["reference"] == "delta:large_download_ready:search-123"
     assert "notify-123" in caplog.text
     assert "private" not in caplog.text.lower()
+
+
+def test_notify_prepares_supported_attachments_and_skips_invalid(monkeypatch, record, caplog):
+    monkeypatch.setenv("EMAIL_BACKEND", "notify")
+    monkeypatch.setenv("ATTACHMENT_BUCKET", "email-attachments")
+    monkeypatch.setenv("NOTIFY_TEMPLATE_IDS", '{"delta/collection_instance_release":"release-template"}')
+    message = json.loads(record["body"])
+    message.update({
+        "notification_type": "collection_instance_release",
+        "attachments": [
+            {"url": "s3://email-attachments/notifications/one", "filename": "guide.pdf"},
+            {"url": "s3://email-attachments/notifications/two", "filename": "unsafe.exe"},
+            {"url": "s3://email-attachments/notifications/three", "filename": "large.csv"},
+        ],
+        "personalisation": {
+            "recipient_first_name": "Private Name",
+            "collection_url": "https://example.test/form",
+        },
+    })
+    client = MagicMock()
+    client.send_email_notification.return_value = {"id": "notify-123"}
+    s3 = MagicMock()
+    s3.get_object.side_effect = [
+        {"ContentLength": 4, "Body": BytesIO(b"%PDF")},
+        {"ContentLength": p.MAX_ATTACHMENT_BYTES + 1, "Body": BytesIO()},
+    ]
+    monkeypatch.setattr(p, "notify_client", lambda: client)
+    monkeypatch.setattr(p, "attachment_client", lambda: s3)
+    monkeypatch.setattr(p, "prepare_notify_upload",
+                        lambda body, filename: {"filename": filename, "content": body.read()})
+
+    p.process_record({**record, "body": json.dumps(message)})
+
+    personalisation = client.send_email_notification.call_args.kwargs["personalisation"]
+    assert personalisation["attachment_1"] == {"filename": "guide.pdf", "content": b"%PDF"}
+    assert personalisation["attachment_2"] == ""
+    assert personalisation["attachment_3"] == ""
+    assert personalisation["attachment_message"] == "Guidance documents are available below."
+    assert s3.get_object.call_count == 2
+    assert s3.delete_objects.call_args.kwargs["Delete"]["Objects"] == [
+        {"Key": "notifications/one"},
+        {"Key": "notifications/two"},
+        {"Key": "notifications/three"},
+    ]
+    assert "attachment_skipped" in caplog.text
+    for value in ("guide.pdf", "unsafe.exe", "large.csv", "email-attachments"):
+        assert value not in caplog.text
 
 
 def test_provider_error_is_sanitised_and_only_failed_record_retried(monkeypatch, record, caplog):

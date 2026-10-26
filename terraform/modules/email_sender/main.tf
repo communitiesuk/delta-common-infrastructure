@@ -2,7 +2,38 @@ data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
-  name = "shared-emails-${var.environment}"
+  name                   = "shared-emails-${var.environment}"
+  attachment_bucket_name = "dluhc-shared-email-attachments-${var.environment}"
+}
+
+module "attachment_bucket" {
+  source                             = "../s3_bucket"
+  bucket_name                        = local.attachment_bucket_name
+  access_log_bucket_name             = "${local.attachment_bucket_name}-access-logs"
+  access_s3_log_expiration_days      = 30
+  noncurrent_version_expiration_days = null
+  versioning_enabled                 = false
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "attachments" {
+  bucket = module.attachment_bucket.bucket
+
+  rule {
+    id     = "expire-staged-attachments"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    expiration {
+      days = 1
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 1
+    }
+  }
 }
 
 resource "aws_sqs_queue" "dead_letter" {
@@ -47,8 +78,15 @@ resource "aws_iam_role_policy" "publish" {
   name = local.name
   role = var.publisher_role_name
   policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = [{ Effect = "Allow", Action = "sqs:SendMessage", Resource = aws_sqs_queue.email.arn }]
+    Version = "2012-10-17"
+    Statement = [
+      { Effect = "Allow", Action = "sqs:SendMessage", Resource = aws_sqs_queue.email.arn },
+      {
+        Effect   = "Allow"
+        Action   = "s3:PutObject"
+        Resource = "${module.attachment_bucket.bucket_arn}/notifications/*"
+      }
+    ]
   })
 }
 
@@ -89,7 +127,12 @@ resource "aws_iam_role_policy" "sender" {
     Version = "2012-10-17"
     Statement = concat([
       { Effect = "Allow", Action = ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes", "sqs:ChangeMessageVisibility"], Resource = aws_sqs_queue.email.arn },
-      { Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.sender.arn}:*" }
+      { Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.sender.arn}:*" },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:DeleteObject"]
+        Resource = "${module.attachment_bucket.bucket_arn}/notifications/*"
+      }
       ], var.backend == "notify" ? [
       { Effect = "Allow", Action = "secretsmanager:GetSecretValue", Resource = var.notify_api_key_secret_arn }
     ] : [])
@@ -113,6 +156,7 @@ resource "aws_lambda_function" "sender" {
       SQS_QUEUE_URL             = aws_sqs_queue.email.url
       NOTIFY_API_KEY_SECRET_ARN = var.notify_api_key_secret_arn
       NOTIFY_TEMPLATE_IDS       = jsonencode(var.notify_template_ids)
+      ATTACHMENT_BUCKET         = module.attachment_bucket.bucket
     }
   }
   lifecycle {

@@ -3,10 +3,23 @@ import json
 import logging
 import os
 import time
+from io import BytesIO
+from pathlib import PurePosixPath
+from urllib.parse import urlparse
 
 LOG = logging.getLogger("email_sender")
 LOG.setLevel(logging.INFO)
-NOTIFICATION_TYPES = {("delta", "large_download_ready")}
+NOTIFICATION_TYPES = {
+    ("delta", "collection_instance_release"),
+    ("delta", "large_download_ready"),
+}
+MAX_ATTACHMENTS = 3
+MAX_ATTACHMENT_BYTES = 2 * 1024 * 1024
+ATTACHMENT_FIELDS = tuple(f"attachment_{index}" for index in range(1, MAX_ATTACHMENTS + 1))
+SUPPORTED_ATTACHMENT_EXTENSIONS = {
+    ".csv", ".doc", ".docx", ".jpeg", ".jpg", ".json", ".odt",
+    ".pdf", ".png", ".rtf", ".txt", ".xlsx",
+}
 
 
 class SendFailure(Exception):
@@ -37,6 +50,19 @@ def validate(message):
             raise SendFailure("invalid_personalisation")
         if not values["download_url"].startswith(("https://", "http://")):
             raise SendFailure("invalid_download_url")
+    if message["application"] == "delta" and message["notification_type"] == "collection_instance_release":
+        if not all(isinstance(values.get(k), str) and values[k] for k in ("recipient_first_name", "collection_url")):
+            raise SendFailure("invalid_personalisation")
+        if not values["collection_url"].startswith(("https://", "http://")):
+            raise SendFailure("invalid_collection_url")
+        attachments = message.get("attachments")
+        if not isinstance(attachments, list) or len(attachments) > MAX_ATTACHMENTS:
+            raise SendFailure("invalid_attachments")
+        for attachment in attachments:
+            if not isinstance(attachment, dict) or set(attachment) != {"url", "filename"}:
+                raise SendFailure("invalid_attachments")
+            if not all(isinstance(attachment[key], str) and attachment[key] for key in ("url", "filename")):
+                raise SendFailure("invalid_attachments")
 
 
 _notify = None
@@ -55,16 +81,94 @@ def notify_client():
     return _notify
 
 
+def attachment_client():
+    import boto3
+    return boto3.client("s3")
+
+
+def prepare_notify_upload(body, filename):
+    from notifications_python_client import prepare_upload
+    return prepare_upload(body, filename=filename)
+
+
+def attachment_location(attachment):
+    parsed = urlparse(attachment["url"])
+    bucket = os.environ.get("ATTACHMENT_BUCKET", "")
+    filename = attachment["filename"]
+    if (parsed.scheme != "s3" or parsed.netloc != bucket or not parsed.path.startswith("/")
+            or parsed.query or parsed.fragment or "/" in filename or "\\" in filename
+            or any(ord(c) < 32 for c in filename)):
+        raise SendFailure("invalid_attachments")
+    key = parsed.path.removeprefix("/")
+    if not key.startswith("notifications/"):
+        raise SendFailure("invalid_attachments")
+    return key, filename
+
+
+def prepare_attachments(message):
+    personalisation = dict(message["personalisation"])
+    personalisation.update({field: "" for field in ATTACHMENT_FIELDS})
+    valid_count = 0
+    s3 = attachment_client()
+    for index, attachment in enumerate(message.get("attachments", []), start=1):
+        key, filename = attachment_location(attachment)
+        extension = PurePosixPath(filename).suffix.lower()
+        if extension not in SUPPORTED_ATTACHMENT_EXTENSIONS:
+            event("attachment_skipped", attachment_index=index, category="unsupported_type")
+            continue
+        response = s3.get_object(Bucket=os.environ["ATTACHMENT_BUCKET"], Key=key)
+        if response["ContentLength"] >= MAX_ATTACHMENT_BYTES:
+            response["Body"].close()
+            event("attachment_skipped", attachment_index=index, category="oversized")
+            continue
+        body = response["Body"]
+        contents = body.read(MAX_ATTACHMENT_BYTES)
+        body.close()
+        if len(contents) >= MAX_ATTACHMENT_BYTES:
+            event("attachment_skipped", attachment_index=index, category="oversized")
+            continue
+        valid_count += 1
+        personalisation[ATTACHMENT_FIELDS[valid_count - 1]] = prepare_notify_upload(
+            BytesIO(contents), filename
+        )
+    personalisation["attachment_message"] = (
+        "Guidance documents are available below." if valid_count else ""
+    )
+    return personalisation
+
+
+def delete_attachments(message):
+    objects = [
+        {"Key": attachment_location(attachment)[0]}
+        for attachment in message.get("attachments", [])
+    ]
+    if objects:
+        attachment_client().delete_objects(
+            Bucket=os.environ["ATTACHMENT_BUCKET"],
+            Delete={"Objects": objects, "Quiet": True},
+        )
+
+
 def notify_send(message):
     mappings = json.loads(os.environ.get("NOTIFY_TEMPLATE_IDS", "{}"))
     template_id = mappings.get(f"{message['application']}/{message['notification_type']}")
     if not template_id:
         raise SendFailure("missing_template_configuration")
+    personalisation = (
+        prepare_attachments(message)
+        if message["notification_type"] == "collection_instance_release"
+        else message["personalisation"]
+    )
     response = notify_client().send_email_notification(
         email_address=message["email_address"], template_id=template_id,
-        personalisation=message["personalisation"],
+        personalisation=personalisation,
         reference=f"{message['application']}:{message['notification_type']}:{message['correlation_id']}",
     )
+    if message["notification_type"] == "collection_instance_release":
+        try:
+            delete_attachments(message)
+        except Exception:
+            event("attachment_cleanup_failed")
     return response["id"]
 
 
