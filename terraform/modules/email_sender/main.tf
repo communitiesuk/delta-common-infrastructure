@@ -82,8 +82,22 @@ resource "aws_iam_role_policy" "publish" {
     Statement = [
       { Effect = "Allow", Action = "sqs:SendMessage", Resource = aws_sqs_queue.email.arn },
       {
-        Effect   = "Allow"
-        Action   = "s3:PutObject"
+        Effect = "Allow"
+        Action = [
+          "s3:GetBucketLocation",
+          "s3:GetEncryptionConfiguration",
+          "s3:ListBucket",
+          "s3:ListBucketMultipartUploads",
+        ]
+        Resource = module.attachment_bucket.bucket_arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:AbortMultipartUpload",
+          "s3:ListMultipartUploadParts",
+          "s3:PutObject",
+        ]
         Resource = "${module.attachment_bucket.bucket_arn}/notifications/*"
       }
     ]
