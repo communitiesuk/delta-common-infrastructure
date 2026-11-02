@@ -424,17 +424,28 @@ module "ses_user" {
 module "mailhog" {
   source = "../modules/mailhog"
 
-  environment       = local.environment
-  vpc               = module.networking.vpc
-  ssh_ingress_sg_id = module.bastion.bastion_security_group_id
-  private_dns       = module.networking.private_dns
-  private_subnet    = module.networking.mailhog_private_subnet
-  public_subnet_ids = [for subnet in module.networking.public_subnets : subnet.id]
+  environment                          = local.environment
+  vpc                                  = module.networking.vpc
+  ssh_ingress_sg_id                    = module.bastion.bastion_security_group_id
+  private_dns                          = module.networking.private_dns
+  private_subnet                       = module.networking.mailhog_private_subnet
+  public_subnet_ids                    = [for subnet in module.networking.public_subnets : subnet.id]
+  patch_maintenance_window             = module.mailhog_patch_maintenance_window
+  patch_cloudwatch_log_expiration_days = local.patch_cloudwatch_log_expiration_days
   public_dns = {
     zone_id     = var.secondary_domain_zone_id
     base_domain = var.secondary_domain
   }
   ses_user = module.ses_user
+}
+
+module "mailhog_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment       = local.environment
+  prefix            = "mailhog-instance-patching"
+  schedule          = "cron(00 04 ? * MON,WED,FRI *)"
+  subscribed_emails = local.all_notifications_email_addresses
 }
 
 module "notifications" {
