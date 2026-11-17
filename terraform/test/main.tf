@@ -271,7 +271,7 @@ module "windows_patch_maintenance_window" {
 
   environment       = local.environment
   prefix            = "ad-ca-instance-patching"
-  schedule          = "cron(00 06 ? * WED *)"
+  schedule          = "cron(00 06 ? * WED,SUN *)"
   duration          = 4
   cutoff            = 1
   subscribed_emails = local.all_notifications_email_addresses
