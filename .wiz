@@ -1,0 +1,7 @@
+ignore:
+  iac:
+    # SSM Run Command logging requires logs:DescribeLogGroups, which AWS does not
+    # scope to a log group ARN. Log writes are scoped to the MailHog patch log group.
+    3edc2599-c2fb-45d3-8878-77a5735f1cab:
+      "/terraform/modules/mailhog/patching.tf":
+        reason: BY_DESIGN
