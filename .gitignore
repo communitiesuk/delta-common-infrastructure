@@ -38,6 +38,7 @@ override.tf.json
 terraform.rc
 
 lambdaFunction.zip
+/email-sender/dist/email-sender.zip
 
 manual_scripts/logs/logs
 
