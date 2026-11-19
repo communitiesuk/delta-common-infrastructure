@@ -98,11 +98,6 @@ output "vpc_id" {
   value = module.networking.vpc.id
 }
 
-output "gh_runner_private_key" {
-  value     = module.gh_runner.private_key
-  sensitive = true
-}
-
 output "private_dns" {
   value = module.networking.private_dns
 }

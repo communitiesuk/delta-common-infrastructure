@@ -76,11 +76,6 @@ output "ad_dns_servers" {
   value = module.active_directory.dns_servers
 }
 
-output "gh_runner_private_key" {
-  value     = module.gh_runner.private_key
-  sensitive = true
-}
-
 output "ml_hostname" {
   value = module.marklogic.ml_hostname
 }

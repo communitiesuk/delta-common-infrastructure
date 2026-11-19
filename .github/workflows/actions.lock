@@ -30,6 +30,7 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'aws-actions/configure-aws-credentials@v6.3.0'
         - 'hashicorp/setup-terraform@v4.0.1'
+    '.github/workflows/refresh-runner-images.yml': []
 dependencies:
     'actions/checkout@v7.0.1':
         ref: 'v7.0.1'

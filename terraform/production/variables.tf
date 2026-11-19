@@ -41,12 +41,6 @@ variable "ecr_repo_account_id" {
   default     = "468442790030"
 }
 
-variable "github_actions_runner_token" {
-  type        = string
-  default     = "invalid-token"
-  description = "Token to register the VPC internal GitHub runner with GitHub. This token is short lived and only needs to be provided for the apply where the GitHub runner is created."
-}
-
 variable "dap_external_role_arns" {
   type    = list(string)
   default = []

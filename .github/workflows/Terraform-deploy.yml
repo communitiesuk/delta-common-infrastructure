@@ -1,5 +1,5 @@
 name: Deploy Delta Common Infrastructure
-run-name: Terraform Deploy ${{ inputs.environment }}
+run-name: Terraform Deploy ${{ inputs.environment }} (${{ inputs.stack }})
 on:
   workflow_dispatch:
     inputs:
@@ -11,18 +11,34 @@ on:
           - test
           - staging
           - production
+      stack:
+        required: true
+        type: choice
+        description: Terraform stack to deploy
+        default: infrastructure
+        options:
+          - infrastructure
+          - ephemeral-runner
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      stack:
+        type: string
+        required: true
 
 permissions:
   id-token: write
   contents: read
 
 concurrency:
-  group: terraform-${{ github.ref }}-${{ inputs.environment }}
+  group: terraform-${{ github.ref }}-${{ inputs.environment }}-${{ inputs.stack }}
   cancel-in-progress: false
 
 env:
   AWS_REGION: eu-west-1
-  TF_WORKING_DIRECTORY: terraform/${{ inputs.environment }}
+  TF_WORKING_DIRECTORY: terraform/${{ inputs.environment }}${{ inputs.stack == 'ephemeral-runner' && '_ephemeral_runner' || '' }}
   ENVIRONMENT: ${{ inputs.environment }}
   DEPLOYMENT_ROLE: ${{ inputs.environment == 'production' && 'arn:aws:iam::468442790030:role/terraform-prod-deployment-role' || 'arn:aws:iam::486283582667:role/terraform-test-deployment-role' }}
   DEPLOYMENT_SESSION_NAME: github-actions-${{ inputs.environment }}-terraform-deployment
@@ -34,9 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      pull-requests: write
       contents: read
-      packages: write
 
     steps:
       - name: Checkout Repo
@@ -62,10 +76,16 @@ jobs:
         id: fmt
         run: terraform fmt -check -diff -recursive
 
+      - name: Download and verify ephemeral runner Lambda packages
+        if: inputs.stack == 'ephemeral-runner'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash terraform/modules/ephemeral_github_runner/download-artifacts.sh "$TF_WORKING_DIRECTORY"
+
       - name: Terraform init
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         id: init
-        run: terraform init -no-color -upgrade
+        run: terraform init -no-color ${{ inputs.stack == 'ephemeral-runner' && '-lockfile=readonly' || '-upgrade' }}
 
       - name: Terraform validate
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
@@ -86,17 +106,28 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: terraform-plan
+          name: terraform-plan-${{ inputs.environment }}
           path: |
             ${{ env.TF_WORKING_DIRECTORY }}/tfplan
             ${{ env.TF_WORKING_DIRECTORY }}/tfplan.txt
           retention-days: 3
 
       - name: Save Lambda Packages
+        if: inputs.stack != 'ephemeral-runner'
         uses: actions/upload-artifact@v7.0.2
         with:
           name: lambda-packages
           path: terraform/**/*.zip
+          retention-days: 3
+
+      - name: Save verified ephemeral runner Lambda packages
+        if: inputs.stack == 'ephemeral-runner'
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ephemeral-runner-packages-${{ inputs.environment }}
+          path: ${{ env.TF_WORKING_DIRECTORY }}/.terraform/runner-artifacts/*.zip
+          include-hidden-files: true
+          if-no-files-found: error
           retention-days: 3
 
       - name: Post Plan Summary
@@ -106,6 +137,7 @@ jobs:
           {
             echo "### Terraform Plan Summary"
             echo "**Environment**: \`${{ env.ENVIRONMENT }}\`"
+            echo "**Stack**: \`${{ inputs.stack }}\`"
             echo "**Branch**: \`${{ github.ref_name }}\`"
             echo "**Triggered By**: \`${{ github.actor }}\`"
             
@@ -144,19 +176,27 @@ jobs:
       - name: Terraform init
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         id: init
-        run: terraform init -no-color -upgrade
+        run: terraform init -no-color ${{ inputs.stack == 'ephemeral-runner' && '-lockfile=readonly' || '-upgrade' }}
 
       - name: Download Terraform Plan
         uses: actions/download-artifact@v8.0.2
         with:
-          name: terraform-plan
+          name: terraform-plan-${{ inputs.environment }}
           path: ${{ env.TF_WORKING_DIRECTORY }}
 
       - name: Download Lambda Packages
+        if: inputs.stack != 'ephemeral-runner'
         uses: actions/download-artifact@v8.0.2
         with:
           name: lambda-packages
           path: terraform
+
+      - name: Restore verified ephemeral runner Lambda packages
+        if: inputs.stack == 'ephemeral-runner'
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: ephemeral-runner-packages-${{ inputs.environment }}
+          path: ${{ env.TF_WORKING_DIRECTORY }}/.terraform/runner-artifacts
 
       - name: Terraform apply
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
@@ -172,6 +212,7 @@ jobs:
           {
             echo "### Terraform Apply Summary"
             echo "**Environment**: \`${{ env.ENVIRONMENT }}\`"
+            echo "**Stack**: \`${{ inputs.stack }}\`"
             echo "**Branch**: \`${{ github.ref_name }}\`"
             echo "**Executed By**: \`${{ github.actor }}\`"
             echo "**Status**: \`${{ steps.apply.outcome }}\`"
@@ -185,3 +226,15 @@ jobs:
             fi
             echo "\`\`\`"
            } >> $GITHUB_STEP_SUMMARY
+
+      - name: Show ephemeral runner setup details
+        if: inputs.stack == 'ephemeral-runner'
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: |
+          webhook_url=$(terraform output -raw webhook_url)
+          syncer_name=$(terraform output -raw runner_binaries_syncer_name)
+          {
+            echo "### Ephemeral runner setup"
+            printf '\n- Repository webhook URL: `%s`\n' "$webhook_url"
+            printf -- '- Runner binary sync Lambda: `%s`\n' "$syncer_name"
+          } >> "$GITHUB_STEP_SUMMARY"
