@@ -1,7 +1,15 @@
-# The dedicated log destination does not log to itself or retain deleted versions.
-# tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
+# The dedicated log destination does not log to itself.
+# tfsec:ignore:aws-s3-enable-bucket-logging
 resource "aws_s3_bucket" "runner_access_logs" {
   bucket = "${local.name}-dist-access-logs-${local.account_id}"
+}
+
+resource "aws_s3_bucket_versioning" "runner_access_logs" {
+  bucket = aws_s3_bucket.runner_access_logs.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "runner_access_logs" {
@@ -26,7 +34,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "runner_access_log
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "runner_access_logs" {
-  bucket = aws_s3_bucket.runner_access_logs.id
+  bucket = aws_s3_bucket_versioning.runner_access_logs.bucket
 
   rule {
     id     = "expire-old-access-logs"
@@ -35,6 +43,20 @@ resource "aws_s3_bucket_lifecycle_configuration" "runner_access_logs" {
 
     expiration {
       days = var.logging_retention_in_days
+    }
+  }
+
+  rule {
+    id     = "purge-noncurrent-access-logs"
+    status = "Enabled"
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = 14
+    }
+
+    expiration {
+      expired_object_delete_marker = true
     }
   }
 }

@@ -16,3 +16,10 @@ Repeat per environment, starting with `test`.
 Dependabot updates the Terraform pin. The PR check automatically verifies all four Lambda packages against upstream's signed build provenance for that release commit. No checksum refresh is needed. Deployment uses the packages verified by its plan job.
 
 On `main`, **Refresh ephemeral runner images** starts at 02:00 UTC on the first of each month. It deploys the `ephemeral-runner` stack to test, staging, then production, subject to each environment's approval rules. Use the manual deploy for urgent updates.
+
+## Runner access log bucket: Wiz exceptions
+
+The following exception requests apply only to `runner_access_logs`, the private S3 server access log destination:
+
+- **Customer-managed KMS key:** Keep SSE-S3 encryption. [AWS requires S3-managed keys on this log destination](https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html#grant-log-delivery-permissions-general).
+- **Replication:** Keep one copy unless audit or recovery policy requires a replica. The bucket is versioned, and noncurrent versions expire after 14 days.
