@@ -4,13 +4,40 @@ Repeat per environment, starting with `test`. Before deploying, merge the HTTPS 
 
 1. On the existing GitHub App (`5783568`), approve **Repository Administration: Read and write** and **Actions: Read-only** for `communitiesuk/delta-marklogic-deploy`.
 2. In the **AWS Management Console**, switch to **Europe (Ireland) (`eu-west-1`)** and the account for your environment: `486283582667` for test and staging, or `468442790030` for production. Open **Systems Manager → Parameter Store → Create parameter**. Create each parameter separately with **Tier: Standard**, **Type: SecureString**, and **KMS key: `alias/aws/ssm`**. Replace `<env>` with `test`, `staging`, or `production`:
-   - `/delta-<env>-ephemeral/app-key-base64`: the base64-encoded GitHub App PEM private key.
+   - `/delta-<env>-ephemeral/app-key-base64`: start with the original `.pem` downloaded from GitHub App `5783568`. On macOS, validate the file and copy its single-line base64 encoding without displaying it:
+
+     ```bash
+     openssl rsa -in "/path/to/github-app.pem" -check -noout &&
+       openssl base64 -A -in "/path/to/github-app.pem" | pbcopy
+     ```
+
+     Replace the path with your downloaded file. If OpenSSL reports `RSA key ok`, paste the clipboard directly into the parameter's **Value** field. Encode the **entire file once**, including the `BEGIN` and `END` lines. Do not paste the raw PEM, add quotes, or encode the existing parameter value. The GitHub Actions secret `RUNNER_APP_PRIVATE_KEY` is different: it takes the **raw PEM**, not base64.
    - `/delta-<env>-ephemeral/webhook-secret`: a new random secret for this environment's webhook. On macOS, run `openssl rand -hex 32 | tr -d '\n' | pbcopy` to copy a fresh secret to your clipboard without printing it. Run it separately for each environment and use the value as-is.
    - Enter the secrets in the console, not in this README or Terraform. Keep the webhook secret available for step 4.
 3. Run **Deploy Delta Common Infrastructure** with the chosen **environment** and **stack: `ephemeral-runner`**. The workflow downloads and verifies the Lambda packages. After apply, get the webhook URL and sync Lambda name from the job summary. Confirm the Lambda has synced the runner binary before dispatching jobs.
 4. In `delta-marklogic-deploy` → **Settings → Webhooks**, add a repository webhook for the fleet. Use the URL from step 3, `application/json`, SSL verification, and the same secret from step 2. Under **Which events would you like to trigger this webhook?**, choose **Let me select individual events** and select **Workflow jobs** only (not **Workflow runs**). Uncheck **Pushes** if selected. Leave the app's own webhook unchanged.
 5. In `delta-marklogic-deploy`, switch self-hosted jobs to `runs-on: <env>-ephemeral` without `self-hosted`. Keep GitHub environment protections and OIDC roles unchanged; jobs already using staging for `staging1` should use `staging-ephemeral`. Check deploy, test, backup, restore, and import jobs. Use the [GitHub-hosted AMI workflow](../../../.github/workflows/build-marklogic-ami.yml) instead of switching the duplicate Packer job.
 6. Confirm a job succeeds, its EC2 instance terminates, and its CloudWatch logs remain available. Then rerun the deployment with **stack: `infrastructure`** to remove that environment's permanent runner and patch window. This also removes the old runner log groups; preserve them first if needed. Remove any remaining offline legacy registration in GitHub.
+
+## Check the saved App key
+
+If a job waits for a runner and the scale-up Lambda logs `ERR_OSSL_UNSUPPORTED` or `DECODER routines::unsupported` while signing the GitHub App JWT, check the value saved in Parameter Store. From an AWS CLI session authenticated to the environment's account, run the following with Node.js installed. Replace `staging` in the parameter name for test or production. This prints the parameter version on success, never the key.
+
+```bash
+aws ssm get-parameter \
+  --region eu-west-1 \
+  --name /delta-staging-ephemeral/app-key-base64 \
+  --with-decryption \
+  --output json |
+node -e '
+  const { Parameter: p } = JSON.parse(require("node:fs").readFileSync(0, "utf8"));
+  const pem = Buffer.from(p.Value, "base64").toString().replace(/\\n/g, "\n");
+  require("node:crypto").createSign("RSA-SHA256").update("probe").sign(pem);
+  console.log(`RSA signing OK (SSM version ${p.Version})`);
+'
+```
+
+If signing fails, replace the parameter value using step 2 and repeat the check. If the original PEM fails validation, generate a new private key in the GitHub App settings. Do not revoke the existing key until you confirm nothing else uses it. Once the saved value passes, retry the smoke test. Correcting the parameter does not require a Terraform apply or webhook change.
 
 ## Updating the runner module
 
