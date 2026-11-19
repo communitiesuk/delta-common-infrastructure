@@ -58,18 +58,23 @@ resource "aws_security_group" "runner" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  egress {
-    description = "Private MarkLogic application, admin and test ports"
-    protocol    = "tcp"
-    from_port   = 7997
-    to_port     = 8255
-    cidr_blocks = [data.aws_vpc.runner.cidr_block]
+  dynamic "egress" {
+    # Match the MarkLogic ingress ports in ../marklogic/ports.tf, excluding SSH.
+    for_each = toset([7997, 8000, 8001, 8002, 8050, 8053, 8055, 8058, 8140, 8141, 8142, 8143, 8144, 8150, 8240, 8250, 8255])
+    content {
+      description = "Private MarkLogic port ${egress.value}"
+      protocol    = "tcp"
+      from_port   = egress.value
+      to_port     = egress.value
+      cidr_blocks = [data.aws_vpc.runner.cidr_block]
+    }
   }
 }
 
 resource "aws_kms_key" "logs" {
-  description         = "CloudWatch logs for ${local.name}"
-  enable_key_rotation = true
+  description             = "CloudWatch logs for ${local.name}"
+  enable_key_rotation     = true
+  rotation_period_in_days = 180
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -104,6 +109,9 @@ resource "aws_cloudwatch_log_group" "webhook" {
   kms_key_id        = aws_kms_key.logs.arn
 }
 
+# tfsec cannot resolve tracing on the nested watcher Lambdas or the S3 logging
+# target wired through its bucket policy. The retry queues use AWS default encryption.
+# tfsec:ignore:aws-lambda-enable-tracing[version=8.1.1] tfsec:ignore:aws-s3-enable-bucket-logging[version=8.1.1] tfsec:ignore:aws-sqs-enable-queue-encryption[version=8.1.1]
 module "runners" {
   source  = "github-aws-runners/github-runner/aws"
   version = "8.1.1"
@@ -149,11 +157,14 @@ module "runners" {
   enable_cloudwatch_agent   = true
   logging_retention_in_days = var.logging_retention_in_days
   logging_kms_key_id        = aws_kms_key.logs.arn
+  tracing_config            = { mode = "Active" }
 
-  webhook_lambda_zip                = "${var.artifact_directory}/webhook.zip"
-  runners_lambda_zip                = "${var.artifact_directory}/runners.zip"
-  runner_binaries_syncer_lambda_zip = "${var.artifact_directory}/runner-binaries-syncer.zip"
-  runner_binaries_s3_versioning     = "Enabled"
+  webhook_lambda_zip                       = "${var.artifact_directory}/webhook.zip"
+  runners_lambda_zip                       = "${var.artifact_directory}/runners.zip"
+  runner_binaries_syncer_lambda_zip        = "${var.artifact_directory}/runner-binaries-syncer.zip"
+  runner_binaries_s3_versioning            = "Enabled"
+  runner_binaries_s3_logging_bucket        = aws_s3_bucket_policy.runner_access_logs.bucket
+  runner_binaries_s3_logging_bucket_prefix = "access/"
   webhook_lambda_apigateway_access_log_settings = {
     destination_arn = aws_cloudwatch_log_group.webhook.arn
     format = jsonencode({

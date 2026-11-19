@@ -205,6 +205,20 @@ jobs:
           set -o pipefail
           terraform apply -auto-approve tfplan 2>&1 | tee apply_output.txt
 
+      - name: Verify runner retry queue encryption
+        if: inputs.stack == 'ephemeral-runner'
+        run: |
+          for suffix in deregister-retry deregister-retry-dlq; do
+            queue_name="delta-${ENVIRONMENT}-ephemeral-${suffix}"
+            queue_url=$(aws sqs get-queue-url --queue-name "$queue_name" --query QueueUrl --output text)
+            encryption=$(aws sqs get-queue-attributes --queue-url "$queue_url" \
+              --attribute-names SqsManagedSseEnabled KmsMasterKeyId --output json)
+            if ! jq -e '(.Attributes.SqsManagedSseEnabled == "true") or ((.Attributes.KmsMasterKeyId // "") != "")' <<< "$encryption" > /dev/null; then
+              echo "::error::Queue $queue_name is not encrypted."
+              exit 1
+            fi
+          done
+
       - name: Post Apply Summary
         if: always()
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
