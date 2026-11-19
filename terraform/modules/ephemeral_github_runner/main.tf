@@ -148,6 +148,7 @@ module "runners" {
   logging_retention_in_days = var.logging_retention_in_days
   logging_kms_key_id        = aws_kms_key.logs.arn
   tracing_config            = { mode = "Active" }
+  userdata_template         = "${path.module}/runner-user-data.sh.tftpl"
 
   webhook_lambda_zip                       = "${var.artifact_directory}/webhook.zip"
   runners_lambda_zip                       = "${var.artifact_directory}/runners.zip"

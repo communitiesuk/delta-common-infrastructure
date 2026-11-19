@@ -39,9 +39,15 @@ node -e '
 
 If signing fails, replace the parameter value using step 2 and repeat the check. If the original PEM fails validation, generate a new private key in the GitHub App settings. Do not revoke the existing key until you confirm nothing else uses it. Once the saved value passes, retry the smoke test. Correcting the parameter does not require a Terraform apply or webhook change.
 
+## Runner fails to start with exit code 28
+
+Check EC2 **Actions → Monitor and troubleshoot → Get system log** for the first error before `runner-start-failed`. If `curl` timed out reaching `s3.us-east-2.amazonaws.com` to download the X-Ray daemon, apply the updated `ephemeral-runner` stack for that environment and start a fresh smoke run. The runner bootstrap skips that download, while Lambda tracing and runner CloudWatch logs stay enabled. No `infrastructure` apply or firewall change is needed.
+
 ## Updating the runner module
 
 Dependabot updates the Terraform pin. The PR check automatically verifies all four Lambda packages against upstream's signed build provenance for that release commit. No checksum refresh is needed. Deployment uses the packages verified by its plan job.
+
+When updating the module, verify the custom user-data template still skips only the EC2 X-Ray setup. A plan fails if the template can no longer find the upstream X-Ray block.
 
 On `main`, **Refresh ephemeral runner images** starts at 02:00 UTC on the first of each month. It deploys the `ephemeral-runner` stack to test, staging, then production, subject to each environment's approval rules. Use the manual deploy for urgent updates.
 
