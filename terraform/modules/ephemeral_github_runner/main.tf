@@ -48,16 +48,6 @@ resource "aws_security_group" "runner" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Match the existing runner subnet's outbound SSH path for GitHub deploy-key checkouts.
-  # tfsec:ignore:aws-vpc-no-public-egress-sgr
-  egress {
-    description = "SSH for GitHub deploy-key checkouts"
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   dynamic "egress" {
     # Match the MarkLogic ingress ports in ../marklogic/ports.tf, excluding SSH.
     for_each = toset([7997, 8000, 8001, 8002, 8050, 8053, 8055, 8058, 8140, 8141, 8142, 8143, 8144, 8150, 8240, 8250, 8255])

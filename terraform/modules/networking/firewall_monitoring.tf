@@ -37,7 +37,6 @@ resource "aws_cloudwatch_dashboard" "network_firewall_dashboard" {
           type = "metric",
           properties = {
             "metrics" : [
-              ["AWS/NetworkFirewall", "Packets", "FirewallName", aws_networkfirewall_firewall.main.name, "CustomAction", "GitHubActionsSSH", "AvailabilityZone", aws_subnet.firewall.availability_zone, "Engine", "Stateless", { "color" : "#000000" }],
               ["AWS/NetworkFirewall", "Packets", "FirewallName", aws_networkfirewall_firewall.main.name, "CustomAction", "DroppedNTP", "AvailabilityZone", aws_subnet.firewall.availability_zone, "Engine", "Stateless", { "color" : "#ff7f0e" }],
               ["AWS/NetworkFirewall", "Packets", "FirewallName", aws_networkfirewall_firewall.main.name, "CustomAction", "ForwardUnmatchedPacket", "AvailabilityZone", aws_subnet.firewall.availability_zone, "Engine", "Stateless", { "color" : "#2ca02c" }]
             ],

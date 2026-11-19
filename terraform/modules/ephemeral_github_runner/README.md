@@ -1,6 +1,6 @@
 # Deploy ephemeral GitHub runners
 
-Repeat per environment, starting with `test`.
+Repeat per environment, starting with `test`. Before deploying, merge the HTTPS checkout migration in `delta-marklogic-deploy` and configure its `RUNNER_APP_PRIVATE_KEY` secret. The new runners do not allow outbound SSH, and applying `infrastructure` removes the shared runner subnet's SSH firewall exception.
 
 1. On the existing GitHub App (`5783568`), approve **Repository Administration: Read and write** and **Actions: Read-only** for `communitiesuk/delta-marklogic-deploy`.
 2. In the environment's AWS account (`eu-west-1`), create two **Standard SecureString** parameters using `aws/ssm`. Replace `<env>` with `test`, `staging`, or `production`:

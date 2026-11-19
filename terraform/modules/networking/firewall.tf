@@ -199,68 +199,6 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
           action_definition {
             publish_metric_action {
               dimension {
-                value = "GitHubActionsSSH"
-              }
-            }
-          }
-          action_name = "GitHubActionsSSHMetricAction"
-        }
-
-        # Allow SSH from the GitHub Runner so it can clone from GitHub
-        # Outbound
-        stateless_rule {
-          priority = 4
-          rule_definition {
-            actions = ["aws:pass", "GitHubActionsSSHMetricAction"]
-            match_attributes {
-              source {
-                address_definition = local.github_runner_cidr_10
-              }
-              source_port {
-                from_port = 1024
-                to_port   = 65535
-              }
-              destination {
-                address_definition = "0.0.0.0/0"
-              }
-              destination_port {
-                from_port = 22
-                to_port   = 22
-              }
-              protocols = [local.tcp_protocol_number]
-            }
-          }
-        }
-
-        # Inbound
-        stateless_rule {
-          priority = 5
-          rule_definition {
-            actions = ["aws:pass", "GitHubActionsSSHMetricAction"]
-            match_attributes {
-              source {
-                address_definition = "0.0.0.0/0"
-              }
-              source_port {
-                from_port = 22
-                to_port   = 22
-              }
-              destination {
-                address_definition = local.github_runner_cidr_10
-              }
-              destination_port {
-                from_port = 1024
-                to_port   = 65535
-              }
-              protocols = [local.tcp_protocol_number, local.udp_protocol_number]
-            }
-          }
-        }
-
-        custom_action {
-          action_definition {
-            publish_metric_action {
-              dimension {
                 value = "DroppedNTP"
               }
             }

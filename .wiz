@@ -13,3 +13,8 @@ ignore:
     d16d439d-ea04-467e-bacc-9fbb39326747:
       "/terraform/modules/ephemeral_github_runner/access-logs.tf":
         reason: BY_DESIGN
+    # The runner security group's only unrestricted destination CIDR is TCP 443.
+    # The private subnet routes public HTTPS through Network Firewall's TLS SNI allowlist.
+    1a6b41e8-15ee-4798-b2d3-378e559e42f1:
+      "/terraform/modules/ephemeral_github_runner/main.tf":
+        reason: BY_DESIGN

@@ -57,7 +57,7 @@ See the Terraform code for details.
 Outbound internet connections from private subnets go via AWS Network Firewall, and then an AWS NAT Gateway.
 
 Network Firewall performs per-subnet allowlist filtering based on SNI and Host header for TLS and HTTP traffic respectively.
-Other outbound traffic is dropped with the exception of outbound SSH for the GitHub runner.
+Other outbound internet traffic is dropped. GitHub runners use HTTPS for checkouts.
 
 See the [networking module](../../terraform/modules/networking/main.tf) for the full allowlist.
 
