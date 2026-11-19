@@ -5,3 +5,11 @@ ignore:
     3edc2599-c2fb-45d3-8878-77a5735f1cab:
       "/terraform/modules/mailhog/patching.tf":
         reason: BY_DESIGN
+    # S3 server access log delivery requires SSE-S3 on the destination bucket.
+    8a890cc2-813e-4da6-afad-721c64a3361b:
+      "/terraform/modules/ephemeral_github_runner/access-logs.tf":
+        reason: BY_DESIGN
+    # The versioned log destination keeps one copy; no second copy is required.
+    d16d439d-ea04-467e-bacc-9fbb39326747:
+      "/terraform/modules/ephemeral_github_runner/access-logs.tf":
+        reason: BY_DESIGN
