@@ -30,8 +30,8 @@ Deployments are either managed by Terraform or by workflows within the repositor
 ## MarkLogic deployments
 
 Deployments to MarkLogic require direct network access.
-For this we use an EC2 instance inside the VPC as a GitHub runner.
-Access controls around GitHub runners are limited, so we attach them to a separate repository.
+For this we use ephemeral EC2 runners inside the VPC, scoped to the `delta-marklogic-deploy` repository.
+Each runner executes one job and is then terminated.
 
 Deployments from this repository also use an AWS user with access to required secrets like the MarkLogic admin password.
 This user is stored as environment secrets, with access control via branch protection for test/staging, and named approvers for production.
@@ -63,7 +63,7 @@ This user is stored as environment secrets, with access control via branch prote
 
 \*\* Being able to push artefacts to production also affects dev as they share artefact repositories. Artefacts are immutable, so this cannot be used to directly affect running production services.
 
-† In practice, a user with access to the GitHub runner in an environment may be able to extract the MarkLogic secrets from a previous run. Repository write access should therefore be carefully controlled.
+† A repository writer can target a runner with network access to MarkLogic. Runner labels are not an authorization boundary; restrict repository write access and keep the GitHub environment protections in place.
 
 Where "Maintain" isn't specified the permissions are the same as "Write".
 

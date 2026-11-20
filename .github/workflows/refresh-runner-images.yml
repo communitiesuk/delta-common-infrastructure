@@ -1,0 +1,30 @@
+name: Refresh ephemeral runner images
+
+on:
+  schedule:
+    - cron: '0 2 1 * *'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    uses: ./.github/workflows/Terraform-deploy.yml
+    with:
+      environment: test
+      stack: ephemeral-runner
+
+  staging:
+    needs: test
+    uses: ./.github/workflows/Terraform-deploy.yml
+    with:
+      environment: staging
+      stack: ephemeral-runner
+
+  production:
+    needs: staging
+    uses: ./.github/workflows/Terraform-deploy.yml
+    with:
+      environment: production
+      stack: ephemeral-runner

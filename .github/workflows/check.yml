@@ -13,6 +13,8 @@ jobs:
   tf_fmt:
     name: Validate Terraform formatting
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
@@ -22,6 +24,12 @@ jobs:
           terraform_version: 1.9.3
       - name: Check formatting of all Terraform files
         run: terraform fmt -check -diff -recursive
+      - name: Verify ephemeral runner Lambda provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          artifact_test_dir=$(mktemp -d "$RUNNER_TEMP/runner-artifacts.XXXXXX")
+          bash terraform/modules/ephemeral_github_runner/download-artifacts.sh "$artifact_test_dir"
   tfsec:
     name: tfsec check
     runs-on: ubuntu-latest

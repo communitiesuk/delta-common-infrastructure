@@ -40,8 +40,8 @@ This is primarily used for development access in the test and staging accounts, 
 Developer's SSH public keys are uploaded to an S3 bucket, and the bastion host automatically fetches these and sets up a user per-key.  
 SSH access logs from the instance are shipped to CloudWatch, and users do not have root access to interfere with this.
 
-There is also a GitHub runner instance in each environment attached to the delta-marklogic-deploy repository.
-This is not accessible from the internet, but it does fetch and execute jobs from GitHub Actions.
+Each environment can launch a private, one-job EC2 runner for the `delta-marklogic-deploy` repository.
+The runner has no inbound access from the internet and connects to GitHub Actions to fetch and execute its job.
 See [07_cicd.md](./07_cicd.md) for further details.
 
 ## Egress
@@ -57,7 +57,7 @@ See the Terraform code for details.
 Outbound internet connections from private subnets go via AWS Network Firewall, and then an AWS NAT Gateway.
 
 Network Firewall performs per-subnet allowlist filtering based on SNI and Host header for TLS and HTTP traffic respectively.
-Other outbound traffic is dropped with the exception of outbound SSH for the GitHub runner.
+Other outbound internet traffic is dropped. GitHub runners use HTTPS for checkouts.
 
 See the [networking module](../../terraform/modules/networking/main.tf) for the full allowlist.
 

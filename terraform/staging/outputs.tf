@@ -88,11 +88,6 @@ output "auth_service_private_subnet_ids" {
   value = module.networking.auth_service_private_subnets[*].id
 }
 
-output "gh_runner_private_key" {
-  value     = module.gh_runner.private_key
-  sensitive = true
-}
-
 output "private_dns" {
   value = module.networking.private_dns
 }

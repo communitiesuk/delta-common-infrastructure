@@ -12,6 +12,20 @@ updates:
     groups:
       terraform-providers:
         group-by: dependency-name
+  - package-ecosystem: "terraform"
+    directories:
+      - "terraform/test_ephemeral_runner/"
+      - "terraform/staging_ephemeral_runner/"
+      - "terraform/production_ephemeral_runner/"
+    schedule:
+      interval: "weekly"
+    groups:
+      ephemeral-runner-providers:
+        group-by: dependency-name
+  - package-ecosystem: "terraform"
+    directory: "terraform/modules/ephemeral_github_runner/"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

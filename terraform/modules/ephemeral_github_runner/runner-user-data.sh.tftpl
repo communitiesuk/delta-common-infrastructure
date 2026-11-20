@@ -1,0 +1,51 @@
+#!/bin/bash -e
+
+exec > >(tee /var/log/user-data.log | logger -t user-data -s 2>/dev/console) 2>&1
+set +x
+%{ if enable_debug_logging }
+set -x
+%{ endif }
+
+with_retry() {
+  local attempt
+  for attempt in 1 2 3 4 5; do
+    if "$@"; then
+      return 0
+    fi
+    echo "Attempt $attempt failed: $*"
+    if [ "$attempt" -lt 5 ]; then
+      sleep 5
+    fi
+  done
+  return 1
+}
+
+${pre_install}
+
+with_retry dnf upgrade-minimal -y
+with_retry dnf install -y docker
+systemctl start docker
+usermod -a -G docker ec2-user
+with_retry dnf install -y amazon-cloudwatch-agent jq git
+with_retry dnf install -y --allowerasing curl
+
+user_name=ec2-user
+${install_runner}
+${post_install}
+
+%{ if hook_job_started != "" }
+cat > /opt/actions-runner/hook_job_started.sh <<'EOF'
+${hook_job_started}
+EOF
+echo ACTIONS_RUNNER_HOOK_JOB_STARTED=/opt/actions-runner/hook_job_started.sh | tee -a /opt/actions-runner/.env
+%{ endif }
+
+%{ if hook_job_completed != "" }
+cat > /opt/actions-runner/hook_job_completed.sh <<'EOF'
+${hook_job_completed}
+EOF
+echo ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/opt/actions-runner/hook_job_completed.sh | tee -a /opt/actions-runner/.env
+%{ endif }
+
+# Skip the public X-Ray download. The template fails to render if the upstream block changes.
+${replace(start_runner, regex("(?m)^if \\[\\[ \"\\$xray_trace_id\" != \"\" \\]\\]; then\\n  # run xray service\\n  curl https://s3\\.us-east-2\\.amazonaws\\.com/aws-xray-assets\\.us-east-2/xray-daemon/[^\\n]+\\n(?:[^\\n]*\\n)*?^fi\\n", start_runner), "")}

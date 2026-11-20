@@ -154,11 +154,7 @@ Add and apply an open_id_connect module if there isn't already one for the AWS a
 
 ### 6 MarkLogic configuration - GitHub Runner
 
-Follow the instructions in the GitHub Runner module README to get the runner creation token, bring the module up.
-
-```sh
-terraform apply -target module.gh_runner -var="github_actions_runner_token=<token>"
-```
+Follow the [ephemeral GitHub runner runbook](terraform/modules/ephemeral_github_runner/README.md) to provision the environment's runner fleet and configure its GitHub webhook.
 
 Create SES credentials to pass to MarkLogic with the `ses_user` module if the environment will have one.
 
