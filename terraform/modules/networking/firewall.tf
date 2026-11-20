@@ -104,7 +104,7 @@ resource "aws_networkfirewall_rule_group" "stateless_main" {
 
   description = "Main stateless rule group for ${var.environment} environment firewall"
   capacity    = local.stateless_firewall_rule_group_capacity
-  name        = "stateless-rules-cap-${local.stateless_firewall_rule_group_capacity}-${var.environment}"
+  name        = "stateless-rules-cap-${local.stateless_firewall_rule_group_capacity}-v2-${var.environment}"
   type        = "STATELESS"
   rule_group {
     rules_source {
