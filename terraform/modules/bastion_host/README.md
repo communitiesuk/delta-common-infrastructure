@@ -28,7 +28,7 @@ internet, so `external_allowed_cidrs` can be set to `[]` to close off public SSH
 Authentication still uses dev's existing SSH keys (uploaded to the S3 bucket as described above); EICE only
 provides a private, IAM-authenticated tunnel to the instance in place of a public IP/port.
 
-Add a `Host` block like the following to your `~/.ssh/config`, replacing the port forwards with whichever
+Add a `Host` block like the following to your `~/.ssh/config` (or edit if you already currently have one configured for the TEST bastion), replacing the port forwards with whichever
 ones you need:
 
 ```sshconfig
