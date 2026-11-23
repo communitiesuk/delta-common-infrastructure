@@ -46,6 +46,7 @@ locals {
   patch_cloudwatch_log_expiration_days = 30
   s3_log_expiration_days               = 30
   all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk"]
+  bastion_instance_connect_enabled     = true
 }
 
 module "communities_only_ssl_certs" {
@@ -118,12 +119,15 @@ module "bastion" {
   public_subnet_ids       = [for subnet in module.networking.public_subnets : subnet.id]
   instance_subnet_ids     = [for subnet in module.networking.bastion_private_subnets : subnet.id]
   admin_ssh_key_pair_name = aws_key_pair.bastion_ssh_key.key_name
-  external_allowed_cidrs  = var.allowed_ssh_cidrs
-  instance_count          = 1
-  log_group_name          = module.bastion_log_group.log_group_names[0]
-  extra_userdata          = file("${path.module}/../bastion_config.sh")
-  tags_asg                = var.default_tags
-  tags_host_key           = { "terraform-plan-read" = true }
+  # Public SSH access is closed - devs connect via the EC2 Instance Connect Endpoint below instead,
+  # which doesn't require a static IP and isn't exposed to brute-force attacks from the internet.
+  external_allowed_cidrs           = []
+  enable_instance_connect_endpoint = local.bastion_instance_connect_enabled
+  instance_count                   = 1
+  log_group_name                   = module.bastion_log_group.log_group_names[0]
+  extra_userdata                   = file("${path.module}/../bastion_config.sh")
+  tags_asg                         = var.default_tags
+  tags_host_key                    = { "terraform-plan-read" = true }
   dns_config = {
     zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
@@ -362,9 +366,10 @@ module "marklogic" {
 module "iam_roles" {
   source = "../modules/iam_roles"
 
-  organisation_account_id = "448312965134"
-  environment             = local.environment
-  session_manager_key_arn = data.aws_kms_key.session_manager.arn
+  organisation_account_id               = "448312965134"
+  environment                           = local.environment
+  session_manager_key_arn               = data.aws_kms_key.session_manager.arn
+  bastion_instance_connect_subnet_cidrs = local.bastion_instance_connect_enabled ? [for subnet in module.networking.bastion_private_subnets : subnet.cidr_block] : []
 }
 
 data "aws_kms_key" "session_manager" {

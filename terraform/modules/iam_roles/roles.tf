@@ -62,16 +62,21 @@ resource "aws_iam_role" "infrastructure_support" {
 }
 
 resource "aws_iam_role_policy_attachment" "infrastructure_support" {
-  for_each = {
-    read_only       = data.aws_iam_policy.read_only_all.arn
-    cloudwatch_full = data.aws_iam_policy.cloudwatch_full_access.arn
-    ssm_full        = data.aws_iam_policy.ssm_full_access.arn
-    ssm_ad          = aws_iam_policy.ssm_adms_rdp.arn # Still need this for ssm-guiconnect actions
-    aws_support     = data.aws_iam_policy.aws_support_access.arn
-    tf_state        = data.aws_iam_policy.tf_state_read_only.arn
-    cloudshell      = data.aws_iam_policy.cloudshell.arn
-    infra_support   = aws_iam_policy.infra_support.arn
-  }
+  for_each = merge(
+    {
+      read_only       = data.aws_iam_policy.read_only_all.arn
+      cloudwatch_full = data.aws_iam_policy.cloudwatch_full_access.arn
+      ssm_full        = data.aws_iam_policy.ssm_full_access.arn
+      ssm_ad          = aws_iam_policy.ssm_adms_rdp.arn # Still need this for ssm-guiconnect actions
+      aws_support     = data.aws_iam_policy.aws_support_access.arn
+      tf_state        = data.aws_iam_policy.tf_state_read_only.arn
+      cloudshell      = data.aws_iam_policy.cloudshell.arn
+      infra_support   = aws_iam_policy.infra_support.arn
+    },
+    length(aws_iam_policy.ec2_instance_connect_bastion) > 0 ? {
+      ec2_instance_connect_bastion = aws_iam_policy.ec2_instance_connect_bastion[0].arn
+    } : {}
+  )
 
   role       = aws_iam_role.infrastructure_support.name
   policy_arn = each.value

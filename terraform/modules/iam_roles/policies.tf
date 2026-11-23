@@ -203,6 +203,37 @@ resource "aws_iam_policy" "ssm_adms_rdp" {
   policy = data.aws_iam_policy_document.ssm_adms_rdp.json
 }
 
+data "aws_iam_policy_document" "ec2_instance_connect_bastion" {
+  # tfsec:ignore:aws-iam-no-policy-wildcards
+  statement {
+    sid       = "OpenTunnelToBastion"
+    actions   = ["ec2-instance-connect:OpenTunnel"]
+    resources = ["*"]
+
+    condition {
+      test     = "IpAddress"
+      variable = "ec2-instance-connect:privateIpAddress"
+      values   = var.bastion_instance_connect_subnet_cidrs
+    }
+    condition {
+      test     = "NumericEquals"
+      variable = "ec2-instance-connect:remotePort"
+      values   = ["22"]
+    }
+    condition {
+      test     = "NumericLessThanEquals"
+      variable = "ec2-instance-connect:maxTunnelDuration"
+      values   = ["3600"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "ec2_instance_connect_bastion" {
+  count  = length(var.bastion_instance_connect_subnet_cidrs) > 0 ? 1 : 0
+  name   = "ec2-instance-connect-bastion-${var.environment}"
+  policy = data.aws_iam_policy_document.ec2_instance_connect_bastion.json
+}
+
 data "aws_iam_policy_document" "application_support" {
   statement {
     sid = "ManageSESSuppressionList"

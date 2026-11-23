@@ -14,3 +14,8 @@ output "ssh_keys_bucket" {
 output "bastion_host_key_fingerprint_sha256" {
   value = tls_private_key.bastion_host_key.public_key_fingerprint_sha256
 }
+
+output "instance_connect_endpoint_id" {
+  description = "ID of the EC2 Instance Connect Endpoint, if enabled"
+  value       = var.enable_instance_connect_endpoint ? aws_ec2_instance_connect_endpoint.bastion[0].id : null
+}
