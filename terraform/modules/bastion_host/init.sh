@@ -2,7 +2,6 @@
 
 set -xe
 
-yum -y update --security
 yum -y install jq nc amazon-cloudwatch-agent iptables-services
 
 mkdir /usr/bin/bastion
@@ -39,6 +38,9 @@ cat > /usr/bin/bastion/sync_users_with_s3 <<'EOF'
 #!/usr/bin/env bash
 
 set -xe
+
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+cd /root
 
 LOG_FILE="/var/log/bastion/changelog.log"
 # Where we store etags of public keys for registered users
@@ -78,8 +80,7 @@ for row in $(cat "$S3_DATA_FILE" | jq -r '.[] | @base64'); do
   # Check the username starts with a letter and only contains letters, numbers, dashes and underscores afterwards
   if [[ "$USER_NAME" =~ ^[a-z][-a-z0-9_]*$ ]]; then
     # Check whether the user already exists
-    cut -d: -f1 /etc/passwd | grep -qx $USER_NAME  || error_code=$?
-    if [ $error_code -eq 1 ]; then
+    if ! cut -d: -f1 /etc/passwd | grep -qx "$USER_NAME"; then
       # See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/managing-users.html#create-user-account
       adduser $USER_NAME
       [ -d /home/$USER_NAME/.ssh ] || mkdir -m 700 /home/$USER_NAME/.ssh
@@ -128,16 +129,45 @@ fi
 EOF
 
 chmod 700 /usr/bin/bastion/sync_users_with_s3
-PATH=$PATH:/sbin /usr/bin/bastion/sync_users_with_s3
+cat > /etc/systemd/system/bastion-sync-users.service <<'EOF'
+[Unit]
+Description=Sync bastion SSH users from S3
 
-# Update users every 5 minutes, check for security updates at 3AM
-cat > ~/crontab << EOF
-*/5 * * * * PATH=$PATH:/sbin /usr/bin/bastion/sync_users_with_s3
-0 3 * * * yum -y update --security
-@reboot bash -c "cat /dev/null | nohup nc -kl 2345 >/dev/null 2>&1 &"
+[Service]
+Type=oneshot
+Environment=HOME=/root
+ExecStart=/usr/bin/bastion/sync_users_with_s3
 EOF
-crontab ~/crontab
-rm ~/crontab
 
-# Listen on port 2345 for healthcheck pings from the load balancer
-bash -c "cat /dev/null | nohup nc -kl 2345 >/dev/null 2>&1 &"
+cat > /etc/systemd/system/bastion-sync-users.timer <<'EOF'
+[Unit]
+Description=Sync bastion SSH users every five minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=5min
+
+[Install]
+WantedBy=timers.target
+EOF
+
+cat > /etc/systemd/system/bastion-healthcheck.service <<'EOF'
+[Unit]
+Description=Bastion load balancer health check listener
+
+[Service]
+ExecStart=/usr/bin/nc -kl 2345
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable --now bastion-sync-users.timer
+systemctl start bastion-sync-users.service
+systemctl enable --now bastion-healthcheck.service
+%{ if enable_ssm ~}
+systemctl enable --now amazon-ssm-agent.service
+%{ endif ~}

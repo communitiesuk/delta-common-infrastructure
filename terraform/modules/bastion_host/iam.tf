@@ -61,6 +61,12 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_agent" {
   policy_arn = data.aws_iam_policy.cloudwatch_agent.arn
 }
 
+resource "aws_iam_role_policy_attachment" "ssm" {
+  count      = var.patch_maintenance_window == null ? 0 : 1
+  role       = aws_iam_role.bastion.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_instance_profile" "bastion_host_profile" {
   name_prefix = "${var.name_prefix}bastion-profile"
   role        = aws_iam_role.bastion.name

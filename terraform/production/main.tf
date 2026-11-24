@@ -138,10 +138,21 @@ module "bastion" {
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
 
+  patch_maintenance_window = module.bastion_patch_maintenance_window
+
   dns_config = var.secondary_domain == null ? null : {
     zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
+}
+
+module "bastion_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment       = local.environment
+  prefix            = "bastion-instance-patching"
+  schedule          = "cron(0 3 * * ? *)"
+  subscribed_emails = local.all_notifications_email_addresses
 }
 
 # We create the codeartifact domain only in the production environment, and it is shared across all environments

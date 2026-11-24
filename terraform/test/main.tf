@@ -124,11 +124,23 @@ module "bastion" {
   extra_userdata          = file("${path.module}/../bastion_config.sh")
   tags_asg                = var.default_tags
   tags_host_key           = { "terraform-plan-read" = true }
+
+  patch_maintenance_window = module.bastion_patch_maintenance_window
+
   dns_config = {
     zone_id = var.secondary_domain_zone_id
     domain  = "bastion.${var.secondary_domain}"
   }
   s3_access_log_expiration_days = local.s3_log_expiration_days
+}
+
+module "bastion_patch_maintenance_window" {
+  source = "../modules/maintenance_window"
+
+  environment       = local.environment
+  prefix            = "bastion-instance-patching"
+  schedule          = "cron(0 3 * * ? *)"
+  subscribed_emails = local.all_notifications_email_addresses
 }
 
 module "public_albs" {
