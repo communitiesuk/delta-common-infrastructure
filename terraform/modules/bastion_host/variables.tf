@@ -40,6 +40,12 @@ variable "external_ssh_port" {
   default     = 22
 }
 
+variable "enable_instance_connect_endpoint" {
+  type        = bool
+  description = "If true, creates an EC2 Instance Connect Endpoint so the bastion can be reached without public internet access, using IAM-authenticated tunnelling instead of a public CIDR allowlist"
+  default     = false
+}
+
 variable "internal_ssh_port" {
   type        = number
   description = "Which port the bastion will use to SSH into other private instances"
