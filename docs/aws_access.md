@@ -1,35 +1,13 @@
 # AWS Access
 
-## AWS console setup
+## AWS setup
 
 By "AWS console" we mean the website <https://console.aws.amazon.com/>.
-
-1. Have an account in the DLUHC AWS account (alias `mhclg`), login with your IAM username and password <https://mhclg.signin.aws.amazon.com/console>
-2. Set up MFA on your account in the DLUHC account (required for assuming the role in the other accounts)
-    1. To do this log in to your account in the web console and navigate to IAM
-    2. On the right hand side use the 'Quick links' section to quickly get to the tab 'My security credentials'
-    3. Scroll down to the 'Multi-factor authentication' section and work through the wizard to add an MFA using your username as the device name
-    4. Log out and back in again
-3. You can assume a role in one of the two Delta accounts from the AWS console
-    1. Log into the AWS console then click your username in the top right
-    2. Select "Switch role"
-    3. For "Account" input the account id
-        * 486283582667 for dev (test and staging)
-        * 468442790030 for prod
-    4. For "Role" input the role you're able to assume in that account (e.g. developer, assume-infra-support-staging). See [security docs](./security/02_aws_access.md) for a list of available roles.
-    5. Display Name and colour is up to you, fill them in and press "Switch Role"
-    6. Switch to Ireland (eu-west-1) in the region dropdown (top bar, second from the right)
+To access this, see [Working with AWS accounts](https://communitiesuk.github.io/mhclg-way/manuals/working-with-aws-accounts.html)
 
 ## Viewing logs
 
-Logs can be viewed in [CloudWatch](https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1).
-
-The delta server structured logs are under the `<environment>/delta-website-structured` Log Group.
-To search logs, find the Log Group, press "Search log group" then select a time period and put your search query in quotes in the "Filter events" box.
-
-[Link to Delta website catalina logs in production](https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#logsV2:log-groups/log-group/production$252Fdelta-website-structured/log-events)
-
-MarkLogic and other server logs are also available in CloudWatch.
+Logs can be viewed in CloudWatch
 
 ## Access to Active Directory
 
@@ -55,123 +33,6 @@ If you don't have an account on that environment's Windows domain you can create
 ## AWS CLI Setup
 
 We use the AWS CLI for running Terraform commands locally and connecting to instances via AWS Systems Manager Session Manager, including for the MarkLogic admin UI and query console.
-
-### Generating an access key
-
-To use the CLI you will need an AWS Access Key and Secret.
-
-1. Log into your account in the console, or switch back to the organisation account if you've just switched role
-2. Click on your name in the top right and go to "Security credentials"
-3. Scroll down to the "Access keys" section and select "Create access key"
-4. Skip through the "best practices & alternatives" (select any option and press next) and "description" steps
-5. Ensure you save your access key and secret somewhere secure - such as in a password manager (e.g. private folder in Keeper)
-
-### Install
-
-Install the AWS Command Line Interface: <https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html>
-
-Install the Session Manager plugin for the AWS CLI: <https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html>
-
-A bash-like terminal, if you're on Windows use WSL or install [Git Bash for Windows](https://gitforwindows.org/).
-
-Restart your terminal after installing.
-
-### Configure - with AWS Vault
-
-We use AWS Vault to securely store AWS credentials locally.
-
-If you have infra-support or developer access to any account, please always use AWS Vault or similar.  
-If not you can use _Configure - Access key in config file_ below.
-
-1. Install aws-vault as per the [instructions](https://github.com/99designs/aws-vault#installing)
-    * For Windows download a [release](https://github.com/99designs/aws-vault/releases/latest) and add to PATH, or install [Chocolatey](https://chocolatey.org/) and `choco install aws-vault`.
-    * If using WSL you will need `pass` as well, something like:
-
-    ```shell
-    sudo apt install pass
-    gpg --generate-key
-    # Remember the secret passphrase!!!
-    # take note of the long string outputted under pub.
-    pass init <public key string from above>
-    # take a look at the most recent version and use that instead of the below
-    wget https://github.com/99designs/aws-vault/releases/download/v6.6.2/aws-vault-linux-amd64
-    sudo mv aws-vault-linux-amd64 /usr/local/sbin/aws-vault
-    chmod +x /usr/local/sbin/aws-vault
-    # Add the following to ~/.bashrc:
-    # export AWS_VAULT_BACKEND=pass
-    # then either source the .bashrc file or just run the line above in the console.
-    # NOTE: You will need to unlock pass with your passphrase to use aws-vault,
-    # otherwise you will get "gpg: decryption failed: No secret key"
-    # Do this with `pass show dluhc`
-    ```
-
-2. Open your AWS config file in whatever text editor you like
-    * This lives at ~/.aws/config, you can do this from bash by running `nano ~/.aws/config`, this will also create the
-      file if it doesn't exist yet
-3. Add the following contents to the file, filling in \<your AWS username> and \<role> where needed
-
-   ```text
-   [profile dluhc]
-   region = eu-west-1
-   mfa_serial = arn:aws:iam::448312965134:mfa/<your AWS username>
-
-   [profile delta-dev]
-   source_profile = dluhc
-   include_profile = dluhc
-   role_arn=arn:aws:iam::486283582667:role/<role>
-
-   [profile delta-prod]
-   source_profile = dluhc
-   include_profile = dluhc
-   role_arn=arn:aws:iam::468442790030:role/<role>
-   ```
-
-4. From your terminal run `aws-vault add dluhc` and enter your Access Key ID and Secret Access Key when prompted
-    * Note, when you enter the secret access key you will not be able to see your input
-5. If you run `aws-vault list` you should see something like
-
-   ```text
-   Profile                  Credentials              Sessions
-   =======                  ===========              ========
-   dluhc                    dluhc                    -
-   delta-dev                -                        -
-   delta-prod               -                        -
-   ```
-
-6. To use these credentials you use the command `aws-vault exec <profile>` - you will be prompted to enter an MFA code
-   for the DLUHC account, this is used to create a session which will last a short period of time, during which you
-   won't need to enter them again
-    1. To run a single command run `aws-vault exec <profile> -- <command>` (where profile is one of 'dluhc',
-      `delta-dev` and `delta-prod`)
-    2. To start an authenticated subshell run `aws-vault exec <profile>`
-
-### Configure - Access key in config file
-
-Alternatively you can include your AWS Access Key and Secret in plain text in the config file,
-this isn't recommended, but is quicker to setup and acceptable for the application-support role.
-
-Note the role will be different for the two accounts, e.g. assume-application-support-staging and assume-application-support-production.
-
-```text
-[profile dluhc]
-region = eu-west-1
-aws_access_key_id=<your AWS access key id>
-aws_secret_access_key=<your AWS secret access key>
-
-[profile delta-dev]
-source_profile = dluhc
-role_arn=arn:aws:iam::486283582667:role/<role>
-mfa_serial = arn:aws:iam::448312965134:mfa/<your AWS username>
-region = eu-west-1
-
-[profile delta-prod]
-source_profile = dluhc
-role_arn=arn:aws:iam::468442790030:role/<role>
-mfa_serial = arn:aws:iam::448312965134:mfa/<your AWS username>
-region = eu-west-1
-```
-
-You'll then need to include `--profile delta-dev` or `--profile delta-prod` in your `aws` commands, or set the `AWS_PROFILE` environment variable.
 
 ### Troubleshooting
 

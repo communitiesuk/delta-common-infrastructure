@@ -14,21 +14,13 @@ We have enabled AWS GuardDuty, which can detect suspicious account activity, inc
 
 ## Permissions/Roles
 
-These are the roles used by humans to access the account.
+You should have both a read-only role and a `developer` role in each AWS account: production and non-production (test and staging).
 
 Managed by DLUHC:
 
 * `developer` - managed by DLUHC, effectively admin access
   * We plan to add an alarm on use of this role and phase it out for day-to-day use, see <https://mhclgdigital.atlassian.net/wiki/spaces/DT/pages/3375167/Security+-+DLUHC+responsibilities>
 * `auditor` and `security-auditor` - read only access
-
-Managed in this repository and environment specific. These are defined in [roles.tf](../../terraform/modules/iam_roles/roles.tf).
-
-* `cloudwatch-monitor` - CloudWatch access
-* `application-support` - View logs and use SSM to connect to MarkLogic and Active Directory
-* `infra-support` - Same as above, plus ReadOnlyAccess, Terraform state read, access to AWS support tickets, and permissions to perform some common actions, like scaling up/down servers
-
-The full names of the roles start with `assume-` and end with `-<environment>`, for example, "assume-application-support-staging" and "assume-infra-support-production".
 
 ## Alarms and monitoring
 
