@@ -6,4 +6,6 @@ The Active Directory management and certificate authority Windows EC2 instances 
 
 The test MailHog server is patched at 04:00 UTC on Mondays, Wednesdays and Fridays via an SSM maintenance window. It upgrades to the latest Amazon Linux 2023 release, reboots when needed, and checks that MailHog is running. Failures are sent to the environment's notification email addresses.
 
+The SSH bastions in test, staging, and production upgrade to the latest Amazon Linux 2023 release daily at 03:00 UTC via SSM. The task reboots when needed, checks that SSH responds on the host, sends output to the bastion CloudWatch log group, and alerts the environment's notification email addresses on failure. A reboot interrupts active SSH sessions and tunnels. SSH public key sync runs separately on a five-minute systemd timer.
+
 Other components (vendor application versions, Tomcat etc.) are patched manually on a schedule documented on Confluence as part of the Run Book: <https://mhclgdigital.atlassian.net/wiki/spaces/DT/pages/3375127/Patching>
