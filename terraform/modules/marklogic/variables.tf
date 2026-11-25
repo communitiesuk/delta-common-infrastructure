@@ -120,6 +120,22 @@ variable "dap_export_external_access" {
   default = []
 }
 
+variable "azure_dap_export_rotation_reminder_emails" {
+  description = "Email addresses for Azure DAP export access key rotation reminders; blank and .invalid entries are ignored"
+  type        = list(string)
+  default     = []
+  nullable    = false
+}
+
+variable "azure_dap_export_rotation_reminder_sender" {
+  description = "SES identity and sender address for Azure DAP export access key rotation reminders"
+  type = object({
+    identity_arn = string
+    address      = string
+  })
+  default = null
+}
+
 variable "marklogic_ami_version" {
   type = string
 
