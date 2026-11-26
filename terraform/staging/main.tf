@@ -47,6 +47,12 @@ locals {
   patch_cloudwatch_log_expiration_days = 60
   s3_log_expiration_days               = 60
   all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk", "dluhc-delta-dev-cloud-aaaamwf6vajqjepih2xfrp2dqe@communities-govuk.slack.com"]
+
+  ses_domain = "datacollection.test.communities.gov.uk"
+
+  azure_dap_export_rotation_reminder_emails = [
+    "delta-notifications@communities.gov.uk",
+  ]
 }
 
 data "aws_region" "current" {}
@@ -354,6 +360,13 @@ module "marklogic" {
       allowed_cidrs = var.azure_dap_export_allowed_cidrs
     }
   ]
+
+  azure_dap_export_rotation_reminder_emails = local.azure_dap_export_rotation_reminder_emails
+  azure_dap_export_rotation_reminder_sender = {
+    identity_arn = module.ses_identity.arn
+    address      = "dap-export-reminders@${local.ses_domain}"
+  }
+
   backup_replication_bucket              = module.backup_replication_bucket.bucket
   ebs_backup_role_arn                    = module.ebs_backup.role_arn
   ebs_backup_completed_sns_topic_arn     = module.ebs_backup.sns_topic_arn
@@ -373,7 +386,7 @@ module "ses_identity" {
 
   environment                          = local.environment
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
-  domain                               = "datacollection.test.communities.gov.uk"
+  domain                               = local.ses_domain
   cloudwatch_suffix                    = "-communities"
   alarms_sns_topic_arn                 = module.notifications.alarms_sns_topic_arn
 }

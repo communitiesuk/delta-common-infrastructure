@@ -4,6 +4,10 @@ locals {
     for access in var.dap_export_external_access : access.name => access
   }
   dap_export_rotation_lambda_subnets = var.dap_export_rotation_lambda_subnets == null ? var.private_subnets : var.dap_export_rotation_lambda_subnets
+  azure_dap_export_rotation_reminder_emails = toset([
+    for email in var.azure_dap_export_rotation_reminder_emails : trimspace(email)
+    if trimspace(email) != "" && !endswith(lower(trimspace(email)), ".invalid")
+  ])
 }
 
 data "aws_prefix_list" "s3" {
@@ -428,6 +432,21 @@ resource "aws_secretsmanager_secret_rotation" "dap_export_external" {
     aws_lambda_permission.allow_secretsmanager_dap_export_rotation,
     aws_secretsmanager_secret_version.dap_export_external,
   ]
+}
+
+module "azure_dap_export_rotation_reminder" {
+  for_each = {
+    for name in keys(local.dap_export_external_access) : name => name
+    if name == "azure-dap-export" && length(local.azure_dap_export_rotation_reminder_emails) > 0
+  }
+
+  source             = "../dap_export_rotation_reminder"
+  environment        = var.environment
+  secret_arn         = aws_secretsmanager_secret.dap_export_external[each.key].arn
+  emails             = local.azure_dap_export_rotation_reminder_emails
+  sender             = var.azure_dap_export_rotation_reminder_sender
+  alarms_topic_arn   = var.alarms_sns_topic_arn
+  log_retention_days = var.patch_cloudwatch_log_expiration_days
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "dap_export" {

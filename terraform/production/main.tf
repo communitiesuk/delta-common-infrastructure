@@ -45,6 +45,13 @@ locals {
   patch_cloudwatch_log_expiration_days = 90
   s3_log_expiration_days               = 731
   all_notifications_email_addresses    = ["delta-notifications@communities.gov.uk", "dluhc-delta-dev-cloud-aaaamuljvhexfmcatxqusfyjmm@communities-govuk.slack.com"]
+
+  ses_domain = "datacollection.communities.gov.uk"
+
+  azure_dap_export_rotation_reminder_emails = [
+    "delta-notifications@communities.gov.uk",
+    "CDSSupport@communities.gov.uk",
+  ]
 }
 data "aws_route53_zone" "private" {
   name         = "vpc.local"
@@ -61,7 +68,7 @@ module "communities_only_ssl_certs" {
 module "ses_identity" {
   source = "../modules/ses_identity"
 
-  domain                               = "datacollection.communities.gov.uk"
+  domain                               = local.ses_domain
   environment                          = local.environment
   cloudwatch_suffix                    = "-communities"
   email_cloudwatch_log_expiration_days = local.cloudwatch_log_expiration_days
@@ -265,6 +272,13 @@ module "marklogic" {
       allowed_cidrs = var.azure_dap_export_allowed_cidrs
     }
   ]
+
+  azure_dap_export_rotation_reminder_emails = local.azure_dap_export_rotation_reminder_emails
+  azure_dap_export_rotation_reminder_sender = {
+    identity_arn = module.ses_identity.arn
+    address      = "dap-export-reminders@${local.ses_domain}"
+  }
+
   s151_external_aws_principal_arns   = var.s151_external_aws_principal_arns
   backup_replication_bucket          = module.backup_replication_bucket.bucket
   ebs_backup_role_arn                = module.ebs_backup.role_arn
